@@ -2,8 +2,8 @@ import { PiBarcode } from "react-icons/pi"
 import type Book from "types/Book"
 
 export default async function BookPage({ params }: any) {
-  const { isbn } = params
-  const url = `https://openlibrary.org/isbn/${isbn}.json`
+  const { isbn: bookId } = params
+  const url = `https://openlibrary.org/books/${bookId}.json`
   const res = await fetch(url)
 
   if (res.status !== 200) {
@@ -14,24 +14,6 @@ export default async function BookPage({ params }: any) {
 
   const bookData = await res.json()
   console.log(bookData)
-
-  let authorName = bookData.by_statement
-
-  if (!authorName) {
-    const olAuthorKey = bookData.authors?.[0]?.key
-    console.log(olAuthorKey)
-    if (olAuthorKey) {
-      const authorUrl = `https://openlibrary.org/${olAuthorKey}.json`
-      const res = await fetch(authorUrl)
-      if (res.status !== 200) {
-        console.log(res)
-        const errorMessage = await res.text()
-        throw new Error(errorMessage)
-      }
-      const author = await res.json()
-      authorName = author.name
-    }
-  }
 
   let work
   const olWorkKey = bookData.works?.[0]?.key
@@ -47,7 +29,25 @@ export default async function BookPage({ params }: any) {
   }
   console.log(work)
 
-  let coverImageUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`
+  let authorName
+  const olAuthorKey = work.authors?.[0]?.author?.key
+  console.log(olAuthorKey)
+  if (olAuthorKey) {
+    const authorUrl = `https://openlibrary.org/${olAuthorKey}.json`
+    const res = await fetch(authorUrl)
+    if (res.status !== 200) {
+      console.log(res)
+      const errorMessage = await res.text()
+      throw new Error(errorMessage)
+    }
+    const author = await res.json()
+    authorName = author.name
+  }
+
+  let coverImageUrl
+  if (bookData && bookData.covers && bookData.covers.length > 0) {
+    coverImageUrl = `https://covers.openlibrary.org/b/id/${bookData.covers[0]}-L.jpg`
+  }
   if (work && work.covers && work.covers.length > 0) {
     coverImageUrl = `https://covers.openlibrary.org/b/id/${work.covers[0]}-L.jpg`
   }
@@ -55,7 +55,7 @@ export default async function BookPage({ params }: any) {
   const description = work.description?.value || work.description || "No description found."
 
   const book: Book = {
-    title: bookData.title,
+    title: work.title,
     subtitle: bookData.subtitle,
     by: authorName,
     description,

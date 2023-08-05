@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.16",
     "@types/node": "20.4.2",
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
     "eslint": "^8.2.0",
     "eslint-config-next": "13.4.10",
+    "lodash.debounce": "^4.0.8",
     "next": "13.4.10",
     "postcss": "8.4.26",
     "react": "18.2.0",
@@ -24,6 +26,7 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint-config-airbnb": "19.0.4",
