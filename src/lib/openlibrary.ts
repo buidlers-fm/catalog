@@ -1,0 +1,151 @@
+import { fetchJson } from "lib/helpers/general"
+import type Book from "types/Book"
+
+const BASE_URL = "https://openlibrary.org"
+const COVERS_BASE_URL = "https://covers.openlibrary.org/b"
+const PATHS = {
+  search: "search.json",
+}
+
+enum CoverUrlType {
+  CoverId = "id",
+}
+
+enum CoverSize {
+  S = "S",
+  M = "M",
+  L = "L",
+}
+
+const OpenLibrary = {
+  getFullBook: async (bookId: string) => {
+    // get book
+    const url = `${BASE_URL}/books/${bookId}.json`
+    const bookData = await fetchJson(url)
+    console.log(bookData)
+
+    // get work
+    let work
+    const workKey = bookData.works?.[0]?.key
+    if (workKey) {
+      const workUrl = `${BASE_URL}/${workKey}.json`
+      work = await fetchJson(workUrl)
+    }
+    console.log(work)
+
+    // get author from work
+    let authorName
+    const authorKey = work.authors?.[0]?.author?.key
+    console.log(authorKey)
+    if (authorKey) {
+      const authorUrl = `${BASE_URL}/${authorKey}.json`
+      const author = await fetchJson(authorUrl)
+      authorName = author.name
+    }
+
+    const getCoverUrl = (coverId: string) =>
+      OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.L)
+
+    // get cover image
+    let coverImageUrl
+    if (bookData && bookData.covers && bookData.covers.length > 0) {
+      coverImageUrl = getCoverUrl(bookData.covers[0])
+    }
+
+    // get all editions
+    const allEditionsUrl = `${BASE_URL}/${workKey}/editions.json`
+    const allEditionsRes = await fetchJson(allEditionsUrl)
+    const allEditions = allEditionsRes.entries
+
+    // if cover image is missing, try to get from another edition
+    if (!coverImageUrl) {
+      const editionWithCover = allEditions.find(
+        (edition: any) => edition.covers && edition.covers.length > 0,
+      )
+      if (editionWithCover) {
+        coverImageUrl = getCoverUrl(editionWithCover.covers[0])
+      }
+    }
+
+    // but work cover might be the best of all
+    if (work && work.covers && work.covers.length > 0) {
+      coverImageUrl = getCoverUrl(work.covers[0])
+    }
+
+    // polyfill schema inconsistencies
+    const description = work.description?.value || work.description || "No description found."
+
+    // consolidate publishers
+    let publishers = allEditions.map((edition: any) => edition.publishers).flat()
+    publishers = publishers.filter(
+      (publisher: string, idx: number) => publishers.indexOf(publisher) === idx,
+    )
+
+    const book: Book = {
+      title: work.title,
+      subtitle: bookData.subtitle,
+      by: authorName,
+      description,
+      coverImageUrl: coverImageUrl!,
+      publisherName: publishers.join(", "),
+      publishDate: bookData.publishDate,
+      openlibraryId: workKey?.split("/works/")?.[1],
+    }
+
+    return book
+  },
+
+  getOlWorkPageUrl: (workId: string) => `${BASE_URL}/works/${workId}`,
+
+  getCoverUrl: (coverUrlType: CoverUrlType, id: string | number, size: CoverSize) =>
+    `${COVERS_BASE_URL}/${coverUrlType}/${id}-${size}.jpg`,
+
+  search: async (searchString: string, limit: number = 3) => {
+    const baseSearchUrl = `${BASE_URL}/${PATHS.search}`
+    const url = new URL(baseSearchUrl)
+    url.searchParams.append("q", searchString)
+
+    const resBody = await fetchJson(url)
+    let results = resBody.docs // returns up to 100 results per page
+
+    console.log(results)
+
+    const books: Partial<Book>[] = []
+
+    // filter out unreliable results and apply limit
+    // so far some markers of unreliable results (based on trial and error) include:
+    // + no isbn
+    // + no author name
+    // + listed as independently published
+    results = results.filter(
+      (result: any) => result.isbn && result.authorName && result.authorName.length > 0,
+    )
+    results = results.filter(
+      (result: any) => !result.publisher?.includes("Independently Published"),
+    )
+    results = results.slice(0, limit)
+
+    results.forEach((result: any) => {
+      const { title, coverI: coverId } = result
+      const author = result.authorName?.join(", ")
+      const openlibraryId = result.editionKey?.[0]
+
+      const isDup = books.some((book) => book.title === title && book.by === author)
+      if (isDup) return
+
+      const book = {
+        title,
+        by: author,
+        openlibraryId,
+        coverImageUrl:
+          coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),
+      }
+
+      books.push(book)
+    })
+
+    return books
+  },
+}
+
+export default OpenLibrary
