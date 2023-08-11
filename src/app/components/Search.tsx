@@ -13,10 +13,11 @@ import type Book from "types/Book"
 
 const RESULTS_LIMIT = 3
 
-export default function Search() {
+export default function Search({ isMobileNav = false }) {
   const router = useRouter()
   const pathname = usePathname()
   const [searchResults, setSearchResults] = useState<Partial<Book>[]>()
+  const [moreResultsExist, setMoreResultsExist] = useState<boolean>()
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>()
 
@@ -35,11 +36,13 @@ export default function Search() {
 
       setIsSearching(true)
 
-      const results = await OpenLibrary.search(searchString, RESULTS_LIMIT)
+      const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
+        await OpenLibrary.search(searchString, RESULTS_LIMIT)
 
       console.log(results)
       setIsSearching(false)
       setSearchResults(results)
+      setMoreResultsExist(_moreResultsExist)
     }
 
     return debounce(onSearchChange, 300)
@@ -49,7 +52,7 @@ export default function Search() {
     if (isSearching) return
     setSelectedBook(book)
     setSearchResults(undefined)
-    router.push(`/books/${book.openlibraryId}`)
+    router.push(`/books/${book.openlibraryBookId}`)
   }
 
   useEffect(() => {
@@ -67,12 +70,16 @@ export default function Search() {
             <Combobox.Input
               onChange={debouncedSearchHandler}
               displayValue={() => selectedBook?.title || ""}
-              className="w-96 px-11 pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans"
+              className={`${
+                isMobileNav ? "w-full" : "w-96"
+              } px-11 pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans`}
             />
             {(open || selectedBook) && (
               <Combobox.Options
                 static
-                className="absolute top-[50px] w-96 rounded bg-gray-900 font-nunito-sans"
+                className={`${
+                  isMobileNav ? "w-full" : "w-96"
+                } absolute top-[50px] rounded bg-gray-900 font-nunito-sans`}
               >
                 {isLoading && (
                   <div className="h-24 flex items-center justify-center">
@@ -86,7 +93,7 @@ export default function Search() {
                 {!isLoading && searchResults && searchResults.length > 0 && (
                   <>
                     {searchResults.map((book) => (
-                      <Combobox.Option key={book.openlibraryId} value={book} as={Fragment}>
+                      <Combobox.Option key={book.openlibraryBookId} value={book} as={Fragment}>
                         {({ active }) => (
                           <li
                             className={`flex items-center ${
@@ -115,6 +122,11 @@ export default function Search() {
                         )}
                       </Combobox.Option>
                     ))}
+                    {moreResultsExist && (
+                      <li className="px-6 py-6 text-gray-200">
+                        More results exist. Try searching by title and author to narrow them down!
+                      </li>
+                    )}
                   </>
                 )}
               </Combobox.Options>

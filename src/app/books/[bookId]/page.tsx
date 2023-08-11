@@ -9,8 +9,8 @@ export default async function BookPage({ params }: any) {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex">
-        <div className="flex-grow-0 flex-shrink-0 w-72">
+      <div className="md:flex mx-8 md:mx-8 lg:mx-16">
+        <div className="flex-grow-0 flex-shrink-0 w-72 mx-auto mb-16">
           {book.coverImageUrl ? (
             <img src={book.coverImageUrl} alt="cover" className="object-top shadow-md rounded-md" />
           ) : (
@@ -19,16 +19,16 @@ export default async function BookPage({ params }: any) {
             </div>
           )}
         </div>
-        <div className="flex-grow ml-16">
+        <div className="flex-grow mx-auto md:ml-16">
           <h1 className="mb-1 text-4xl font-semibold">
             {book.title}
             <span className="text-xl ml-3 font-normal text-gray-200">{book.publishDate}</span>
           </h1>
           {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
           <h2 className="my-2 text-xl">by {book.by}</h2>
-          <div className="my-8 whitespace-pre-wrap w-5/6">{book.description}</div>
+          <div className="my-8 whitespace-pre-wrap md:w-11/12">{book.description}</div>
           <div className="my-8">
-            {book.openlibraryId && (
+            {book.openlibraryWorkId && (
               <div className="my-2">
                 <span className="text-gray-200">More at</span>{" "}
                 <Link

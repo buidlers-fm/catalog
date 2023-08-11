@@ -6,5 +6,6 @@ export default interface Book {
   coverImageUrl: string
   publisherName: string
   publishDate: string
-  openlibraryId: string
+  openlibraryBookId?: string
+  openlibraryWorkId: string
 }
