@@ -89,7 +89,7 @@ const OpenLibrary = {
       coverImageUrl: coverImageUrl!,
       publisherName: publishers.join(", "),
       publishDate: bookData.publishDate,
-      openlibraryId: workKey?.split("/works/")?.[1],
+      openlibraryWorkId: workKey?.split("/works/")?.[1],
     }
 
     return book
@@ -107,6 +107,7 @@ const OpenLibrary = {
 
     const resBody = await fetchJson(url)
     let results = resBody.docs // returns up to 100 results per page
+    let moreResultsExist = resBody.numFound > results.length
 
     console.log(results)
 
@@ -123,12 +124,16 @@ const OpenLibrary = {
     results = results.filter(
       (result: any) => !result.publisher?.includes("Independently Published"),
     )
+
+    // there are more pages of results in openlibrary OR
+    // there are more filtered results than the limit
+    moreResultsExist = moreResultsExist || results.length > limit
     results = results.slice(0, limit)
 
     results.forEach((result: any) => {
       const { title, coverI: coverId } = result
       const author = result.authorName?.join(", ")
-      const openlibraryId = result.editionKey?.[0]
+      const openlibraryBookId = result.editionKey?.[0]
 
       const isDup = books.some((book) => book.title === title && book.by === author)
       if (isDup) return
@@ -136,7 +141,7 @@ const OpenLibrary = {
       const book = {
         title,
         by: author,
-        openlibraryId,
+        openlibraryBookId,
         coverImageUrl:
           coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),
       }
@@ -144,7 +149,7 @@ const OpenLibrary = {
       books.push(book)
     })
 
-    return books
+    return { resultsForPage: books, moreResultsExist }
   },
 }
 
