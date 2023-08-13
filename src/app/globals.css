@@ -5,3 +5,36 @@
 .cat-underline {
   border-bottom: 1px solid hsl(181, 64%, 40%);
 }
+
+.cat-btn {
+  @apply mr-4 my-4 text-white font-nunito-sans border-b-[3px] border-r-[3px];
+  @apply cat-btn-md;
+}
+
+.cat-btn-sm {
+  @apply px-3 py-1;
+}
+
+.cat-btn-md {
+  @apply px-3 py-2;
+}
+
+.cat-btn-lg {
+  @apply px-6 py-3;
+}
+
+.cat-btn-orange {
+  @apply bg-orange-500 hover:bg-orange-700 border-b-orange-900 border-r-orange-900;
+}
+
+.cat-btn-teal {
+  @apply bg-teal-500 hover:bg-teal-700 border-b-teal-900 border-r-teal-900;
+}
+
+.cat-btn-red {
+  @apply bg-red-500 hover:bg-red-700 border-b-red-900 border-r-red-900;
+}
+
+.cat-btn-gray {
+  @apply bg-gray-500 hover:bg-gray-700 border-b-gray-900 border-r-gray-900;
+}
