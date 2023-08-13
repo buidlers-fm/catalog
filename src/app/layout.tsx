@@ -2,6 +2,7 @@ import "app/globals.css"
 import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
 import MobileNav from "app/components/MobileNav"
 import Search from "app/components/Search"
+import Toast from "app/components/Toast"
 import type { Metadata } from "next"
 
 const chivoMono = Chivo_Mono({ subsets: ["latin"], variable: "--font-chivo-mono" })
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             © buidlers.
           </footer>
         </div>
+        <Toast />
       </body>
     </html>
   )
