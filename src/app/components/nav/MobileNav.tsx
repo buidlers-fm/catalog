@@ -1,11 +1,14 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
-import Drawer from "react-modern-drawer"
 import "react-modern-drawer/dist/index.css"
-import { BsSearch, BsXCircle, BsXLg } from "react-icons/bs"
-import Search from "app/components/Search"
+import { BsSearch, BsXLg } from "react-icons/bs"
+import Search from "app/components/nav/Search"
+import UserNav from "app/components/nav/UserNav"
+
+const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
 export default function MobileNav() {
   const pathname = usePathname()
@@ -16,10 +19,11 @@ export default function MobileNav() {
   }, [pathname])
 
   return (
-    <>
+    <div className="flex">
       <button className="mt-2 px-2" onClick={() => setShowMobileSearch(true)}>
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
+      <UserNav />
       <Drawer
         open={showMobileSearch}
         onClose={() => setShowMobileSearch(false)}
@@ -35,6 +39,6 @@ export default function MobileNav() {
           </button>
         </div>
       </Drawer>
-    </>
+    </div>
   )
 }

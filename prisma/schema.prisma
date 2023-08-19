@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_POOLED")
+  directUrl = env("DATABASE_URL_DIRECT")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model UserProfile {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username   String   @unique
+  bio        String?
+  userId    String   @unique @db.Uuid @map("user_id")
+  createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  
+  @@map("user_profiles")
+}
+
+model User {
+  id         String   @id
+  email      String @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+
+  @@map("users")
+}

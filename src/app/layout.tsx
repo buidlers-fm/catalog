@@ -1,7 +1,8 @@
 import "app/globals.css"
 import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
-import MobileNav from "app/components/MobileNav"
-import Search from "app/components/Search"
+import { UserProvider } from "contexts/UserContext"
+import MobileNav from "app/components/nav/MobileNav"
+import Nav from "app/components/nav/Nav"
 import Toast from "app/components/Toast"
 import type { Metadata } from "next"
 
@@ -46,27 +47,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${fontsClassNames} bg-black text-white`}>
-        <div className="flex flex-col h-screen">
-          <header className="px-8 py-8 flex justify-between">
-            <div className="self-start text-4xl font-chivo-mono font-bold text-sand-500 tracking-wide">
-              <span className="mr-3">buidlers</span>
-              <span>catalog</span>
-            </div>
-            <div className="inline-block lg:hidden">
-              <MobileNav />
-            </div>
-            <div className="hidden lg:inline-block">
-              <Search />
-            </div>
-          </header>
-          <main className="mx-8 lg:mx-24 mt-16 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
-            {children}
-          </main>
-          <footer className="mt-32 px-8 py-4 font-chivo-mono text-lg tracking-wider">
-            © buidlers.
-          </footer>
-        </div>
-        <Toast />
+        <UserProvider>
+          <div className="flex flex-col h-screen">
+            <header className="px-8 py-8 flex justify-between">
+              <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-sand-500 tracking-wide">
+                <span className="mr-3 block sm:inline">buidlers</span>
+                <span>catalog</span>
+              </div>
+              <div className="inline-block lg:hidden">
+                <MobileNav />
+              </div>
+              <div className="hidden lg:inline-block">
+                <Nav />
+              </div>
+            </header>
+            <main className="mx-8 lg:mx-24 mt-16 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
+              {children}
+            </main>
+            <footer className="mt-32 px-8 py-4 font-chivo-mono text-lg tracking-wider">
+              © buidlers.
+            </footer>
+          </div>
+          <Toast />
+        </UserProvider>
       </body>
     </html>
   )

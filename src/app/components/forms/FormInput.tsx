@@ -1,4 +1,4 @@
-export default function FormInput({ labelText, name, type, fullWidth = true }) {
+export default function FormInput({ labelText, name, type, fullWidth = true, ...moreProps }) {
   return (
     <div className="my-4 font-nunito-sans text-white">
       <div className="mb-1">
@@ -8,6 +8,7 @@ export default function FormInput({ labelText, name, type, fullWidth = true }) {
         <input
           name={name}
           type={type}
+          {...moreProps}
           className={`${
             fullWidth ? "w-full" : "w-96"
           } px-3 pt-3 pb-2 bg-gray-900 rounded border-none focus:outline-orange-500`}

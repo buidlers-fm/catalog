@@ -7,7 +7,7 @@
 }
 
 .cat-btn {
-  @apply mr-4 my-4 text-white font-nunito-sans border-b-[3px] border-r-[3px];
+  @apply mr-4 my-4 text-white font-nunito-sans border-b-[3px] border-r-[3px] disabled:opacity-50;
   @apply cat-btn-md;
 }
 
@@ -37,4 +37,12 @@
 
 .cat-btn-gray {
   @apply bg-gray-500 hover:bg-gray-700 border-b-gray-900 border-r-gray-900;
+}
+
+.cat-btn-link {
+  @apply border-b border-b-gray-200;
+}
+
+.cat-btn-text {
+  @apply text-gray-100 font-nunito-sans;
 }
