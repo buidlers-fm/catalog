@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - "main"
+      - "production"
+
+jobs:
+  migrate-database-job:
+    runs-on: ubuntu-latest
+    name: Migrate database
+    timeout-minutes: 5
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+      - name: Install dependencies
+        run: yarn
+      - name: Migrate database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL_DIRECT: ${{ steps.extract_branch.outputs.branch }}_DATABASE_URL
