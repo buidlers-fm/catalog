@@ -47,60 +47,66 @@ export function UserProvider({ children }) {
 
     console.log(_user)
     setCurrentUser(_user)
-  }, [])
+  }, [supabase.auth])
 
   useEffect(() => {
     fetchUser()
   }, [fetchUser])
 
-  const signUp = useCallback(async (email: string, username: string, password: string) => {
-    const res = await fetch("/api/auth/sign-up", {
-      method: "POST",
-      body: JSON.stringify({
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        username,
         password,
-      }),
-    })
+      })
 
-    if (res.status === 200) {
-      await signIn(email, password)
-    } else {
-      const { error } = await res.json()
-      throw new Error(error)
-    }
-  }, [])
-
-  const signIn = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (error) {
-      if (error.status === 400) {
-        throw new Error("Invalid email or password.")
-      } else {
-        throw error
+      if (error) {
+        if (error.status === 400) {
+          throw new Error("Invalid email or password.")
+        } else {
+          throw error
+        }
       }
-    }
 
-    console.log(data)
-    const { user: userData } = humps.camelizeKeys(data)
+      console.log(data)
+      const { user: userData } = humps.camelizeKeys(data)
 
-    const {
-      email: userEmail,
-      userMetadata: { username },
-    } = userData
+      const {
+        email: userEmail,
+        userMetadata: { username },
+      } = userData
 
-    const _user = {
-      email: userEmail,
-      username,
-    }
+      const _user = {
+        email: userEmail,
+        username,
+      }
 
-    console.log(_user)
-    setCurrentUser(_user)
-  }, [])
+      console.log(_user)
+      setCurrentUser(_user)
+    },
+    [supabase.auth],
+  )
+
+  const signUp = useCallback(
+    async (email: string, username: string, password: string) => {
+      const res = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          username,
+          password,
+        }),
+      })
+
+      if (res.status === 200) {
+        await signIn(email, password)
+      } else {
+        const { error } = await res.json()
+        throw new Error(error)
+      }
+    },
+    [signIn],
+  )
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut()
@@ -109,7 +115,7 @@ export function UserProvider({ children }) {
     }
 
     setCurrentUser(null)
-  }, [])
+  }, [supabase.auth])
 
   const providerValue = useMemo(
     () => ({ currentUser, signUp, signIn, signOut }),

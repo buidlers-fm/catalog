@@ -1,6 +1,10 @@
 {
   "extends": ["airbnb", "airbnb-typescript", "next/core-web-vitals", "prettier"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
   "rules": {
+    "@next/next/no-img-element": "off",
     "@typescript-eslint/naming-convention": [
       "error",
       {
@@ -10,6 +14,7 @@
       }
     ],
     "@typescript-eslint/no-use-before-define": "off",
+    "consistent-return": "off",
     "import/prefer-default-export": "off",
     "import/extensions": [
       "warn",
@@ -37,6 +42,7 @@
       }
     ],
     "no-else-return": "off",
+    "no-underscore-dangle": "off",
     "react/button-has-type": "off",
     "react/function-component-definition": [
       2,
@@ -45,6 +51,7 @@
         "unnamedComponents": "arrow-function"
       }
     ],
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    "react/no-unescaped-entities": "off"
   }
 }
