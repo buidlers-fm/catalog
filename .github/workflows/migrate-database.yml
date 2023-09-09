@@ -23,5 +23,5 @@ jobs:
       - name: Migrate database
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL_DIRECT: ${{ steps.extract_branch.outputs.branch }}_DATABASE_URL_DIRECT
-          DATABASE_URL_POOLED: ${{ steps.extract_branch.outputs.branch }}_DATABASE_URL_POOLED
+          DATABASE_URL_DIRECT: ${{ secrets[format('{0}_DATABASE_URL_DIRECT', steps.extract_branch.outputs.branch)] }}
+          DATABASE_URL_POOLED: ${{ secrets[format('{0}_DATABASE_URL_POOLED', steps.extract_branch.outputs.branch)] }}
