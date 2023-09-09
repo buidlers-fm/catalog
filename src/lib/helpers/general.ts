@@ -1,7 +1,7 @@
 import humps from "humps"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
-  const res = await fetch(url)
+  const res = await fetch(url, options)
 
   if (res.status !== 200) {
     console.log(res)
