@@ -8,7 +8,7 @@ export default async function BookPage({ params }: any) {
   const book: Book = await OpenLibrary.getFullBook(bookId)
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="mt-16 max-w-4xl mx-auto">
       <div className="md:flex mx-8 md:mx-8 lg:mx-16">
         <div className="flex-grow-0 flex-shrink-0 w-72 mx-auto mb-16">
           {book.coverImageUrl ? (

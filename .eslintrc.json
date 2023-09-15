@@ -41,6 +41,7 @@
         ]
       }
     ],
+    "import/no-extraneous-dependencies": "off",
     "no-else-return": "off",
     "no-underscore-dangle": "off",
     "react/button-has-type": "off",
@@ -52,6 +53,7 @@
       }
     ],
     "react/jsx-props-no-spreading": "off",
-    "react/no-unescaped-entities": "off"
+    "react/no-unescaped-entities": "off",
+    "react/require-default-props": "off"
   }
 }

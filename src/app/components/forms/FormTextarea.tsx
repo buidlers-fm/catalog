@@ -8,7 +8,7 @@ type Props = {
   [moreProps: string]: any
 }
 
-export default function FormInput({
+export default function FormTextarea({
   labelText,
   name,
   type,
@@ -23,14 +23,14 @@ export default function FormInput({
         <label htmlFor={name}>{labelText}</label>
       </div>
       <div>
-        <input
+        <textarea
           name={name}
-          type={type}
+          rows={3}
           {...formProps}
           {...moreProps}
           className={`${
             fullWidth ? "w-full" : "w-96"
-          } px-3 pt-3 pb-2 bg-gray-900 disabled:text-gray-500 rounded border-none focus:outline-orange-500`}
+          } px-3 pt-3 pb-2 bg-gray-900 rounded border-none focus:outline-orange-500`}
         />
       </div>
       {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
