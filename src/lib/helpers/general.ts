@@ -5,8 +5,8 @@ export const fetchJson = async (url: string | URL, options: any = {}) => {
 
   if (res.status !== 200) {
     console.log(res)
-    const errorMessage = await res.text()
-    throw new Error(errorMessage)
+    const resBody = await res.json()
+    throw new Error(resBody.error)
   }
 
   const resBody = await res.json()
@@ -21,4 +21,16 @@ export const truncateString = (str: string | undefined, maxChars: number) => {
   const truncatedString = str.substring(0, lastSpaceIndex).trim()
 
   return `${truncatedString}...`
+}
+
+export const isValidHttpUrl = (string) => {
+  let url
+
+  try {
+    url = new URL(string)
+  } catch (_) {
+    return false
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:"
 }

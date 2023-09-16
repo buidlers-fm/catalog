@@ -12,7 +12,11 @@ datasource db {
 model UserProfile {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username   String   @unique
+  displayName String? @map("display_name")
   bio        String?
+  location   String?
+  website    String?
+  avatarUrl String? @map("avatar_url")
   userId    String   @unique @db.Uuid @map("user_id")
   createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
   

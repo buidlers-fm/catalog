@@ -47,7 +47,7 @@ export default function SignInForm({ toggleAuth }) {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-      <button className="cat-btn cat-btn-teal" onClick={handleSubmit} disabled={isSubmitting}>
+      <button className="cat-btn cat-btn-teal my-4" onClick={handleSubmit} disabled={isSubmitting}>
         Sign in
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}

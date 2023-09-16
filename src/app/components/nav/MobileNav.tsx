@@ -20,7 +20,7 @@ export default function MobileNav() {
 
   return (
     <div className="flex">
-      <button className="mt-2 px-2" onClick={() => setShowMobileSearch(true)}>
+      <button className="mt-1 px-2" onClick={() => setShowMobileSearch(true)}>
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
       <UserNav />

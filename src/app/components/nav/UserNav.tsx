@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import dynamic from "next/dynamic"
 import { useState } from "react"
 import { Menu } from "@headlessui/react"
@@ -35,7 +36,12 @@ export default function UserNav() {
           <div className="relative">
             <Menu.Items className="absolute top-2 w-[92px] bg-gray-900 rounded px-4 py-3">
               <Menu.Item>
-                <button onClick={signOut} className="cat-btn-text">
+                <Link href={`/users/${currentUser.username}`}>
+                  <button className="cat-btn-text my-1">Profile</button>
+                </Link>
+              </Menu.Item>
+              <Menu.Item>
+                <button onClick={signOut} className="cat-btn-text my-1">
                   Sign out
                 </button>
               </Menu.Item>
