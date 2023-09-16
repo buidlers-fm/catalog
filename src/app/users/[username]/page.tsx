@@ -1,4 +1,7 @@
 import Link from "next/link"
+import { cookies } from "next/headers"
+import humps from "humps"
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
@@ -13,6 +16,14 @@ const getDomainFromUrl = (url: string) => new URL(url).hostname
 export default async function UserProfilePage({ params }) {
   const { username } = params
 
+  const supabase = createServerComponentClient({ cookies })
+
+  const { data, error } = await supabase.auth.getSession()
+  if (error) throw error
+
+  const { session } = humps.camelizeKeys(data)
+  const sessionUserId = session?.user?.id
+
   const userProfile = await prisma.userProfile.findUnique({
     where: {
       username,
@@ -21,6 +32,8 @@ export default async function UserProfilePage({ params }) {
 
   console.log("profile page fetch:")
   console.log(userProfile)
+
+  const isUsersProfile = sessionUserId === userProfile?.userId
 
   const { displayName, bio, location, website, avatarUrl } = userProfile!
 
@@ -60,9 +73,11 @@ export default async function UserProfilePage({ params }) {
           </div>
         </div>
         <div>
-          <Link href="/settings/profile">
-            <button className="cat-btn cat-btn-gray">Edit Profile</button>
-          </Link>
+          {isUsersProfile && (
+            <Link href="/settings/profile">
+              <button className="cat-btn cat-btn-gray">Edit Profile</button>
+            </Link>
+          )}
         </div>
       </div>
       <div className="mt-12 font-nunito-sans">
