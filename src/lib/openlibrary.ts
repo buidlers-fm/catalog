@@ -109,8 +109,6 @@ const OpenLibrary = {
     let results = resBody.docs // returns up to 100 results per page
     let moreResultsExist = resBody.numFound > results.length
 
-    console.log(results)
-
     const books: Partial<Book>[] = []
 
     // filter out unreliable results and apply limit
@@ -134,6 +132,7 @@ const OpenLibrary = {
       const { title, coverI: coverId } = result
       const author = result.authorName?.join(", ")
       const openlibraryBookId = result.editionKey?.[0]
+      const openlibraryWorkId = result.key.split("/works/").pop()
 
       const isDup = books.some((book) => book.title === title && book.by === author)
       if (isDup) return
@@ -142,6 +141,7 @@ const OpenLibrary = {
         title,
         by: author,
         openlibraryBookId,
+        openlibraryWorkId,
         coverImageUrl:
           coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),
       }
