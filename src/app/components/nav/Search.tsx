@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, Fragment, useEffect } from "react"
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Combobox } from "@headlessui/react"
 import { BsSearch } from "react-icons/bs"
 import { GiOpenBook } from "react-icons/gi"
@@ -13,8 +13,13 @@ import type Book from "types/Book"
 
 const RESULTS_LIMIT = 3
 
-export default function Search({ isMobileNav = false }) {
-  const router = useRouter()
+type Props = {
+  onSelect: (selectedBook) => void
+  isNav?: boolean
+  isMobileNav?: boolean
+}
+
+export default function Search({ onSelect, isNav = true, isMobileNav = false }: Props) {
   const pathname = usePathname()
   const [searchResults, setSearchResults] = useState<Partial<Book>[]>()
   const [moreResultsExist, setMoreResultsExist] = useState<boolean>()
@@ -32,14 +37,11 @@ export default function Search({ isMobileNav = false }) {
 
       if (searchString.length < 3) return
 
-      console.log("searching...")
-
       setIsSearching(true)
 
       const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
         await OpenLibrary.search(searchString, RESULTS_LIMIT)
 
-      console.log(results)
       setIsSearching(false)
       setSearchResults(results)
       setMoreResultsExist(_moreResultsExist)
@@ -50,9 +52,9 @@ export default function Search({ isMobileNav = false }) {
 
   const handleSelect = (book: Book) => {
     if (isSearching) return
-    setSelectedBook(book)
+    if (isNav) setSelectedBook(book)
     setSearchResults(undefined)
-    router.push(`/books/${book.openlibraryBookId}`)
+    onSelect(book)
   }
 
   useEffect(() => {
@@ -66,13 +68,14 @@ export default function Search({ isMobileNav = false }) {
       <Combobox value={undefined} onChange={handleSelect}>
         {({ open }) => (
           <>
-            <BsSearch className="absolute top-[15px] left-4 text-gray-200" />
+            {isNav && <BsSearch className="absolute top-[15px] left-4 text-gray-200" />}
             <Combobox.Input
               onChange={debouncedSearchHandler}
               displayValue={() => selectedBook?.title || ""}
-              className={`${
-                isMobileNav ? "w-full" : "w-96"
-              } px-11 pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans`}
+              placeholder="Search by title and author"
+              className={`${isMobileNav ? "w-full" : "w-96"} ${
+                isNav ? "px-11" : "px-4"
+              } pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans`}
             />
             {(open || selectedBook) && (
               <Combobox.Options

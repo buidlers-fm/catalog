@@ -10,23 +10,67 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model UserProfile {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username   String   @unique
-  displayName String? @map("display_name")
-  bio        String?
-  location   String?
-  website    String?
-  avatarUrl String? @map("avatar_url")
-  userId    String   @unique @db.Uuid @map("user_id")
-  createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username    String   @unique
+  displayName String?  @map("display_name")
+  bio         String?
+  location    String?
+  website     String?
+  avatarUrl   String?  @map("avatar_url")
+  userId      String   @unique @db.Uuid @map("user_id")
+  lists       List[]
+  createdAt   DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
   
   @@map("user_profiles")
 }
 
 model User {
   id         String   @id
-  email      String @unique
-  createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  email      String   @unique
+  createdAt  DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
 
   @@map("users")
+}
+
+model Book {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug              String   @unique
+  title             String
+  authorName        String?  @map("author_name")
+  openlibraryWorkId String?  @map("openlibrary_work_id")
+  coverImageUrl     String?  @map("cover_image_url")
+  createdAt         DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+
+  @@map("books")
+  @@index([openlibraryWorkId])
+}
+
+model List {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                String               @unique
+  title               String
+  description         String?
+  creatorId           String               @map("creator_id") @db.Uuid
+  creator             UserProfile          @relation(fields: [creatorId], references: [id])
+  ownerId             String               @map("owner_id") @db.Uuid
+  listItemAssignments ListItemAssignment[]
+  createdAt           DateTime             @default(now()) @db.Timestamptz(6) @map("created_at")
+
+  @@map("lists")
+  @@index([creatorId])
+  @@index([ownerId])
+}
+
+model ListItemAssignment {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  listId           String   @map("list_id") @db.Uuid
+  list             List     @relation(fields: [listId], references: [id])
+  listedObjectType String   @map("listed_object_type")
+  listedObjectId   String   @map("listed_object_id") @db.Uuid
+  sortOrder        Int      @map("sort_order")
+  createdAt        DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+
+  @@map("list_item_assignments")
+  @@index([listId])
+  @@index([listedObjectId])
 }
