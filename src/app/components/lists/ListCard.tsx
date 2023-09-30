@@ -31,15 +31,15 @@ function ListCardBook({ book, idx }) {
   const zIndex = zIndexes[idx]
 
   return (
-    <div className={`-mr-[16px] ${zIndex}`}>
+    <div className={`-mr-[16px] w-[64px] h-[96px] overflow-hidden ${zIndex}`}>
       {book.coverImageUrl ? (
         <img
           src={book.coverImageUrl}
-          className="w-[64px] h-[96px] object-cover rounded-sm"
+          className="h-full object-cover rounded-sm"
           alt={`${book.title} cover`}
         />
       ) : (
-        <div className="w-[64px] h-[96px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded">
+        <div className="w-full h-full shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded">
           <GiOpenBook className="mt-0 text-2xl text-gray-500" />
         </div>
       )}
