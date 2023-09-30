@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { cookies } from "next/headers"
-import humps from "humps"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+// import { cookies } from "next/headers"
+// import humps from "humps"
+// import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import { getUserProfileLink } from "lib/helpers/general"
@@ -13,13 +13,13 @@ const prisma = new PrismaClient()
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
 
-  const supabase = createServerComponentClient({ cookies })
+  // const supabase = createServerComponentClient({ cookies })
 
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
+  // const { data, error } = await supabase.auth.getSession()
+  // if (error) throw error
 
-  const { session } = humps.camelizeKeys(data)
-  const sessionUserId = session?.user?.id
+  // const { session } = humps.camelizeKeys(data)
+  // const sessionUserId = session?.user?.id
 
   const userProfile = await prisma.userProfile.findUnique({
     where: {
@@ -61,13 +61,13 @@ export default async function UserListPage({ params }) {
     },
   })
 
-  const isUsersList = sessionUserId === userProfile?.userId
+  // const isUsersList = sessionUserId === userProfile?.userId
 
-  const { title } = list
-  const { displayName, avatarUrl } = userProfile!
+  const { title, description } = list
+  const { displayName } = userProfile!
 
-  const description =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
+  // const description =
+  //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
 
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
