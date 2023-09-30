@@ -43,6 +43,7 @@
     ],
     "import/no-extraneous-dependencies": "off",
     "no-else-return": "off",
+    "no-param-reassign": ["error", { "props": false }],
     "no-underscore-dangle": "off",
     "react/button-has-type": "off",
     "react/function-component-definition": [

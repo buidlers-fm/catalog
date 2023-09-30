@@ -36,3 +36,7 @@ export const isValidHttpUrl = (string) => {
 }
 
 export const getUserProfileLink = (username: string) => `/users/${username}`
+
+export const getBookLink = (slug: string) => `/books/${slug}`
+
+export const getListLink = (user, slug: string) => `/users/${user.username}/lists/${slug}`

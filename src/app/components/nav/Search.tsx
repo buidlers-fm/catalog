@@ -96,7 +96,7 @@ export default function Search({ onSelect, isNav = true, isMobileNav = false }: 
                 {!isLoading && searchResults && searchResults.length > 0 && (
                   <>
                     {searchResults.map((book) => (
-                      <Combobox.Option key={book.openlibraryBookId} value={book} as={Fragment}>
+                      <Combobox.Option key={book.openlibraryWorkId} value={book} as={Fragment}>
                         {({ active }) => (
                           <li
                             className={`flex items-center ${

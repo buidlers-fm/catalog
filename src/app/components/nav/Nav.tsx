@@ -7,7 +7,8 @@ import UserNav from "app/components/nav/UserNav"
 export default function Nav() {
   const router = useRouter()
 
-  const navigateToBookPage = (book) => router.push(`/books/${book.openlibraryBookId}`)
+  const navigateToBookPage = (book) =>
+    router.push(`/books?openlibraryWorkId=${book.openlibraryWorkId}`)
 
   return (
     <div className="flex">

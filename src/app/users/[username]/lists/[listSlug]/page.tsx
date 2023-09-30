@@ -3,6 +3,7 @@ import { cookies } from "next/headers"
 import humps from "humps"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
+import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import { getUserProfileLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
@@ -68,18 +69,6 @@ export default async function UserListPage({ params }) {
   const description =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
 
-  const convertImageUrlToLarge = (imageUrl) => {
-    const pattern = /-M(\.\w+)$/ // filename ends in "-M", followed by file extension
-    const match = imageUrl.match(pattern)
-
-    if (!match) return imageUrl
-
-    const fileExtension = match[1]
-    const largeImageUrl = imageUrl.replace(pattern, `-L${fileExtension}`)
-
-    return largeImageUrl
-  }
-
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
       <div className="text-4xl font-semibold mb-1">{title}</div>
@@ -92,16 +81,7 @@ export default async function UserListPage({ params }) {
       <div className="my-4">{description}</div>
       <div className="my-8 p-0 grid grid-cols-1 sm:grid-cols-3 ml:grid-cols-5 gap0 sm:gap-[28px]">
         {books.map((book) => (
-          <div
-            key={book.id}
-            className="w-[288px] sm:w-[144px] h-auto my-8 mx-auto sm:my-4 flex items-center justify-center"
-          >
-            <img
-              src={convertImageUrlToLarge(book.coverImageUrl) as any}
-              className="w-full"
-              alt={`${book.title} cover`}
-            />
-          </div>
+          <ListBook key={book.id} book={book} />
         ))}
       </div>
     </div>
