@@ -93,14 +93,28 @@ export async function POST(req: NextRequest) {
 
     if (selectedBookRecords.length !== selectedBooks.length) {
       throw new Error(
-        `Selected ${selectedBooks.length} books for list but only ${selectedBookRecords.length} books found in db`,
+        `Selected ${selectedBooks.length} books for list but ${selectedBookRecords.length} books found in db`,
       )
     }
 
     // create list + list item assignments as a transaction
     const listSlug = await generateUniqueSlug(listTitle, "list", { ownerId: userProfile.id })
 
-    const listItemAssignments = selectedBookRecords.map((book, idx) => ({
+    const orderedSelectedBookRecords = selectedBookRecords.sort((a, b) => {
+      const indexOfA = selectedBooks.findIndex(
+        (book) => book.openlibraryWorkId === a.openlibraryWorkId,
+      )
+      const indexOfB = selectedBooks.findIndex(
+        (book) => book.openlibraryWorkId === b.openlibraryWorkId,
+      )
+
+      if (indexOfA === -1 || indexOfB === -1)
+        throw new Error("fetched a book record that wasn't selected for the list")
+
+      return indexOfA - indexOfB
+    })
+
+    const listItemAssignments = orderedSelectedBookRecords.map((book, idx) => ({
       listedObjectType: "book",
       listedObjectId: book.id,
       sortOrder: idx + 1,

@@ -53,13 +53,21 @@ export default async function UserListPage({ params }) {
     .filter((lia) => lia.listedObjectType === "book")
     .map((lia) => lia.listedObjectId)
 
-  const books = await prisma.book.findMany({
+  const _books = await prisma.book.findMany({
     where: {
       id: {
         in: bookIds,
       },
     },
   })
+
+  const books = list.listItemAssignments
+    .map((lia) => {
+      if (lia.listedObjectType !== "book") return null
+
+      return _books.find((b) => b.id === lia.listedObjectId)
+    })
+    .filter((b) => !!b)
 
   // const isUsersList = sessionUserId === userProfile?.userId
 
@@ -81,7 +89,7 @@ export default async function UserListPage({ params }) {
       <div className="my-4">{description}</div>
       <div className="my-8 p-0 grid grid-cols-1 sm:grid-cols-3 ml:grid-cols-5 gap0 sm:gap-[28px]">
         {books.map((book) => (
-          <ListBook key={book.id} book={book} />
+          <ListBook key={book!.id} book={book} />
         ))}
       </div>
     </div>
