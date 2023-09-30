@@ -34,3 +34,5 @@ export const isValidHttpUrl = (string) => {
 
   return url.protocol === "http:" || url.protocol === "https:"
 }
+
+export const getUserProfileLink = (username: string) => `/users/${username}`
