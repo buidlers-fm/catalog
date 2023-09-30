@@ -18,20 +18,21 @@ enum CoverSize {
 }
 
 const OpenLibrary = {
-  getFullBook: async (bookId: string) => {
-    // get book
-    const url = `${BASE_URL}/books/${bookId}.json`
-    const bookData = await fetchJson(url)
-    console.log(bookData)
-
+  getFullBook: async (workId: string) => {
     // get work
-    let work
-    const workKey = bookData.works?.[0]?.key
-    if (workKey) {
-      const workUrl = `${BASE_URL}/${workKey}.json`
-      work = await fetchJson(workUrl)
-    }
+    const workUrl = `${BASE_URL}/works/${workId}.json`
+    const work = await fetchJson(workUrl)
     console.log(work)
+
+    // get editions and first book data
+    const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
+    const editionsRes = await fetchJson(editionsUrl)
+    const editions = editionsRes.entries
+    const bookData = editions.sort((a, b) => {
+      if (!a.latestRevision) return 1
+      if (!b.latestRevision) return -1
+      return b.latestRevision - a.latestRevision
+    })[0]
 
     // get author from work
     let authorName
@@ -52,14 +53,9 @@ const OpenLibrary = {
       coverImageUrl = getCoverUrl(bookData.covers[0])
     }
 
-    // get all editions
-    const allEditionsUrl = `${BASE_URL}/${workKey}/editions.json`
-    const allEditionsRes = await fetchJson(allEditionsUrl)
-    const allEditions = allEditionsRes.entries
-
     // if cover image is missing, try to get from another edition
     if (!coverImageUrl) {
-      const editionWithCover = allEditions.find(
+      const editionWithCover = editions.find(
         (edition: any) => edition.covers && edition.covers.length > 0,
       )
       if (editionWithCover) {
@@ -76,7 +72,7 @@ const OpenLibrary = {
     const description = work.description?.value || work.description || "No description found."
 
     // consolidate publishers
-    let publishers = allEditions.map((edition: any) => edition.publishers).flat()
+    let publishers = editions.map((edition: any) => edition.publishers).flat()
     publishers = publishers.filter(
       (publisher: string, idx: number) => publishers.indexOf(publisher) === idx,
     )
@@ -89,7 +85,7 @@ const OpenLibrary = {
       coverImageUrl: coverImageUrl!,
       publisherName: publishers.join(", "),
       publishDate: bookData.publishDate,
-      openlibraryWorkId: workKey?.split("/works/")?.[1],
+      openlibraryWorkId: workId,
     }
 
     return book

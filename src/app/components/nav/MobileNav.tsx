@@ -19,7 +19,8 @@ export default function MobileNav() {
     setShowMobileSearch(false)
   }, [pathname])
 
-  const navigateToBookPage = (book) => router.push(`/books/${book.openlibraryBookId}`)
+  const navigateToBookPage = (book) =>
+    router.push(`/books?openlibraryWorkId=${book.openlibraryWorkId}`)
 
   return (
     <div className="flex">

@@ -1,10 +1,12 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
-import { fetchJson } from "lib/helpers/general"
+import { useUser } from "contexts/UserContext"
+import { fetchJson, getListLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
@@ -26,6 +28,8 @@ const validations = {
 }
 
 export default function CreateList() {
+  const router = useRouter()
+  const { currentUser } = useUser()
   const [books, setBooks] = useState<Book[]>([])
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -80,7 +84,7 @@ export default function CreateList() {
         body: JSON.stringify(humps.decamelizeKeys(requestData)),
       })
 
-      toast.success("Changes saved!", { id: toastId })
+      router.push(getListLink(currentUser, createdList.slug))
       console.log(createdList)
     } catch (error: any) {
       setErrorMessage(error.message)

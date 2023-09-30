@@ -6,6 +6,8 @@ import { PrismaClient } from "@prisma/client"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
+import ListCard from "app/components/lists/ListCard"
+import { getListLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
 
@@ -30,8 +32,56 @@ export default async function UserProfilePage({ params }) {
     },
   })
 
+  if (!userProfile) throw new Error("User not found")
   console.log("profile page fetch:")
   console.log(userProfile)
+
+  const lists = await prisma.list.findMany({
+    where: {
+      ownerId: userProfile.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 3,
+    include: {
+      listItemAssignments: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
+  })
+
+  console.log(lists)
+
+  const allBookIds = lists
+    .map((list) =>
+      list.listItemAssignments
+        .filter((lia) => lia.listedObjectType === "book")
+        .map((lia) => lia.listedObjectId),
+    )
+    .flat()
+
+  const allBooks = await prisma.book.findMany({
+    where: {
+      id: {
+        in: allBookIds,
+      },
+    },
+  })
+
+  lists.forEach((list: any) => {
+    list.url = getListLink(userProfile, list.slug)
+
+    list.books = list.listItemAssignments
+      .map((lia) => {
+        if (lia.listedObjectType !== "book") return null
+
+        return allBooks.find((b) => b.id === lia.listedObjectId)
+      })
+      .filter((b) => !!b)
+  })
 
   const isUsersProfile = sessionUserId === userProfile?.userId
 
@@ -88,11 +138,24 @@ export default async function UserProfilePage({ params }) {
         </div>
       </div>
       <div className="mt-8 font-nunito-sans">
-        <div className="text-gray-300 text-sm uppercase tracking-wider">Lists</div>
-        <hr className="my-1 h-[1px] border-none bg-gray-300" />
-        <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-          Nothin to see here.
+        <div className="text-gray-300 text-sm uppercase tracking-wider">
+          Lists
+          <Link href="/lists/new">
+            <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
+          </Link>
         </div>
+        <hr className="my-1 h-[1px] border-none bg-gray-300" />
+        {lists.length > 0 ? (
+          <div className="">
+            {lists.map((list) => (
+              <ListCard key={list.id} list={list} />
+            ))}
+          </div>
+        ) : (
+          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
+            Nothin to see here.
+          </div>
+        )}
       </div>
     </div>
   )

@@ -34,3 +34,9 @@ export const isValidHttpUrl = (string) => {
 
   return url.protocol === "http:" || url.protocol === "https:"
 }
+
+export const getUserProfileLink = (username: string) => `/users/${username}`
+
+export const getBookLink = (slug: string) => `/books/${slug}`
+
+export const getListLink = (user, slug: string) => `/users/${user.username}/lists/${slug}`

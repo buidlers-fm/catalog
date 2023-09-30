@@ -3,10 +3,7 @@ import { GiOpenBook } from "react-icons/gi"
 import OpenLibrary from "lib/openlibrary"
 import type Book from "types/Book"
 
-export default async function BookPage({ params }: any) {
-  const { bookId } = params
-  const book: Book = await OpenLibrary.getFullBook(bookId)
-
+export default async function BookPage({ book }: { book: Book }) {
   return (
     <div className="mt-16 max-w-4xl mx-auto">
       <div className="md:flex mx-8 md:mx-8 lg:mx-16">
@@ -32,7 +29,7 @@ export default async function BookPage({ params }: any) {
               <div className="my-2">
                 <span className="text-gray-200">More at</span>{" "}
                 <Link
-                  href={OpenLibrary.getOlWorkPageUrl(bookId)}
+                  href={OpenLibrary.getOlWorkPageUrl(book.openlibraryWorkId)}
                   className="cat-underline"
                   target="_blank"
                   rel="noopener noreferrer"
