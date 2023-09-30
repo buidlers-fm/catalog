@@ -84,6 +84,7 @@ export default function CreateList() {
         body: JSON.stringify(humps.decamelizeKeys(requestData)),
       })
 
+      toast.success("Changes saved!", { id: toastId })
       router.push(getListLink(currentUser, createdList.slug))
       console.log(createdList)
     } catch (error: any) {
