@@ -29,7 +29,7 @@ export default function FormTextarea({
           {...formProps}
           {...moreProps}
           className={`${
-            fullWidth ? "w-full" : "w-96"
+            fullWidth ? "w-full" : "w-full xs:w-96"
           } px-3 pt-3 pb-2 bg-gray-900 rounded border-none focus:outline-gold-500`}
         />
       </div>

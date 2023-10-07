@@ -140,9 +140,11 @@ export default async function UserProfilePage({ params }) {
       <div className="mt-8 font-nunito-sans">
         <div className="text-gray-300 text-sm uppercase tracking-wider">
           Lists
-          <Link href="/lists/new">
-            <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
-          </Link>
+          {isUsersProfile && (
+            <Link href="/lists/new">
+              <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
+            </Link>
+          )}
         </div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {lists.length > 0 ? (

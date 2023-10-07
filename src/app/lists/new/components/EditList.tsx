@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { List } from "@prisma/client"
 import { toast } from "react-hot-toast"
 import humps from "humps"
 import { useUser } from "contexts/UserContext"
@@ -14,6 +15,7 @@ import type Book from "types/Book"
 
 const validations = {
   title: {
+    required: true,
     maxLength: {
       value: 100,
       message: "Title cannot be longer than 100 characters.",
@@ -27,7 +29,7 @@ const validations = {
   },
 }
 
-export default function CreateList() {
+export default function EditList() {
   const router = useRouter()
   const { currentUser } = useUser()
   const [books, setBooks] = useState<Book[]>([])
@@ -59,11 +61,24 @@ export default function CreateList() {
     setBooks(updatedBooks)
   }
 
+  const reorderBooks = (sortedIds: string[]) => {
+    const _books = [...books]
+
+    const updatedBooks = _books.sort((a, b) => {
+      const idA = sortedIds.indexOf(a.openlibraryBookId!)
+      const idB = sortedIds.indexOf(b.openlibraryBookId!)
+
+      if (idA === -1 || idB === -1) throw new Error("There was a problem reordering the books.")
+
+      return idA - idB
+    })
+
+    setBooks(updatedBooks)
+  }
+
   const submit = async (listData) => {
     setIsSubmitting(true)
     setErrorMessage(undefined)
-
-    console.log(listData)
 
     const toastId = toast.loading("Saving your changes...")
 
@@ -75,18 +90,14 @@ export default function CreateList() {
       books,
     }
 
-    console.log(requestData)
-    console.log(errors)
-
     try {
-      const createdList = await fetchJson(`/api/lists`, {
+      const createdList: List = await fetchJson(`/api/lists`, {
         method: "POST",
         body: JSON.stringify(humps.decamelizeKeys(requestData)),
       })
 
       toast.success("Changes saved!", { id: toastId })
       router.push(getListLink(currentUser, createdList.slug))
-      console.log(createdList)
     } catch (error: any) {
       setErrorMessage(error.message)
       toast.error("Oh no! There was an error.", { id: toastId })
@@ -118,7 +129,12 @@ export default function CreateList() {
             errorMessage={errors.description?.message}
             fullWidth={false}
           />
-          <EditListBooks books={books} onBookSelect={addBook} onBookRemove={removeBook} />
+          <EditListBooks
+            books={books}
+            onBookSelect={addBook}
+            onBookRemove={removeBook}
+            onReorder={reorderBooks}
+          />
           <div className="inline-block">
             <button
               type="submit"
