@@ -29,7 +29,7 @@ export default function UserNav() {
         <Menu>
           <Menu.Button className="cat-btn-text mt-2 lg:mt-0 ml-4 mr-2">
             <div className="flex">
-              <FaUserCircle className=" mr-3 text-2xl text-sand-500" />
+              <FaUserCircle className=" mr-3 text-2xl text-gold-100" />
               <span className="hidden sm:inline">{currentUser.username}</span>
             </div>
           </Menu.Button>

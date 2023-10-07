@@ -165,7 +165,7 @@ export default function EditProfile({ userProfile }) {
               fullWidth={false}
             />
             <div className="inline-block">
-              <button type="submit" className="cat-btn cat-btn-teal my-4" disabled={isSubmitting}>
+              <button type="submit" className="cat-btn cat-btn-gold my-4" disabled={isSubmitting}>
                 Save changes
               </button>
             </div>
