@@ -72,8 +72,8 @@ export default function Search({ onSelect, isNav = true, isMobileNav = false }: 
             <Combobox.Input
               onChange={debouncedSearchHandler}
               displayValue={() => selectedBook?.title || ""}
-              placeholder="Search by title and author"
-              className={`${isMobileNav ? "w-full" : "w-96"} ${
+              placeholder={`${isNav ? "Search" : "Add"} by title and author`}
+              className={`${isMobileNav ? "w-full" : "w-full xs:w-96"} ${
                 isNav ? "px-11" : "px-4"
               } pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans`}
             />
@@ -81,8 +81,8 @@ export default function Search({ onSelect, isNav = true, isMobileNav = false }: 
               <Combobox.Options
                 static
                 className={`${
-                  isMobileNav ? "w-full" : "w-96"
-                } absolute top-[50px] rounded bg-gray-900 font-nunito-sans`}
+                  isMobileNav ? "w-full" : "w-full xs:w-96"
+                } absolute z-50 top-[50px] rounded bg-gray-900 font-nunito-sans`}
               >
                 {isLoading && (
                   <div className="h-24 flex items-center justify-center">

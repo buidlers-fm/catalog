@@ -1,19 +1,27 @@
 "use client"
 
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
 import { useUser } from "contexts/UserContext"
-import { fetchJson, getListLink } from "lib/helpers/general"
+import { fetchJson, getListLink, getEditListLink, dbBookToBook } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
+import type List from "types/List"
 import type Book from "types/Book"
+
+type Props = {
+  list?: List
+  isEdit?: boolean
+}
 
 const validations = {
   title: {
+    required: true,
     maxLength: {
       value: 100,
       message: "Title cannot be longer than 100 characters.",
@@ -27,7 +35,7 @@ const validations = {
   },
 }
 
-export default function CreateList() {
+export default function EditList({ list, isEdit = false }: Props) {
   const router = useRouter()
   const { currentUser } = useUser()
   const [books, setBooks] = useState<Book[]>([])
@@ -39,11 +47,19 @@ export default function CreateList() {
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm<{ [k: string]: string }>()
+  } = useForm<{ [k: string]: string }>({
+    defaultValues: list as any,
+  })
+
+  useEffect(() => {
+    if (!list) return
+    const _books = list.dbBooks.map((dbBook) => dbBookToBook(dbBook))
+    setBooks(_books)
+  }, [list])
 
   const addBook = (selectedBook: Book) => {
     const bookAlreadyInList = books.some(
-      (b) => b.openlibraryBookId === selectedBook.openlibraryBookId,
+      (b) => b.openlibraryWorkId === selectedBook.openlibraryWorkId,
     )
     if (bookAlreadyInList) {
       toast.error("This book is already in your list!")
@@ -55,15 +71,28 @@ export default function CreateList() {
   }
 
   const removeBook = (book: Book) => {
-    const updatedBooks = books.filter((b) => b.openlibraryBookId !== book.openlibraryBookId)
+    const updatedBooks = books.filter((b) => b.openlibraryWorkId !== book.openlibraryWorkId)
+    setBooks(updatedBooks)
+  }
+
+  const reorderBooks = (sortedIds: string[]) => {
+    const _books = [...books]
+
+    const updatedBooks = _books.sort((a, b) => {
+      const idA = sortedIds.indexOf(a.openlibraryWorkId!)
+      const idB = sortedIds.indexOf(b.openlibraryWorkId!)
+
+      if (idA === -1 || idB === -1) throw new Error("There was a problem reordering the books.")
+
+      return idA - idB
+    })
+
     setBooks(updatedBooks)
   }
 
   const submit = async (listData) => {
     setIsSubmitting(true)
     setErrorMessage(undefined)
-
-    console.log(listData)
 
     const toastId = toast.loading("Saving your changes...")
 
@@ -75,18 +104,35 @@ export default function CreateList() {
       books,
     }
 
-    console.log(requestData)
-    console.log(errors)
-
     try {
-      const createdList = await fetchJson(`/api/lists`, {
-        method: "POST",
-        body: JSON.stringify(humps.decamelizeKeys(requestData)),
-      })
+      if (isEdit) {
+        const updatedList: List = await fetchJson(`/api/lists/${list!.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(humps.decamelizeKeys(requestData)),
+        })
 
-      toast.success("Changes saved!", { id: toastId })
-      router.push(getListLink(currentUser, createdList.slug))
-      console.log(createdList)
+        const successMessage = (
+          <>
+            Changes saved!&nbsp;
+            <Link href={getListLink(currentUser, updatedList.slug!)}>
+              <button type="button" className="cat-btn-link">
+                View your list.
+              </button>
+            </Link>
+          </>
+        )
+
+        toast.success(successMessage, { id: toastId })
+        router.push(getEditListLink(currentUser, updatedList.slug!))
+      } else {
+        const createdList: List = await fetchJson(`/api/lists`, {
+          method: "POST",
+          body: JSON.stringify(humps.decamelizeKeys(requestData)),
+        })
+
+        toast.success("Changes saved!", { id: toastId })
+        router.push(getListLink(currentUser, createdList.slug!))
+      }
     } catch (error: any) {
       setErrorMessage(error.message)
       toast.error("Oh no! There was an error.", { id: toastId })
@@ -99,7 +145,7 @@ export default function CreateList() {
 
   return (
     <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
-      <div className="my-8 text-3xl">New List</div>
+      <div className="my-8 text-3xl">{isEdit ? "Edit" : "New"} List</div>
       <form onSubmit={handleSubmit(submit)}>
         <div className="my-8">
           <FormInput
@@ -118,7 +164,12 @@ export default function CreateList() {
             errorMessage={errors.description?.message}
             fullWidth={false}
           />
-          <EditListBooks books={books} onBookSelect={addBook} onBookRemove={removeBook} />
+          <EditListBooks
+            books={books}
+            onBookSelect={addBook}
+            onBookRemove={removeBook}
+            onReorder={reorderBooks}
+          />
           <div className="inline-block">
             <button
               type="submit"

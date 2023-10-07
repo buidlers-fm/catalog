@@ -29,8 +29,8 @@ export default function FormInput({
           {...formProps}
           {...moreProps}
           className={`${
-            fullWidth ? "w-full" : "w-96"
-          } px-3 pt-3 pb-2 bg-gray-900 disabled:text-gray-500 rounded border-none focus:outline-orange-500`}
+            fullWidth ? "w-full" : "w-full xs:w-96"
+          } px-3 pt-3 pb-2 bg-gray-900 disabled:text-gray-500 rounded border-none focus:outline-gold-500`}
         />
       </div>
       {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
