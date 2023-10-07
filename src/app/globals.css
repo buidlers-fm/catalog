@@ -7,7 +7,7 @@
 }
 
 .cat-btn {
-  @apply text-white font-nunito-sans border-b-[3px] border-r-[3px] disabled:opacity-50;
+  @apply font-nunito-sans font-semibold border-b-[3px] border-r-[3px] disabled:opacity-50;
   @apply cat-btn-md;
 }
 
@@ -23,21 +23,25 @@
   @apply px-6 py-3;
 }
 
-.cat-btn-orange {
-  @apply bg-orange-500 hover:bg-orange-700 border-b-orange-900 border-r-orange-900;
+.cat-btn-gold {
+  @apply bg-gold-500 text-black hover:bg-gold-700 border-b-gold-900 border-r-gold-900;
 }
 
 .cat-btn-teal {
-  @apply bg-teal-500 hover:bg-teal-700 border-b-teal-900 border-r-teal-900;
+  @apply bg-teal-500 text-white hover:bg-teal-700 border-b-teal-900 border-r-teal-900;
 }
 
 .cat-btn-red {
-  @apply bg-red-500 hover:bg-red-700 border-b-red-900 border-r-red-900;
+  @apply bg-red-500 text-white hover:bg-red-700 border-b-red-900 border-r-red-900;
 }
 
 .cat-btn-gray {
-  @apply bg-gray-500 hover:bg-gray-700 border-b-gray-900 border-r-gray-900;
+  @apply bg-gray-500 text-white hover:bg-gray-700 border-b-gray-900 border-r-gray-900;
 }
+
+/* .cat-btn-orange { */
+/*   @apply bg-orange-500 hover:bg-orange-700 border-b-orange-900 border-r-orange-900; */
+/* } */
 
 .cat-btn-link {
   @apply border-b border-b-gray-200;

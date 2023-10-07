@@ -122,7 +122,7 @@ export default function CreateList() {
           <div className="inline-block">
             <button
               type="submit"
-              className="cat-btn cat-btn-teal my-4"
+              className="cat-btn cat-btn-gold my-4"
               disabled={isSubmitting || !readyToSubmit}
             >
               Save changes
