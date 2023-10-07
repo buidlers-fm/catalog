@@ -11,7 +11,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 const prisma = new PrismaClient()
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest, { params }) {
   try {
     // auth check
     const supabase = createRouteHandlerClient(
@@ -27,6 +27,29 @@ export async function POST(req: NextRequest) {
     // fetch profile id
     const userProfile = await prisma.userProfile.findUnique({ where: { userId: session.user.id } })
     if (!userProfile) throw new Error("User profile not found")
+
+    // verify list exists and belongs to current user
+    const { listId } = params
+    const list = await prisma.list.findUnique({
+      where: {
+        id: listId,
+      },
+      include: {
+        listItemAssignments: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+    })
+
+    if (!list) return NextResponse.json({}, { status: 404 })
+    if (list.ownerId !== userProfile.id) {
+      return NextResponse.json(
+        { error: "You are not authorized to update this list" },
+        { status: 403 },
+      )
+    }
 
     const {
       title: listTitle,
@@ -73,8 +96,30 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // create list + list item assignments as a transaction
-    const listSlug = await generateUniqueSlug(listTitle, "list", { ownerId: userProfile.id })
+    // regenerate slug if title has changed
+    let listSlug = list.slug
+    if (listTitle !== list.title) {
+      listSlug = await generateUniqueSlug(listTitle, "list", { ownerId: userProfile.id })
+    }
+
+    // update list
+    const updatedList = await prisma.list.update({
+      where: {
+        id: listId,
+      },
+      data: {
+        slug: listSlug,
+        title: listTitle,
+        description: listDescription,
+      },
+    })
+
+    // delete + recreate list item assignments
+    await prisma.listItemAssignment.deleteMany({
+      where: {
+        listId,
+      },
+    })
 
     const orderedSelectedBookRecords = selectedBookRecords.sort((a, b) => {
       const indexOfA = selectedBooks.findIndex(
@@ -91,27 +136,17 @@ export async function POST(req: NextRequest) {
     })
 
     const listItemAssignments = orderedSelectedBookRecords.map((book, idx) => ({
+      listId,
       listedObjectType: "book",
       listedObjectId: book.id,
       sortOrder: idx + 1,
     }))
 
-    const createdList = await prisma.list.create({
-      data: {
-        slug: listSlug,
-        title: listTitle,
-        description: listDescription,
-        creatorId: userProfile.id,
-        ownerId: userProfile.id,
-        listItemAssignments: {
-          createMany: {
-            data: listItemAssignments,
-          },
-        },
-      },
+    await prisma.listItemAssignment.createMany({
+      data: listItemAssignments,
     })
 
-    const resBody = humps.decamelizeKeys(createdList)
+    const resBody = humps.decamelizeKeys(updatedList)
 
     return NextResponse.json(resBody, { status: 200 })
   } catch (error: any) {

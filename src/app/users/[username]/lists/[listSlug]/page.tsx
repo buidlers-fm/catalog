@@ -1,10 +1,10 @@
 import Link from "next/link"
-// import { cookies } from "next/headers"
-// import humps from "humps"
-// import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+import { cookies } from "next/headers"
+import humps from "humps"
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
-import { getUserProfileLink } from "lib/helpers/general"
+import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
 
@@ -13,13 +13,13 @@ const prisma = new PrismaClient()
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
 
-  // const supabase = createServerComponentClient({ cookies })
+  const supabase = createServerComponentClient({ cookies })
 
-  // const { data, error } = await supabase.auth.getSession()
-  // if (error) throw error
+  const { data, error } = await supabase.auth.getSession()
+  if (error) throw error
 
-  // const { session } = humps.camelizeKeys(data)
-  // const sessionUserId = session?.user?.id
+  const { session } = humps.camelizeKeys(data)
+  const sessionUserId = session?.user?.id
 
   const userProfile = await prisma.userProfile.findUnique({
     where: {
@@ -69,7 +69,7 @@ export default async function UserListPage({ params }) {
     })
     .filter((b) => !!b)
 
-  // const isUsersList = sessionUserId === userProfile?.userId
+  const isUsersList = sessionUserId === userProfile?.userId
 
   const { title, description } = list
   const { displayName } = userProfile!
@@ -79,7 +79,14 @@ export default async function UserListPage({ params }) {
 
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
-      <div className="text-4xl font-semibold mb-1">{title}</div>
+      <div className="flex">
+        <div className="text-4xl font-semibold mb-1">{title}</div>
+        {isUsersList && (
+          <Link href={getEditListLink(userProfile, listSlug)}>
+            <button className="cat-btn cat-btn-sm cat-btn-gray ml-6">Edit list</button>
+          </Link>
+        )}
+      </div>
       <div className="my-2 text-gray-200 font-nunito-sans">
         a list by{" "}
         <Link href={getUserProfileLink(username)} className="cat-underline">

@@ -14,11 +14,11 @@ type Props = {
   onReorder: (reorderedIds: string[]) => void
 }
 
-export default function EditBookList({ books, onBookSelect, onBookRemove, onReorder }: Props) {
+export default function EditListBooks({ books, onBookSelect, onBookRemove, onReorder }: Props) {
   const [bookIds, setBookIds] = useState<string[]>([])
 
   useEffect(() => {
-    setBookIds(books.map((b) => b.openlibraryBookId!))
+    setBookIds(books.map((b) => b.openlibraryWorkId!))
   }, [books])
 
   const handleDragEnd = (event) => {
@@ -37,7 +37,7 @@ export default function EditBookList({ books, onBookSelect, onBookRemove, onReor
 
   return (
     <>
-      <div className="mt-8 mb-4 text-xl">Add books</div>
+      <div className="mt-8 mb-4 text-xl">Books</div>
       <Search isNav={false} onSelect={onBookSelect} />
       <div className="mt-6 mb-2">
         {books.length > 0 ? (
@@ -46,8 +46,8 @@ export default function EditBookList({ books, onBookSelect, onBookRemove, onReor
               <ul>
                 {books.map((book) => (
                   <SortableBook
-                    key={book.openlibraryBookId}
-                    id={book.openlibraryBookId}
+                    key={book.openlibraryWorkId}
+                    id={book.openlibraryWorkId}
                     book={book}
                     onRemove={onBookRemove}
                   />

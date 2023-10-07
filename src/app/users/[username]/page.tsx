@@ -139,7 +139,7 @@ export default async function UserProfilePage({ params }) {
       </div>
       <div className="mt-8 font-nunito-sans">
         <div className="text-gray-300 text-sm uppercase tracking-wider">
-          Lists
+          Recent lists
           {isUsersProfile && (
             <Link href="/lists/new">
               <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
