@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid"
 import { StorageClient } from "@supabase/storage-js"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
+import { createList, updateList } from "lib/api/lists"
 import type { NextRequest } from "next/server"
 
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -54,7 +55,11 @@ export async function PATCH(req: NextRequest, { params }) {
   // proceed with update
   const formData = await req.formData()
   const json = formData.get("data") as string
-  const { userProfile: profileToUpdate, options } = humps.camelizeKeys(JSON.parse(json))
+  const {
+    userProfile: profileToUpdate,
+    books: profileBooks,
+    options,
+  } = humps.camelizeKeys(JSON.parse(json))
 
   console.log(profileToUpdate)
 
@@ -86,7 +91,7 @@ export async function PATCH(req: NextRequest, { params }) {
     profileToUpdate.avatarUrl = `${storageBucketPath}/${filePath}`
   }
 
-  // update user profile record
+  // prepare user profile record
   const { displayName, location, website, bio, avatarUrl } = profileToUpdate
 
   const fieldsToUpdate = {
@@ -104,6 +109,32 @@ export async function PATCH(req: NextRequest, { params }) {
     })
 
     const updatedProfile = humps.decamelizeKeys(updateProfileRes)
+
+    // TODO: if books have been changed AND list exists, get its id and update it
+    if (options.favoriteBooksUpdated) {
+      const existingBooksList = await prisma.list.findFirst({
+        where: {
+          ownerId: updatedProfile.id,
+          designation: "favorite",
+        },
+      })
+
+      if (existingBooksList) {
+        const listParamsToUpdate = {
+          books: profileBooks,
+        }
+        await updateList(existingBooksList, listParamsToUpdate, updatedProfile)
+      } else {
+        const booksList = {
+          title: "_favorite",
+          slug: "_favorite",
+          designation: "favorite",
+          books: profileBooks,
+        }
+
+        await createList(booksList, updatedProfile)
+      }
+    }
 
     return NextResponse.json(updatedProfile, { status: 200 })
   } catch (error: any) {

@@ -4,10 +4,12 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
+import useEditBookList from "hooks/useEditBookList"
 import { fetchJson, isValidHttpUrl } from "lib/helpers/general"
 import AvatarUpload from "app/settings/profile/components/AvatarUpload"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
+import EditListBooks from "app/lists/new/components/EditListBooks"
 
 const validations = {
   displayName: {
@@ -33,7 +35,15 @@ const validations = {
   },
 }
 
-export default function EditProfile({ userProfile }) {
+export default function EditProfile({ userProfile, favoriteBooksList }) {
+  const {
+    books,
+    addBook,
+    removeBook,
+    reorderBooks,
+    isDirty: isBooksListDirty,
+  } = useEditBookList(favoriteBooksList)
+
   const [avatar, setAvatar] = useState<any>()
   const [avatarUrl, setAvatarUrl] = useState<string>(userProfile.avatarUrl)
   const [avatarUpdated, setAvatarUpdated] = useState<boolean>(false)
@@ -65,9 +75,12 @@ export default function EditProfile({ userProfile }) {
 
     const toastId = toast.loading("Saving your changes...")
 
-    const requestData = {
+    const requestData: any = {
       userProfile: userProfileData,
-      options: {},
+      books,
+      options: {
+        favoriteBooksUpdated: isBooksListDirty,
+      },
     }
 
     const formData = new FormData()
@@ -75,14 +88,10 @@ export default function EditProfile({ userProfile }) {
     if (avatarUpdated) {
       if (avatar) {
         formData.append("avatarFile", avatar.file)
-        requestData.options = {
-          avatarMimeType: avatar.fileType,
-          avatarExtension: avatar.fileExtension,
-        }
+        requestData.options.avatarMimeType = avatar.fileType
+        requestData.options.avatarExtension = avatar.fileExtension
       } else {
-        requestData.options = {
-          avatarDeleted: true,
-        }
+        requestData.options.avatarDeleted = true
       }
     }
 
@@ -104,75 +113,85 @@ export default function EditProfile({ userProfile }) {
       setAvatarUrl(updatedProfile.avatarUrl)
     } catch (error: any) {
       setErrorMessage(error.message)
-      toast.error("Oh no! There was an error.", { id: toastId })
+      toast.error("Oh no! There was an error updating your profile.", { id: toastId })
     }
 
     setIsSubmitting(false)
   }
 
   return (
-    <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
+    <div className="my-8 max-w-4xl mx-auto font-nunito-sans">
       <div className="my-8 text-3xl">Edit Profile</div>
       <form onSubmit={handleSubmit(submit)}>
-        <div className="flex justify-center">
-          <div className="my-8">
+        <div className="ml:flex justify-center">
+          <div className="my-8 grow">
             <AvatarUpload
               initialFile={avatarUrl}
               onFileChange={onAvatarChange}
               markFileValid={setAvatarValid}
             />
-          </div>
-          <div className="grow ml-16 flex flex-col items-end">
-            <FormInput
-              labelText="Username (not editable)"
-              name="username"
-              type="text"
-              formProps={register("username")}
-              fullWidth={false}
-              disabled
-            />
-            <FormInput
-              labelText="Display name"
-              name="displayName"
-              type="text"
-              formProps={register("displayName", validations.displayName)}
-              errorMessage={errors.displayName?.message}
-              fullWidth={false}
-            />
-            <FormInput
-              labelText="Location"
-              name="location"
-              type="text"
-              formProps={register("location", validations.location)}
-              errorMessage={errors.location?.message}
-              fullWidth={false}
-            />
-            <FormInput
-              labelText="Website"
-              name="website"
-              type="text"
-              formProps={register("website", validations.website)}
-              errorMessage={errors.website?.message}
-              fullWidth={false}
-              placeholder="https://example.com"
-            />
-            <FormTextarea
-              labelText="Bio"
-              name="bio"
-              type="text"
-              formProps={register("bio", validations.bio)}
-              errorMessage={errors.bio?.message}
-              fullWidth={false}
-            />
-            <div className="inline-block">
-              <button type="submit" className="cat-btn cat-btn-gold my-4" disabled={isSubmitting}>
-                Save changes
-              </button>
-            </div>
-            <div className="w-96">
-              {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
+            <div className="mt-8">
+              <FormInput
+                labelText="Username (not editable)"
+                name="username"
+                type="text"
+                formProps={register("username")}
+                fullWidth={false}
+                disabled
+              />
+              <FormInput
+                labelText="Display name"
+                name="displayName"
+                type="text"
+                formProps={register("displayName", validations.displayName)}
+                errorMessage={errors.displayName?.message}
+                fullWidth={false}
+              />
+              <FormInput
+                labelText="Location"
+                name="location"
+                type="text"
+                formProps={register("location", validations.location)}
+                errorMessage={errors.location?.message}
+                fullWidth={false}
+              />
+              <FormInput
+                labelText="Website"
+                name="website"
+                type="text"
+                formProps={register("website", validations.website)}
+                errorMessage={errors.website?.message}
+                fullWidth={false}
+                placeholder="https://example.com"
+              />
+              <FormTextarea
+                labelText="Bio"
+                name="bio"
+                type="text"
+                formProps={register("bio", validations.bio)}
+                errorMessage={errors.bio?.message}
+                fullWidth={false}
+              />
             </div>
           </div>
+          <div className="ml:ml-16 flex flex-col">
+            <EditListBooks
+              heading="Top 5 books"
+              books={books}
+              onBookSelect={addBook}
+              onBookRemove={removeBook}
+              onReorder={reorderBooks}
+              limit={5}
+            />
+          </div>
+        </div>
+        <div className="inline-block">
+          <button type="submit" className="cat-btn cat-btn-gold my-4" disabled={isSubmitting}>
+            Save changes
+          </button>
+        </div>
+        <div className="w-96">
+          {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
         </div>
       </form>
     </div>

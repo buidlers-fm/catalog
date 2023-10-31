@@ -8,11 +8,11 @@ export default interface List {
   title: string
   description?: string
   creatorId: string
-  creator: UserProfile
+  creator?: UserProfile
   ownerId: string
-  owner: UserProfile
+  owner?: UserProfile
   listItemAssignments: any[] // TODO
   createdAt?: Date
-  books: Book[]
-  dbBooks: DbBook[]
+  books?: Book[]
+  dbBooks?: DbBook[]
 }

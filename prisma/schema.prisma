@@ -50,6 +50,7 @@ model List {
   slug                String               @unique
   title               String
   description         String?
+  designation         String?
   creatorId           String               @map("creator_id") @db.Uuid
   creator             UserProfile          @relation(fields: [creatorId], references: [id])
   ownerId             String               @map("owner_id") @db.Uuid

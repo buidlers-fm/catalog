@@ -1,8 +1,9 @@
 import { cookies } from "next/headers"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Book as DbBook } from "@prisma/client"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
 import EditProfile from "app/settings/profile/components/EditProfile"
+import type List from "types/List"
 
 export const dynamic = "force-dynamic"
 
@@ -24,5 +25,42 @@ export default async function SettingsProfilePage() {
 
   const userProfile = humps.camelizeKeys(userProfileRes)
 
-  return <EditProfile userProfile={userProfile} />
+  const favoriteBooksList = (await prisma.list.findFirst({
+    where: {
+      ownerId: userProfile.id,
+      designation: "favorite",
+    },
+    include: {
+      listItemAssignments: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
+  })) as List
+
+  if (favoriteBooksList) {
+    const bookIds = favoriteBooksList.listItemAssignments
+      .filter((lia) => lia.listedObjectType === "book")
+      .map((lia) => lia.listedObjectId)
+
+    const _books = await prisma.book.findMany({
+      where: {
+        id: {
+          in: bookIds,
+        },
+      },
+    })
+
+    const books = favoriteBooksList.listItemAssignments
+      .map((lia) => {
+        if (lia.listedObjectType !== "book") return null
+
+        return _books.find((b) => b.id === lia.listedObjectId)
+      })
+      .filter((b) => !!b) as DbBook[]
+
+    favoriteBooksList.dbBooks = books
+  }
+  return <EditProfile userProfile={userProfile} favoriteBooksList={favoriteBooksList} />
 }

@@ -2,17 +2,17 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
 import { useUser } from "contexts/UserContext"
-import { fetchJson, getListLink, getEditListLink, dbBookToBook } from "lib/helpers/general"
+import useEditBookList from "hooks/useEditBookList"
+import { fetchJson, getListLink, getEditListLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
 import type List from "types/List"
-import type Book from "types/Book"
 
 type Props = {
   list?: List
@@ -38,7 +38,7 @@ const validations = {
 export default function EditList({ list, isEdit = false }: Props) {
   const router = useRouter()
   const { currentUser } = useUser()
-  const [books, setBooks] = useState<Book[]>([])
+  const { books, addBook, removeBook, reorderBooks } = useEditBookList(list)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
 
@@ -50,45 +50,6 @@ export default function EditList({ list, isEdit = false }: Props) {
   } = useForm<{ [k: string]: string }>({
     defaultValues: list as any,
   })
-
-  useEffect(() => {
-    if (!list) return
-    const _books = list.dbBooks.map((dbBook) => dbBookToBook(dbBook))
-    setBooks(_books)
-  }, [list])
-
-  const addBook = (selectedBook: Book) => {
-    const bookAlreadyInList = books.some(
-      (b) => b.openlibraryWorkId === selectedBook.openlibraryWorkId,
-    )
-    if (bookAlreadyInList) {
-      toast.error("This book is already in your list!")
-      return
-    }
-
-    const updatedBooks = [...books, selectedBook]
-    setBooks(updatedBooks)
-  }
-
-  const removeBook = (book: Book) => {
-    const updatedBooks = books.filter((b) => b.openlibraryWorkId !== book.openlibraryWorkId)
-    setBooks(updatedBooks)
-  }
-
-  const reorderBooks = (sortedIds: string[]) => {
-    const _books = [...books]
-
-    const updatedBooks = _books.sort((a, b) => {
-      const idA = sortedIds.indexOf(a.openlibraryWorkId!)
-      const idB = sortedIds.indexOf(b.openlibraryWorkId!)
-
-      if (idA === -1 || idB === -1) throw new Error("There was a problem reordering the books.")
-
-      return idA - idB
-    })
-
-    setBooks(updatedBooks)
-  }
 
   const submit = async (listData) => {
     setIsSubmitting(true)
@@ -165,6 +126,7 @@ export default function EditList({ list, isEdit = false }: Props) {
             fullWidth={false}
           />
           <EditListBooks
+            heading="Books"
             books={books}
             onBookSelect={addBook}
             onBookRemove={removeBook}

@@ -8,13 +8,22 @@ import SortableBook from "app/lists/new/components/SortableBook"
 import type Book from "types/Book"
 
 type Props = {
+  heading: string
   books: Book[]
   onBookSelect: (book: Book) => void
   onBookRemove: (book: Book) => void
   onReorder: (reorderedIds: string[]) => void
+  limit?: number
 }
 
-export default function EditListBooks({ books, onBookSelect, onBookRemove, onReorder }: Props) {
+export default function EditListBooks({
+  heading,
+  books,
+  onBookSelect,
+  onBookRemove,
+  onReorder,
+  limit,
+}: Props) {
   const [bookIds, setBookIds] = useState<string[]>([])
 
   useEffect(() => {
@@ -35,10 +44,19 @@ export default function EditListBooks({ books, onBookSelect, onBookRemove, onReo
     }
   }
 
+  // @ts-ignore
+  const disabled = Number.isFinite(limit) && books.length >= limit
+  const disabledMessage = `This list can have up to ${limit} books.`
+
   return (
     <>
-      <div className="mt-8 mb-4 text-xl">Books</div>
-      <Search isNav={false} onSelect={onBookSelect} />
+      <div className="mt-8 mb-4 text-xl">{heading}</div>
+      <Search
+        isNav={false}
+        onSelect={onBookSelect}
+        disabled={disabled}
+        disabledMessage={disabledMessage}
+      />
       <div className="mt-6 mb-2">
         {books.length > 0 ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
