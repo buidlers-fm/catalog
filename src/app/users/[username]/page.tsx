@@ -6,8 +6,10 @@ import { PrismaClient } from "@prisma/client"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
+import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import { getListLink } from "lib/helpers/general"
+import type List from "types/List"
 
 export const dynamic = "force-dynamic"
 
@@ -36,9 +38,26 @@ export default async function UserProfilePage({ params }) {
   console.log("profile page fetch:")
   console.log(userProfile)
 
+  const favoriteBooksList = (await prisma.list.findFirst({
+    where: {
+      ownerId: userProfile.id,
+      designation: "favorite",
+    },
+    include: {
+      listItemAssignments: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
+  })) as List | null
+
+  console.log(favoriteBooksList)
+
   const lists = await prisma.list.findMany({
     where: {
       ownerId: userProfile.id,
+      designation: null,
     },
     orderBy: {
       createdAt: "desc",
@@ -53,9 +72,9 @@ export default async function UserProfilePage({ params }) {
     },
   })
 
-  console.log(lists)
+  const allLists = [...lists, favoriteBooksList] as List[]
 
-  const allBookIds = lists
+  const allBookIds = allLists
     .map((list) =>
       list.listItemAssignments
         .filter((lia) => lia.listedObjectType === "book")
@@ -71,7 +90,7 @@ export default async function UserProfilePage({ params }) {
     },
   })
 
-  lists.forEach((list: any) => {
+  allLists.forEach((list: any) => {
     list.url = getListLink(userProfile, list.slug)
 
     list.books = list.listItemAssignments
@@ -91,7 +110,7 @@ export default async function UserProfilePage({ params }) {
   //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
 
   return (
-    <div className="mt-4 max-w-4xl mx-auto">
+    <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
       <div className="flex font-nunito-sans">
         {avatarUrl ? (
           <img
@@ -133,9 +152,17 @@ export default async function UserProfilePage({ params }) {
       <div className="mt-12 font-nunito-sans">
         <div className="text-gray-300 text-sm uppercase tracking-wider">Favorite Books</div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
-        <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-          Nothin to see here.
-        </div>
+        {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
+          <div className="p-0 grid grid-cols-1 sm:grid-cols-3 ml:grid-cols-5 gap-0 sm:gap-[28px]">
+            {favoriteBooksList.books.map((book) => (
+              <ListBook key={book!.id} book={book} />
+            ))}
+          </div>
+        ) : (
+          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
+            Nothin to see here.
+          </div>
+        )}
       </div>
       <div className="mt-8 font-nunito-sans">
         <div className="text-gray-300 text-sm uppercase tracking-wider">

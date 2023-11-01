@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 import humps from "humps"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
-import { PrismaClient, Book } from "@prisma/client"
+import { PrismaClient, Book as DbBook } from "@prisma/client"
 import EditList from "app/lists/new/components/EditList"
 import type List from "types/List"
 
@@ -69,7 +69,7 @@ export default async function UserListPage({ params }) {
 
       return _books.find((b) => b.id === lia.listedObjectId)
     })
-    .filter((b) => !!b) as Book[]
+    .filter((b) => !!b) as DbBook[]
 
   list.dbBooks = books
   return <EditList list={list} isEdit />
