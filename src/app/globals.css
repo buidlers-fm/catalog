@@ -39,6 +39,18 @@
   @apply bg-gray-500 text-white hover:bg-gray-700 border-b-gray-900 border-r-gray-900;
 }
 
+.cat-btn-red-outline {
+  @apply text-red-500 border-red-500 border;
+}
+
+.cat-btn-gray-outline {
+  @apply text-gray-500 border-gray-500 border;
+}
+
+.cat-btn-white-outline {
+  @apply text-gray-100 border-gray-500 border-2;
+}
+
 /* .cat-btn-orange { */
 /*   @apply bg-orange-500 hover:bg-orange-700 border-b-orange-900 border-r-orange-900; */
 /* } */

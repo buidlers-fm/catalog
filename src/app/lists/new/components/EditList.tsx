@@ -8,10 +8,11 @@ import { toast } from "react-hot-toast"
 import humps from "humps"
 import { useUser } from "contexts/UserContext"
 import useEditBookList from "hooks/useEditBookList"
-import { fetchJson, getListLink, getEditListLink } from "lib/helpers/general"
+import { fetchJson, getListLink, getEditListLink, getUserProfileLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
+import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
 
 type Props = {
@@ -41,6 +42,8 @@ export default function EditList({ list, isEdit = false }: Props) {
   const { books, addBook, removeBook, reorderBooks } = useEditBookList(list)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
 
   const {
     register,
@@ -102,50 +105,91 @@ export default function EditList({ list, isEdit = false }: Props) {
     setIsSubmitting(false)
   }
 
+  const handleDelete = async () => {
+    if (!list?.id || !isEdit) {
+      toast.error("Hmm, something went wrong.")
+      return
+    }
+
+    const toastId = toast.loading("Deleting your list...")
+
+    setIsDeleting(true)
+
+    try {
+      await fetchJson(`/api/lists/${list.id}`, {
+        method: "DELETE",
+      })
+
+      toast.success("List deleted!", { id: toastId })
+      router.push(getUserProfileLink(currentUser!.username))
+    } catch (error: any) {
+      toast.error("Hmm, something went wrong.", { id: toastId })
+    }
+
+    setIsDeleting(false)
+  }
+
   const readyToSubmit = getValues("title")?.length > 0 && books.length > 0
 
   return (
-    <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
-      <div className="my-8 text-3xl">{isEdit ? "Edit" : "New"} List</div>
-      <form onSubmit={handleSubmit(submit)}>
-        <div className="my-8">
-          <FormInput
-            labelText="Title"
-            name="title"
-            type="text"
-            formProps={register("title", validations.title)}
-            errorMessage={errors.title?.message}
-            fullWidth={false}
-          />
-          <FormTextarea
-            labelText="Description"
-            name="description"
-            type="text"
-            formProps={register("description", validations.description)}
-            errorMessage={errors.description?.message}
-            fullWidth={false}
-          />
-          <EditListBooks
-            heading="Books"
-            books={books}
-            onBookSelect={addBook}
-            onBookRemove={removeBook}
-            onReorder={reorderBooks}
-          />
-          <div className="inline-block">
-            <button
-              type="submit"
-              className="cat-btn cat-btn-gold my-4"
-              disabled={isSubmitting || !readyToSubmit}
-            >
-              Save changes
-            </button>
+    <>
+      <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
+        <div className="my-8 text-3xl">{isEdit ? "Edit" : "New"} List</div>
+        <form onSubmit={handleSubmit(submit)}>
+          <div className="my-8">
+            <FormInput
+              labelText="Title"
+              name="title"
+              type="text"
+              formProps={register("title", validations.title)}
+              errorMessage={errors.title?.message}
+              fullWidth={false}
+            />
+            <FormTextarea
+              labelText="Description"
+              name="description"
+              type="text"
+              formProps={register("description", validations.description)}
+              errorMessage={errors.description?.message}
+              fullWidth={false}
+            />
+            <EditListBooks
+              heading="Books"
+              books={books}
+              onBookSelect={addBook}
+              onBookRemove={removeBook}
+              onReorder={reorderBooks}
+            />
+            <div className="flex justify-between">
+              <button
+                type="submit"
+                className="cat-btn cat-btn-gold my-4"
+                disabled={isSubmitting || !readyToSubmit}
+              >
+                Save changes
+              </button>
+              {isEdit && (
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteModal(true)}
+                  className="cat-btn cat-btn-red-outline my-4 ml-4"
+                  disabled={isSubmitting || !readyToSubmit}
+                >
+                  Delete list
+                </button>
+              )}
+            </div>
+            <div className="w-96">
+              {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
+            </div>
           </div>
-          <div className="w-96">
-            {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
-          </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+      <ConfirmationModal
+        onConfirm={handleDelete}
+        onClose={() => setShowDeleteModal(false)}
+        isOpen={showDeleteModal}
+      />
+    </>
   )
 }

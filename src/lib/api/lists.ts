@@ -89,6 +89,7 @@ const createList = async (params, userProfile) => {
           data: listItemAssignments,
         },
       },
+      updatedAt: new Date(),
     },
   })
 
@@ -152,6 +153,7 @@ const updateList = async (list, params, userProfile) => {
       slug: listSlug,
       title: listTitle,
       description: listDescription,
+      updatedAt: new Date(),
     },
   })
 

@@ -68,3 +68,56 @@ export async function PATCH(req: NextRequest, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
+
+export async function DELETE(req: NextRequest, { params }) {
+  try {
+    // auth check
+    const supabase = createRouteHandlerClient(
+      { cookies },
+      { supabaseKey: SUPABASE_SERVICE_ROLE_KEY },
+    )
+    const { data, error: supabaseError } = await supabase.auth.getSession()
+    if (supabaseError) throw supabaseError
+
+    const { session } = humps.camelizeKeys(data)
+    if (!session) throw new Error("No session found")
+
+    // fetch profile id
+    const userProfile = await prisma.userProfile.findUnique({ where: { userId: session.user.id } })
+    if (!userProfile) throw new Error("User profile not found")
+
+    // verify list exists and belongs to current user
+    const { listId } = params
+    const list = await prisma.list.findUnique({
+      where: {
+        id: listId,
+      },
+      include: {
+        listItemAssignments: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+    })
+
+    if (!list) return NextResponse.json({}, { status: 404 })
+    if (list.ownerId !== userProfile.id) {
+      return NextResponse.json(
+        { error: "You are not authorized to delete this list" },
+        { status: 403 },
+      )
+    }
+
+    await prisma.list.delete({
+      where: {
+        id: listId,
+      },
+    })
+
+    return NextResponse.json({}, { status: 200 })
+  } catch (error: any) {
+    console.error(error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}

@@ -5,6 +5,7 @@ import { truncateString } from "lib/helpers/general"
 const NUM_BOOK_COVERS = 4
 
 export default function ListCard({ list }) {
+  const totalBookCount = list.books.length
   const books = list.books.slice(0, NUM_BOOK_COVERS)
 
   return (
@@ -17,7 +18,10 @@ export default function ListCard({ list }) {
             ))}
           </div>
           <div className="mt-2 mx-4 grow">
-            <div className="mt-[-8px] font-bold">{truncateString(list.title, 64)}</div>
+            <div className="mt-[-8px]">
+              <span className="font-bold">{truncateString(list.title, 64)}</span>
+              <span className="ml-2 text-gray-500 text-sm font-normal">{totalBookCount} books</span>
+            </div>
             {list.description && <div>{truncateString(list.description, 150)}</div>}
           </div>
         </div>

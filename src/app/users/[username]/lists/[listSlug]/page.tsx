@@ -3,12 +3,16 @@ import { cookies } from "next/headers"
 import humps from "humps"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
 
 const prisma = new PrismaClient()
+
+dayjs.extend(relativeTime)
 
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
@@ -71,8 +75,10 @@ export default async function UserListPage({ params }) {
 
   const isUsersList = sessionUserId === userProfile?.userId
 
-  const { title, description } = list
+  const { title, description, createdAt, updatedAt } = list
   const { displayName } = userProfile!
+  const createdAtStr = dayjs(createdAt).fromNow()
+  const updatedAtStr = updatedAt ? dayjs(updatedAt).fromNow() : createdAtStr
 
   // const description =
   //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
@@ -92,6 +98,9 @@ export default async function UserListPage({ params }) {
         <Link href={getUserProfileLink(username)} className="cat-underline">
           {displayName}
         </Link>
+      </div>
+      <div className="my-3 text-gray-500 text-sm font-nunito-sans">
+        created {createdAtStr}, last updated {updatedAtStr}
       </div>
       <div className="my-4">{description}</div>
       <div className="my-8 p-0 grid grid-cols-1 sm:grid-cols-3 ml:grid-cols-5 gap0 sm:gap-[28px]">
