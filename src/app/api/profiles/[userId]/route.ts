@@ -110,7 +110,7 @@ export async function PATCH(req: NextRequest, { params }) {
 
     const updatedProfile = humps.decamelizeKeys(updateProfileRes)
 
-    // TODO: if books have been changed AND list exists, get its id and update it
+    // if books have been changed AND list exists, get its id and update it
     if (options.favoriteBooksUpdated) {
       const existingBooksList = await prisma.list.findFirst({
         where: {
