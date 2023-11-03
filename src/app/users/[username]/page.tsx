@@ -102,6 +102,8 @@ export default async function UserProfilePage({ params }) {
       .filter((b) => !!b)
   })
 
+  console.log(JSON.stringify(lists, null, 2))
+
   const isUsersProfile = sessionUserId === userProfile?.userId
 
   const { displayName, bio, location, website, avatarUrl } = userProfile!

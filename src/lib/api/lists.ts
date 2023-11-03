@@ -192,4 +192,60 @@ const updateList = async (list, params, userProfile) => {
   return updatedList
 }
 
-export { createList, updateList }
+const addBook = async (book, list) => {
+  // check if book exists
+  let persistedBook = await prisma.book.findFirst({
+    where: { openlibraryWorkId: book.openlibraryWorkId },
+  })
+
+  // create book if it doesn't exist
+  if (!persistedBook) {
+    const { title, by, coverImageUrl, openlibraryWorkId } = book
+
+    const bookData = {
+      slug: await generateUniqueSlug(`${title} ${by}`, "book"),
+      title,
+      authorName: by,
+      coverImageUrl,
+      openlibraryWorkId,
+    }
+
+    persistedBook = await prisma.book.create({
+      data: bookData,
+    })
+  }
+
+  const existingListItemAssignments = await prisma.listItemAssignment.findMany({
+    where: {
+      listId: list.id,
+    },
+    orderBy: {
+      sortOrder: "desc",
+    },
+  })
+
+  // check if book is already in list
+  const existingListItemAssignmentForBook = existingListItemAssignments.find(
+    (lta) => lta.listedObjectId === persistedBook!.id,
+  )
+  if (existingListItemAssignmentForBook) return existingListItemAssignmentForBook
+
+  // create new list item assignment to add to the end of the list
+  const lastItemInList = existingListItemAssignments[0]
+  const sortOrder = (lastItemInList?.sortOrder || 0) + 1
+
+  const listItemAssignment = {
+    listId: list.id,
+    listedObjectType: "book",
+    listedObjectId: persistedBook.id,
+    sortOrder,
+  }
+
+  const createdListItemAssignment = await prisma.listItemAssignment.create({
+    data: listItemAssignment,
+  })
+
+  return createdListItemAssignment
+}
+
+export { createList, updateList, addBook }

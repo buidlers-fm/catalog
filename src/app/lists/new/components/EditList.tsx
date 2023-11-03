@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
@@ -14,9 +14,11 @@ import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
+import type Book from "types/Book"
 
 type Props = {
   list?: List
+  firstBook?: Book
   isEdit?: boolean
 }
 
@@ -36,7 +38,7 @@ const validations = {
   },
 }
 
-export default function EditList({ list, isEdit = false }: Props) {
+export default function EditList({ list, firstBook, isEdit = false }: Props) {
   const router = useRouter()
   const { currentUser } = useUser()
   const { books, addBook, removeBook, reorderBooks } = useEditBookList(list)
@@ -47,11 +49,22 @@ export default function EditList({ list, isEdit = false }: Props) {
   const {
     register,
     handleSubmit,
-    getValues,
+    watch,
     formState: { errors },
   } = useForm<{ [k: string]: string }>({
     defaultValues: list as any,
   })
+
+  useEffect(() => {
+    if (!firstBook) return
+
+    const isBookAlreadyInList = books.find(
+      (book) => book.openlibraryWorkId === firstBook.openlibraryWorkId,
+    )
+    if (!isBookAlreadyInList) {
+      addBook(firstBook)
+    }
+  }, [firstBook, addBook, books])
 
   const submit = async (listData) => {
     setIsSubmitting(true)
@@ -124,7 +137,8 @@ export default function EditList({ list, isEdit = false }: Props) {
     }
   }
 
-  const readyToSubmit = getValues("title")?.length > 0 && books.length > 0
+  const titleValue = watch("title")
+  const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
   return (
     <>
