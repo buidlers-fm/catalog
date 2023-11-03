@@ -43,7 +43,6 @@ export default function EditList({ list, isEdit = false }: Props) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-  const [isDeleting, setIsDeleting] = useState<boolean>(false)
 
   const {
     register,
@@ -113,8 +112,6 @@ export default function EditList({ list, isEdit = false }: Props) {
 
     const toastId = toast.loading("Deleting your list...")
 
-    setIsDeleting(true)
-
     try {
       await fetchJson(`/api/lists/${list.id}`, {
         method: "DELETE",
@@ -125,8 +122,6 @@ export default function EditList({ list, isEdit = false }: Props) {
     } catch (error: any) {
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
-
-    setIsDeleting(false)
   }
 
   const readyToSubmit = getValues("title")?.length > 0 && books.length > 0
