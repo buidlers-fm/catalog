@@ -6,7 +6,7 @@ export default interface List {
   id?: string
   slug?: string
   title: string
-  description?: string
+  description?: string | null
   creatorId: string
   creator?: UserProfile
   ownerId: string

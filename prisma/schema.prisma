@@ -75,4 +75,6 @@ model ListItemAssignment {
   @@map("list_item_assignments")
   @@index([listId])
   @@index([listedObjectId])
+  @@unique([listId, listedObjectId, listedObjectType])
+  @@unique([listId, sortOrder])
 }
