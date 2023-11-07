@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import humps from "humps"
 import { DndContext, closestCenter } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -15,8 +14,9 @@ import { RxDragHandleDots2 } from "react-icons/rx"
 import { BsPinAngle, BsPinAngleFill } from "react-icons/bs"
 import { MdEdit } from "react-icons/md"
 import { toast } from "react-hot-toast"
+import api from "lib/api"
 import { useUser } from "lib/contexts/UserContext"
-import { fetchJson, sortListsByPinSortOrder, getEditListLink } from "lib/helpers/general"
+import { sortListsByPinSortOrder, getEditListLink } from "lib/helpers/general"
 import ListCard from "app/components/lists/ListCard"
 import type List from "types/List"
 
@@ -42,10 +42,7 @@ export default function ManageLists({ lists, pins }) {
     const toastId = toast.loading(`Pinning "${list.title}"...`)
 
     try {
-      await fetchJson("/api/pins", {
-        method: "POST",
-        body: JSON.stringify(humps.decamelizeKeys(requestData)),
-      })
+      await api.pins.create(requestData)
 
       toast.success("Pin saved!", { id: toastId })
 
@@ -65,17 +62,11 @@ export default function ManageLists({ lists, pins }) {
       pinnedObjectType: "list",
     }
 
-    const queryString = new URLSearchParams(humps.decamelizeKeys(requestData)).toString()
-    const url = `/api/pins?${queryString}`
-
     setIsBusy(true)
     const toastId = toast.loading(`Unpinning "${list.title}"...`)
 
     try {
-      await fetchJson(url, {
-        method: "DELETE",
-        body: JSON.stringify(humps.decamelizeKeys(requestData)),
-      })
+      await api.pins.delete(requestData)
 
       toast.success("List has been unpinned.", { id: toastId })
 
@@ -113,10 +104,7 @@ export default function ManageLists({ lists, pins }) {
     const toastId = toast.loading("Reordering pinned lists...")
 
     try {
-      await fetchJson("/api/pins", {
-        method: "PATCH",
-        body: JSON.stringify(humps.decamelizeKeys(requestData)),
-      })
+      await api.pins.reorder(requestData)
 
       toast.success("Pinned lists order saved!", { id: toastId })
     } catch (error: any) {

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid"
 import { StorageClient } from "@supabase/storage-js"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
+import { withApiHandling } from "lib/api/withApiHandling"
 import { createList, updateList } from "lib/api/lists"
 import type { NextRequest } from "next/server"
 
@@ -19,90 +20,72 @@ const storageClient = new StorageClient(storageUrl, {
 
 const prisma = new PrismaClient()
 
-export async function GET(req: NextRequest, { params }) {
-  console.log(params)
-  const { userId } = params
+export const PATCH = withApiHandling(
+  async (req: NextRequest, { params }) => {
+    const { routeParams, session } = params
+    const { userId } = routeParams
 
-  const userProfilesRes = await prisma.userProfile.findUnique({ where: { userId } })
+    const supabase = createRouteHandlerClient(
+      { cookies },
+      { supabaseKey: SUPABASE_SERVICE_ROLE_KEY },
+    )
 
-  if (!userProfilesRes) {
-    return NextResponse.json({}, { status: 404 })
-  }
+    const sessionUserId = session.user.id
 
-  const userProfile = humps.decamelizeKeys(userProfilesRes)
+    if (sessionUserId !== userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    }
 
-  return NextResponse.json(userProfile, { status: 200 })
-}
+    // proceed with update
+    const formData = await req.formData()
+    const json = formData.get("data") as string
+    const {
+      userProfile: profileToUpdate,
+      books: profileBooks,
+      options,
+    } = humps.camelizeKeys(JSON.parse(json))
 
-export async function PATCH(req: NextRequest, { params }) {
-  console.log(params)
-  const { userId } = params
+    console.log(profileToUpdate)
 
-  // auth check
-  const supabase = createRouteHandlerClient({ cookies }, { supabaseKey: SUPABASE_SERVICE_ROLE_KEY })
-  const { data, error: supabaseError } = await supabase.auth.getSession()
-  if (supabaseError) throw supabaseError
+    // handle avatar updates
+    const avatarBlob = formData.get("avatarFile") as Blob | null
 
-  const { session } = humps.camelizeKeys(data)
-  if (!session) throw new Error("No session found")
+    if ((avatarBlob || options.avatarDeleted) && profileToUpdate.avatarUrl) {
+      const filePath = profileToUpdate.avatarUrl.split("/assets/").pop()
 
-  const sessionUserId = session.user.id
+      const { error: avatarDeleteError } = await supabase.storage.from("assets").remove(filePath)
 
-  if (sessionUserId !== userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
+      if (avatarDeleteError) throw new Error(`Error uploading avatar: ${avatarDeleteError.message}`)
 
-  // proceed with update
-  const formData = await req.formData()
-  const json = formData.get("data") as string
-  const {
-    userProfile: profileToUpdate,
-    books: profileBooks,
-    options,
-  } = humps.camelizeKeys(JSON.parse(json))
+      profileToUpdate.avatarUrl = null
+    }
 
-  console.log(profileToUpdate)
+    if (avatarBlob) {
+      const { avatarMimeType, avatarExtension } = options
+      const avatarUuid = uuidv4()
+      const fileDir = "user_profiles/avatars"
+      const filePath = `${fileDir}/${avatarUuid}.${avatarExtension}`
+      console.log(filePath, avatarMimeType)
+      const { error: avatarUploadError } = await storageClient
+        .from("assets")
+        .upload(filePath, avatarBlob, { contentType: avatarMimeType })
 
-  // handle avatar updates
-  const avatarBlob = formData.get("avatarFile") as Blob | null
+      if (avatarUploadError) throw new Error(`Error uploading avatar: ${avatarUploadError.message}`)
 
-  if ((avatarBlob || options.avatarDeleted) && profileToUpdate.avatarUrl) {
-    const filePath = profileToUpdate.avatarUrl.split("/assets/").pop()
+      profileToUpdate.avatarUrl = `${storageBucketPath}/${filePath}`
+    }
 
-    const { error: avatarDeleteError } = await supabase.storage.from("assets").remove(filePath)
+    // prepare user profile record
+    const { displayName, location, website, bio, avatarUrl } = profileToUpdate
 
-    if (avatarDeleteError) throw new Error(`Error uploading avatar: ${avatarDeleteError.message}`)
+    const fieldsToUpdate = {
+      displayName,
+      location,
+      website,
+      bio,
+      avatarUrl,
+    }
 
-    profileToUpdate.avatarUrl = null
-  }
-
-  if (avatarBlob) {
-    const { avatarMimeType, avatarExtension } = options
-    const avatarUuid = uuidv4()
-    const fileDir = "user_profiles/avatars"
-    const filePath = `${fileDir}/${avatarUuid}.${avatarExtension}`
-    console.log(filePath, avatarMimeType)
-    const { error: avatarUploadError } = await storageClient
-      .from("assets")
-      .upload(filePath, avatarBlob, { contentType: avatarMimeType })
-
-    if (avatarUploadError) throw new Error(`Error uploading avatar: ${avatarUploadError.message}`)
-
-    profileToUpdate.avatarUrl = `${storageBucketPath}/${filePath}`
-  }
-
-  // prepare user profile record
-  const { displayName, location, website, bio, avatarUrl } = profileToUpdate
-
-  const fieldsToUpdate = {
-    displayName,
-    location,
-    website,
-    bio,
-    avatarUrl,
-  }
-
-  try {
     const updateProfileRes = await prisma.userProfile.update({
       where: { userId },
       data: fieldsToUpdate,
@@ -137,8 +120,6 @@ export async function PATCH(req: NextRequest, { params }) {
     }
 
     return NextResponse.json(updatedProfile, { status: 200 })
-  } catch (error: any) {
-    console.error(error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
+  },
+  { requireJsonBody: false },
+)

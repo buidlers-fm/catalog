@@ -5,20 +5,21 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import humps from "humps"
-import { useUser } from "lib/contexts/UserContext"
+import api from "lib/api"
 import useEditBookList from "lib/hooks/useEditBookList"
-import { fetchJson, getListLink, getEditListLink, getUserListsLink } from "lib/helpers/general"
+import { getListLink, getEditListLink, getUserListsLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
 import type Book from "types/Book"
+import type UserProfile from "types/UserProfile"
 
 type Props = {
   list?: List
   firstBook?: Book
+  currentUserProfile: UserProfile
   isEdit?: boolean
 }
 
@@ -38,9 +39,8 @@ const validations = {
   },
 }
 
-export default function EditList({ list, firstBook, isEdit = false }: Props) {
+export default function EditList({ list, firstBook, currentUserProfile, isEdit = false }: Props) {
   const router = useRouter()
-  const { currentUser } = useUser()
   const { books, addBook, removeBook, reorderBooks } = useEditBookList(list)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -82,15 +82,12 @@ export default function EditList({ list, firstBook, isEdit = false }: Props) {
 
     try {
       if (isEdit) {
-        const updatedList: List = await fetchJson(`/api/lists/${list!.id}`, {
-          method: "PATCH",
-          body: JSON.stringify(humps.decamelizeKeys(requestData)),
-        })
+        const updatedList: List = await api.lists.update(list!.id, requestData)
 
         const successMessage = (
           <>
             Changes saved!&nbsp;
-            <Link href={getListLink(currentUser, updatedList.slug!)}>
+            <Link href={getListLink(currentUserProfile, updatedList.slug!)}>
               <button type="button" className="cat-btn-link">
                 View your list.
               </button>
@@ -99,15 +96,12 @@ export default function EditList({ list, firstBook, isEdit = false }: Props) {
         )
 
         toast.success(successMessage, { id: toastId })
-        router.push(getEditListLink(currentUser, updatedList.slug!))
+        router.push(getEditListLink(currentUserProfile, updatedList.slug!))
       } else {
-        const createdList: List = await fetchJson(`/api/lists`, {
-          method: "POST",
-          body: JSON.stringify(humps.decamelizeKeys(requestData)),
-        })
+        const createdList: List = await api.lists.create(requestData)
 
         toast.success("Changes saved!", { id: toastId })
-        router.push(getListLink(currentUser, createdList.slug!))
+        router.push(getListLink(currentUserProfile, createdList.slug!))
       }
     } catch (error: any) {
       setErrorMessage(error.message)
@@ -126,12 +120,10 @@ export default function EditList({ list, firstBook, isEdit = false }: Props) {
     const toastId = toast.loading("Deleting your list...")
 
     try {
-      await fetchJson(`/api/lists/${list.id}`, {
-        method: "DELETE",
-      })
+      await api.lists.delete(list.id)
 
       toast.success("List deleted!", { id: toastId })
-      router.push(getUserListsLink(currentUser!.username))
+      router.push(getUserListsLink(currentUserProfile!.username))
     } catch (error: any) {
       toast.error("Hmm, something went wrong.", { id: toastId })
     }

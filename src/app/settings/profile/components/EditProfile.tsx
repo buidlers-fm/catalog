@@ -4,8 +4,9 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
+import api from "lib/api"
 import useEditBookList from "lib/hooks/useEditBookList"
-import { fetchJson, isValidHttpUrl } from "lib/helpers/general"
+import { isValidHttpUrl } from "lib/helpers/general"
 import AvatarUpload from "app/settings/profile/components/AvatarUpload"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
@@ -25,7 +26,10 @@ const validations = {
     },
   },
   website: {
-    validate: (value) => isValidHttpUrl(value) || "Website needs to be a valid URL.",
+    validate: (value) => {
+      if (!value) return true
+      return isValidHttpUrl(value) || "Website needs to be a valid URL."
+    },
   },
   bio: {
     maxLength: {
@@ -101,10 +105,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
     console.log(errors)
 
     try {
-      const updatedProfile = await fetchJson(`/api/profiles/${userProfile.userId}`, {
-        method: "PATCH",
-        body: formData,
-      })
+      const updatedProfile = await api.profiles.update(userProfile.userId, formData)
 
       toast.success("Changes saved!", { id: toastId })
 

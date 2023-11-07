@@ -3,11 +3,10 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Dialog } from "@headlessui/react"
-import humps from "humps"
 import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import { FaCheck, FaPlus } from "react-icons/fa6"
-import { fetchJson } from "lib/helpers/general"
+import api from "lib/api"
 import type List from "types/List"
 
 export default function AddBookToListsModal({ book, userLists, onClose, isOpen }) {
@@ -49,10 +48,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
     }
 
     try {
-      await fetchJson(`/api/lists/add_book`, {
-        method: "POST",
-        body: JSON.stringify(humps.decamelizeKeys(requestData)),
-      })
+      await api.lists.addBook(requestData)
 
       toast.success(`Successfully added to ${listsStr}!`, { id: toastId })
 

@@ -9,7 +9,15 @@ import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import type Book from "types/Book"
 import type List from "types/List"
 
-export default function BookPage({ book, userLists }: { book: Book; userLists: List[] }) {
+export default function BookPage({
+  book,
+  userLists,
+  isSignedIn,
+}: {
+  book: Book
+  userLists: List[]
+  isSignedIn: boolean
+}) {
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
 
   return (
@@ -28,15 +36,17 @@ export default function BookPage({ book, userLists }: { book: Book; userLists: L
                 <GiOpenBook className="mt-0 text-9xl text-gray-500" />
               </div>
             )}
-            <div className="my-8 font-nunito-sans">
-              <button
-                type="button"
-                onClick={() => setShowAddBookToListsModal(true)}
-                className="w-full bg-gray-800 py-2 px-4 text-gray-200 hover:text-white"
-              >
-                <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> Add to list
-              </button>
-            </div>
+            {isSignedIn && (
+              <div className="my-8 font-nunito-sans">
+                <button
+                  type="button"
+                  onClick={() => setShowAddBookToListsModal(true)}
+                  className="w-full bg-gray-800 py-2 px-4 text-gray-200 hover:text-white"
+                >
+                  <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> Add to list
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex-grow mx-auto md:ml-16">
             <h1 className="mb-1 text-4xl font-semibold">
@@ -64,12 +74,14 @@ export default function BookPage({ book, userLists }: { book: Book; userLists: L
           </div>
         </div>
       </div>
-      <AddBookToListsModal
-        book={book}
-        userLists={userLists}
-        isOpen={showAddBookToListsModal}
-        onClose={() => setShowAddBookToListsModal(false)}
-      />
+      {isSignedIn && (
+        <AddBookToListsModal
+          book={book}
+          userLists={userLists}
+          isOpen={showAddBookToListsModal}
+          onClose={() => setShowAddBookToListsModal(false)}
+        />
+      )}
     </>
   )
 }

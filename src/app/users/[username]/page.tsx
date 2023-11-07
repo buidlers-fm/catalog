@@ -1,11 +1,9 @@
 import Link from "next/link"
-import { cookies } from "next/headers"
-import humps from "humps"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
+import { getCurrentUserProfile } from "lib/server/auth"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import { getUserListsLink, getListLink, sortListsByPinSortOrder } from "lib/helpers/general"
@@ -19,14 +17,7 @@ const getDomainFromUrl = (url: string) => new URL(url).hostname
 
 export default async function UserProfilePage({ params }) {
   const { username } = params
-
-  const supabase = createServerComponentClient({ cookies })
-
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
-
-  const { session } = humps.camelizeKeys(data)
-  const sessionUserId = session?.user?.id
+  const currentUserProfile = await getCurrentUserProfile()
 
   const userProfile = await prisma.userProfile.findUnique({
     where: {
@@ -106,7 +97,7 @@ export default async function UserProfilePage({ params }) {
     })
   }
 
-  const allLists = [...lists, favoriteBooksList] as List[]
+  const allLists = [...lists, favoriteBooksList].filter((list) => !!list) as List[]
 
   const allBookIds = allLists
     .map((list) =>
@@ -138,7 +129,7 @@ export default async function UserProfilePage({ params }) {
 
   console.log(JSON.stringify(lists, null, 2))
 
-  const isUsersProfile = sessionUserId === userProfile?.userId
+  const isUsersProfile = currentUserProfile?.id === userProfile!.id
 
   const { displayName, bio, location, website, avatarUrl } = userProfile!
 

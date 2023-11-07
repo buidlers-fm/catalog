@@ -3,6 +3,7 @@
 import { createContext, useState, useCallback, useEffect, useMemo, useContext } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
+import api from "lib/api"
 
 type User = {
   id?: string
@@ -89,14 +90,13 @@ export function UserProvider({ children }) {
 
   const signUp = useCallback(
     async (email: string, username: string, password: string) => {
-      const res = await fetch("/api/auth/sign-up", {
-        method: "POST",
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-        }),
-      })
+      const requestData = {
+        email,
+        username,
+        password,
+      }
+
+      const res = await api.auth.signUp(requestData)
 
       if (res.status === 200) {
         await signIn(email, password)
