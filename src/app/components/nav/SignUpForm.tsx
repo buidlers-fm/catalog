@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "react-hot-toast"
-import { useUser } from "contexts/UserContext"
+import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
 export default function SignUpForm({ toggleAuth }) {

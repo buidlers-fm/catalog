@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useUser } from "contexts/UserContext"
+import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
 export default function SignInForm({ toggleAuth }) {
