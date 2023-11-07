@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 .cat-underline {
-  border-bottom: 1px solid hsl(181, 64%, 40%);
+  border-bottom: 1px solid;
+  @apply border-b-gold-500;
 }
 
 .cat-btn {

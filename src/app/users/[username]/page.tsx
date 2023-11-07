@@ -8,7 +8,7 @@ import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
-import { getListLink } from "lib/helpers/general"
+import { getUserListsLink, getListLink, sortListsByPinSortOrder } from "lib/helpers/general"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
@@ -54,23 +54,57 @@ export default async function UserProfilePage({ params }) {
 
   console.log(favoriteBooksList)
 
-  const lists = await prisma.list.findMany({
+  let lists: List[] = []
+  let hasPinnedLists = false
+
+  const pins = await prisma.pin.findMany({
     where: {
-      ownerId: userProfile.id,
-      designation: null,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 3,
-    include: {
-      listItemAssignments: {
-        orderBy: {
-          sortOrder: "asc",
-        },
-      },
+      pinnerId: userProfile.id,
+      pinnedObjectType: "list",
     },
   })
+
+  const pinnedListIds = pins.map((pin) => pin.pinnedObjectId)
+
+  if (pins.length > 0) {
+    const _lists = await prisma.list.findMany({
+      where: {
+        id: {
+          in: pinnedListIds,
+        },
+        ownerId: userProfile.id,
+        designation: null,
+      },
+      include: {
+        listItemAssignments: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+    })
+
+    lists = sortListsByPinSortOrder(_lists, pins)
+    hasPinnedLists = true
+  } else {
+    lists = await prisma.list.findMany({
+      where: {
+        ownerId: userProfile.id,
+        designation: null,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 3,
+      include: {
+        listItemAssignments: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+    })
+  }
 
   const allLists = [...lists, favoriteBooksList] as List[]
 
@@ -107,9 +141,6 @@ export default async function UserProfilePage({ params }) {
   const isUsersProfile = sessionUserId === userProfile?.userId
 
   const { displayName, bio, location, website, avatarUrl } = userProfile!
-
-  // const bio =
-  //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
 
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
@@ -167,13 +198,20 @@ export default async function UserProfilePage({ params }) {
         )}
       </div>
       <div className="mt-8 font-nunito-sans">
-        <div className="text-gray-300 text-sm uppercase tracking-wider">
-          Recent lists
-          {isUsersProfile && (
-            <Link href="/lists/new">
-              <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
+        <div className="flex justify-between text-gray-300 text-sm">
+          <div className="uppercase tracking-wider">
+            {hasPinnedLists ? "Pinned lists" : "Recent lists"}
+          </div>
+          <div className="flex">
+            {isUsersProfile && (
+              <Link href="/lists/new">
+                <button className="cat-btn cat-btn-sm cat-btn-gray mx-2">+ Create a list</button>
+              </Link>
+            )}
+            <Link className="inline-block mt-1 mx-2" href={getUserListsLink(username)}>
+              {isUsersProfile ? "Manage lists" : "See all"}
             </Link>
-          )}
+          </div>
         </div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {lists.length > 0 ? (
