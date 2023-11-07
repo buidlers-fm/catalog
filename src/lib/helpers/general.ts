@@ -44,6 +44,8 @@ export const isValidHttpUrl = (string) => {
 
 export const getUserProfileLink = (username: string) => `/users/${username}`
 
+export const getUserListsLink = (username: string) => `/users/${username}/lists`
+
 export const getBookLink = (slug: string) => `/books/${slug}`
 
 export const getListLink = (user, slug: string) => `/users/${user.username}/lists/${slug}`
@@ -79,3 +81,16 @@ export const generateUniqueSlug = async (str, modelName, additionalFilters = {})
 
   return slug
 }
+
+export const sortListsByPinSortOrder = (lists, pins) =>
+  lists
+    .filter((list) => !!pins.find((p) => p.pinnedObjectId === list.id))
+    .sort((listA, listB) => {
+      const pinA = pins.find((pin) => pin.pinnedObjectId === listA.id)
+      const pinB = pins.find((pin) => pin.pinnedObjectId === listB.id)
+
+      const orderA = pinA?.sortOrder || Infinity
+      const orderB = pinB?.sortOrder || Infinity
+
+      return orderA - orderB
+    })

@@ -19,6 +19,7 @@ model UserProfile {
   avatarUrl   String?  @map("avatar_url")
   userId      String   @unique @db.Uuid @map("user_id")
   lists       List[]
+  pins        Pin[]
   createdAt   DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
   
   @@map("user_profiles")
@@ -77,4 +78,20 @@ model ListItemAssignment {
   @@index([listedObjectId])
   @@unique([listId, listedObjectId, listedObjectType])
   @@unique([listId, sortOrder])
+}
+
+model Pin {
+  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pinnerId         String      @map("pinner_id") @db.Uuid
+  pinner           UserProfile @relation(fields: [pinnerId], references: [id])
+  pinnedObjectType String      @map("pinned_object_type")
+  pinnedObjectId   String      @map("pinned_object_id") @db.Uuid
+  createdAt        DateTime    @default(now()) @db.Timestamptz(6) @map("created_at")
+  sortOrder        Int      @map("sort_order")
+
+  @@map("pins")
+  @@index([pinnerId])
+  @@index([pinnedObjectId])
+  @@unique([pinnerId, pinnedObjectId, pinnedObjectType])
+  @@unique([pinnerId, sortOrder])
 }

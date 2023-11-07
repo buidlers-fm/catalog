@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast"
 import humps from "humps"
 import { useUser } from "contexts/UserContext"
 import useEditBookList from "hooks/useEditBookList"
-import { fetchJson, getListLink, getEditListLink, getUserProfileLink } from "lib/helpers/general"
+import { fetchJson, getListLink, getEditListLink, getUserListsLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/lists/new/components/EditListBooks"
@@ -131,7 +131,7 @@ export default function EditList({ list, firstBook, isEdit = false }: Props) {
       })
 
       toast.success("List deleted!", { id: toastId })
-      router.push(getUserProfileLink(currentUser!.username))
+      router.push(getUserListsLink(currentUser!.username))
     } catch (error: any) {
       toast.error("Hmm, something went wrong.", { id: toastId })
     }

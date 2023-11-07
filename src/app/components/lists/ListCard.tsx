@@ -4,25 +4,29 @@ import { truncateString } from "lib/helpers/general"
 
 const NUM_BOOK_COVERS = 4
 
-export default function ListCard({ list }) {
+export default function ListCard({ list, separators = true, compact = false }) {
   const totalBookCount = list.books.length
   const books = list.books.slice(0, NUM_BOOK_COVERS)
 
   return (
-    <div className="py-6 border-b border-b-gray-500 last:border-none">
+    <div
+      className={`${compact ? null : "py-6"} ${
+        separators && "border-b border-b-gray-500 last:border-none"
+      }`}
+    >
       <Link href={list.url}>
-        <div className="flex items-center">
+        <div className="sm:flex items-center">
           <div className="w-[208px] flex shrink-0 mr-4">
             {books.map((book, idx) => (
               <ListCardBook key={book.id} book={book} idx={idx} />
             ))}
           </div>
-          <div className="mt-2 mx-4 grow">
+          <div className="mt-4 sm:mt-2 sm:mx-4 grow">
             <div className="mt-[-8px]">
               <span className="font-bold">{truncateString(list.title, 64)}</span>
               <span className="ml-2 text-gray-500 text-sm font-normal">{totalBookCount} books</span>
             </div>
-            {list.description && <div>{truncateString(list.description, 150)}</div>}
+            {list.description && <div>{truncateString(list.description, 100)}</div>}
           </div>
         </div>
       </Link>
