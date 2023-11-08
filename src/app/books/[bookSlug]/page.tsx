@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
 export default async function BookPageBySlug({ params }: any) {
   const { bookSlug } = params
 
-  const book = await prisma.book.findUnique({
+  const book = await prisma.book.findFirst({
     where: {
       slug: bookSlug,
     },

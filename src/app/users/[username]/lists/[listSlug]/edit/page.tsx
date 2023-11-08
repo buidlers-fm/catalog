@@ -14,7 +14,7 @@ export default async function UserListPage({ params }) {
   const currentUserProfile = await getCurrentUserProfile()
   if (!currentUserProfile) redirect("/")
 
-  const userProfile = await prisma.userProfile.findUnique({
+  const userProfile = await prisma.userProfile.findFirst({
     where: {
       username,
     },

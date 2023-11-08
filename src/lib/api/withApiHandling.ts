@@ -37,7 +37,7 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
       const { session } = humps.camelizeKeys(data)
       if (!session && requireSession) throw new Error("No session found")
 
-      const currentUserProfile = await prisma.userProfile.findUnique({
+      const currentUserProfile = await prisma.userProfile.findFirst({
         where: { userId: session.user.id },
       })
       if (!currentUserProfile && requireUserProfile) throw new Error("User profile not found")

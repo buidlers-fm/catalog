@@ -13,7 +13,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   // verify pinned object exists and belongs to the user
   if (pinnedObjectType === "list") {
-    const pinnedObject = await prisma.list.findUnique({
+    const pinnedObject = await prisma.list.findFirst({
       where: {
         id: pinnedObjectId,
       },
