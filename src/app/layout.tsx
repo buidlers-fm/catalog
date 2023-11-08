@@ -18,13 +18,13 @@ const fonts = [chivoMono, newsreader, nunitoSans]
 const fontsClassNames = fonts.map((font) => font.variable).join(" ")
 
 export const metadata: Metadata = {
-  title: "buidlers catalog",
+  title: "catalog",
   description: "for book people.",
   // openGraph: {
-  //   title: "buidlers catalog",
+  //   title: "catalog",
   //   description: "for book people.",
   //   url: "",
-  //   siteName: "buidlers catalog",
+  //   siteName: "catalog",
   //   images: [
   //     {
   //       url: "https://nextjs.org/og.png",
@@ -51,8 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex flex-col h-screen">
             <header className="px-8 py-8 flex justify-between">
               <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
-                <span className="mr-3 block sm:inline">buidlers</span>
-                <span>catalog</span>
+                catalog
               </div>
               <div className="inline-block lg:hidden">
                 <MobileNav />
