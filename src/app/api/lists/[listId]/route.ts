@@ -12,7 +12,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
 
   // verify list exists and belongs to current user
   const { listId } = routeParams
-  const list = await prisma.list.findUnique({
+  const list = await prisma.list.findFirst({
     where: {
       id: listId,
     },
@@ -54,7 +54,7 @@ export const DELETE = withApiHandling(
 
     // verify list exists and belongs to current user
     const { listId } = routeParams
-    const list = await prisma.list.findUnique({
+    const list = await prisma.list.findFirst({
       where: {
         id: listId,
       },

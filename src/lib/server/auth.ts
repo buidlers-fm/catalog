@@ -27,7 +27,7 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
 
   const sessionUserId = session?.user?.id
 
-  const currentUserProfile = await prisma.userProfile.findUnique({
+  const currentUserProfile = await prisma.userProfile.findFirst({
     where: {
       userId: sessionUserId,
     },
