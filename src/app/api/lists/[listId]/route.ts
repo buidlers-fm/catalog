@@ -1,93 +1,59 @@
-import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import humps from "humps"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
+import { withApiHandling } from "lib/api/withApiHandling"
 import { updateList } from "lib/api/lists"
 import type { NextRequest } from "next/server"
 
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
 const prisma = new PrismaClient()
 
-export async function PATCH(req: NextRequest, { params }) {
-  try {
-    // auth check
-    const supabase = createRouteHandlerClient(
-      { cookies },
-      { supabaseKey: SUPABASE_SERVICE_ROLE_KEY },
-    )
-    const { data, error: supabaseError } = await supabase.auth.getSession()
-    if (supabaseError) throw supabaseError
+export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
+  const { routeParams, reqJson, currentUserProfile: userProfile } = params
 
-    const { session } = humps.camelizeKeys(data)
-    if (!session) throw new Error("No session found")
-
-    // fetch profile id
-    const userProfile = await prisma.userProfile.findUnique({ where: { userId: session.user.id } })
-    if (!userProfile) throw new Error("User profile not found")
-
-    // verify list exists and belongs to current user
-    const { listId } = params
-    const list = await prisma.list.findUnique({
-      where: {
-        id: listId,
-      },
-      include: {
-        listItemAssignments: {
-          orderBy: {
-            sortOrder: "asc",
-          },
+  // verify list exists and belongs to current user
+  const { listId } = routeParams
+  const list = await prisma.list.findUnique({
+    where: {
+      id: listId,
+    },
+    include: {
+      listItemAssignments: {
+        orderBy: {
+          sortOrder: "asc",
         },
       },
-    })
+    },
+  })
 
-    if (!list) return NextResponse.json({}, { status: 404 })
-    if (list.ownerId !== userProfile.id) {
-      return NextResponse.json(
-        { error: "You are not authorized to update this list" },
-        { status: 403 },
-      )
-    }
-
-    const { title, description, books } = humps.camelizeKeys(await req.json())
-
-    const updatedListParams = {
-      title,
-      description,
-      books,
-    }
-
-    const updatedList = await updateList(list, updatedListParams, userProfile)
-
-    const resBody = humps.decamelizeKeys(updatedList)
-
-    return NextResponse.json(resBody, { status: 200 })
-  } catch (error: any) {
-    console.error(error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (!list) return NextResponse.json({}, { status: 404 })
+  if (list.ownerId !== userProfile.id) {
+    return NextResponse.json(
+      { error: "You are not authorized to update this list" },
+      { status: 403 },
+    )
   }
-}
 
-export async function DELETE(req: NextRequest, { params }) {
-  try {
-    // auth check
-    const supabase = createRouteHandlerClient(
-      { cookies },
-      { supabaseKey: SUPABASE_SERVICE_ROLE_KEY },
-    )
-    const { data, error: supabaseError } = await supabase.auth.getSession()
-    if (supabaseError) throw supabaseError
+  const { title, description, books } = reqJson
 
-    const { session } = humps.camelizeKeys(data)
-    if (!session) throw new Error("No session found")
+  const updatedListParams = {
+    title,
+    description,
+    books,
+  }
 
-    // fetch profile id
-    const userProfile = await prisma.userProfile.findUnique({ where: { userId: session.user.id } })
-    if (!userProfile) throw new Error("User profile not found")
+  const updatedList = await updateList(list, updatedListParams, userProfile)
+
+  const resBody = humps.decamelizeKeys(updatedList)
+
+  return NextResponse.json(resBody, { status: 200 })
+})
+
+export const DELETE = withApiHandling(
+  async (_req: NextRequest, { params }) => {
+    const { routeParams, currentUserProfile: userProfile } = params
 
     // verify list exists and belongs to current user
-    const { listId } = params
+    const { listId } = routeParams
     const list = await prisma.list.findUnique({
       where: {
         id: listId,
@@ -102,6 +68,7 @@ export async function DELETE(req: NextRequest, { params }) {
     })
 
     if (!list) return NextResponse.json({}, { status: 404 })
+
     if (list.ownerId !== userProfile.id) {
       return NextResponse.json(
         { error: "You are not authorized to delete this list" },
@@ -116,8 +83,6 @@ export async function DELETE(req: NextRequest, { params }) {
     })
 
     return NextResponse.json({}, { status: 200 })
-  } catch (error: any) {
-    console.error(error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
+  },
+  { requireJsonBody: false },
+)

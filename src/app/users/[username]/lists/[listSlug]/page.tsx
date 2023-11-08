@@ -1,10 +1,8 @@
 import Link from "next/link"
-import { cookies } from "next/headers"
-import humps from "humps"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { getCurrentUserProfile } from "lib/server/auth"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 
@@ -17,13 +15,7 @@ dayjs.extend(relativeTime)
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
 
-  const supabase = createServerComponentClient({ cookies })
-
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
-
-  const { session } = humps.camelizeKeys(data)
-  const sessionUserId = session?.user?.id
+  const currentUserProfile = await getCurrentUserProfile()
 
   const userProfile = await prisma.userProfile.findUnique({
     where: {
@@ -36,7 +28,7 @@ export default async function UserListPage({ params }) {
   console.log(userProfile.userId)
   console.log(listSlug)
 
-  const list = await prisma.list.findUnique({
+  const list = await prisma.list.findFirst({
     where: {
       ownerId: userProfile.id,
       slug: listSlug,
@@ -73,7 +65,7 @@ export default async function UserListPage({ params }) {
     })
     .filter((b) => !!b)
 
-  const isUsersList = sessionUserId === userProfile?.userId
+  const isUsersList = currentUserProfile?.id === userProfile!.id
 
   const { title, description, createdAt, updatedAt } = list
   const { displayName } = userProfile!

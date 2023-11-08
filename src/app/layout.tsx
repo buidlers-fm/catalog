@@ -1,6 +1,6 @@
 import "app/globals.css"
 import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
-import { UserProvider } from "contexts/UserContext"
+import { UserProvider } from "lib/contexts/UserContext"
 import MobileNav from "app/components/nav/MobileNav"
 import Nav from "app/components/nav/Nav"
 import Toast from "app/components/Toast"

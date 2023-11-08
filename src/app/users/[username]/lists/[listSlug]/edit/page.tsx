@@ -1,7 +1,6 @@
-import { cookies } from "next/headers"
-import humps from "humps"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+import { redirect } from "next/navigation"
 import { PrismaClient, Book as DbBook } from "@prisma/client"
+import { getCurrentUserProfile } from "lib/server/auth"
 import EditList from "app/lists/new/components/EditList"
 import type List from "types/List"
 
@@ -12,13 +11,8 @@ const prisma = new PrismaClient()
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
 
-  const supabase = createServerComponentClient({ cookies })
-
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
-
-  const { session } = humps.camelizeKeys(data)
-  const sessionUserId = session?.user?.id
+  const currentUserProfile = await getCurrentUserProfile()
+  if (!currentUserProfile) redirect("/")
 
   const userProfile = await prisma.userProfile.findUnique({
     where: {
@@ -27,14 +21,11 @@ export default async function UserListPage({ params }) {
   })
 
   if (!userProfile) throw new Error("List not found")
-  console.log(userProfile)
-  console.log(userProfile.userId)
-  console.log(listSlug)
 
-  const isUsersList = sessionUserId === userProfile?.userId
+  const isUsersList = currentUserProfile.id === userProfile!.id
   if (!isUsersList) throw new Error("You can only edit your own lists.")
 
-  const list = (await prisma.list.findUnique({
+  const list = (await prisma.list.findFirst({
     where: {
       ownerId: userProfile.id,
       slug: listSlug,
@@ -72,5 +63,5 @@ export default async function UserListPage({ params }) {
     .filter((b) => !!b) as DbBook[]
 
   list.dbBooks = books
-  return <EditList list={list} isEdit />
+  return <EditList list={list} currentUserProfile={currentUserProfile} isEdit />
 }

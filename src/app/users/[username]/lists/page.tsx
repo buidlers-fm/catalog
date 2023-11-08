@@ -1,7 +1,5 @@
-import { cookies } from "next/headers"
-import humps from "humps"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
+import { getCurrentUserProfile } from "lib/server/auth"
 import { getListLink } from "lib/helpers/general"
 import ManageLists from "app/users/[username]/lists/components/ManageLists"
 import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex"
@@ -12,14 +10,7 @@ const prisma = new PrismaClient()
 
 export default async function UserListsIndexPage({ params }) {
   const { username } = params
-
-  const supabase = createServerComponentClient({ cookies })
-
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
-
-  const { session } = humps.camelizeKeys(data)
-  const sessionUserId = session?.user?.id
+  const currentUserProfile = await getCurrentUserProfile()
 
   const userProfile = await prisma.userProfile.findUnique({
     where: {
@@ -86,7 +77,7 @@ export default async function UserListsIndexPage({ params }) {
     },
   })
 
-  const isUsersProfile = sessionUserId === userProfile?.userId
+  const isUsersProfile = currentUserProfile?.id === userProfile!.id
 
   if (isUsersProfile) {
     return <ManageLists lists={lists} pins={pins} />
