@@ -107,8 +107,6 @@ const OpenLibrary = {
 
     const books: Partial<Book>[] = []
 
-    results.sort((a, b) => b.editionCount - a.editionCount)
-
     // filter out unreliable results and apply limit
     // so far some markers of unreliable results (based on trial and error) include:
     // + no isbn
