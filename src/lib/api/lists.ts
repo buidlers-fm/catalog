@@ -25,12 +25,12 @@ const createList = async (params, userProfile) => {
   )
 
   const booksToCreatePromises = selectedBooksToCreate.map(async (selectedBook) => {
-    const { title, by, coverImageUrl, openLibraryWorkId } = selectedBook
+    const { title, authorName, coverImageUrl, openLibraryWorkId } = selectedBook
 
     return {
-      slug: await generateUniqueSlug(`${title} ${by}`, "book"),
+      slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
       title,
-      authorName: by,
+      authorName,
       coverImageUrl,
       openLibraryWorkId,
     }
@@ -111,12 +111,12 @@ const updateList = async (list, params, userProfile) => {
   )
 
   const booksToCreatePromises = selectedBooksToCreate.map(async (selectedBook) => {
-    const { title, by, coverImageUrl, openLibraryWorkId } = selectedBook
+    const { title, authorName, coverImageUrl, openLibraryWorkId } = selectedBook
 
     return {
-      slug: await generateUniqueSlug(`${title} ${by}`, "book"),
+      slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
       title,
-      authorName: by,
+      authorName,
       coverImageUrl,
       openLibraryWorkId,
     }
@@ -200,12 +200,12 @@ const addBook = async (book, list) => {
 
   // create book if it doesn't exist
   if (!persistedBook) {
-    const { title, by, coverImageUrl, openLibraryWorkId } = book
+    const { title, authorName, coverImageUrl, openLibraryWorkId } = book
 
     const bookData = {
-      slug: await generateUniqueSlug(`${title} ${by}`, "book"),
+      slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
       title,
-      authorName: by,
+      authorName,
       coverImageUrl,
       openLibraryWorkId,
     }
