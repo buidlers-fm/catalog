@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { getCurrentUserProfile } from "lib/server/auth"
-import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
+import ListBook from "app/lists/components/ListBook"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
@@ -71,9 +71,6 @@ export default async function UserListPage({ params }) {
   const { displayName } = userProfile!
   const createdAtStr = dayjs(createdAt).fromNow()
   const updatedAtStr = updatedAt ? dayjs(updatedAt).fromNow() : createdAtStr
-
-  // const description =
-  //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at nibh elit. Aliquam quis erat non velit imperdiet pretium vel eget velit. Sed sed tempus velit. Donec interdum sit amet augue ut cursus. Nunc nulla neque, finibus id volutpat eget, egestas vel tellus. Nam ultricies placerat lectus dui."
 
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">

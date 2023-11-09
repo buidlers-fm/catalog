@@ -4,7 +4,7 @@ import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import { getCurrentUserProfile } from "lib/server/auth"
-import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
+import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import {
   getUserListsLink,
