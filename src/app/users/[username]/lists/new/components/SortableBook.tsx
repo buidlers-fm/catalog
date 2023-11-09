@@ -48,7 +48,7 @@ export default function SortableBook({ id, book, onRemove }) {
       </div>
       <div className="mx-4 grow">
         <div className="mt-[-8px] font-bold">{truncateString(book.title, 64)}</div>
-        <div>{truncateString(book.by, 32)}</div>
+        <div>{truncateString(book.authorName, 32)}</div>
       </div>
       <div className="shrink-0">
         <button onClick={() => onRemove(book)} className="p-2">

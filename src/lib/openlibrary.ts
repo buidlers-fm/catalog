@@ -80,7 +80,7 @@ const OpenLibrary = {
     const book: Book = {
       title: work.title,
       subtitle: bookData.subtitle,
-      by: authorName,
+      authorName,
       description,
       coverImageUrl: coverImageUrl!,
       publisherName: publishers.join(", "),
@@ -129,16 +129,14 @@ const OpenLibrary = {
     results.forEach((result: any) => {
       const { title, coverI: coverId } = result
       const author = result.authorName?.join(", ")
-      const openlibraryBookId = result.editionKey?.[0]
       const openLibraryWorkId = result.key.split("/works/").pop()
 
-      const isDup = books.some((book) => book.title === title && book.by === author)
+      const isDup = books.some((book) => book.title === title && book.authorName === author)
       if (isDup) return
 
       const book = {
         title,
-        by: author,
-        openlibraryBookId,
+        authorName: author,
         openLibraryWorkId,
         coverImageUrl:
           coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),

@@ -11,6 +11,7 @@ import {
   getListLink,
   getNewListLink,
   sortListsByPinSortOrder,
+  attachBooksToLists,
 } from "lib/helpers/general"
 import type List from "types/List"
 
@@ -34,7 +35,7 @@ export default async function UserProfilePage({ params }) {
   console.log("profile page fetch:")
   console.log(userProfile)
 
-  const favoriteBooksList = (await prisma.list.findFirst({
+  let favoriteBooksList = (await prisma.list.findFirst({
     where: {
       ownerId: userProfile.id,
       designation: "favorite",
@@ -48,7 +49,9 @@ export default async function UserProfilePage({ params }) {
     },
   })) as List | null
 
-  console.log(favoriteBooksList)
+  if (favoriteBooksList) {
+    ;[favoriteBooksList] = await attachBooksToLists([favoriteBooksList])
+  }
 
   let lists: List[] = []
   let hasPinnedLists = false
@@ -102,35 +105,10 @@ export default async function UserProfilePage({ params }) {
     })
   }
 
-  const allLists = [...lists, favoriteBooksList].filter((list) => !!list) as List[]
-
-  const allBookIds = allLists
-    .map((list) =>
-      list.listItemAssignments
-        .filter((lia) => lia.listedObjectType === "book")
-        .map((lia) => lia.listedObjectId),
-    )
-    .flat()
-
-  const allBooks = await prisma.book.findMany({
-    where: {
-      id: {
-        in: allBookIds,
-      },
-    },
-  })
-
-  allLists.forEach((list: any) => {
-    list.url = getListLink(userProfile, list.slug)
-
-    list.books = list.listItemAssignments
-      .map((lia) => {
-        if (lia.listedObjectType !== "book") return null
-
-        return allBooks.find((b) => b.id === lia.listedObjectId)
-      })
-      .filter((b) => !!b)
-  })
+  lists = (await attachBooksToLists(lists)).map((list) => ({
+    ...list,
+    url: getListLink(userProfile, list.slug),
+  }))
 
   console.log(JSON.stringify(lists, null, 2))
 

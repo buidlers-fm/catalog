@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
-import { dbBookToBook } from "lib/helpers/general"
 import type List from "types/List"
 import type Book from "types/Book"
 
@@ -9,9 +8,8 @@ export default function useEditBookList(list?: List) {
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!list) return
-    const _books = list.dbBooks!.map((dbBook) => dbBookToBook(dbBook))
-    setBooks(_books)
+    if (!list?.books) return
+    setBooks(list.books)
   }, [list])
 
   const addBook = (selectedBook: Book) => {

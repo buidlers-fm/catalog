@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import OpenLibrary from "lib/openlibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { attachBooksToLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
 import type Book from "types/Book"
 
@@ -27,7 +28,7 @@ export default async function BookPageBySlug({ params }: any) {
   let userLists: any[] = []
 
   if (userProfile) {
-    userLists = await prisma.list.findMany({
+    const _userLists = await prisma.list.findMany({
       where: {
         ownerId: userProfile.id,
         designation: null,
@@ -44,31 +45,7 @@ export default async function BookPageBySlug({ params }: any) {
       },
     })
 
-    const allBookIds = userLists
-      .map((list) =>
-        list.listItemAssignments
-          .filter((lia) => lia.listedObjectType === "book")
-          .map((lia) => lia.listedObjectId),
-      )
-      .flat()
-
-    const allBooks = await prisma.book.findMany({
-      where: {
-        id: {
-          in: allBookIds,
-        },
-      },
-    })
-
-    userLists.forEach((list: any) => {
-      list.books = list.listItemAssignments
-        .map((lia) => {
-          if (lia.listedObjectType !== "book") return null
-
-          return allBooks.find((b) => b.id === lia.listedObjectId)
-        })
-        .filter((b) => !!b)
-    })
+    userLists = await attachBooksToLists(_userLists)
 
     console.log(userLists)
   }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
-import { PrismaClient, Book as DbBook } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { attachBooksToLists } from "lib/helpers/general"
 import EditList from "app/users/[username]/lists/new/components/EditList"
 import type List from "types/List"
 
@@ -25,7 +26,7 @@ export default async function UserListPage({ params }) {
   const isUsersList = currentUserProfile.id === userProfile!.id
   if (!isUsersList) throw new Error("You can only edit your own lists.")
 
-  const list = (await prisma.list.findFirst({
+  const _list = (await prisma.list.findFirst({
     where: {
       ownerId: userProfile.id,
       slug: listSlug,
@@ -39,29 +40,11 @@ export default async function UserListPage({ params }) {
     },
   })) as List
 
-  if (!list) throw new Error("List not found")
+  if (!_list) throw new Error("List not found")
+
+  const [list] = await attachBooksToLists([_list])
+
   console.log(list)
 
-  const bookIds = list.listItemAssignments
-    .filter((lia) => lia.listedObjectType === "book")
-    .map((lia) => lia.listedObjectId)
-
-  const _books = await prisma.book.findMany({
-    where: {
-      id: {
-        in: bookIds,
-      },
-    },
-  })
-
-  const books = list.listItemAssignments
-    .map((lia) => {
-      if (lia.listedObjectType !== "book") return null
-
-      return _books.find((b) => b.id === lia.listedObjectId)
-    })
-    .filter((b) => !!b) as DbBook[]
-
-  list.dbBooks = books
   return <EditList list={list} currentUserProfile={currentUserProfile} isEdit />
 }

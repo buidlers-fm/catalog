@@ -129,7 +129,7 @@ export default function Search({
                                 <div className="mt-[-8px] mb-1 font-bold">
                                   {truncateString(book.title, 64)}
                                 </div>
-                                <div>{truncateString(book.by, 32)}</div>
+                                <div>{truncateString(book.authorName, 32)}</div>
                               </div>
                               <div className={`w-1 h-24 shrink-0 ${active && "bg-gold-500"}`} />
                             </li>

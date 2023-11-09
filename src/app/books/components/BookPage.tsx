@@ -54,7 +54,7 @@ export default function BookPage({
               <span className="text-xl ml-3 font-normal text-gray-200">{book.publishDate}</span>
             </h1>
             {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
-            <h2 className="my-2 text-xl">by {book.by}</h2>
+            <h2 className="my-2 text-xl">by {book.authorName}</h2>
             <div className="my-8 whitespace-pre-wrap md:w-11/12">{book.description}</div>
             <div className="my-8">
               {book.openLibraryWorkId && (
