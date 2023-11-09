@@ -24,7 +24,7 @@ const defaults = {
 export function withApiHandling(requestHandler, options: Options = defaults) {
   return async (req: NextRequest, { params: routeParams }) => {
     try {
-      const { requireSession, requireUserProfile, requireJsonBody } = options
+      const { requireSession, requireUserProfile, requireJsonBody } = { ...defaults, ...options }
 
       // auth check
       const supabase = createRouteHandlerClient(
@@ -37,9 +37,12 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
       const { session } = humps.camelizeKeys(data)
       if (!session && requireSession) throw new Error("No session found")
 
-      const currentUserProfile = await prisma.userProfile.findFirst({
-        where: { userId: session.user.id },
-      })
+      let currentUserProfile
+      if (session) {
+        currentUserProfile = await prisma.userProfile.findFirst({
+          where: { userId: session.user.id },
+        })
+      }
       if (!currentUserProfile && requireUserProfile) throw new Error("User profile not found")
 
       let reqJson = {}

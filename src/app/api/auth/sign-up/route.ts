@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import { PrismaClient } from "@prisma/client"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
+import { withApiHandling } from "lib/api/withApiHandling"
 import type { NextRequest } from "next/server"
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -11,12 +12,19 @@ const supabase = createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 const prisma = new PrismaClient()
 
-export async function POST(req: NextRequest) {
-  try {
-    const reqBody = await req.json()
-    const { email, username, password } = humps.camelizeKeys(reqBody)
+export const POST = withApiHandling(
+  async (req: NextRequest, { params }) => {
+    const { reqJson } = params
+    const { email, username, password } = reqJson
 
     // validations
+    if (!email || !username || !password) {
+      return NextResponse.json(
+        { error: "Email, username, and password must all be present." },
+        { status: 400 },
+      )
+    }
+
     const matchingUsersCount = await prisma.user.count({ where: { email } })
     if (matchingUsersCount > 0) {
       return NextResponse.json(
@@ -81,8 +89,9 @@ export async function POST(req: NextRequest) {
 
     const resBody = humps.decamelizeKeys(resData)
     return NextResponse.json(resBody, { status: 200 })
-  } catch (error: any) {
-    console.error(error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
+  },
+  {
+    requireSession: false,
+    requireUserProfile: false,
+  },
+)
