@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { PrismaClient } from "@prisma/client"
-import OpenLibrary from "lib/openlibrary"
+import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getBookLink, attachBooksToLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
@@ -23,7 +23,7 @@ export default async function BookPageByQuery({ searchParams }) {
 
   if (existingBook) redirect(getBookLink(existingBook.slug))
 
-  const openlibraryBook: Book = await OpenLibrary.getFullBook(openLibraryWorkId)
+  const openLibraryBook: Book = await OpenLibrary.getFullBook(openLibraryWorkId)
 
   const userProfile = await getCurrentUserProfile()
 
@@ -52,5 +52,5 @@ export default async function BookPageByQuery({ searchParams }) {
     console.log(userLists)
   }
 
-  return <BookPage book={openlibraryBook} isSignedIn={!!userProfile} userLists={userLists} />
+  return <BookPage book={openLibraryBook} isSignedIn={!!userProfile} userLists={userLists} />
 }

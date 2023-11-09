@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import OpenLibrary from "lib/openlibrary"
+import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { attachBooksToLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
@@ -21,7 +21,7 @@ export default async function BookPageBySlug({ params }: any) {
   if (!book) throw new Error("Book not found")
 
   const workId = book.openLibraryWorkId!
-  const openlibraryBook: Book = await OpenLibrary.getFullBook(workId)
+  const openLibraryBook: Book = await OpenLibrary.getFullBook(workId)
 
   const userProfile = await getCurrentUserProfile()
 
@@ -50,5 +50,5 @@ export default async function BookPageBySlug({ params }: any) {
     console.log(userLists)
   }
 
-  return <BookPage book={openlibraryBook} userLists={userLists} isSignedIn={!!userProfile} />
+  return <BookPage book={openLibraryBook} userLists={userLists} isSignedIn={!!userProfile} />
 }

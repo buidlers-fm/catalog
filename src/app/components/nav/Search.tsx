@@ -7,7 +7,7 @@ import { BsSearch } from "react-icons/bs"
 import { GiOpenBook } from "react-icons/gi"
 import { BarsFade } from "react-svg-spinners"
 import debounce from "lodash.debounce"
-import OpenLibrary from "lib/openlibrary"
+import OpenLibrary from "lib/openLibrary"
 import { truncateString } from "lib/helpers/general"
 import type Book from "types/Book"
 
