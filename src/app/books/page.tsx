@@ -1,6 +1,8 @@
+import { redirect } from "next/navigation"
 import { PrismaClient } from "@prisma/client"
 import OpenLibrary from "lib/openlibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { getBookLink } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
 import type Book from "types/Book"
 
@@ -12,6 +14,14 @@ export default async function BookPageByQuery({ searchParams }) {
   const { open_library_work_id: openLibraryWorkId } = searchParams
 
   if (!openLibraryWorkId) throw new Error("openLibraryWorkId must be included")
+
+  const existingBook = await prisma.book.findFirst({
+    where: {
+      openLibraryWorkId,
+    },
+  })
+
+  if (existingBook) redirect(getBookLink(existingBook.slug))
 
   const openlibraryBook: Book = await OpenLibrary.getFullBook(openLibraryWorkId)
 
