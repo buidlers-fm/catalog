@@ -27,7 +27,7 @@ export default function EditListBooks({
   const [bookIds, setBookIds] = useState<string[]>([])
 
   useEffect(() => {
-    setBookIds(books.map((b) => b.openlibraryWorkId!))
+    setBookIds(books.map((b) => b.openLibraryWorkId!))
   }, [books])
 
   const handleDragEnd = (event) => {
@@ -64,8 +64,8 @@ export default function EditListBooks({
               <ul>
                 {books.map((book) => (
                   <SortableBook
-                    key={book.openlibraryWorkId}
-                    id={book.openlibraryWorkId}
+                    key={book.openLibraryWorkId}
+                    id={book.openLibraryWorkId}
                     book={book}
                     onRemove={onBookRemove}
                   />

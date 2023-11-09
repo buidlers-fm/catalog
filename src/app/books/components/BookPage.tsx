@@ -57,11 +57,11 @@ export default function BookPage({
             <h2 className="my-2 text-xl">by {book.by}</h2>
             <div className="my-8 whitespace-pre-wrap md:w-11/12">{book.description}</div>
             <div className="my-8">
-              {book.openlibraryWorkId && (
+              {book.openLibraryWorkId && (
                 <div className="my-2">
                   <span className="text-gray-200">More at</span>{" "}
                   <Link
-                    href={OpenLibrary.getOlWorkPageUrl(book.openlibraryWorkId)}
+                    href={OpenLibrary.getOlWorkPageUrl(book.openLibraryWorkId)}
                     className="cat-underline"
                     target="_blank"
                     rel="noopener noreferrer"

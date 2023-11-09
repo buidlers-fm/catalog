@@ -15,24 +15,24 @@ const createList = async (params, userProfile) => {
 
   // find existing books
   const existingBooks = await prisma.book.findMany({
-    where: { openlibraryWorkId: { in: selectedBooks.map((b) => b.openlibraryWorkId) } },
+    where: { openLibraryWorkId: { in: selectedBooks.map((b) => b.openLibraryWorkId) } },
   })
 
   // create books that don't exist
-  const existingBookOpenlibraryWorkIds = existingBooks.map((b) => b.openlibraryWorkId)
+  const existingBookOpenlibraryWorkIds = existingBooks.map((b) => b.openLibraryWorkId)
   const selectedBooksToCreate: Book[] = selectedBooks.filter(
-    (b) => !existingBookOpenlibraryWorkIds.includes(b.openlibraryWorkId),
+    (b) => !existingBookOpenlibraryWorkIds.includes(b.openLibraryWorkId),
   )
 
   const booksToCreatePromises = selectedBooksToCreate.map(async (selectedBook) => {
-    const { title, by, coverImageUrl, openlibraryWorkId } = selectedBook
+    const { title, by, coverImageUrl, openLibraryWorkId } = selectedBook
 
     return {
       slug: await generateUniqueSlug(`${title} ${by}`, "book"),
       title,
       authorName: by,
       coverImageUrl,
-      openlibraryWorkId,
+      openLibraryWorkId,
     }
   })
 
@@ -43,7 +43,7 @@ const createList = async (params, userProfile) => {
   })
 
   const selectedBookRecords = await prisma.book.findMany({
-    where: { openlibraryWorkId: { in: selectedBooks.map((b) => b.openlibraryWorkId) } },
+    where: { openLibraryWorkId: { in: selectedBooks.map((b) => b.openLibraryWorkId) } },
   })
 
   if (selectedBookRecords.length !== selectedBooks.length) {
@@ -58,10 +58,10 @@ const createList = async (params, userProfile) => {
 
   const orderedSelectedBookRecords = selectedBookRecords.sort((a, b) => {
     const indexOfA = selectedBooks.findIndex(
-      (book) => book.openlibraryWorkId === a.openlibraryWorkId,
+      (book) => book.openLibraryWorkId === a.openLibraryWorkId,
     )
     const indexOfB = selectedBooks.findIndex(
-      (book) => book.openlibraryWorkId === b.openlibraryWorkId,
+      (book) => book.openLibraryWorkId === b.openLibraryWorkId,
     )
 
     if (indexOfA === -1 || indexOfB === -1)
@@ -101,24 +101,24 @@ const updateList = async (list, params, userProfile) => {
 
   // find existing books
   const existingBooks = await prisma.book.findMany({
-    where: { openlibraryWorkId: { in: selectedBooks.map((b) => b.openlibraryWorkId) } },
+    where: { openLibraryWorkId: { in: selectedBooks.map((b) => b.openLibraryWorkId) } },
   })
 
   // create books that don't exist
-  const existingBookOpenlibraryWorkIds = existingBooks.map((b) => b.openlibraryWorkId)
+  const existingBookOpenlibraryWorkIds = existingBooks.map((b) => b.openLibraryWorkId)
   const selectedBooksToCreate: Book[] = selectedBooks.filter(
-    (b) => !existingBookOpenlibraryWorkIds.includes(b.openlibraryWorkId),
+    (b) => !existingBookOpenlibraryWorkIds.includes(b.openLibraryWorkId),
   )
 
   const booksToCreatePromises = selectedBooksToCreate.map(async (selectedBook) => {
-    const { title, by, coverImageUrl, openlibraryWorkId } = selectedBook
+    const { title, by, coverImageUrl, openLibraryWorkId } = selectedBook
 
     return {
       slug: await generateUniqueSlug(`${title} ${by}`, "book"),
       title,
       authorName: by,
       coverImageUrl,
-      openlibraryWorkId,
+      openLibraryWorkId,
     }
   })
 
@@ -129,7 +129,7 @@ const updateList = async (list, params, userProfile) => {
   })
 
   const selectedBookRecords = await prisma.book.findMany({
-    where: { openlibraryWorkId: { in: selectedBooks.map((b) => b.openlibraryWorkId) } },
+    where: { openLibraryWorkId: { in: selectedBooks.map((b) => b.openLibraryWorkId) } },
   })
 
   if (selectedBookRecords.length !== selectedBooks.length) {
@@ -166,10 +166,10 @@ const updateList = async (list, params, userProfile) => {
 
   const orderedSelectedBookRecords = selectedBookRecords.sort((a, b) => {
     const indexOfA = selectedBooks.findIndex(
-      (book) => book.openlibraryWorkId === a.openlibraryWorkId,
+      (book) => book.openLibraryWorkId === a.openLibraryWorkId,
     )
     const indexOfB = selectedBooks.findIndex(
-      (book) => book.openlibraryWorkId === b.openlibraryWorkId,
+      (book) => book.openLibraryWorkId === b.openLibraryWorkId,
     )
 
     if (indexOfA === -1 || indexOfB === -1)
@@ -195,19 +195,19 @@ const updateList = async (list, params, userProfile) => {
 const addBook = async (book, list) => {
   // check if book exists
   let persistedBook = await prisma.book.findFirst({
-    where: { openlibraryWorkId: book.openlibraryWorkId },
+    where: { openLibraryWorkId: book.openLibraryWorkId },
   })
 
   // create book if it doesn't exist
   if (!persistedBook) {
-    const { title, by, coverImageUrl, openlibraryWorkId } = book
+    const { title, by, coverImageUrl, openLibraryWorkId } = book
 
     const bookData = {
       slug: await generateUniqueSlug(`${title} ${by}`, "book"),
       title,
       authorName: by,
       coverImageUrl,
-      openlibraryWorkId,
+      openLibraryWorkId,
     }
 
     persistedBook = await prisma.book.create({

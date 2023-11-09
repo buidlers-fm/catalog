@@ -8,5 +8,5 @@ export default interface Book {
   publisherName?: string
   publishDate?: string
   openlibraryBookId?: string
-  openlibraryWorkId: string
+  openLibraryWorkId: string
 }

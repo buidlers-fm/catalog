@@ -38,12 +38,12 @@ model Book {
   slug              String   @unique
   title             String
   authorName        String?  @map("author_name")
-  openlibraryWorkId String?  @map("openlibrary_work_id")
+  openLibraryWorkId String?  @unique @map("open_library_work_id")
   coverImageUrl     String?  @map("cover_image_url")
   createdAt         DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
 
   @@map("books")
-  @@index([openlibraryWorkId])
+  @@index([openLibraryWorkId])
 }
 
 model List {

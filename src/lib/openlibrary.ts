@@ -85,7 +85,7 @@ const OpenLibrary = {
       coverImageUrl: coverImageUrl!,
       publisherName: publishers.join(", "),
       publishDate: bookData.publishDate,
-      openlibraryWorkId: workId,
+      openLibraryWorkId: workId,
     }
 
     return book
@@ -130,7 +130,7 @@ const OpenLibrary = {
       const { title, coverI: coverId } = result
       const author = result.authorName?.join(", ")
       const openlibraryBookId = result.editionKey?.[0]
-      const openlibraryWorkId = result.key.split("/works/").pop()
+      const openLibraryWorkId = result.key.split("/works/").pop()
 
       const isDup = books.some((book) => book.title === title && book.by === author)
       if (isDup) return
@@ -139,7 +139,7 @@ const OpenLibrary = {
         title,
         by: author,
         openlibraryBookId,
-        openlibraryWorkId,
+        openLibraryWorkId,
         coverImageUrl:
           coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),
       }

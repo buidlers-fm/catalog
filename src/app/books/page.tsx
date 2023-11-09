@@ -9,11 +9,11 @@ export const dynamic = "force-dynamic"
 const prisma = new PrismaClient()
 
 export default async function BookPageByQuery({ searchParams }) {
-  const { openlibraryWorkId } = searchParams
+  const { open_library_work_id: openLibraryWorkId } = searchParams
 
-  if (!openlibraryWorkId) throw new Error("openlibraryWorkId must be included")
+  if (!openLibraryWorkId) throw new Error("openLibraryWorkId must be included")
 
-  const openlibraryBook: Book = await OpenLibrary.getFullBook(openlibraryWorkId)
+  const openlibraryBook: Book = await OpenLibrary.getFullBook(openLibraryWorkId)
 
   const userProfile = await getCurrentUserProfile()
 

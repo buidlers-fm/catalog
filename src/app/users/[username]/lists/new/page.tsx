@@ -10,10 +10,10 @@ export default async function CreateListPage({ searchParams }) {
   const userProfile = await getCurrentUserProfile()
   if (!userProfile) redirect("/")
 
-  const { with: openlibraryWorkId } = searchParams
+  const { with: openLibraryWorkId } = searchParams
 
-  if (openlibraryWorkId) {
-    const openlibraryBook: Book = await OpenLibrary.getFullBook(openlibraryWorkId)
+  if (openLibraryWorkId) {
+    const openlibraryBook: Book = await OpenLibrary.getFullBook(openLibraryWorkId)
     return <EditList currentUserProfile={userProfile} firstBook={openlibraryBook} />
   } else {
     return <EditList currentUserProfile={userProfile} />

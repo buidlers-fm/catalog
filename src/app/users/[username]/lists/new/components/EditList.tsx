@@ -59,7 +59,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     if (!firstBook) return
 
     const isBookAlreadyInList = books.find(
-      (book) => book.openlibraryWorkId === firstBook.openlibraryWorkId,
+      (book) => book.openLibraryWorkId === firstBook.openLibraryWorkId,
     )
     if (!isBookAlreadyInList) {
       addBook(firstBook)

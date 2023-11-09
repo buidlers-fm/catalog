@@ -19,7 +19,7 @@ export default async function BookPageBySlug({ params }: any) {
 
   if (!book) throw new Error("Book not found")
 
-  const workId = book.openlibraryWorkId!
+  const workId = book.openLibraryWorkId!
   const openlibraryBook: Book = await OpenLibrary.getFullBook(workId)
 
   const userProfile = await getCurrentUserProfile()

@@ -60,7 +60,7 @@ export const dbBookToBook = (dbBook: DbBook): Book => ({
   title: dbBook.title,
   by: dbBook.authorName!,
   coverImageUrl: dbBook.coverImageUrl!,
-  openlibraryWorkId: dbBook.openlibraryWorkId!,
+  openLibraryWorkId: dbBook.openLibraryWorkId!,
 })
 
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {

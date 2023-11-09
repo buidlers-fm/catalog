@@ -38,7 +38,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
 
   const handleClickNewList = () => {
     if (!currentUser) return
-    const newListUrl = `${getNewListLink(currentUser)}?with=${book.openlibraryWorkId}`
+    const newListUrl = `${getNewListLink(currentUser)}?with=${book.openLibraryWorkId}`
     router.push(newListUrl)
   }
 
