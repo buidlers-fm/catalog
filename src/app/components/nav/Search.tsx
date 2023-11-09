@@ -7,7 +7,7 @@ import { BsSearch } from "react-icons/bs"
 import { GiOpenBook } from "react-icons/gi"
 import { BarsFade } from "react-svg-spinners"
 import debounce from "lodash.debounce"
-import OpenLibrary from "lib/openlibrary"
+import OpenLibrary from "lib/openLibrary"
 import { truncateString } from "lib/helpers/general"
 import type Book from "types/Book"
 
@@ -107,7 +107,7 @@ export default function Search({
                   {!isLoading && searchResults && searchResults.length > 0 && (
                     <>
                       {searchResults.map((book) => (
-                        <Combobox.Option key={book.openlibraryWorkId} value={book} as={Fragment}>
+                        <Combobox.Option key={book.openLibraryWorkId} value={book} as={Fragment}>
                           {({ active }) => (
                             <li
                               className={`flex items-center ${
@@ -129,7 +129,7 @@ export default function Search({
                                 <div className="mt-[-8px] mb-1 font-bold">
                                   {truncateString(book.title, 64)}
                                 </div>
-                                <div>{truncateString(book.by, 32)}</div>
+                                <div>{truncateString(book.authorName, 32)}</div>
                               </div>
                               <div className={`w-1 h-24 shrink-0 ${active && "bg-gold-500"}`} />
                             </li>

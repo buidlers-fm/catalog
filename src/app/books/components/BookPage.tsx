@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { FaPlus } from "react-icons/fa6"
 import { GiOpenBook } from "react-icons/gi"
-import OpenLibrary from "lib/openlibrary"
+import OpenLibrary from "lib/openLibrary"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import type Book from "types/Book"
 import type List from "types/List"
@@ -54,14 +54,14 @@ export default function BookPage({
               <span className="text-xl ml-3 font-normal text-gray-200">{book.publishDate}</span>
             </h1>
             {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
-            <h2 className="my-2 text-xl">by {book.by}</h2>
+            <h2 className="my-2 text-xl">by {book.authorName}</h2>
             <div className="my-8 whitespace-pre-wrap md:w-11/12">{book.description}</div>
             <div className="my-8">
-              {book.openlibraryWorkId && (
+              {book.openLibraryWorkId && (
                 <div className="my-2">
                   <span className="text-gray-200">More at</span>{" "}
                   <Link
-                    href={OpenLibrary.getOlWorkPageUrl(book.openlibraryWorkId)}
+                    href={OpenLibrary.getOlWorkPageUrl(book.openLibraryWorkId)}
                     className="cat-underline"
                     target="_blank"
                     rel="noopener noreferrer"

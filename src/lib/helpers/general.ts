@@ -2,8 +2,6 @@ import humps from "humps"
 import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
 import { PrismaClient } from "@prisma/client"
-import type { Book as DbBook } from "@prisma/client"
-import type Book from "types/Book"
 
 const prisma = new PrismaClient()
 
@@ -51,15 +49,10 @@ export const getBookLink = (slug: string) => `/books/${slug}`
 export const getListLink = (userProfile, slug: string) =>
   `/users/${userProfile.username}/lists/${slug}`
 
+export const getNewListLink = (userProfile) => `${getUserListsLink(userProfile.username)}/new`
+
 export const getEditListLink = (userProfile, slug: string) =>
   `${getListLink(userProfile, slug)}/edit`
-
-export const dbBookToBook = (dbBook: DbBook): Book => ({
-  title: dbBook.title,
-  by: dbBook.authorName!,
-  coverImageUrl: dbBook.coverImageUrl!,
-  openlibraryWorkId: dbBook.openlibraryWorkId!,
-})
 
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {
   const simpleSlug = slugify(str)
@@ -96,3 +89,30 @@ export const sortListsByPinSortOrder = (lists, pins) =>
 
       return orderA - orderB
     })
+
+export const attachBooksToLists = async (lists) => {
+  const allBookIds = lists
+    .map((list) =>
+      list.listItemAssignments
+        .filter((lia) => lia.listedObjectType === "book")
+        .map((lia) => lia.listedObjectId),
+    )
+    .flat()
+
+  const allBooks = await prisma.book.findMany({
+    where: {
+      id: {
+        in: allBookIds,
+      },
+    },
+  })
+
+  const bookIdsToBooks = allBooks.reduce((result, book) => ({ ...result, [book.id]: book }), {})
+
+  return lists.map((list: any) => ({
+    ...list,
+    books: list.listItemAssignments
+      .map((lia) => (lia.listedObjectType === "book" ? bookIdsToBooks[lia.listedObjectId] : null))
+      .filter((b) => !!b),
+  }))
+}

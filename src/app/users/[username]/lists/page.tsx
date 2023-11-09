@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { getListLink } from "lib/helpers/general"
+import { attachBooksToLists, getListLink } from "lib/helpers/general"
 import ManageLists from "app/users/[username]/lists/components/ManageLists"
 import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex"
 
@@ -22,7 +22,7 @@ export default async function UserListsIndexPage({ params }) {
   console.log("profile page fetch:")
   console.log(userProfile)
 
-  const lists = await prisma.list.findMany({
+  const _lists = await prisma.list.findMany({
     where: {
       ownerId: userProfile.id,
       designation: null,
@@ -39,33 +39,10 @@ export default async function UserListsIndexPage({ params }) {
     },
   })
 
-  const allBookIds = lists
-    .map((list) =>
-      list.listItemAssignments
-        .filter((lia) => lia.listedObjectType === "book")
-        .map((lia) => lia.listedObjectId),
-    )
-    .flat()
-
-  const allBooks = await prisma.book.findMany({
-    where: {
-      id: {
-        in: allBookIds,
-      },
-    },
-  })
-
-  lists.forEach((list: any) => {
-    list.url = getListLink(userProfile, list.slug)
-
-    list.books = list.listItemAssignments
-      .map((lia) => {
-        if (lia.listedObjectType !== "book") return null
-
-        return allBooks.find((b) => b.id === lia.listedObjectId)
-      })
-      .filter((b) => !!b)
-  })
+  const lists = (await attachBooksToLists(_lists)).map((list) => ({
+    ...list,
+    url: getListLink(userProfile, list.slug),
+  }))
 
   const pins = await prisma.pin.findMany({
     where: {

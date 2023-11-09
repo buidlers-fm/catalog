@@ -10,7 +10,7 @@ import { isValidHttpUrl } from "lib/helpers/general"
 import AvatarUpload from "app/settings/profile/components/AvatarUpload"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
-import EditListBooks from "app/lists/new/components/EditListBooks"
+import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 
 const validations = {
   displayName: {
@@ -122,7 +122,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
 
   return (
     <div className="my-8 max-w-4xl mx-auto font-nunito-sans">
-      <div className="my-8 text-3xl">Edit Profile</div>
+      <div className="my-8 cat-page-title">Edit Profile</div>
       <form onSubmit={handleSubmit(submit)}>
         <div className="ml:flex justify-center">
           <div className="my-8 grow">

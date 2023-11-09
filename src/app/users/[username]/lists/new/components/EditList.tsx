@@ -10,7 +10,7 @@ import useEditBookList from "lib/hooks/useEditBookList"
 import { getListLink, getEditListLink, getUserListsLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
-import EditListBooks from "app/lists/new/components/EditListBooks"
+import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
 import type Book from "types/Book"
@@ -59,7 +59,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     if (!firstBook) return
 
     const isBookAlreadyInList = books.find(
-      (book) => book.openlibraryWorkId === firstBook.openlibraryWorkId,
+      (book) => book.openLibraryWorkId === firstBook.openLibraryWorkId,
     )
     if (!isBookAlreadyInList) {
       addBook(firstBook)
@@ -135,7 +135,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   return (
     <>
       <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
-        <div className="my-8 text-3xl">{isEdit ? "Edit" : "New"} List</div>
+        <div className="my-8 cat-page-title">{isEdit ? "Edit" : "New"} List</div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="my-8">
             <FormInput

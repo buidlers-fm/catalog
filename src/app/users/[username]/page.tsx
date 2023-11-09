@@ -4,9 +4,15 @@ import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import { getCurrentUserProfile } from "lib/server/auth"
-import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
+import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
-import { getUserListsLink, getListLink, sortListsByPinSortOrder } from "lib/helpers/general"
+import {
+  getUserListsLink,
+  getListLink,
+  getNewListLink,
+  sortListsByPinSortOrder,
+  attachBooksToLists,
+} from "lib/helpers/general"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
@@ -29,7 +35,7 @@ export default async function UserProfilePage({ params }) {
   console.log("profile page fetch:")
   console.log(userProfile)
 
-  const favoriteBooksList = (await prisma.list.findFirst({
+  let favoriteBooksList = (await prisma.list.findFirst({
     where: {
       ownerId: userProfile.id,
       designation: "favorite",
@@ -43,7 +49,9 @@ export default async function UserProfilePage({ params }) {
     },
   })) as List | null
 
-  console.log(favoriteBooksList)
+  if (favoriteBooksList) {
+    ;[favoriteBooksList] = await attachBooksToLists([favoriteBooksList])
+  }
 
   let lists: List[] = []
   let hasPinnedLists = false
@@ -97,35 +105,10 @@ export default async function UserProfilePage({ params }) {
     })
   }
 
-  const allLists = [...lists, favoriteBooksList].filter((list) => !!list) as List[]
-
-  const allBookIds = allLists
-    .map((list) =>
-      list.listItemAssignments
-        .filter((lia) => lia.listedObjectType === "book")
-        .map((lia) => lia.listedObjectId),
-    )
-    .flat()
-
-  const allBooks = await prisma.book.findMany({
-    where: {
-      id: {
-        in: allBookIds,
-      },
-    },
-  })
-
-  allLists.forEach((list: any) => {
-    list.url = getListLink(userProfile, list.slug)
-
-    list.books = list.listItemAssignments
-      .map((lia) => {
-        if (lia.listedObjectType !== "book") return null
-
-        return allBooks.find((b) => b.id === lia.listedObjectId)
-      })
-      .filter((b) => !!b)
-  })
+  lists = (await attachBooksToLists(lists)).map((list) => ({
+    ...list,
+    url: getListLink(userProfile, list.slug),
+  }))
 
   console.log(JSON.stringify(lists, null, 2))
 
@@ -195,7 +178,7 @@ export default async function UserProfilePage({ params }) {
           </div>
           <div className="flex">
             {isUsersProfile && (
-              <Link href="/lists/new">
+              <Link href={getNewListLink(currentUserProfile)}>
                 <button className="cat-btn cat-btn-sm cat-btn-gray mx-2">+ Create a list</button>
               </Link>
             )}
