@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { DndContext, closestCenter } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
 import Search from "app/components/nav/Search"
-import SortableBook from "app/lists/new/components/SortableBook"
+import SortableBook from "app/users/[username]/lists/new/components/SortableBook"
 import type Book from "types/Book"
 
 type Props = {

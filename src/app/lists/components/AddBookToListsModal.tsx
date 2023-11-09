@@ -7,10 +7,13 @@ import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import { FaCheck, FaPlus } from "react-icons/fa6"
 import api from "lib/api"
+import { useUser } from "lib/contexts/UserContext"
+import { getNewListLink } from "lib/helpers/general"
 import type List from "types/List"
 
 export default function AddBookToListsModal({ book, userLists, onClose, isOpen }) {
   const router = useRouter()
+  const { currentUser } = useUser()
 
   const [selectedLists, setSelectedLists] = useState<List[]>([])
   const [isBusy, setIsBusy] = useState<boolean>(false)
@@ -34,7 +37,8 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
   }
 
   const handleClickNewList = () => {
-    const newListUrl = `/lists/new?with=${book.openlibraryWorkId}`
+    if (!currentUser) return
+    const newListUrl = `${getNewListLink(currentUser)}?with=${book.openlibraryWorkId}`
     router.push(newListUrl)
   }
 

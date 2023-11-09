@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { PrismaClient, Book as DbBook } from "@prisma/client"
 import { getCurrentUserProfile } from "lib/server/auth"
-import EditList from "app/lists/new/components/EditList"
+import EditList from "app/users/[username]/lists/new/components/EditList"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"

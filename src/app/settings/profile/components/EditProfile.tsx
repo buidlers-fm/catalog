@@ -10,7 +10,7 @@ import { isValidHttpUrl } from "lib/helpers/general"
 import AvatarUpload from "app/settings/profile/components/AvatarUpload"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
-import EditListBooks from "app/lists/new/components/EditListBooks"
+import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 
 const validations = {
   displayName: {

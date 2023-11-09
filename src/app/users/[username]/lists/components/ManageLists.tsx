@@ -16,7 +16,7 @@ import { MdEdit } from "react-icons/md"
 import { toast } from "react-hot-toast"
 import api from "lib/api"
 import { useUser } from "lib/contexts/UserContext"
-import { sortListsByPinSortOrder, getEditListLink } from "lib/helpers/general"
+import { sortListsByPinSortOrder, getEditListLink, getNewListLink } from "lib/helpers/general"
 import ListCard from "app/components/lists/ListCard"
 import type List from "types/List"
 
@@ -120,7 +120,7 @@ export default function ManageLists({ lists, pins }) {
     <div className="mt-4 max-w-3xl mx-auto font-nunito-sans">
       <div className="text-3xl">Your lists</div>
       <div className="mt-8 flex justify-end">
-        <Link href="/lists/new">
+        <Link href={getNewListLink(currentUser)}>
           <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
         </Link>
       </div>

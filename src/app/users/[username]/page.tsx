@@ -6,7 +6,12 @@ import { PiMapPinFill } from "react-icons/pi"
 import { getCurrentUserProfile } from "lib/server/auth"
 import ListBook from "app/users/[username]/lists/[listSlug]/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
-import { getUserListsLink, getListLink, sortListsByPinSortOrder } from "lib/helpers/general"
+import {
+  getUserListsLink,
+  getListLink,
+  getNewListLink,
+  sortListsByPinSortOrder,
+} from "lib/helpers/general"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
@@ -195,7 +200,7 @@ export default async function UserProfilePage({ params }) {
           </div>
           <div className="flex">
             {isUsersProfile && (
-              <Link href="/lists/new">
+              <Link href={getNewListLink(currentUserProfile)}>
                 <button className="cat-btn cat-btn-sm cat-btn-gray mx-2">+ Create a list</button>
               </Link>
             )}

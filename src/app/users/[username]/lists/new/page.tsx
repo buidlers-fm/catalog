@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import OpenLibrary from "lib/openlibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
-import EditList from "app/lists/new/components/EditList"
+import EditList from "app/users/[username]/lists/new/components/EditList"
 import type Book from "types/Book"
 
 export const dynamic = "force-dynamic"
