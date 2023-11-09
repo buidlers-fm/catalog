@@ -118,7 +118,7 @@ export default function ManageLists({ lists, pins }) {
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-nunito-sans">
-      <div className="text-3xl">Your lists</div>
+      <div className="cat-page-title">Your lists</div>
       <div className="mt-8 flex justify-end">
         <Link href={getNewListLink(currentUser)}>
           <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>

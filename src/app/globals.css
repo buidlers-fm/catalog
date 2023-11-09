@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.cat-page-title {
+  @apply text-3xl font-nunito-sans;
+}
+
 .cat-underline {
   border-bottom: 1px solid;
   @apply border-b-gold-500;

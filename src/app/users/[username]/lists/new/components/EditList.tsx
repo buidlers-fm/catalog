@@ -135,7 +135,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   return (
     <>
       <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
-        <div className="my-8 text-3xl">{isEdit ? "Edit" : "New"} List</div>
+        <div className="my-8 cat-page-title">{isEdit ? "Edit" : "New"} List</div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="my-8">
             <FormInput
