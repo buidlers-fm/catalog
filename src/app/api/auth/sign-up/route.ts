@@ -58,25 +58,20 @@ export async function POST(req: NextRequest) {
 
     const userId = data.user!.id
 
-    // create app user
+    // create app user and profile
     const createUserRes = await prisma.user.create({
       data: {
         id: userId,
         email,
+        profile: {
+          create: {
+            username,
+          },
+        },
       },
     })
 
     console.log(createUserRes)
-
-    // create profile
-    const createProfileRes = await prisma.userProfile.create({
-      data: {
-        username,
-        userId,
-      },
-    })
-
-    console.log(createProfileRes)
 
     const resData = {
       email,

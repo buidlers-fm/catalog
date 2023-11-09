@@ -18,6 +18,7 @@ model UserProfile {
   website     String?
   avatarUrl   String?  @map("avatar_url")
   userId      String   @unique @db.Uuid @map("user_id")
+  user        User     @relation(fields: [userId], references: [id])
   lists       List[]
   pins        Pin[]
   createdAt   DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
@@ -26,8 +27,9 @@ model UserProfile {
 }
 
 model User {
-  id         String   @id
+  id         String   @id @db.Uuid
   email      String   @unique
+  profile    UserProfile?
   createdAt  DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
 
   @@map("users")

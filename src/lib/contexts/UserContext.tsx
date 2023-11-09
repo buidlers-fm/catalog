@@ -96,14 +96,8 @@ export function UserProvider({ children }) {
         password,
       }
 
-      const res = await api.auth.signUp(requestData)
-
-      if (res.status === 200) {
-        await signIn(email, password)
-      } else {
-        const { error } = await res.json()
-        throw new Error(error)
-      }
+      await api.auth.signUp(requestData)
+      await signIn(email, password)
     },
     [signIn],
   )
