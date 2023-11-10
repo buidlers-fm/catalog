@@ -1,12 +1,13 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
 import api from "lib/api"
 import useEditBookList from "lib/hooks/useEditBookList"
-import { isValidHttpUrl } from "lib/helpers/general"
+import { isValidHttpUrl, getUserProfileLink } from "lib/helpers/general"
 import AvatarUpload from "app/settings/profile/components/AvatarUpload"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
@@ -107,7 +108,18 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
     try {
       const updatedProfile = await api.profiles.update(userProfile.userId, formData)
 
-      toast.success("Changes saved!", { id: toastId })
+      const successMessage = (
+        <>
+          Changes saved!&nbsp;
+          <Link href={getUserProfileLink(userProfile.username)}>
+            <button type="button" className="cat-btn-link">
+              View your profile.
+            </button>
+          </Link>
+        </>
+      )
+
+      toast.success(successMessage, { id: toastId })
 
       setAvatarValid(true)
       setAvatarUpdated(false)
