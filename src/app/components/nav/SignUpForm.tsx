@@ -62,6 +62,7 @@ export default function SignUpForm({ toggleAuth }) {
       />
       <FormInput
         labelText="Username"
+        descriptionText="Choose a username between 3 and 30 characters, that contains only letters, numbers, dashes (-), and underscores (_)."
         name="username"
         type="text"
         onChange={(e) => setUsername(e.target.value)}
@@ -70,6 +71,7 @@ export default function SignUpForm({ toggleAuth }) {
       />
       <FormInput
         labelText="Password"
+        descriptionText="Choose a password at least 8 characters long."
         name="password"
         type="password"
         onChange={(e) => setPassword(e.target.value)}

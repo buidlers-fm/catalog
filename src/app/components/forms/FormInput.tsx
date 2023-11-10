@@ -2,6 +2,7 @@ type Props = {
   labelText: string
   name: string
   type: string
+  descriptionText?: string
   accentColor?: string
   formProps?: any
   errorMessage?: string
@@ -13,6 +14,7 @@ export default function FormInput({
   labelText,
   name,
   type,
+  descriptionText,
   accentColor = "gold",
   formProps = {},
   errorMessage,
@@ -28,9 +30,10 @@ export default function FormInput({
 
   return (
     <div className="my-4 font-nunito-sans text-white">
-      <div className="mb-1">
+      <div className="mb-2">
         <label htmlFor={name}>{labelText}</label>
       </div>
+      {descriptionText && <div className="mb-2 text-sm text-gray-200">{descriptionText}</div>}
       <div>
         <input
           name={name}
@@ -39,7 +42,7 @@ export default function FormInput({
           {...moreProps}
           className={`${
             fullWidth ? "w-full" : "w-full xs:w-96"
-          } px-3 pt-3 pb-2 bg-gray-900 disabled:text-gray-500 rounded border-none ${accentColorClasses}`}
+          } mb-2 px-3 pt-3 pb-2 bg-gray-900 disabled:text-gray-500 rounded border-none ${accentColorClasses}`}
         />
       </div>
       {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}

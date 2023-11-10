@@ -12,6 +12,10 @@ const supabase = createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 const prisma = new PrismaClient()
 
+const USERNAME_MIN_LENGTH = 3
+const USERNAME_MAX_LENGTH = 30
+const PASSWORD_MIN_LENGTH = 8
+
 export const POST = withApiHandling(
   async (req: NextRequest, { params }) => {
     const { reqJson } = params
@@ -25,7 +29,14 @@ export const POST = withApiHandling(
       )
     }
 
-    const matchingUsersCount = await prisma.user.count({ where: { email } })
+    const matchingUsersCount = await prisma.user.count({
+      where: {
+        email: {
+          equals: email,
+          mode: "insensitive",
+        },
+      },
+    })
     if (matchingUsersCount > 0) {
       return NextResponse.json(
         { error: "An account with that email already exists." },
@@ -33,7 +44,14 @@ export const POST = withApiHandling(
       )
     }
 
-    const matchingProfilesCount = await prisma.userProfile.count({ where: { username } })
+    const matchingProfilesCount = await prisma.userProfile.count({
+      where: {
+        username: {
+          equals: username,
+          mode: "insensitive",
+        },
+      },
+    })
     if (matchingProfilesCount > 0) {
       return NextResponse.json(
         { error: "An account with that username already exists." },
@@ -41,7 +59,23 @@ export const POST = withApiHandling(
       )
     }
 
-    if (password.length < 8) {
+    const validUsernameRegex = /^[a-zA-Z0-9_-]+$/
+    const isUsernameValid = username.match(validUsernameRegex)
+    if (!isUsernameValid) {
+      return NextResponse.json(
+        { error: "Username can only contain letters, numbers, dashes (-), and underscores (_)." },
+        { status: 400 },
+      )
+    }
+
+    if (username.length < USERNAME_MIN_LENGTH || username.length > USERNAME_MAX_LENGTH) {
+      return NextResponse.json(
+        { error: "Username must be between 3 and 30 characters." },
+        { status: 400 },
+      )
+    }
+
+    if (password.length < PASSWORD_MIN_LENGTH) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters." },
         { status: 400 },
