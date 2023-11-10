@@ -56,10 +56,6 @@
   @apply text-gray-100 border-gray-500 border-2;
 }
 
-/* .cat-btn-orange { */
-/*   @apply bg-orange-500 hover:bg-orange-700 border-b-orange-900 border-r-orange-900; */
-/* } */
-
 .cat-btn-link {
   @apply border-b border-b-gray-200;
 }
@@ -67,3 +63,21 @@
 .cat-btn-text {
   @apply text-gray-100 font-nunito-sans;
 }
+
+/* filepond styles */
+.filepond--root {
+  @apply cursor-pointer font-nunito-sans !important;
+}
+
+.filepond--drop-label {
+  @apply text-white !important;
+}
+
+.filepond--drop-label label {
+  @apply cursor-pointer !important;
+}
+
+.filepond--panel-root {
+  @apply bg-gray-900 !important;
+}
+/* end filepond styles */

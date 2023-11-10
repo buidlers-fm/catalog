@@ -110,8 +110,6 @@ export default async function UserProfilePage({ params }) {
     url: getListLink(userProfile, list.slug),
   }))
 
-  console.log(JSON.stringify(lists, null, 2))
-
   const isUsersProfile = currentUserProfile?.id === userProfile!.id
 
   const { displayName, bio, location, website, avatarUrl } = userProfile!
