@@ -123,7 +123,7 @@ export default async function UserProfilePage({ params }) {
           <img
             src={avatarUrl}
             alt="avatar"
-            className="h-24 w-24 bg-cover bg-no-repeat bg-center rounded-full"
+            className="mr-3 h-24 w-24 bg-cover bg-no-repeat bg-center rounded-full"
           />
         ) : (
           <FaUserCircle className=" mr-3 text-[96px] text-gray-500" />

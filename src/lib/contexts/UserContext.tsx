@@ -4,6 +4,7 @@ import { createContext, useState, useCallback, useEffect, useMemo, useContext } 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
 import api from "lib/api"
+import type UserProfile from "types/UserProfile"
 
 type User = {
   id?: string
@@ -13,6 +14,7 @@ type User = {
 
 type UserProviderValue = {
   currentUser?: User | null
+  currentUserProfile?: UserProfile | null
   signUp: (email: string, username: string, password: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -22,6 +24,7 @@ const UserContext = createContext<UserProviderValue | undefined>(undefined)
 
 export function UserProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>()
+  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>()
 
   const supabase = createClientComponentClient()
 
@@ -37,6 +40,7 @@ export function UserProvider({ children }) {
     const { user: userData } = session
 
     const {
+      id: userId,
       email,
       userMetadata: { username },
     } = userData
@@ -48,6 +52,9 @@ export function UserProvider({ children }) {
 
     console.log(_user)
     setCurrentUser(_user)
+
+    const _currentUserProfile = await api.profiles.find(userId)
+    if (_currentUserProfile) setCurrentUserProfile(_currentUserProfile)
   }, [supabase.auth])
 
   useEffect(() => {
@@ -73,6 +80,7 @@ export function UserProvider({ children }) {
       const { user: userData } = humps.camelizeKeys(data)
 
       const {
+        id: userId,
         email: userEmail,
         userMetadata: { username },
       } = userData
@@ -84,6 +92,9 @@ export function UserProvider({ children }) {
 
       console.log(_user)
       setCurrentUser(_user)
+
+      const _currentUserProfile = await api.profiles.find(userId)
+      if (_currentUserProfile) setCurrentUserProfile(_currentUserProfile)
     },
     [supabase.auth],
   )
@@ -109,11 +120,12 @@ export function UserProvider({ children }) {
     }
 
     setCurrentUser(null)
+    setCurrentUserProfile(null)
   }, [supabase.auth])
 
   const providerValue = useMemo(
-    () => ({ currentUser, signUp, signIn, signOut }),
-    [currentUser, signUp, signIn, signOut],
+    () => ({ currentUser, currentUserProfile, signUp, signIn, signOut }),
+    [currentUser, currentUserProfile, signUp, signIn, signOut],
   )
 
   return <UserContext.Provider value={providerValue}>{children}</UserContext.Provider>

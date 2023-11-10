@@ -20,6 +20,32 @@ const storageClient = new StorageClient(storageUrl, {
 
 const prisma = new PrismaClient()
 
+export const GET = withApiHandling(
+  async (req: NextRequest, { params }) => {
+    const { routeParams } = params
+    const { userId } = routeParams
+
+    const userProfile = await prisma.userProfile.findFirst({
+      where: {
+        userId,
+      },
+    })
+
+    if (!userProfile) {
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 })
+    }
+
+    const resBody = humps.decamelizeKeys(userProfile)
+
+    return NextResponse.json(resBody, { status: 200 })
+  },
+  {
+    requireSession: false,
+    requireUserProfile: false,
+    requireJsonBody: false,
+  },
+)
+
 export const PATCH = withApiHandling(
   async (req: NextRequest, { params }) => {
     const { routeParams, session } = params
