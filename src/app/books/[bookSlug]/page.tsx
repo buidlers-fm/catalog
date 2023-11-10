@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { attachBooksToLists } from "lib/helpers/general"
@@ -6,8 +6,6 @@ import BookPage from "app/books/components/BookPage"
 import type Book from "types/Book"
 
 export const dynamic = "force-dynamic"
-
-const prisma = new PrismaClient()
 
 export default async function BookPageBySlug({ params }: any) {
   const { bookSlug } = params

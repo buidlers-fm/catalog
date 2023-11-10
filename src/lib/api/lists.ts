@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import { generateUniqueSlug } from "lib/helpers/general"
 import type Book from "types/Book"
-
-const prisma = new PrismaClient()
 
 const createList = async (params, userProfile) => {
   const {

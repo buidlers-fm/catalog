@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { attachBooksToLists, getListLink } from "lib/helpers/general"
 import ManageLists from "app/users/[username]/lists/components/ManageLists"
 import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex"
 
 export const dynamic = "force-dynamic"
-
-const prisma = new PrismaClient()
 
 export default async function UserListsIndexPage({ params }) {
   const { username } = params

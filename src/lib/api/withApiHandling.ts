@@ -2,12 +2,10 @@ import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import humps from "humps"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import type { NextRequest } from "next/server"
 
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-const prisma = new PrismaClient()
 
 type Options = {
   requireSession?: boolean

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
-import { PrismaClient } from "@prisma/client"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
+import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import type { NextRequest } from "next/server"
 
@@ -9,8 +9,6 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 const supabase = createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-
-const prisma = new PrismaClient()
 
 const USERNAME_MIN_LENGTH = 3
 const USERNAME_MAX_LENGTH = 30

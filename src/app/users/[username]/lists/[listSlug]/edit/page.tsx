@@ -1,13 +1,11 @@
 import { redirect } from "next/navigation"
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { attachBooksToLists } from "lib/helpers/general"
 import EditList from "app/users/[username]/lists/new/components/EditList"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
-
-const prisma = new PrismaClient()
 
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params

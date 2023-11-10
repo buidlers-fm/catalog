@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { updateList } from "lib/api/lists"
 import type { NextRequest } from "next/server"
-
-const prisma = new PrismaClient()
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const { routeParams, reqJson, currentUserProfile: userProfile } = params

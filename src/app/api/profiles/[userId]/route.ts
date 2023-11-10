@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import { v4 as uuidv4 } from "uuid"
 import { StorageClient } from "@supabase/storage-js"
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { createList, updateList } from "lib/api/lists"
 import type { NextRequest } from "next/server"
@@ -15,8 +15,6 @@ const storageClient = new StorageClient(storageUrl, {
   apikey: SUPABASE_SERVICE_ROLE_KEY,
   Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
 })
-
-const prisma = new PrismaClient()
 
 export const GET = withApiHandling(
   async (req: NextRequest, { params }) => {

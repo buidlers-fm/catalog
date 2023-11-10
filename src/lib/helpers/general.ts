@@ -1,9 +1,7 @@
 import humps from "humps"
 import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import prisma from "lib/prisma"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const res = await fetch(url, options)

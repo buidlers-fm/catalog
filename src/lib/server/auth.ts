@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 import humps from "humps"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
-import { PrismaClient } from "@prisma/client"
+import prisma from "lib/prisma"
 
 type Options = {
   requireSignedIn?: boolean
@@ -10,8 +10,6 @@ type Options = {
 const defaultOptions = {
   requireSignedIn: false,
 }
-
-const prisma = new PrismaClient()
 
 const getCurrentUserProfile = async (options: Options = defaultOptions) => {
   const { requireSignedIn } = options
