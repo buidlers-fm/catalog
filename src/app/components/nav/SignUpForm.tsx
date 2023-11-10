@@ -53,6 +53,7 @@ export default function SignUpForm({ toggleAuth }) {
         type="email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
+        accentColor="teal"
       />
       <FormInput
         labelText="Username"
@@ -60,6 +61,7 @@ export default function SignUpForm({ toggleAuth }) {
         type="text"
         onChange={(e) => setUsername(e.target.value)}
         value={username}
+        accentColor="teal"
       />
       <FormInput
         labelText="Password"
@@ -67,8 +69,9 @@ export default function SignUpForm({ toggleAuth }) {
         type="password"
         onChange={(e) => setPassword(e.target.value)}
         value={password}
+        accentColor="teal"
       />
-      <button className="cat-btn cat-btn-gold my-4" onClick={handleSubmit} disabled={isSubmitting}>
+      <button className="cat-btn cat-btn-teal my-4" onClick={handleSubmit} disabled={isSubmitting}>
         Sign up
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
