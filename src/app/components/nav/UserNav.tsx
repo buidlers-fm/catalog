@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Menu } from "@headlessui/react"
 import { BsXLg } from "react-icons/bs"
@@ -14,6 +15,7 @@ import "react-modern-drawer/dist/index.css"
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
 export default function UserNav() {
+  const router = useRouter()
   const { currentUserProfile, signOut } = useUser()
   const [showAuth, setShowAuth] = useState<boolean>(false)
   const [isSignIn, setIsSignIn] = useState<boolean>(true)
@@ -21,6 +23,12 @@ export default function UserNav() {
   const onClickSignIn = () => {
     setIsSignIn(true)
     setShowAuth(true)
+  }
+
+  const onClickSignOut = async () => {
+    await signOut()
+    setShowAuth(false)
+    router.refresh()
   }
 
   return (
@@ -49,7 +57,7 @@ export default function UserNav() {
                 </Link>
               </Menu.Item>
               <Menu.Item>
-                <button onClick={signOut} className="cat-btn-text my-1">
+                <button onClick={onClickSignOut} className="cat-btn-text my-1">
                   Sign out
                 </button>
               </Menu.Item>

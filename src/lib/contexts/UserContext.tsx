@@ -16,7 +16,7 @@ type UserProviderValue = {
   currentUser?: User | null
   currentUserProfile?: UserProfile | null
   signUp: (email: string, username: string, password: string) => Promise<void>
-  signIn: (email: string, password: string) => Promise<void>
+  signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
 }
 
@@ -94,7 +94,16 @@ export function UserProvider({ children }) {
       setCurrentUser(_user)
 
       const _currentUserProfile = await api.profiles.find(userId)
-      if (_currentUserProfile) setCurrentUserProfile(_currentUserProfile)
+      if (_currentUserProfile) {
+        setCurrentUserProfile(_currentUserProfile)
+      } else {
+        throw new Error("User profile is missing")
+      }
+
+      return {
+        currentUser: _user,
+        currentUserProfile: _currentUserProfile,
+      }
     },
     [supabase.auth],
   )

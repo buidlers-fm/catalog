@@ -1,11 +1,14 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
+import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
 export default function SignUpForm({ toggleAuth }) {
+  const router = useRouter()
   const { signUp } = useUser()
 
   const [email, setEmail] = useState<string>("")
@@ -38,6 +41,8 @@ export default function SignUpForm({ toggleAuth }) {
       await signUp(email, username, password)
 
       toast.success("Signed up!")
+
+      router.push(getUserProfileLink(username))
     } catch (error: any) {
       setErrorMessage(error.message)
     }
