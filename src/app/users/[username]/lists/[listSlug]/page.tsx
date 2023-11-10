@@ -1,14 +1,12 @@
 import Link from "next/link"
-import { PrismaClient } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import ListBook from "app/lists/components/ListBook"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
-
-const prisma = new PrismaClient()
 
 dayjs.extend(relativeTime)
 
