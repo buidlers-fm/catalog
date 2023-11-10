@@ -11,6 +11,12 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   const { pinnedObjectId, pinnedObjectType } = reqJson
 
+  // validate
+  if (!pinnedObjectId || pinnedObjectType) {
+    const errorMsg = "pinnedObjectId and pinnedObjectType are required."
+    return NextResponse.json({ error: errorMsg }, { status: 400 })
+  }
+
   // verify pinned object exists and belongs to the user
   if (pinnedObjectType === "list") {
     const pinnedObject = await prisma.list.findFirst({

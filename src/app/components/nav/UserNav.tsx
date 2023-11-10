@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Menu } from "@headlessui/react"
 import { BsXLg } from "react-icons/bs"
@@ -14,7 +15,8 @@ import "react-modern-drawer/dist/index.css"
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
 export default function UserNav() {
-  const { currentUser, signOut } = useUser()
+  const router = useRouter()
+  const { currentUserProfile, signOut } = useUser()
   const [showAuth, setShowAuth] = useState<boolean>(false)
   const [isSignIn, setIsSignIn] = useState<boolean>(true)
 
@@ -23,25 +25,39 @@ export default function UserNav() {
     setShowAuth(true)
   }
 
+  const onClickSignOut = async () => {
+    await signOut()
+    setShowAuth(false)
+    router.refresh()
+  }
+
   return (
     <div>
-      {currentUser ? (
+      {currentUserProfile ? (
         <Menu>
           <Menu.Button className="cat-btn-text mt-2 lg:mt-0 ml-4 mr-2">
             <div className="flex">
-              <FaUserCircle className=" mr-3 text-2xl text-gold-100" />
-              <span className="hidden sm:inline">{currentUser.username}</span>
+              {currentUserProfile.avatarUrl ? (
+                <img
+                  src={currentUserProfile.avatarUrl}
+                  alt="user avatar"
+                  className="mr-3 w-[24px] rounded-full"
+                />
+              ) : (
+                <FaUserCircle className="mr-3 text-2xl text-gold-100" />
+              )}
+              <span className="hidden sm:inline">{currentUserProfile.username}</span>
             </div>
           </Menu.Button>
           <div className="relative">
             <Menu.Items className="absolute top-2 w-[92px] bg-gray-900 rounded px-4 py-3">
               <Menu.Item>
-                <Link href={`/users/${currentUser.username}`}>
+                <Link href={`/users/${currentUserProfile.username}`}>
                   <button className="cat-btn-text my-1">Profile</button>
                 </Link>
               </Menu.Item>
               <Menu.Item>
-                <button onClick={signOut} className="cat-btn-text my-1">
+                <button onClick={onClickSignOut} className="cat-btn-text my-1">
                   Sign out
                 </button>
               </Menu.Item>

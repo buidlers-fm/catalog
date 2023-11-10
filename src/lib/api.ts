@@ -53,6 +53,7 @@ const api = {
     },
   },
   profiles: {
+    find: (userId) => fetchJson(`/api/profiles/${userId}`),
     update: (userId, formData) =>
       fetchJson(`/api/profiles/${userId}`, {
         method: "PATCH",

@@ -1,10 +1,14 @@
 "use client"
 
+import { useRouter, usePathname } from "next/navigation"
 import { useState } from "react"
+import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
 export default function SignInForm({ toggleAuth }) {
+  const pathname = usePathname()
+  const router = useRouter()
   const { signIn } = useUser()
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
@@ -23,7 +27,13 @@ export default function SignInForm({ toggleAuth }) {
 
     try {
       validateInput()
-      await signIn(email, password)
+      const { currentUserProfile } = await signIn(email, password)
+
+      if (pathname === "/") {
+        router.push(getUserProfileLink(currentUserProfile.username))
+      } else {
+        router.refresh()
+      }
     } catch (error: any) {
       setErrorMessage(error.message)
     }
@@ -47,7 +57,7 @@ export default function SignInForm({ toggleAuth }) {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-      <button className="cat-btn cat-btn-teal my-4" onClick={handleSubmit} disabled={isSubmitting}>
+      <button className="cat-btn cat-btn-gold my-4" onClick={handleSubmit} disabled={isSubmitting}>
         Sign in
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}

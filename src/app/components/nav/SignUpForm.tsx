@@ -1,11 +1,14 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
+import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
 export default function SignUpForm({ toggleAuth }) {
+  const router = useRouter()
   const { signUp } = useUser()
 
   const [email, setEmail] = useState<string>("")
@@ -38,6 +41,8 @@ export default function SignUpForm({ toggleAuth }) {
       await signUp(email, username, password)
 
       toast.success("Signed up!")
+
+      router.push(getUserProfileLink(username))
     } catch (error: any) {
       setErrorMessage(error.message)
     }
@@ -53,22 +58,27 @@ export default function SignUpForm({ toggleAuth }) {
         type="email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
+        accentColor="teal"
       />
       <FormInput
         labelText="Username"
+        descriptionText="Choose a username between 3 and 30 characters, that contains only letters, numbers, dashes (-), and underscores (_)."
         name="username"
         type="text"
         onChange={(e) => setUsername(e.target.value)}
         value={username}
+        accentColor="teal"
       />
       <FormInput
         labelText="Password"
+        descriptionText="Choose a password at least 8 characters long."
         name="password"
         type="password"
         onChange={(e) => setPassword(e.target.value)}
         value={password}
+        accentColor="teal"
       />
-      <button className="cat-btn cat-btn-gold my-4" onClick={handleSubmit} disabled={isSubmitting}>
+      <button className="cat-btn cat-btn-teal my-4" onClick={handleSubmit} disabled={isSubmitting}>
         Sign up
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}

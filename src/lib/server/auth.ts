@@ -25,13 +25,14 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
 
   if (!session && requireSignedIn) throw new Error("Session not found")
 
-  const sessionUserId = session?.user?.id
-
-  const currentUserProfile = await prisma.userProfile.findFirst({
-    where: {
-      userId: sessionUserId,
-    },
-  })
+  let currentUserProfile
+  if (session) {
+    currentUserProfile = await prisma.userProfile.findFirst({
+      where: {
+        userId: session.user.id,
+      },
+    })
+  }
 
   if (!currentUserProfile && requireSignedIn) throw new Error("User not found")
 

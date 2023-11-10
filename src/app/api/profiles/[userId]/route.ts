@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
 import humps from "humps"
 import { v4 as uuidv4 } from "uuid"
 import { StorageClient } from "@supabase/storage-js"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { PrismaClient } from "@prisma/client"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { createList, updateList } from "lib/api/lists"
@@ -20,15 +18,36 @@ const storageClient = new StorageClient(storageUrl, {
 
 const prisma = new PrismaClient()
 
+export const GET = withApiHandling(
+  async (req: NextRequest, { params }) => {
+    const { routeParams } = params
+    const { userId } = routeParams
+
+    const userProfile = await prisma.userProfile.findFirst({
+      where: {
+        userId,
+      },
+    })
+
+    if (!userProfile) {
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 })
+    }
+
+    const resBody = humps.decamelizeKeys(userProfile)
+
+    return NextResponse.json(resBody, { status: 200 })
+  },
+  {
+    requireSession: false,
+    requireUserProfile: false,
+    requireJsonBody: false,
+  },
+)
+
 export const PATCH = withApiHandling(
   async (req: NextRequest, { params }) => {
     const { routeParams, session } = params
     const { userId } = routeParams
-
-    const supabase = createRouteHandlerClient(
-      { cookies },
-      { supabaseKey: SUPABASE_SERVICE_ROLE_KEY },
-    )
 
     const sessionUserId = session.user.id
 
@@ -45,15 +64,23 @@ export const PATCH = withApiHandling(
       options,
     } = humps.camelizeKeys(JSON.parse(json))
 
-    console.log(profileToUpdate)
-
     // handle avatar updates
     const avatarBlob = formData.get("avatarFile") as Blob | null
 
-    if ((avatarBlob || options.avatarDeleted) && profileToUpdate.avatarUrl) {
-      const filePath = profileToUpdate.avatarUrl.split("/assets/").pop()
+    const existingProfile = await prisma.userProfile.findFirst({
+      where: {
+        userId,
+      },
+    })
 
-      const { error: avatarDeleteError } = await supabase.storage.from("assets").remove(filePath)
+    if (!existingProfile) {
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 })
+    }
+
+    if ((avatarBlob || options.avatarDeleted) && existingProfile.avatarUrl) {
+      const filePath = existingProfile.avatarUrl.split("/assets/").pop()
+
+      const { error: avatarDeleteError } = await storageClient.from("assets").remove([filePath!])
 
       if (avatarDeleteError) throw new Error(`Error uploading avatar: ${avatarDeleteError.message}`)
 
@@ -65,7 +92,7 @@ export const PATCH = withApiHandling(
       const avatarUuid = uuidv4()
       const fileDir = "user_profiles/avatars"
       const filePath = `${fileDir}/${avatarUuid}.${avatarExtension}`
-      console.log(filePath, avatarMimeType)
+
       const { error: avatarUploadError } = await storageClient
         .from("assets")
         .upload(filePath, avatarBlob, { contentType: avatarMimeType })

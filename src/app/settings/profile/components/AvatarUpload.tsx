@@ -36,12 +36,12 @@ export default function AvatarUpload({ initialFile, onFileChange, markFileValid 
     setErrorMessage(undefined)
 
     setFiles(_files)
-
     const _file = _files[0]
-    console.log(_file)
-    onFileChange(_file)
 
-    if (!_file) markFileValid(true) // file has been removed
+    if (!_file) {
+      onFileChange(undefined)
+      markFileValid(true) // file has been removed
+    }
   }
 
   const handleError = (error) => {
@@ -54,24 +54,40 @@ export default function AvatarUpload({ initialFile, onFileChange, markFileValid 
   }
 
   return (
-    <div className="h-48 w-48">
-      <FilePond
-        name="avatar"
-        files={files}
-        onupdatefiles={handleFileChange}
-        onerror={handleError}
-        imagePreviewHeight={192}
-        imageCropAspectRatio="1:1"
-        imageResizeTargetWidth={512}
-        imageResizeTargetHeight={512}
-        acceptedFileTypes={["image/*"]}
-        maxFileSize="4MB"
-        labelIdle="Drag & drop, paste, or click to select"
-        stylePanelLayout="compact circle"
-        styleLoadIndicatorPosition="center"
-        styleProgressIndicatorPosition="center"
-        styleButtonRemoveItemPosition="right bottom"
-      />
+    <div>
+      <div className="h-48 w-48">
+        <FilePond
+          name="avatar"
+          files={files}
+          onupdatefiles={handleFileChange}
+          onerror={handleError}
+          imagePreviewHeight={192}
+          imageCropAspectRatio="1:1"
+          imageResizeTargetWidth={512}
+          imageResizeTargetHeight={512}
+          acceptedFileTypes={["image/*"]}
+          maxFileSize="4MB"
+          labelIdle="Drag & drop, paste, or click to select"
+          stylePanelLayout="compact circle"
+          styleLoadIndicatorPosition="center"
+          styleProgressIndicatorPosition="center"
+          styleButtonRemoveItemPosition="right bottom"
+          imageTransformImageFilter={(file) => !file.type.match(/gif/)}
+          onpreparefile={(fileItem, output) => {
+            const transformedFile = new File([output], output.name, { type: output.type })
+            const transformedFileItemObj = {
+              file: transformedFile,
+              fileType: output.type,
+              fileExtension: output.name.split(".").pop(),
+            }
+            setFiles([transformedFileItemObj])
+            onFileChange(transformedFileItemObj)
+          }}
+        />
+      </div>
+      <div className="mt-6 text-sm text-gray-200">
+        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
+      </div>
       {errorMessage && <div className="my-4 text-red-500">{errorMessage}</div>}
     </div>
   )
