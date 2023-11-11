@@ -1,6 +1,6 @@
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { attachBooksToLists, getListLink } from "lib/helpers/general"
+import { decorateLists } from "lib/helpers/general"
 import ManageLists from "app/users/[username]/lists/components/ManageLists"
 import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex"
 
@@ -37,10 +37,7 @@ export default async function UserListsIndexPage({ params }) {
     },
   })
 
-  const lists = (await attachBooksToLists(_lists)).map((list) => ({
-    ...list,
-    url: getListLink(userProfile, list.slug),
-  }))
+  const lists = await decorateLists(_lists)
 
   const pins = await prisma.pin.findMany({
     where: {

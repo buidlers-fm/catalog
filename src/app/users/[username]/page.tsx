@@ -8,10 +8,9 @@ import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import {
   getUserListsLink,
-  getListLink,
   getNewListLink,
   sortListsByPinSortOrder,
-  attachBooksToLists,
+  decorateLists,
 } from "lib/helpers/general"
 import type List from "types/List"
 
@@ -48,7 +47,7 @@ export default async function UserProfilePage({ params }) {
   })) as List | null
 
   if (favoriteBooksList) {
-    ;[favoriteBooksList] = await attachBooksToLists([favoriteBooksList])
+    ;[favoriteBooksList] = await decorateLists([favoriteBooksList])
   }
 
   let lists: List[] = []
@@ -103,10 +102,7 @@ export default async function UserProfilePage({ params }) {
     })
   }
 
-  lists = (await attachBooksToLists(lists)).map((list) => ({
-    ...list,
-    url: getListLink(userProfile, list.slug),
-  }))
+  lists = await decorateLists(lists)
 
   const isUsersProfile = currentUserProfile?.id === userProfile!.id
 
