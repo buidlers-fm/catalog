@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { attachBooksToLists } from "lib/helpers/general"
+import { decorateLists } from "lib/helpers/general"
 import EditProfile from "app/settings/profile/components/EditProfile"
 import type List from "types/List"
 
@@ -26,7 +26,7 @@ export default async function SettingsProfilePage() {
   })) as List
 
   if (favoriteBooksList) {
-    ;[favoriteBooksList] = await attachBooksToLists([favoriteBooksList])
+    ;[favoriteBooksList] = await decorateLists([favoriteBooksList])
   }
 
   return <EditProfile userProfile={userProfile} favoriteBooksList={favoriteBooksList} />

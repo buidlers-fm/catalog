@@ -1,5 +1,6 @@
 export default interface Book {
   id?: string
+  slug?: string
   title: string
   subtitle?: string
   authorName: string

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { getBookLink, attachBooksToLists } from "lib/helpers/general"
+import { getBookLink, decorateLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
 import type Book from "types/Book"
 
@@ -45,7 +45,7 @@ export default async function BookPageByQuery({ searchParams }) {
       },
     })
 
-    userLists = await attachBooksToLists(_userLists)
+    userLists = await decorateLists(_userLists)
 
     console.log(userLists)
   }

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { attachBooksToLists } from "lib/helpers/general"
+import { decorateLists } from "lib/helpers/general"
 import EditList from "app/users/[username]/lists/new/components/EditList"
 import type List from "types/List"
 
@@ -40,7 +40,7 @@ export default async function UserListPage({ params }) {
 
   if (!_list) throw new Error("List not found")
 
-  const [list] = await attachBooksToLists([_list])
+  const [list] = await decorateLists([_list])
 
   console.log(list)
 

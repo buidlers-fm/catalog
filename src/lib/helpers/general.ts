@@ -44,6 +44,8 @@ export const getUserListsLink = (username: string) => `/users/${username}/lists`
 
 export const getBookLink = (slug: string) => `/books/${slug}`
 
+export const getBookListsLink = (slug: string) => `/books/${slug}/lists`
+
 export const getListLink = (userProfile, slug: string) =>
   `/users/${userProfile.username}/lists/${slug}`
 
@@ -88,7 +90,7 @@ export const sortListsByPinSortOrder = (lists, pins) =>
       return orderA - orderB
     })
 
-export const attachBooksToLists = async (lists) => {
+export const decorateLists = async (lists) => {
   const allBookIds = lists
     .map((list) =>
       list.listItemAssignments
@@ -107,10 +109,25 @@ export const attachBooksToLists = async (lists) => {
 
   const bookIdsToBooks = allBooks.reduce((result, book) => ({ ...result, [book.id]: book }), {})
 
+  const listOwners = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: lists.map((list) => list.ownerId),
+      },
+    },
+  })
+
+  const listIdsToOwners = lists.reduce((result, list) => {
+    result[list.id] = listOwners.find((owner) => owner.id === list.ownerId)
+    return result
+  }, {})
+
   return lists.map((list: any) => ({
     ...list,
     books: list.listItemAssignments
       .map((lia) => (lia.listedObjectType === "book" ? bookIdsToBooks[lia.listedObjectId] : null))
       .filter((b) => !!b),
+    url: getListLink(listIdsToOwners[list.id], list.slug),
+    owner: listIdsToOwners[list.id],
   }))
 }
