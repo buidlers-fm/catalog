@@ -157,8 +157,15 @@ export default async function UserProfilePage({ params }) {
             ))}
           </div>
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Nothin to see here.
+          <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
+            {isUsersProfile ? "You haven't" : `${displayName || username} hasn't`} added any
+            favorite books yet.
+            {isUsersProfile && (
+              <>
+                <br />
+                Edit your profile to add some.
+              </>
+            )}
           </div>
         )}
       </div>
@@ -187,7 +194,8 @@ export default async function UserProfilePage({ params }) {
           </div>
         ) : (
           <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Nothin to see here.
+            {isUsersProfile ? "You haven't" : `${displayName || username} hasn't`} created any lists
+            yet.
           </div>
         )}
       </div>
