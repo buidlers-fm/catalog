@@ -1,9 +1,9 @@
+import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
-import type Book from "types/Book"
 
 export const dynamic = "force-dynamic"
 
@@ -16,10 +16,19 @@ export default async function BookPageBySlug({ params }: any) {
     },
   })
 
-  if (!dbBook) throw new Error("Book not found")
+  if (!dbBook) notFound()
 
   const workId = dbBook.openLibraryWorkId!
-  const openLibraryBook: Book = await OpenLibrary.getFullBook(workId)
+
+  let openLibraryBook: any = {}
+  try {
+    openLibraryBook = await OpenLibrary.getFullBook(workId)
+  } catch (error: any) {
+    // if not found, let openLibraryBook stay blank
+    if (error.message !== "notfound") {
+      throw error
+    }
+  }
 
   const book = { ...dbBook, ...openLibraryBook }
 
@@ -48,8 +57,6 @@ export default async function BookPageBySlug({ params }: any) {
     })
 
     userLists = await decorateLists(_userLists)
-
-    console.log(userLists)
   }
 
   const _bookLists = await prisma.list.findMany({

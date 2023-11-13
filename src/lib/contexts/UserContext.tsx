@@ -50,7 +50,6 @@ export function UserProvider({ children }) {
       username,
     }
 
-    console.log(_user)
     setCurrentUser(_user)
 
     const _currentUserProfile = await api.profiles.find(userId)
@@ -76,7 +75,6 @@ export function UserProvider({ children }) {
         }
       }
 
-      console.log(data)
       const { user: userData } = humps.camelizeKeys(data)
 
       const {
@@ -90,7 +88,6 @@ export function UserProvider({ children }) {
         username,
       }
 
-      console.log(_user)
       setCurrentUser(_user)
 
       const _currentUserProfile = await api.profiles.find(userId)

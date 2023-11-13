@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation"
+import { redirect, notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/helpers/general"
@@ -19,7 +19,7 @@ export default async function UserListPage({ params }) {
     },
   })
 
-  if (!userProfile) throw new Error("List not found")
+  if (!userProfile) notFound()
 
   const isUsersList = currentUserProfile.id === userProfile!.id
   if (!isUsersList) throw new Error("You can only edit your own lists.")
@@ -38,11 +38,9 @@ export default async function UserListPage({ params }) {
     },
   })) as List
 
-  if (!_list) throw new Error("List not found")
+  if (!_list) notFound()
 
   const [list] = await decorateLists([_list])
-
-  console.log(list)
 
   return <EditList list={list} currentUserProfile={currentUserProfile} isEdit />
 }

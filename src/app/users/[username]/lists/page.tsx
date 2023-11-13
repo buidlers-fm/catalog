@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/helpers/general"
@@ -16,9 +17,7 @@ export default async function UserListsIndexPage({ params }) {
     },
   })
 
-  if (!userProfile) throw new Error("User not found")
-  console.log("profile page fetch:")
-  console.log(userProfile)
+  if (!userProfile) notFound()
 
   const _lists = await prisma.list.findMany({
     where: {

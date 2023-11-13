@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import prisma from "lib/prisma"
@@ -21,10 +22,7 @@ export default async function UserListPage({ params }) {
     },
   })
 
-  if (!userProfile) throw new Error("List not found")
-  console.log(userProfile)
-  console.log(userProfile.userId)
-  console.log(listSlug)
+  if (!userProfile) notFound()
 
   const list = await prisma.list.findFirst({
     where: {
@@ -40,8 +38,7 @@ export default async function UserListPage({ params }) {
     },
   })
 
-  if (!list) throw new Error("List not found")
-  console.log(list)
+  if (!list) notFound()
 
   const bookIds = list.listItemAssignments
     .filter((lia) => lia.listedObjectType === "book")

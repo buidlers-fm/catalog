@@ -9,6 +9,7 @@ export const fetchJson = async (url: string | URL, options: any = {}) => {
   if (res.status !== 200) {
     console.log(res)
     const resBody = await res.json()
+    console.log(resBody)
     throw new Error(resBody.error)
   }
 

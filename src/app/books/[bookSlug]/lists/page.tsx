@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { decorateLists } from "lib/helpers/general"
 import ListCard from "app/components/lists/ListCard"
@@ -13,7 +14,7 @@ export default async function BookListsIndexPage({ params }) {
     },
   })
 
-  if (!book) throw new Error("Book not found")
+  if (!book) notFound()
 
   const _lists = await prisma.list.findMany({
     where: {

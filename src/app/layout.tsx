@@ -1,4 +1,5 @@
 import "app/globals.css"
+import Link from "next/link"
 import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
 import { UserProvider } from "lib/contexts/UserContext"
 import MobileNav from "app/components/nav/MobileNav"
@@ -51,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex flex-col h-screen">
             <header className="px-8 py-8 flex justify-between">
               <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
-                catalog
+                <Link href="/">catalog</Link>
               </div>
               <div className="inline-block lg:hidden">
                 <MobileNav />

@@ -36,7 +36,7 @@
     "filepond-plugin-image-transform": "^3.8.7",
     "humps": "^2.0.1",
     "lodash.debounce": "^4.0.8",
-    "next": "13.4.13",
+    "next": "13.4.16",
     "postcss": "8.4.26",
     "prisma": "^5.2.0",
     "react": "18.2.0",

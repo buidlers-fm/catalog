@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
@@ -28,9 +29,7 @@ export default async function UserProfilePage({ params }) {
     },
   })
 
-  if (!userProfile) throw new Error("User not found")
-  console.log("profile page fetch:")
-  console.log(userProfile)
+  if (!userProfile) notFound()
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
