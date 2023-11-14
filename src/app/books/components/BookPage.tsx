@@ -82,7 +82,7 @@ export default function BookPage({
             <div className="mt-8 font-nunito-sans">
               <div className="flex justify-between text-gray-300 text-sm">
                 <div className="uppercase tracking-wider">As seen in</div>
-                <div className="flex">
+                <div className="flex -mt-1">
                   <Link className="inline-block mt-1 mx-2" href={getBookListsLink(book.slug!)}>
                     See all
                   </Link>

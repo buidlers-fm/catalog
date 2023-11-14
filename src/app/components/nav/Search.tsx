@@ -86,7 +86,7 @@ export default function Search({
                 placeholder={`${isNav ? "Search" : "Add"} by title and author`}
                 className={`${isMobileNav ? "w-full" : "w-full xs:w-96"} ${
                   isNav ? "px-11" : "px-4"
-                } pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans`}
+                } pt-3 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-nunito-sans`}
               />
               {(open || selectedBook) && (
                 <Combobox.Options

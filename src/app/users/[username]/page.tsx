@@ -174,7 +174,7 @@ export default async function UserProfilePage({ params }) {
           <div className="uppercase tracking-wider">
             {hasPinnedLists ? "Pinned lists" : "Recent lists"}
           </div>
-          <div className="flex">
+          <div className="flex -mt-3">
             {isUsersProfile && (
               <Link href={getNewListLink(currentUserProfile)}>
                 <button className="cat-btn cat-btn-sm cat-btn-gray mx-2">+ Create a list</button>

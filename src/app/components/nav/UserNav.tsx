@@ -50,16 +50,23 @@ export default function UserNav() {
             </div>
           </Menu.Button>
           <div className="relative">
-            <Menu.Items className="absolute top-2 w-[92px] bg-gray-900 rounded px-4 py-3">
+            <Menu.Items className="absolute top-2 w-[92px] bg-gray-900 rounded">
               <Menu.Item>
                 <Link href={`/users/${currentUserProfile.username}`}>
-                  <button className="cat-btn-text my-1">Profile</button>
+                  <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-3 pb-2 text-left rounded-tl rounded-tr">
+                    Profile
+                  </button>
                 </Link>
               </Menu.Item>
               <Menu.Item>
-                <button onClick={onClickSignOut} className="cat-btn-text my-1">
-                  Sign out
-                </button>
+                <div className="">
+                  <button
+                    onClick={onClickSignOut}
+                    className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-3 rounded-bl rounded-br"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </Menu.Item>
             </Menu.Items>
           </div>
