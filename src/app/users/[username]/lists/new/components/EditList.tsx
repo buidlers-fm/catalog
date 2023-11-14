@@ -23,18 +23,23 @@ type Props = {
   isEdit?: boolean
 }
 
+const MAX_LENGTHS = {
+  title: 100,
+  description: 2000,
+}
+
 const validations = {
   title: {
     required: true,
     maxLength: {
-      value: 100,
-      message: "Title cannot be longer than 100 characters.",
+      value: MAX_LENGTHS.title,
+      message: `Title cannot be longer than ${MAX_LENGTHS.title} characters.`,
     },
   },
   description: {
     maxLength: {
-      value: 2000,
-      message: "Description cannot be longer than 2000 characters.",
+      value: MAX_LENGTHS.description,
+      message: `Description cannot be longer than ${MAX_LENGTHS.description} characters.`,
     },
   },
 }
@@ -130,6 +135,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   }
 
   const titleValue = watch("title")
+  const descriptionValue = watch("description")
   const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
   return (
@@ -143,6 +149,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               name="title"
               type="text"
               formProps={register("title", validations.title)}
+              remainingChars={MAX_LENGTHS.title - (titleValue?.length || 0)}
               errorMessage={errors.title?.message}
               fullWidth={false}
             />
@@ -151,6 +158,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               name="description"
               type="text"
               formProps={register("description", validations.description)}
+              remainingChars={MAX_LENGTHS.description - (descriptionValue?.length || 0)}
               errorMessage={errors.description?.message}
               fullWidth={false}
             />

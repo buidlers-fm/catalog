@@ -13,17 +13,23 @@ import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 
+const MAX_LENGTHS = {
+  displayName: 80,
+  location: 40,
+  bio: 300,
+}
+
 const validations = {
   displayName: {
     maxLength: {
-      value: 80,
-      message: "Display name cannot be longer than 80 characters.",
+      value: MAX_LENGTHS.displayName,
+      message: `Display name cannot be longer than ${MAX_LENGTHS.displayName} characters.`,
     },
   },
   location: {
     maxLength: {
-      value: 40,
-      message: "Location cannot be longer than 40 characters.",
+      value: MAX_LENGTHS.location,
+      message: `Location cannot be longer than ${MAX_LENGTHS.location} characters.`,
     },
   },
   website: {
@@ -34,8 +40,8 @@ const validations = {
   },
   bio: {
     maxLength: {
-      value: 300,
-      message: "Bio cannot be longer than 300 characters.",
+      value: MAX_LENGTHS.bio,
+      message: `Bio cannot be longer than ${MAX_LENGTHS.bio} characters.`,
     },
   },
 }
@@ -59,10 +65,15 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<{ [k: string]: string }>({
     defaultValues: userProfile,
   })
+
+  const displayNameValue = watch("displayName")
+  const locationValue = watch("location")
+  const bioValue = watch("bio")
 
   const onAvatarChange = (file) => {
     setAvatar(file)
@@ -157,6 +168,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 name="displayName"
                 type="text"
                 formProps={register("displayName", validations.displayName)}
+                remainingChars={MAX_LENGTHS.displayName - (displayNameValue?.length || 0)}
                 errorMessage={errors.displayName?.message}
                 fullWidth={false}
               />
@@ -165,6 +177,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 name="location"
                 type="text"
                 formProps={register("location", validations.location)}
+                remainingChars={MAX_LENGTHS.location - (locationValue?.length || 0)}
                 errorMessage={errors.location?.message}
                 fullWidth={false}
               />
@@ -182,6 +195,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 name="bio"
                 type="text"
                 formProps={register("bio", validations.bio)}
+                remainingChars={MAX_LENGTHS.bio - (bioValue?.length || 0)}
                 errorMessage={errors.bio?.message}
                 fullWidth={false}
               />
