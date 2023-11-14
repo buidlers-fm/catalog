@@ -104,6 +104,9 @@ module.exports = {
         newsreader: ["var(--font-newsreader)"],
         "nunito-sans": ["var(--font-nunito-sans)"],
       },
+      boxShadow: {
+        black: `2px 2px 0px 0px hsl(0, 0, 0)`,
+      },
     },
   },
   plugins: [],
