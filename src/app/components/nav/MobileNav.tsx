@@ -10,7 +10,7 @@ import UserNav from "app/components/nav/UserNav"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
-export default function MobileNav() {
+export default function MobileNav({ currentUserProfile }) {
   const router = useRouter()
   const pathname = usePathname()
   const [showMobileSearch, setShowMobileSearch] = useState(false)
@@ -27,7 +27,7 @@ export default function MobileNav() {
       <button className="mt-1 px-2" onClick={() => setShowMobileSearch(true)}>
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
-      <UserNav />
+      <UserNav currentUserProfile={currentUserProfile} />
       <Drawer
         open={showMobileSearch}
         onClose={() => setShowMobileSearch(false)}

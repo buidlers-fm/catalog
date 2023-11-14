@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import Search from "app/components/nav/Search"
 import UserNav from "app/components/nav/UserNav"
 
-export default function Nav() {
+export default function Nav({ currentUserProfile }) {
   const router = useRouter()
 
   const navigateToBookPage = (book) =>
@@ -14,7 +14,7 @@ export default function Nav() {
     <div className="flex">
       <Search onSelect={navigateToBookPage} />
       <div className="ml-12 mr-4 mt-2">
-        <UserNav />
+        <UserNav currentUserProfile={currentUserProfile} />
       </div>
     </div>
   )

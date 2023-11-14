@@ -14,9 +14,9 @@ import "react-modern-drawer/dist/index.css"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
-export default function UserNav() {
+export default function UserNav({ currentUserProfile }) {
   const router = useRouter()
-  const { currentUserProfile, signOut } = useUser()
+  const { signOut } = useUser()
   const [showAuth, setShowAuth] = useState<boolean>(false)
   const [isSignIn, setIsSignIn] = useState<boolean>(true)
 

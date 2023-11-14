@@ -2,6 +2,7 @@ import "app/globals.css"
 import Link from "next/link"
 import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
 import { UserProvider } from "lib/contexts/UserContext"
+import { getCurrentUserProfile } from "lib/server/auth"
 import MobileNav from "app/components/nav/MobileNav"
 import Nav from "app/components/nav/Nav"
 import Toast from "app/components/Toast"
@@ -44,7 +45,9 @@ export const metadata: Metadata = {
   // },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const currentUserProfile = await getCurrentUserProfile()
+
   return (
     <html lang="en">
       <body className={`${fontsClassNames} bg-black text-white`}>
@@ -55,10 +58,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/">catalog</Link>
               </div>
               <div className="inline-block lg:hidden">
-                <MobileNav />
+                <MobileNav currentUserProfile={currentUserProfile} />
               </div>
               <div className="hidden lg:inline-block">
-                <Nav />
+                <Nav currentUserProfile={currentUserProfile} />
               </div>
             </header>
             <main className="mx-8 lg:mx-24 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
