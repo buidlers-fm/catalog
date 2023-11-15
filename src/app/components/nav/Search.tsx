@@ -126,10 +126,17 @@ export default function Search({
                                 </div>
                               )}
                               <div className="mx-4 grow">
-                                <div className="mt-[-8px] mb-1 font-bold">
+                                <div className="mt-[-8px] font-bold">
                                   {truncateString(book.title, 64)}
                                 </div>
                                 <div>{truncateString(book.authorName, 32)}</div>
+                                <div className="mt-1 text-sm text-gray-200">
+                                  {book.editionsCount &&
+                                    `${book.editionsCount} ${
+                                      book.editionsCount === 1 ? "edition" : "editions"
+                                    } • `}
+                                  {book.firstPublishedYear}
+                                </div>
                               </div>
                             </li>
                           )}

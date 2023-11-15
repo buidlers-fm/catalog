@@ -1,5 +1,11 @@
+import dayjs from "dayjs"
+import customParseFormat from "dayjs/plugin/customParseFormat"
 import { fetchJson } from "lib/helpers/general"
 import type Book from "types/Book"
+
+dayjs.extend(customParseFormat)
+
+const PUBLISH_DATE_FORMATS = ["YYYY", "MMMM YYYY", "MMMM D, YYYY", "MMM D, YYYY", "YYYY-MM-DD"]
 
 const BASE_URL = "https://openlibrary.org"
 const COVERS_BASE_URL = "https://covers.openlibrary.org/b"
@@ -28,7 +34,7 @@ const OpenLibrary = {
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
     const editionsRes = await fetchJson(editionsUrl)
     const editions = editionsRes.entries
-    const bookData = editions.sort((a, b) => {
+    const bestEdition = editions.sort((a, b) => {
       if (!a.latestRevision) return 1
       if (!b.latestRevision) return -1
       return b.latestRevision - a.latestRevision
@@ -49,8 +55,8 @@ const OpenLibrary = {
 
     // get cover image
     let coverImageUrl
-    if (bookData && bookData.covers && bookData.covers.length > 0) {
-      coverImageUrl = getCoverUrl(bookData.covers[0])
+    if (bestEdition && bestEdition.covers && bestEdition.covers.length > 0) {
+      coverImageUrl = getCoverUrl(bestEdition.covers[0])
     }
 
     // if cover image is missing, try to get from another edition
@@ -77,14 +83,27 @@ const OpenLibrary = {
       (publisher: string, idx: number) => publishers.indexOf(publisher) === idx,
     )
 
+    const getFirstPublishedYear = () => {
+      const pubYears = editions
+        .map((e) => {
+          const dayjsDate = dayjs(e.publishDate, PUBLISH_DATE_FORMATS)
+          if (!dayjsDate.isValid()) return null
+          return dayjsDate.year()
+        })
+        .filter((year) => !!year)
+
+      return Math.min(...pubYears)
+    }
+
     const book: Book = {
       title: work.title,
-      subtitle: bookData.subtitle,
+      subtitle: work.subtitle || bestEdition.subtitle,
       authorName,
       description,
       coverImageUrl: coverImageUrl!,
       publisherName: publishers.join(", "),
-      publishDate: bookData.publishDate,
+      editionsCount: editionsRes.size,
+      firstPublishedYear: getFirstPublishedYear(),
       openLibraryWorkId: workId,
     }
 
@@ -134,12 +153,14 @@ const OpenLibrary = {
       const isDup = books.some((book) => book.title === title && book.authorName === author)
       if (isDup) return
 
-      const book = {
+      const book: Book = {
         title,
         authorName: author,
         openLibraryWorkId,
         coverImageUrl:
           coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),
+        editionsCount: result.editionCount,
+        firstPublishedYear: result.firstPublishYear,
       }
 
       books.push(book)
