@@ -99,7 +99,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
           </>
         )
 
-        toast.success(successMessage, { id: toastId })
+        toast.success(successMessage, { id: toastId, duration: 8000 })
         router.push(getEditListLink(currentUserProfile, updatedList.slug!))
       } else {
         const createdList: List = await api.lists.create(requestData)

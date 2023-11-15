@@ -129,7 +129,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
         </>
       )
 
-      toast.success(successMessage, { id: toastId })
+      toast.success(successMessage, { id: toastId, duration: 8000 })
 
       setAvatarValid(true)
       setAvatarUpdated(false)
