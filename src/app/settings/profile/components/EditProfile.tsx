@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
@@ -122,11 +121,11 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
       const successMessage = (
         <>
           Changes saved!&nbsp;
-          <Link href={getUserProfileLink(userProfile.username)}>
+          <a href={getUserProfileLink(userProfile.username)}>
             <button type="button" className="cat-btn-link">
               View your profile.
             </button>
-          </Link>
+          </a>
         </>
       )
 

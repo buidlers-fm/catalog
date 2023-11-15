@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -92,11 +91,11 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
         const successMessage = (
           <>
             Changes saved!&nbsp;
-            <Link href={getListLink(currentUserProfile, updatedList.slug!)}>
+            <a href={getListLink(currentUserProfile, updatedList.slug!)}>
               <button type="button" className="cat-btn-link">
                 View your list.
               </button>
-            </Link>
+            </a>
           </>
         )
 
@@ -148,6 +147,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               labelText="Title"
               name="title"
               type="text"
+              descriptionText="Changing the title may change the list's URL."
               formProps={register("title", validations.title)}
               remainingChars={MAX_LENGTHS.title - (titleValue?.length || 0)}
               errorMessage={errors.title?.message}
