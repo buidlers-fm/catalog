@@ -30,6 +30,21 @@ export default async function BookPageBySlug({ params }: any) {
     }
   }
 
+  if (openLibraryBook) {
+    await prisma.book.update({
+      where: {
+        id: dbBook.id,
+      },
+      data: {
+        title: openLibraryBook.title || undefined,
+        authorName: openLibraryBook.authorName || undefined,
+        coverImageUrl: openLibraryBook.coverImageUrl || undefined,
+        editionsCount: openLibraryBook.editionsCount || undefined,
+        firstPublishedYear: openLibraryBook.firstPublishedYear || undefined,
+      },
+    })
+  }
+
   const book = { ...dbBook, ...openLibraryBook }
 
   console.log(book)

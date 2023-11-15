@@ -56,7 +56,9 @@ export default function BookPage({
             <div className="flex-grow mx-auto md:ml-16">
               <h1 className="mb-1 text-4xl font-semibold">
                 {book.title}
-                <span className="text-xl ml-3 font-normal text-gray-200">{book.publishDate}</span>
+                <span className="text-xl ml-3 font-normal text-gray-200">
+                  {book.firstPublishedYear}
+                </span>
               </h1>
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
@@ -64,7 +66,9 @@ export default function BookPage({
               <div className="my-8">
                 {book.openLibraryWorkId && (
                   <div className="my-2">
-                    <span className="text-gray-200">More at</span>{" "}
+                    <span className="text-gray-200">
+                      {book.editionsCount ? `${book.editionsCount} editions at` : "More at"}
+                    </span>{" "}
                     <Link
                       href={OpenLibrary.getOlWorkPageUrl(book.openLibraryWorkId)}
                       className="cat-underline"

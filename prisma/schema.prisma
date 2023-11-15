@@ -36,13 +36,15 @@ model User {
 }
 
 model Book {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  slug              String   @unique
-  title             String
-  authorName        String?  @map("author_name")
-  openLibraryWorkId String?  @unique @map("open_library_work_id")
-  coverImageUrl     String?  @map("cover_image_url")
-  createdAt         DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug               String   @unique
+  title              String
+  authorName         String?  @map("author_name")
+  openLibraryWorkId  String?  @unique @map("open_library_work_id")
+  coverImageUrl      String?  @map("cover_image_url")
+  editionsCount      Int?     @map("editions_count")
+  firstPublishedYear Int?     @map("first_published_year")
+  createdAt          DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
 
   @@map("books")
   @@index([openLibraryWorkId])

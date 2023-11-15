@@ -7,6 +7,7 @@ export default interface Book {
   description?: string
   coverImageUrl: string
   publisherName?: string
-  publishDate?: string
+  editionsCount?: number
+  firstPublishedYear?: number | string
   openLibraryWorkId: string
 }
