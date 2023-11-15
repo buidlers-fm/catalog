@@ -102,7 +102,10 @@ module.exports = {
       fontFamily: {
         "chivo-mono": ["var(--font-chivo-mono)"],
         newsreader: ["var(--font-newsreader)"],
-        "nunito-sans": ["var(--font-nunito-sans)"],
+        mulish: ["var(--font-mulish)"],
+      },
+      boxShadow: {
+        black: `2px 2px 0px 0px hsl(0, 0, 0)`,
       },
     },
   },

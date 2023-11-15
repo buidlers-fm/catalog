@@ -4,7 +4,7 @@ import ListCard from "app/components/lists/ListCard"
 
 export default function UserListsIndex({ lists, userProfile }) {
   return (
-    <div className="mt-4 max-w-3xl mx-auto font-nunito-sans">
+    <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="cat-page-title">{userProfile.username}'s lists</div>
       <div className="mt-8">
         {lists.length > 0 ? (

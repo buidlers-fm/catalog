@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -23,18 +22,23 @@ type Props = {
   isEdit?: boolean
 }
 
+const MAX_LENGTHS = {
+  title: 100,
+  description: 2000,
+}
+
 const validations = {
   title: {
     required: true,
     maxLength: {
-      value: 100,
-      message: "Title cannot be longer than 100 characters.",
+      value: MAX_LENGTHS.title,
+      message: `Title cannot be longer than ${MAX_LENGTHS.title} characters.`,
     },
   },
   description: {
     maxLength: {
-      value: 2000,
-      message: "Description cannot be longer than 2000 characters.",
+      value: MAX_LENGTHS.description,
+      message: `Description cannot be longer than ${MAX_LENGTHS.description} characters.`,
     },
   },
 }
@@ -87,15 +91,15 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
         const successMessage = (
           <>
             Changes saved!&nbsp;
-            <Link href={getListLink(currentUserProfile, updatedList.slug!)}>
+            <a href={getListLink(currentUserProfile, updatedList.slug!)}>
               <button type="button" className="cat-btn-link">
                 View your list.
               </button>
-            </Link>
+            </a>
           </>
         )
 
-        toast.success(successMessage, { id: toastId })
+        toast.success(successMessage, { id: toastId, duration: 8000 })
         router.push(getEditListLink(currentUserProfile, updatedList.slug!))
       } else {
         const createdList: List = await api.lists.create(requestData)
@@ -130,11 +134,12 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   }
 
   const titleValue = watch("title")
+  const descriptionValue = watch("description")
   const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
   return (
     <>
-      <div className="my-8 max-w-3xl mx-auto font-nunito-sans">
+      <div className="my-8 max-w-3xl mx-auto font-mulish">
         <div className="my-8 cat-page-title">{isEdit ? "Edit" : "New"} List</div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="my-8">
@@ -142,7 +147,9 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               labelText="Title"
               name="title"
               type="text"
+              descriptionText="Changing the title may change the list's URL."
               formProps={register("title", validations.title)}
+              remainingChars={MAX_LENGTHS.title - (titleValue?.length || 0)}
               errorMessage={errors.title?.message}
               fullWidth={false}
             />
@@ -151,6 +158,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               name="description"
               type="text"
               formProps={register("description", validations.description)}
+              remainingChars={MAX_LENGTHS.description - (descriptionValue?.length || 0)}
               errorMessage={errors.description?.message}
               fullWidth={false}
             />

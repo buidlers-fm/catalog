@@ -1,6 +1,8 @@
 import "app/globals.css"
-import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
+import Link from "next/link"
+import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
 import { UserProvider } from "lib/contexts/UserContext"
+import { getCurrentUserProfile } from "lib/server/auth"
 import MobileNav from "app/components/nav/MobileNav"
 import Nav from "app/components/nav/Nav"
 import Toast from "app/components/Toast"
@@ -12,9 +14,9 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
   variable: "--font-newsreader",
 })
-const nunitoSans = Nunito_Sans({ subsets: ["latin"], variable: "--font-nunito-sans" })
+const mulish = Mulish({ subsets: ["latin"], variable: "--font-mulish" })
 
-const fonts = [chivoMono, newsreader, nunitoSans]
+const fonts = [chivoMono, newsreader, mulish]
 const fontsClassNames = fonts.map((font) => font.variable).join(" ")
 
 export const metadata: Metadata = {
@@ -43,7 +45,9 @@ export const metadata: Metadata = {
   // },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const currentUserProfile = await getCurrentUserProfile()
+
   return (
     <html lang="en">
       <body className={`${fontsClassNames} bg-black text-white`}>
@@ -51,13 +55,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex flex-col h-screen">
             <header className="px-8 py-8 flex justify-between">
               <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
-                catalog
+                <Link href="/">catalog</Link>
               </div>
               <div className="inline-block lg:hidden">
-                <MobileNav />
+                <MobileNav currentUserProfile={currentUserProfile} />
               </div>
               <div className="hidden lg:inline-block">
-                <Nav />
+                <Nav currentUserProfile={currentUserProfile} />
               </div>
             </header>
             <main className="mx-8 lg:mx-24 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">

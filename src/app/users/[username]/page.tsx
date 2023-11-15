@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
@@ -28,9 +29,7 @@ export default async function UserProfilePage({ params }) {
     },
   })
 
-  if (!userProfile) throw new Error("User not found")
-  console.log("profile page fetch:")
-  console.log(userProfile)
+  if (!userProfile) notFound()
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
@@ -110,7 +109,7 @@ export default async function UserProfilePage({ params }) {
 
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
-      <div className="flex font-nunito-sans">
+      <div className="flex font-mulish">
         {avatarUrl ? (
           <img
             src={avatarUrl}
@@ -148,7 +147,7 @@ export default async function UserProfilePage({ params }) {
           )}
         </div>
       </div>
-      <div className="mt-12 font-nunito-sans">
+      <div className="mt-12 font-mulish">
         <div className="text-gray-300 text-sm uppercase tracking-wider">Favorite Books</div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
@@ -158,17 +157,24 @@ export default async function UserProfilePage({ params }) {
             ))}
           </div>
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Nothin to see here.
+          <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
+            {isUsersProfile ? "You haven't" : `${displayName || username} hasn't`} added any
+            favorite books yet.
+            {isUsersProfile && (
+              <>
+                <br />
+                Edit your profile to add some.
+              </>
+            )}
           </div>
         )}
       </div>
-      <div className="mt-8 font-nunito-sans">
+      <div className="mt-8 font-mulish">
         <div className="flex justify-between text-gray-300 text-sm">
           <div className="uppercase tracking-wider">
             {hasPinnedLists ? "Pinned lists" : "Recent lists"}
           </div>
-          <div className="flex">
+          <div className="flex -mt-3">
             {isUsersProfile && (
               <Link href={getNewListLink(currentUserProfile)}>
                 <button className="cat-btn cat-btn-sm cat-btn-gray mx-2">+ Create a list</button>
@@ -188,7 +194,8 @@ export default async function UserProfilePage({ params }) {
           </div>
         ) : (
           <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Nothin to see here.
+            {isUsersProfile ? "You haven't" : `${displayName || username} hasn't`} created any lists
+            yet.
           </div>
         )}
       </div>

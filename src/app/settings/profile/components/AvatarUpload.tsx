@@ -30,7 +30,7 @@ export default function AvatarUpload({ initialFile, onFileChange, markFileValid 
     if (initialFile) {
       setFiles([initialFile])
     }
-  }, [])
+  }, [initialFile])
 
   const handleFileChange = (_files) => {
     setErrorMessage(undefined)
@@ -74,6 +74,11 @@ export default function AvatarUpload({ initialFile, onFileChange, markFileValid 
           styleButtonRemoveItemPosition="right bottom"
           imageTransformImageFilter={(file) => !file.type.match(/gif/)}
           onpreparefile={(fileItem, output) => {
+            // not sure if this is needed but if `files` has not yet
+            // been set to `[initialFile]`, it's definitely too early
+            // to run this function
+            if (initialFile && files.length === 0) return
+
             const transformedFile = new File([output], output.name, { type: output.type })
             const transformedFileItemObj = {
               file: transformedFile,

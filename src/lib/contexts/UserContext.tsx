@@ -18,6 +18,7 @@ type UserProviderValue = {
   signUp: (email: string, username: string, password: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
+  isFetching: boolean
 }
 
 const UserContext = createContext<UserProviderValue | undefined>(undefined)
@@ -25,6 +26,7 @@ const UserContext = createContext<UserProviderValue | undefined>(undefined)
 export function UserProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>()
   const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>()
+  const [isFetching, setIsFetching] = useState<boolean>(true)
 
   const supabase = createClientComponentClient()
 
@@ -35,7 +37,10 @@ export function UserProvider({ children }) {
 
     const { session } = humps.camelizeKeys(data)
 
-    if (!session) return null
+    if (!session) {
+      setIsFetching(false)
+      return null
+    }
 
     const { user: userData } = session
 
@@ -50,11 +55,11 @@ export function UserProvider({ children }) {
       username,
     }
 
-    console.log(_user)
     setCurrentUser(_user)
 
     const _currentUserProfile = await api.profiles.find(userId)
     if (_currentUserProfile) setCurrentUserProfile(_currentUserProfile)
+    setIsFetching(false)
   }, [supabase.auth])
 
   useEffect(() => {
@@ -76,7 +81,6 @@ export function UserProvider({ children }) {
         }
       }
 
-      console.log(data)
       const { user: userData } = humps.camelizeKeys(data)
 
       const {
@@ -90,7 +94,6 @@ export function UserProvider({ children }) {
         username,
       }
 
-      console.log(_user)
       setCurrentUser(_user)
 
       const _currentUserProfile = await api.profiles.find(userId)
@@ -133,8 +136,8 @@ export function UserProvider({ children }) {
   }, [supabase.auth])
 
   const providerValue = useMemo(
-    () => ({ currentUser, currentUserProfile, signUp, signIn, signOut }),
-    [currentUser, currentUserProfile, signUp, signIn, signOut],
+    () => ({ currentUser, currentUserProfile, signUp, signIn, signOut, isFetching }),
+    [currentUser, currentUserProfile, signUp, signIn, signOut, isFetching],
   )
 
   return <UserContext.Provider value={providerValue}>{children}</UserContext.Provider>

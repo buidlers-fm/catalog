@@ -1,17 +1,16 @@
-import { redirect } from "next/navigation"
+import { redirect, notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getBookLink, decorateLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
-import type Book from "types/Book"
 
 export const dynamic = "force-dynamic"
 
 export default async function BookPageByQuery({ searchParams }) {
   const { open_library_work_id: openLibraryWorkId } = searchParams
 
-  if (!openLibraryWorkId) throw new Error("openLibraryWorkId must be included")
+  if (!openLibraryWorkId) notFound()
 
   const existingBook = await prisma.book.findFirst({
     where: {
@@ -21,7 +20,16 @@ export default async function BookPageByQuery({ searchParams }) {
 
   if (existingBook) redirect(getBookLink(existingBook.slug))
 
-  const openLibraryBook: Book = await OpenLibrary.getFullBook(openLibraryWorkId)
+  let openLibraryBook: any = {}
+  try {
+    openLibraryBook = await OpenLibrary.getFullBook(openLibraryWorkId)
+  } catch (error: any) {
+    if (error.message === "notfound") {
+      notFound()
+    } else {
+      throw error
+    }
+  }
 
   const userProfile = await getCurrentUserProfile()
 
@@ -46,8 +54,6 @@ export default async function BookPageByQuery({ searchParams }) {
     })
 
     userLists = await decorateLists(_userLists)
-
-    console.log(userLists)
   }
 
   return <BookPage book={openLibraryBook} isSignedIn={!!userProfile} userLists={userLists} />

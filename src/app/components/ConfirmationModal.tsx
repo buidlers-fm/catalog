@@ -20,7 +20,7 @@ export default function ConfirmationModal({ onConfirm, onClose, isOpen }) {
             <div className="mb-12 text-center text-xl font-bold">Delete this list?</div>
           </Dialog.Title>
 
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <button type="button" onClick={handleClose} className="cat-btn cat-btn-white-outline">
               Cancel
             </button>

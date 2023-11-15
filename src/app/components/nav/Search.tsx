@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation"
 import { Combobox } from "@headlessui/react"
 import { BsSearch } from "react-icons/bs"
 import { GiOpenBook } from "react-icons/gi"
-import { BarsFade } from "react-svg-spinners"
+import { ThreeDotsScale } from "react-svg-spinners"
 import debounce from "lodash.debounce"
 import OpenLibrary from "lib/openLibrary"
 import { truncateString } from "lib/helpers/general"
 import type Book from "types/Book"
 
-const RESULTS_LIMIT = 3
+const RESULTS_LIMIT = 8
 
 type Props = {
   onSelect: (selectedBook) => void
@@ -86,26 +86,26 @@ export default function Search({
                 placeholder={`${isNav ? "Search" : "Add"} by title and author`}
                 className={`${isMobileNav ? "w-full" : "w-full xs:w-96"} ${
                   isNav ? "px-11" : "px-4"
-                } pt-3 pb-2 bg-gray-900 rounded border-none font-nunito-sans`}
+                } pt-3 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-mulish`}
               />
               {(open || selectedBook) && (
                 <Combobox.Options
                   static
                   className={`${
                     isMobileNav ? "w-full" : "w-full xs:w-96"
-                  } absolute z-50 top-[50px] rounded bg-gray-900 font-nunito-sans`}
+                  } absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
                 >
                   {isLoading && (
                     <div className="h-24 flex items-center justify-center">
-                      {/* spinner is teal-500  */}
-                      <BarsFade width={32} height={32} color="hsl(181, 64%, 40%)" />
+                      {/* spinner is gold-300  */}
+                      <ThreeDotsScale width={32} height={32} color="hsl(45, 100%, 69%)" />
                     </div>
                   )}
                   {!isLoading && searchResults && searchResults.length === 0 && (
                     <div className="px-6 py-3">No books found.</div>
                   )}
                   {!isLoading && searchResults && searchResults.length > 0 && (
-                    <>
+                    <div className="max-h-[calc(100vh-192px)] overflow-y-auto">
                       {searchResults.map((book) => (
                         <Combobox.Option key={book.openLibraryWorkId} value={book} as={Fragment}>
                           {({ active }) => (
@@ -131,7 +131,6 @@ export default function Search({
                                 </div>
                                 <div>{truncateString(book.authorName, 32)}</div>
                               </div>
-                              <div className={`w-1 h-24 shrink-0 ${active && "bg-gold-500"}`} />
                             </li>
                           )}
                         </Combobox.Option>
@@ -141,7 +140,7 @@ export default function Search({
                           More results exist. Try searching by title and author to narrow them down!
                         </li>
                       )}
-                    </>
+                    </div>
                   )}
                 </Combobox.Options>
               )}

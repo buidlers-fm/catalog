@@ -28,7 +28,7 @@ export default function ListCard({ list, withByline = false, separators = true, 
               <span className="ml-2 text-gray-500 text-sm font-normal">{totalBookCount} books</span>
             </div>
             {withByline && (
-              <div className="flex mt-2">
+              <div className="flex my-2">
                 {list.owner.avatarUrl ? (
                   <img
                     src={list.owner.avatarUrl}
@@ -41,7 +41,9 @@ export default function ListCard({ list, withByline = false, separators = true, 
                 <span className="text-sm">{list.owner.displayName}</span>
               </div>
             )}
-            {list.description && <div>{truncateString(list.description, 100)}</div>}
+            {list.description && (
+              <div className="text-sm">{truncateString(list.description, 100)}</div>
+            )}
           </div>
         </div>
       </Link>
@@ -62,7 +64,7 @@ function ListCardBook({ book, idx }) {
           alt={`${book.title} cover`}
         />
       ) : (
-        <div className="w-full h-full shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded">
+        <div className="w-full h-full shrink-0 flex items-center justify-center bg-black border-2 border-gray-500 box-border rounded">
           <GiOpenBook className="mt-0 text-2xl text-gray-500" />
         </div>
       )}
