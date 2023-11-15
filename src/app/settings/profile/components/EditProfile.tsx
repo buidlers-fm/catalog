@@ -143,7 +143,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
   }
 
   return (
-    <div className="my-8 max-w-4xl mx-auto font-nunito-sans">
+    <div className="my-8 max-w-4xl mx-auto font-mulish">
       <div className="my-8 cat-page-title">Edit Profile</div>
       <form onSubmit={handleSubmit(submit)}>
         <div className="ml:flex justify-center">

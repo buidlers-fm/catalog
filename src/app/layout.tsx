@@ -1,6 +1,6 @@
 import "app/globals.css"
 import Link from "next/link"
-import { Chivo_Mono, Newsreader, Nunito_Sans } from "next/font/google"
+import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
 import { UserProvider } from "lib/contexts/UserContext"
 import { getCurrentUserProfile } from "lib/server/auth"
 import MobileNav from "app/components/nav/MobileNav"
@@ -14,9 +14,9 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
   variable: "--font-newsreader",
 })
-const nunitoSans = Nunito_Sans({ subsets: ["latin"], variable: "--font-nunito-sans" })
+const mulish = Mulish({ subsets: ["latin"], variable: "--font-mulish" })
 
-const fonts = [chivoMono, newsreader, nunitoSans]
+const fonts = [chivoMono, newsreader, mulish]
 const fontsClassNames = fonts.map((font) => font.variable).join(" ")
 
 export const metadata: Metadata = {

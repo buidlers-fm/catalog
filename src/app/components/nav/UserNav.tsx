@@ -50,7 +50,7 @@ export default function UserNav({ currentUserProfile }) {
             </div>
           </Menu.Button>
           <div className="relative">
-            <Menu.Items className="absolute top-2 w-[92px] bg-gray-900 rounded">
+            <Menu.Items className="absolute top-2 w-[108px] bg-gray-900 rounded">
               <Menu.Item>
                 <Link href={`/users/${currentUserProfile.username}`}>
                   <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-3 pb-2 text-left rounded-tl rounded-tr">
@@ -62,7 +62,7 @@ export default function UserNav({ currentUserProfile }) {
                 <div className="">
                   <button
                     onClick={onClickSignOut}
-                    className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-3 rounded-bl rounded-br"
+                    className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-3 text-left rounded-bl rounded-br"
                   >
                     Sign out
                   </button>

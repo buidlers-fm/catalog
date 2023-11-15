@@ -20,7 +20,7 @@ export default function FormTextarea({
   ...moreProps
 }: Props) {
   return (
-    <div className="my-4 font-nunito-sans text-white">
+    <div className="my-4 font-mulish text-white">
       <div className="mb-1">
         <label htmlFor={name}>{labelText}</label>
       </div>

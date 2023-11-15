@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .cat-page-title {
-  @apply text-3xl font-nunito-sans;
+  @apply text-3xl font-mulish;
 }
 
 .cat-underline {
@@ -12,7 +12,7 @@
 }
 
 .cat-btn {
-  @apply font-nunito-sans font-semibold rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
+  @apply font-mulish font-semibold rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
   @apply cat-btn-md;
 }
 
@@ -57,12 +57,12 @@
 }
 
 .cat-btn-text {
-  @apply text-gray-100 font-nunito-sans;
+  @apply text-gray-100 font-mulish;
 }
 
 /* filepond styles */
 .filepond--root {
-  @apply cursor-pointer font-nunito-sans !important;
+  @apply cursor-pointer font-mulish !important;
 }
 
 .filepond--drop-label {

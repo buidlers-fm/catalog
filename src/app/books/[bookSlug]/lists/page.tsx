@@ -42,7 +42,7 @@ export default async function BookListsIndexPage({ params }) {
   const lists = await decorateLists(_lists)
 
   return (
-    <div className="mt-4 max-w-3xl mx-auto font-nunito-sans">
+    <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="text-sm text-gray-300 uppercase tracking-wider">Lists that include</div>
       <h1 className="my-2 text-4xl font-semibold font-newsreader">{book.title}</h1>
       <div className="mt-4">

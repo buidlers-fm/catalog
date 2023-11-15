@@ -86,14 +86,14 @@ export default function Search({
                 placeholder={`${isNav ? "Search" : "Add"} by title and author`}
                 className={`${isMobileNav ? "w-full" : "w-full xs:w-96"} ${
                   isNav ? "px-11" : "px-4"
-                } pt-3 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-nunito-sans`}
+                } pt-3 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-mulish`}
               />
               {(open || selectedBook) && (
                 <Combobox.Options
                   static
                   className={`${
                     isMobileNav ? "w-full" : "w-full xs:w-96"
-                  } absolute z-50 top-[50px] rounded bg-gray-900 font-nunito-sans`}
+                  } absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
                 >
                   {isLoading && (
                     <div className="h-24 flex items-center justify-center">

@@ -51,7 +51,7 @@ export default function ListBook({ book }) {
           </div>
         </Link>
       </div>
-      <Tooltip anchorSelect={`#book-${book.id}`} className="max-w-[240px] font-nunito-sans">
+      <Tooltip anchorSelect={`#book-${book.id}`} className="max-w-[240px] font-mulish">
         <div className="text-center">{truncateString(`${book.title}`, 40)}</div>
         <div className="text-center">{truncateString(`by ${book.authorName}`, 40)}</div>
       </Tooltip>
@@ -62,7 +62,7 @@ export default function ListBook({ book }) {
 const CoverPlaceholder = ({ book, loading = false }) => (
   <div
     id={`book-${book.id}`}
-    className="w-[288px] h-[432px] sm:w-[144px] sm:h-[216px] p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-nunito-sans text-center text-xl sm:text-sm text-gray-200"
+    className="w-[288px] h-[432px] sm:w-[144px] sm:h-[216px] p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center text-xl sm:text-sm text-gray-200"
   >
     {loading ? (
       "Loading..."

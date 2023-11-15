@@ -109,7 +109,7 @@ export default async function UserProfilePage({ params }) {
 
   return (
     <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
-      <div className="flex font-nunito-sans">
+      <div className="flex font-mulish">
         {avatarUrl ? (
           <img
             src={avatarUrl}
@@ -147,7 +147,7 @@ export default async function UserProfilePage({ params }) {
           )}
         </div>
       </div>
-      <div className="mt-12 font-nunito-sans">
+      <div className="mt-12 font-mulish">
         <div className="text-gray-300 text-sm uppercase tracking-wider">Favorite Books</div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
@@ -169,7 +169,7 @@ export default async function UserProfilePage({ params }) {
           </div>
         )}
       </div>
-      <div className="mt-8 font-nunito-sans">
+      <div className="mt-8 font-mulish">
         <div className="flex justify-between text-gray-300 text-sm">
           <div className="uppercase tracking-wider">
             {hasPinnedLists ? "Pinned lists" : "Recent lists"}

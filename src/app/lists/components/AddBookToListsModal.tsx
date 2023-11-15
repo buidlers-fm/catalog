@@ -68,7 +68,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
   return (
     <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-      <div className="fixed inset-0 flex w-screen items-center justify-center font-nunito-sans">
+      <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
         <Dialog.Panel className="relative max-w-lg rounded bg-gray-900 px-16 py-8">
           <Dialog.Title>
             <div className="grow mb-8 text-xl font-bold">Add "{book.title}" to lists</div>

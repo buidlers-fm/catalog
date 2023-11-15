@@ -117,7 +117,7 @@ export default function ManageLists({ lists, pins }) {
   }
 
   return (
-    <div className="mt-4 max-w-3xl mx-auto font-nunito-sans">
+    <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="cat-page-title">Your lists</div>
       <div className="mt-8 flex justify-end">
         <Link href={currentUser ? getNewListLink(currentUser) : ""}>

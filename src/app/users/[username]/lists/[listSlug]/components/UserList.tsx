@@ -28,20 +28,20 @@ export default function UserList({ userProfile, list, isUsersList }) {
           </Link>
         )}
       </div>
-      <div className="my-2 text-gray-200 font-nunito-sans">
+      <div className="my-2 text-gray-200 font-mulish">
         a list by{" "}
         <Link href={getUserProfileLink(username)} className="cat-underline">
           {displayName}
         </Link>
       </div>
-      <div className="my-3 text-gray-500 text-sm font-nunito-sans">
+      <div className="my-3 text-gray-500 text-sm font-mulish">
         created <span id="created-at">{createdAtFromNow}</span>, last updated{" "}
         <span id="updated-at">{updatedAtFromNow}</span>
       </div>
-      <Tooltip anchorSelect="#created-at" className="max-w-[240px] font-nunito-sans">
+      <Tooltip anchorSelect="#created-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{createdAtFormatted}</div>
       </Tooltip>
-      <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-nunito-sans">
+      <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{updatedAtFormatted}</div>
       </Tooltip>
       <div className="my-4">{description}</div>
