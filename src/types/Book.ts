@@ -6,7 +6,6 @@ export default interface Book {
   authorName: string
   description?: string
   coverImageUrl: string
-  publisherName?: string
   editionsCount?: number
   firstPublishedYear?: number | string
   openLibraryWorkId: string

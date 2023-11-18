@@ -42,8 +42,12 @@ model Book {
   authorName         String?  @map("author_name")
   openLibraryWorkId  String?  @unique @map("open_library_work_id")
   coverImageUrl      String?  @map("cover_image_url")
+  subtitle           String?
+  description        String?
   editionsCount      Int?     @map("editions_count")
   firstPublishedYear Int?     @map("first_published_year")
+  isTranslated       Boolean  @map("is_translated") @default(false)
+  originalTitle      String?  @map("original_title")
   createdAt          DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
 
   @@map("books")
