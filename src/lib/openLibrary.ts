@@ -28,60 +28,93 @@ const OpenLibrary = {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
     const work = await fetchJson(workUrl)
-    console.log(work)
 
     // get editions and first book data
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
     const editionsRes = await fetchJson(editionsUrl)
-    const editions = editionsRes.entries
-    const bestEdition = editions.sort((a, b) => {
+    const _editions = editionsRes.entries
+    const editions = [..._editions].sort((a, b) => {
       if (!a.latestRevision) return 1
       if (!b.latestRevision) return -1
       return b.latestRevision - a.latestRevision
-    })[0]
+    })
+    const bestEdition = editions[0]
+
+    // determine whether original language is english
+    const isEnglishEdition = (e) =>
+      e.languages && e.languages.length === 1 && e.languages[0].key === "/languages/eng"
+
+    const bestEnglishEdition = editions.find((e) => isEnglishEdition(e))
+
+    const normalizeString = (str) => {
+      let result = str
+      const stringsToRemove = ["& ", "and "]
+
+      stringsToRemove.forEach((toRemove) => {
+        result = result.replace(new RegExp(toRemove, "g"), "")
+      })
+
+      return result
+    }
+
+    const isSameLanguage = (_a, _b) => {
+      const a = normalizeString(_a)
+      const b = normalizeString(_b)
+      return (
+        a.localeCompare(b, undefined, {
+          usage: "search",
+          sensitivity: "base",
+          ignorePunctuation: true,
+        }) === 0
+      )
+    }
+
+    const isTranslated =
+      !!bestEnglishEdition && !isSameLanguage(work.title, bestEnglishEdition.title)
 
     // get author from work
     let authorName
     const authorKey = work.authors?.[0]?.author?.key
-    console.log(authorKey)
+
     if (authorKey) {
       const authorUrl = `${BASE_URL}/${authorKey}.json`
       const author = await fetchJson(authorUrl)
-      authorName = author.name
+      authorName = isTranslated ? author.personalName || author.name : author.name
     }
 
     const getCoverUrl = (coverId: string) =>
       OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.L)
 
-    // get cover image
     let coverImageUrl
-    if (bestEdition && bestEdition.covers && bestEdition.covers.length > 0) {
-      coverImageUrl = getCoverUrl(bestEdition.covers[0])
-    }
 
-    // if cover image is missing, try to get from another edition
-    if (!coverImageUrl) {
-      const editionWithCover = editions.find(
-        (edition: any) => edition.covers && edition.covers.length > 0,
-      )
-      if (editionWithCover) {
-        coverImageUrl = getCoverUrl(editionWithCover.covers[0])
-      }
-    }
-
-    // but work cover might be the best of all
+    // first work cover
     if (work && work.covers && work.covers.length > 0) {
       coverImageUrl = getCoverUrl(work.covers[0])
     }
 
+    // if no work cover, fall back to best edition that has a cover
+    if (!coverImageUrl) {
+      const bestEditionWithCover = editions.find(
+        (edition: any) => edition.covers && edition.covers.length > 0,
+      )
+
+      if (bestEditionWithCover) {
+        coverImageUrl = getCoverUrl(bestEditionWithCover.covers[0])
+      }
+    }
+
+    if (isTranslated) {
+      // best english edition cover wins over any other cover
+      const bestEnglishEditionWithCover = editions.find(
+        (e) => isEnglishEdition(e) && e.covers && e.covers.length > 0,
+      )
+      if (bestEnglishEditionWithCover) {
+        coverImageUrl = getCoverUrl(bestEnglishEditionWithCover.covers[0])
+      }
+    }
+
     // polyfill schema inconsistencies
     const description = work.description?.value || work.description || "No description found."
-
-    // consolidate publishers
-    let publishers = editions.map((edition: any) => edition.publishers).flat()
-    publishers = publishers.filter(
-      (publisher: string, idx: number) => publishers.indexOf(publisher) === idx,
-    )
 
     const getFirstPublishedYear = () => {
       const pubYears = editions
@@ -92,19 +125,22 @@ const OpenLibrary = {
         })
         .filter((year) => !!year)
 
-      return Math.min(...pubYears)
+      return Math.min(...(pubYears as number[]))
     }
 
     const book: Book = {
-      title: work.title,
-      subtitle: work.subtitle || bestEdition.subtitle,
+      title: isTranslated ? bestEnglishEdition.title : work.title,
+      subtitle: isTranslated
+        ? bestEnglishEdition.subtitle || work.subtitle || bestEdition.subtitle
+        : work.subtitle || bestEdition.subtitle,
       authorName,
       description,
       coverImageUrl: coverImageUrl!,
-      publisherName: publishers.join(", "),
       editionsCount: editionsRes.size,
       firstPublishedYear: getFirstPublishedYear(),
       openLibraryWorkId: workId,
+      isTranslated,
+      originalTitle: work.title,
     }
 
     return book
@@ -114,6 +150,13 @@ const OpenLibrary = {
 
   getCoverUrl: (coverUrlType: CoverUrlType, id: string | number, size: CoverSize) =>
     `${COVERS_BASE_URL}/${coverUrlType}/${id}-${size}.jpg`,
+
+  sortedEditionsByPubDate: (editions) =>
+    [...editions].sort((editionA, editionB) => {
+      const pubDateA = dayjs(editionA.publishDate, PUBLISH_DATE_FORMATS)
+      const pubDateB = dayjs(editionB.publishDate, PUBLISH_DATE_FORMATS)
+      return pubDateA.isAfter(pubDateB) ? 1 : -1
+    }),
 
   search: async (searchString: string, limit: number = 3) => {
     const baseSearchUrl = `${BASE_URL}/${PATHS.search}`
