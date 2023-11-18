@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, Fragment, useEffect } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { Combobox } from "@headlessui/react"
 import { BsSearch } from "react-icons/bs"
 import { GiOpenBook } from "react-icons/gi"
@@ -29,6 +29,7 @@ export default function Search({
   disabledMessage,
 }: Props) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [searchResults, setSearchResults] = useState<Partial<Book>[]>()
   const [moreResultsExist, setMoreResultsExist] = useState<boolean>()
   const [isSearching, setIsSearching] = useState<boolean>(false)
@@ -66,8 +67,9 @@ export default function Search({
   }
 
   useEffect(() => {
+    setIsSearching(false)
     setSelectedBook(null)
-  }, [pathname])
+  }, [pathname, searchParams])
 
   const isLoading = (isSearching && !searchResults) || !!selectedBook
 
