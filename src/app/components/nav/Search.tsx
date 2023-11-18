@@ -7,6 +7,7 @@ import { BsSearch } from "react-icons/bs"
 import { GiOpenBook } from "react-icons/gi"
 import { ThreeDotsScale } from "react-svg-spinners"
 import debounce from "lodash.debounce"
+import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
 import { truncateString } from "lib/helpers/general"
 import type Book from "types/Book"
@@ -48,8 +49,12 @@ export default function Search({
 
       setIsSearching(true)
 
-      const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
-        await OpenLibrary.search(searchString, RESULTS_LIMIT)
+      // const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
+      //   await OpenLibrary.search(searchString, RESULTS_LIMIT)
+
+      const _moreResultsExist = false
+      const results = await api.books.search(searchString)
+      console.log(results)
 
       setIsSearching(false)
       setSearchResults(results)

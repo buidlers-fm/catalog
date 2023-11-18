@@ -11,6 +11,16 @@ const api = {
         body: prepReqBody(requestData),
       }),
   },
+  books: {
+    search: (searchStr) => {
+      const params = {
+        query: searchStr,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/books/search?${queryString}`
+      return fetchJson(url)
+    },
+  },
   lists: {
     create: (requestData) =>
       fetchJson(`/api/lists`, {
