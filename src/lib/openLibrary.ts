@@ -176,28 +176,52 @@ const OpenLibrary = {
     let results = resBody.docs // returns up to 100 results per page
     let moreResultsExist = resBody.numFound > results.length
 
-    const books: Partial<Book>[] = []
-
     // filter out unreliable results and apply limit
     // so far some markers of unreliable results (based on trial and error) include:
     // + no isbn
     // + no author name
-    // + listed as independently published
     results = results.filter(
       (result: any) => result.isbn && result.authorName && result.authorName.length > 0,
     )
 
-    // TODO: deprioritize instead of excluding
-    // results = results.filter(
-    //   (result: any) => !result.publisher?.includes("Independently Published"),
-    // )
+    const resultsByEditionCount = [...results].sort((a, b) => b.editionCount - a.editionCount)
+
+    const resultsByFirstPublished = [...results].sort(
+      (a, b) => (a.firstPublishYear || Infinity) - (b.firstPublishYear || Infinity),
+    )
+
+    const decoratedResults = results.map((result, idx) => ({
+      result,
+      originalIndex: idx,
+      editionCountIndex: resultsByEditionCount.findIndex((r) => r.key === result.key),
+      firstPublishedIndex: resultsByFirstPublished.findIndex((r) => r.key === result.key),
+    }))
+
+    const scoreForResult = (decoratedResult) => {
+      const { originalIndex, editionCountIndex, firstPublishedIndex } = decoratedResult
+
+      // avoid 0 values in case we use multipliers at some point
+      const originalIndexScore = originalIndex + 1
+      const editionCountScore = editionCountIndex + 1
+      const firstPublishedScore = firstPublishedIndex + 1
+
+      const totalScore = originalIndexScore + editionCountScore + firstPublishedScore
+
+      return totalScore
+    }
+
+    const rankedResults = [...decoratedResults]
+      .sort((a, b) => scoreForResult(a) - scoreForResult(b))
+      .map((decoratedResult) => decoratedResult.result)
 
     // there are more pages of results in openlibrary OR
     // there are more filtered results than the limit
     moreResultsExist = moreResultsExist || results.length > limit
-    results = results.slice(0, limit)
+    const finalResults = rankedResults.slice(0, limit)
 
-    results.forEach((result: any) => {
+    const books: Partial<Book>[] = []
+
+    finalResults.forEach((result: any) => {
       const { title, coverI: coverId } = result
       const author = result.authorName?.join(", ")
       const openLibraryWorkId = result.key.split("/works/").pop()
