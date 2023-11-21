@@ -38,12 +38,15 @@ const OpenLibrary = {
       if (!b.latestRevision) return -1
       return b.latestRevision - a.latestRevision
     })
-    const bestEdition = editions[0]
 
-    // determine whether original language is english
     const isEnglishEdition = (e) =>
       e.languages && e.languages.length === 1 && e.languages[0].key === "/languages/eng"
 
+    const bestEdition = editions.filter(
+      (e) => isEnglishEdition(e) || !e.languages || e.languages.length === 0,
+    )[0]
+
+    // determine whether original language is english
     const bestEnglishEdition = editions.find((e) => isEnglishEdition(e))
 
     const normalizeString = (str) => {
@@ -77,8 +80,14 @@ const OpenLibrary = {
     const authorKey = work.authors?.[0]?.author?.key
 
     if (authorKey) {
-      const authorUrl = `${BASE_URL}/${authorKey}.json`
-      const author = await fetchJson(authorUrl)
+      let authorUrl = `${BASE_URL}/${authorKey}.json`
+      let author = await fetchJson(authorUrl)
+      console.log(author)
+      if (author.type.key === "/type/redirect") {
+        const nextAuthorKey = author.location
+        authorUrl = `${BASE_URL}/${nextAuthorKey}.json`
+        author = await fetchJson(authorUrl)
+      }
       authorName = isTranslated ? author.personalName || author.name : author.name
     }
 
@@ -132,7 +141,7 @@ const OpenLibrary = {
       title: isTranslated ? bestEnglishEdition.title : work.title,
       subtitle: isTranslated
         ? bestEnglishEdition.subtitle || work.subtitle || bestEdition.subtitle
-        : work.subtitle || bestEdition.subtitle,
+        : work.subtitle || bestEnglishEdition?.subtitle,
       authorName,
       description,
       coverImageUrl: coverImageUrl!,
