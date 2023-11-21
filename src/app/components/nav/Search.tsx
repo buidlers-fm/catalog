@@ -22,6 +22,14 @@ type Props = {
   disabledMessage?: string
 }
 
+const mergeSearchResults = (resultsA, resultsB) => {
+  const uniqueResultsB = resultsB.filter(
+    (bookB) => !resultsA.find((bookA) => bookA.openLibraryWorkId === bookB.openLibraryWorkId),
+  )
+
+  return [...resultsA, ...uniqueResultsB]
+}
+
 export default function Search({
   onSelect,
   isNav = true,
@@ -32,13 +40,14 @@ export default function Search({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [searchResults, setSearchResults] = useState<Partial<Book>[]>()
-  const [moreResultsExist, setMoreResultsExist] = useState<boolean>()
+  const [moreResultsExist, setMoreResultsExist] = useState<boolean>(false)
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>()
 
   const debouncedSearchHandler = useMemo(() => {
     async function onSearchChange(e: any) {
       const searchString = e.target.value
+      setMoreResultsExist(false)
 
       if (searchString.length === 0) {
         setSearchResults(undefined)
@@ -49,16 +58,29 @@ export default function Search({
 
       setIsSearching(true)
 
-      // const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
-      //   await OpenLibrary.search(searchString, RESULTS_LIMIT)
+      let existingBooksResults = []
+      try {
+        existingBooksResults = await api.books.search(searchString)
+        console.log(existingBooksResults)
+        if (existingBooksResults.length > 0) {
+          setSearchResults(existingBooksResults)
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
 
-      const _moreResultsExist = false
-      const results = await api.books.search(searchString)
-      console.log(results)
+      try {
+        const { moreResultsExist: _moreResultsExist, resultsForPage: openLibraryResults } =
+          await OpenLibrary.search(searchString, RESULTS_LIMIT)
+
+        const mergedResults = mergeSearchResults(existingBooksResults, openLibraryResults)
+        setSearchResults(mergedResults)
+        setMoreResultsExist(_moreResultsExist)
+      } catch (error: any) {
+        console.error(error)
+      }
 
       setIsSearching(false)
-      setSearchResults(results)
-      setMoreResultsExist(_moreResultsExist)
     }
 
     return debounce(onSearchChange, 300)
@@ -77,6 +99,7 @@ export default function Search({
   }, [pathname, searchParams])
 
   const isLoading = (isSearching && !searchResults) || !!selectedBook
+  const isLoadingMoreResults = isSearching && searchResults
 
   return (
     <div className="relative">
@@ -149,6 +172,12 @@ export default function Search({
                           )}
                         </Combobox.Option>
                       ))}
+                      {isLoadingMoreResults && (
+                        <li className="h-24 flex items-center justify-center">
+                          {/* spinner is gold-300  */}
+                          <ThreeDotsScale width={32} height={32} color="hsl(45, 100%, 69%)" />
+                        </li>
+                      )}
                       {moreResultsExist && (
                         <li className="px-6 py-6 text-gray-200">
                           More results exist. Try searching by title and author to narrow them down!
