@@ -38,9 +38,13 @@ export default async function BookPageBySlug({ params }: any) {
       data: {
         title: openLibraryBook.title || undefined,
         authorName: openLibraryBook.authorName || undefined,
+        subtitle: openLibraryBook.subtitle || undefined,
+        description: openLibraryBook.description || undefined,
         coverImageUrl: openLibraryBook.coverImageUrl || undefined,
         editionsCount: openLibraryBook.editionsCount || undefined,
         firstPublishedYear: openLibraryBook.firstPublishedYear || undefined,
+        isTranslated: openLibraryBook.isTranslated,
+        originalTitle: openLibraryBook.originalTitle || undefined,
       },
     })
   }

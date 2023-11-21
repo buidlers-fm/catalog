@@ -60,6 +60,9 @@ export default function BookPage({
                   {book.firstPublishedYear}
                 </span>
               </h1>
+              {book.isTranslated && (
+                <div className="my-2 text-gray-200 text-xl italic">({book.originalTitle})</div>
+              )}
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
               <div className="my-8 whitespace-pre-wrap md:w-11/12">{book.description}</div>
@@ -82,6 +85,7 @@ export default function BookPage({
               </div>
             </div>
           </div>
+
           {bookLists && bookLists.length > 0 && (
             <div className="mt-8 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">

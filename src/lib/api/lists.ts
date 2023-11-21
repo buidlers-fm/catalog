@@ -23,7 +23,14 @@ const createList = async (params, userProfile) => {
   )
 
   const booksToCreatePromises = selectedBooksToCreate.map(async (selectedBook) => {
-    const { title, authorName, coverImageUrl, openLibraryWorkId } = selectedBook
+    const {
+      title,
+      authorName,
+      coverImageUrl,
+      openLibraryWorkId,
+      editionsCount,
+      firstPublishedYear,
+    } = selectedBook
 
     return {
       slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
@@ -31,6 +38,8 @@ const createList = async (params, userProfile) => {
       authorName,
       coverImageUrl,
       openLibraryWorkId,
+      editionsCount,
+      firstPublishedYear: Number(firstPublishedYear),
     }
   })
 
@@ -109,7 +118,14 @@ const updateList = async (list, params, userProfile) => {
   )
 
   const booksToCreatePromises = selectedBooksToCreate.map(async (selectedBook) => {
-    const { title, authorName, coverImageUrl, openLibraryWorkId } = selectedBook
+    const {
+      title,
+      authorName,
+      coverImageUrl,
+      openLibraryWorkId,
+      editionsCount,
+      firstPublishedYear,
+    } = selectedBook
 
     return {
       slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
@@ -117,6 +133,8 @@ const updateList = async (list, params, userProfile) => {
       authorName,
       coverImageUrl,
       openLibraryWorkId,
+      editionsCount,
+      firstPublishedYear: Number(firstPublishedYear),
     }
   })
 
@@ -198,14 +216,31 @@ const addBook = async (book, list) => {
 
   // create book if it doesn't exist
   if (!persistedBook) {
-    const { title, authorName, coverImageUrl, openLibraryWorkId } = book
+    const {
+      title,
+      authorName,
+      subtitle,
+      description,
+      coverImageUrl,
+      openLibraryWorkId,
+      editionsCount,
+      firstPublishedYear,
+      isTranslated,
+      originalTitle,
+    } = book
 
     const bookData = {
       slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
       title,
       authorName,
+      subtitle,
+      description,
       coverImageUrl,
       openLibraryWorkId,
+      editionsCount,
+      firstPublishedYear: Number(firstPublishedYear),
+      isTranslated,
+      originalTitle,
     }
 
     persistedBook = await prisma.book.create({
