@@ -24,7 +24,7 @@ const convertImageUrlToLarge = (imageUrl) => {
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
 const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
-const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
+const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[288px]"
 
 export default function ListBook({ book, isFavorite = false }) {
   const router = useRouter()
@@ -44,27 +44,29 @@ export default function ListBook({ book, isFavorite = false }) {
         isFavorite ? favoriteBookWidths : defaultWidths
       } h-auto my-8 mx-auto sm:my-4 flex items-center justify-center`}
     >
-      <div className="w-full">
-        <button onClick={() => router.push(getBookLink(book.slug))} disabled={isMobile}>
-          <div>
-            {book.coverImageUrl && !imgLoaded && (
-              <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
-            )}
-            {book.coverImageUrl ? (
-              <img
-                ref={imgRef}
-                src={convertImageUrlToLarge(book.coverImageUrl) as any}
-                id={`book-${book.id}`}
-                className={`w-full ${imgLoaded ? "block" : "hidden"}`}
-                alt={`${book.title} cover`}
-                onLoad={() => setImgLoaded(true)}
-              />
-            ) : (
-              <CoverPlaceholder isFavorite={isFavorite} book={book} />
-            )}
-          </div>
-        </button>
-      </div>
+      <button
+        className="w-full"
+        onClick={() => router.push(getBookLink(book.slug))}
+        disabled={isMobile}
+      >
+        <div>
+          {book.coverImageUrl && !imgLoaded && (
+            <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
+          )}
+          {book.coverImageUrl ? (
+            <img
+              ref={imgRef}
+              src={convertImageUrlToLarge(book.coverImageUrl) as any}
+              id={`book-${book.id}`}
+              className={`w-full ${imgLoaded ? "block" : "hidden"} rounded-sm`}
+              alt={`${book.title} cover`}
+              onLoad={() => setImgLoaded(true)}
+            />
+          ) : (
+            <CoverPlaceholder isFavorite={isFavorite} book={book} />
+          )}
+        </div>
+      </button>
       <Tooltip
         anchorSelect={`#book-${book.id}`}
         className="max-w-[240px] font-mulish"
