@@ -19,12 +19,14 @@ export default function UserList({ userProfile, list, isUsersList }) {
   const updatedAtFormatted = dayjs(updatedAt).format("MMMM D, YYYY")
 
   return (
-    <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
-      <div className="flex">
+    <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
+      <div className="sm:flex">
         <div className="text-4xl font-semibold mb-1">{title}</div>
         {isUsersList && (
           <Link href={getEditListLink(userProfile, listSlug)}>
-            <button className="cat-btn cat-btn-sm cat-btn-gray ml-6">Edit list</button>
+            <button className="cat-btn cat-btn-sm cat-btn-gray my-2 sm:my-0 sm:ml-6">
+              Edit list
+            </button>
           </Link>
         )}
       </div>
@@ -44,8 +46,8 @@ export default function UserList({ userProfile, list, isUsersList }) {
       <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{updatedAtFormatted}</div>
       </Tooltip>
-      <div className="my-4">{description}</div>
-      <div className="my-8 p-0 grid grid-cols-1 sm:grid-cols-3 ml:grid-cols-5 gap0 sm:gap-[28px]">
+      <div className="sm:my-4">{description}</div>
+      <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
         {list.books.map((book) => (
           <ListBook key={book!.id} book={book} />
         ))}

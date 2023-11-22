@@ -10,7 +10,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { pinnedObjectId, pinnedObjectType } = reqJson
 
   // validate
-  if (!pinnedObjectId || pinnedObjectType) {
+  if (!pinnedObjectId || !pinnedObjectType) {
     const errorMsg = "pinnedObjectId and pinnedObjectType are required."
     return NextResponse.json({ error: errorMsg }, { status: 400 })
   }
@@ -114,9 +114,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     }),
   )
 
-  await Promise.all(tempUpdatePinPromises)
-
-  const updatePinPromises = orderedPinnedObjectIds.map((pinnedObjectId, idx) =>
+  const finalUpdatePinPromises = orderedPinnedObjectIds.map((pinnedObjectId, idx) =>
     prisma.pin.updateMany({
       where: {
         pinnerId: userProfile.id,
@@ -128,7 +126,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     }),
   )
 
-  await Promise.all(updatePinPromises)
+  await prisma.$transaction([...tempUpdatePinPromises, ...finalUpdatePinPromises])
 
   return NextResponse.json({}, { status: 200 })
 })
@@ -146,17 +144,7 @@ export const DELETE = withApiHandling(
       return NextResponse.json({ error: errorMsg }, { status: 400 })
     }
 
-    // delete pin(s)
-    await prisma.pin.deleteMany({
-      where: {
-        pinnerId: userProfile.id,
-        pinnedObjectId,
-        pinnedObjectType,
-      },
-    })
-
-    // reassign sortOrder values of remaining pins
-    const remainingPins = await prisma.pin.findMany({
+    const allPins = await prisma.pin.findMany({
       where: {
         pinnerId: userProfile.id,
       },
@@ -165,7 +153,40 @@ export const DELETE = withApiHandling(
       },
     })
 
-    const updatePinPromises = remainingPins.map((remainingPin, idx) =>
+    const pinToDelete = allPins.find(
+      (pin) => pin.pinnedObjectType === pinnedObjectType && pin.pinnedObjectId === pinnedObjectId,
+    )
+    if (!pinToDelete) {
+      return NextResponse.json({ error: "Pin not found" }, { status: 404 })
+    }
+
+    const remainingPins = allPins.filter(
+      (pin) =>
+        !(pin.pinnedObjectType === pinnedObjectType && pin.pinnedObjectId === pinnedObjectId),
+    )
+
+    const deletePinPromise = prisma.pin.deleteMany({
+      where: {
+        pinnerId: userProfile.id,
+        pinnedObjectId,
+        pinnedObjectType,
+      },
+    })
+
+    // reassign sortOrder values (in 2 separate updates, to get around sort_order uniqueness constraint)
+    const sortOrderOffset = allPins.length
+    const tempUpdatePinPromises = remainingPins.map((remainingPin, idx) =>
+      prisma.pin.update({
+        where: {
+          id: remainingPin.id,
+        },
+        data: {
+          sortOrder: idx + 1 + sortOrderOffset,
+        },
+      }),
+    )
+
+    const finalUpdatePinPromises = remainingPins.map((remainingPin, idx) =>
       prisma.pin.update({
         where: {
           id: remainingPin.id,
@@ -176,7 +197,11 @@ export const DELETE = withApiHandling(
       }),
     )
 
-    await Promise.all(updatePinPromises)
+    await prisma.$transaction([
+      deletePinPromise,
+      ...tempUpdatePinPromises,
+      ...finalUpdatePinPromises,
+    ])
 
     return NextResponse.json({}, { status: 200 })
   },

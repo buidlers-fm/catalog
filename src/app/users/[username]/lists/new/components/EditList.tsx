@@ -89,14 +89,12 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
         const updatedList: List = await api.lists.update(list!.id, requestData)
 
         const successMessage = (
-          <>
+          <div className="flex flex-col xs:flex-row ml-2">
             Changes saved!&nbsp;
-            <a href={getListLink(currentUserProfile, updatedList.slug!)}>
-              <button type="button" className="cat-btn-link">
-                View your list.
-              </button>
+            <a href={getListLink(currentUserProfile, updatedList.slug!)} className="underline">
+              View your list.
             </a>
-          </>
+          </div>
         )
 
         toast.success(successMessage, { id: toastId, duration: 8000 })
@@ -147,7 +145,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               labelText="Title"
               name="title"
               type="text"
-              descriptionText="Changing the title may change the list's URL."
+              descriptionText={isEdit ? "Changing the title may change the list's URL." : undefined}
               formProps={register("title", validations.title)}
               remainingChars={MAX_LENGTHS.title - (titleValue?.length || 0)}
               errorMessage={errors.title?.message}
