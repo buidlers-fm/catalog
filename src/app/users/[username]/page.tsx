@@ -108,18 +108,16 @@ export default async function UserProfilePage({ params }) {
   const { displayName, bio, location, website, avatarUrl } = userProfile!
 
   return (
-    <div className="mt-4 sm:w-[488px] ml:w-[832px] mx-auto">
-      <div className="flex font-mulish">
+    <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
+      <div className="sm:flex font-mulish">
         {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="avatar"
-            className="mr-3 h-24 w-24 bg-cover bg-no-repeat bg-center rounded-full"
-          />
+          <div className="shrink-0 sm:mr-3 w-24 h-24 overflow-hidden rounded-full">
+            <img src={avatarUrl} alt="user avatar" className="object-cover min-w-full min-h-full" />
+          </div>
         ) : (
-          <FaUserCircle className=" mr-3 text-[96px] text-gray-500" />
+          <FaUserCircle className="mr-3 text-[96px] text-gray-500" />
         )}
-        <div className="ml-4 grow">
+        <div className="my-6 sm:my-0 sm:ml-4 grow">
           <div className="text-2xl font-bold">{displayName || username}</div>
           <div className="mt-2 max-w-lg whitespace-pre-wrap">{bio}</div>
           <div className="flex mt-3 text-gray-300">
@@ -151,9 +149,9 @@ export default async function UserProfilePage({ params }) {
         <div className="text-gray-300 text-sm uppercase tracking-wider">Favorite Books</div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
-          <div className="p-0 grid grid-cols-1 sm:grid-cols-3 ml:grid-cols-5 gap-0 sm:gap-[28px]">
+          <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
             {favoriteBooksList.books.map((book) => (
-              <ListBook key={book!.id} book={book} />
+              <ListBook key={book!.id} book={book} isFavorite />
             ))}
           </div>
         ) : (
@@ -169,19 +167,28 @@ export default async function UserProfilePage({ params }) {
           </div>
         )}
       </div>
-      <div className="mt-8 font-mulish">
+      <div className="mt-16 font-mulish">
         <div className="flex justify-between text-gray-300 text-sm">
           <div className="uppercase tracking-wider">
             {hasPinnedLists ? "Pinned lists" : "Recent lists"}
           </div>
-          <div className="flex -mt-3">
+          <div
+            className={`flex flex-col xs:flex-row items-end xs:items-stretch ${
+              isUsersProfile ? "-mt-10 xs:-mt-3" : ""
+            }`}
+          >
             {isUsersProfile && (
               <Link href={getNewListLink(currentUserProfile)}>
-                <button className="cat-btn cat-btn-sm cat-btn-gray mx-2">+ Create a list</button>
+                <button className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0">
+                  + Create a list
+                </button>
               </Link>
             )}
-            <Link className="inline-block mt-1 mx-2" href={getUserListsLink(username)}>
-              {isUsersProfile ? "Manage lists" : "See all"}
+            <Link
+              className={`inline-block ${isUsersProfile ? "my-1 xs:mb-0" : ""} mx-2`}
+              href={getUserListsLink(username)}
+            >
+              {isUsersProfile ? "See all / Manage" : "See all"}
             </Link>
           </div>
         </div>

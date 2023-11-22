@@ -32,15 +32,19 @@ export default function MobileNav({ currentUserProfile }) {
         open={showMobileSearch}
         onClose={() => setShowMobileSearch(false)}
         direction="top"
-        style={{ backgroundColor: "hsl(26, 4%, 12%)", height: "75vh" }}
+        style={{ backgroundColor: "hsl(26, 4%, 12%)", height: "100vh" }}
       >
-        <div className="p-8 flex">
-          <div className="grow">
-            <Search isMobileNav onSelect={navigateToBookPage} />
+        <div className="p-8">
+          <div className="flex mb-4">
+            <div className="grow">
+              <Search isMobileNav onSelect={navigateToBookPage} />
+            </div>
+            <button className="ml-8" onClick={() => setShowMobileSearch(false)}>
+              <BsXLg className="text-xl text-gray-200" />
+            </button>
           </div>
-          <button className="ml-8" onClick={() => setShowMobileSearch(false)}>
-            <BsXLg className="text-xl text-gray-200" />
-          </button>
+
+          <div className="ml-2 text-gray-200">Search by title and author.</div>
         </div>
       </Drawer>
     </div>

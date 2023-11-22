@@ -1,10 +1,13 @@
 "use client"
 
-import Link from "next/link"
+import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { GiOpenBook } from "react-icons/gi"
 import { Tooltip } from "react-tooltip"
 import { getBookLink, truncateString } from "lib/helpers/general"
+
+const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 
 const convertImageUrlToLarge = (imageUrl) => {
   const pattern = /-M(\.\w+)$/ // filename ends in "-M", followed by file extension
@@ -18,7 +21,14 @@ const convertImageUrlToLarge = (imageUrl) => {
   return largeImageUrl
 }
 
-export default function ListBook({ book }) {
+const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
+const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
+const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
+const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
+
+export default function ListBook({ book, isFavorite = false }) {
+  const router = useRouter()
+
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
 
   const imgRef = useRef(null)
@@ -30,12 +40,16 @@ export default function ListBook({ book }) {
   return (
     <div
       key={book.id}
-      className="w-[288px] sm:w-[144px] h-auto my-8 mx-auto sm:my-4 flex items-center justify-center"
+      className={`${
+        isFavorite ? favoriteBookWidths : defaultWidths
+      } h-auto my-8 mx-auto sm:my-4 flex items-center justify-center`}
     >
       <div className="w-full">
-        <Link href={getBookLink(book.slug)}>
+        <button onClick={() => router.push(getBookLink(book.slug))} disabled={isMobile}>
           <div>
-            {book.coverImageUrl && !imgLoaded && <CoverPlaceholder book={book} loading />}
+            {book.coverImageUrl && !imgLoaded && (
+              <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
+            )}
             {book.coverImageUrl ? (
               <img
                 ref={imgRef}
@@ -46,29 +60,40 @@ export default function ListBook({ book }) {
                 onLoad={() => setImgLoaded(true)}
               />
             ) : (
-              <CoverPlaceholder book={book} />
+              <CoverPlaceholder isFavorite={isFavorite} book={book} />
             )}
           </div>
-        </Link>
+        </button>
       </div>
-      <Tooltip anchorSelect={`#book-${book.id}`} className="max-w-[240px] font-mulish">
-        <div className="text-center">{truncateString(`${book.title}`, 40)}</div>
-        <div className="text-center">{truncateString(`by ${book.authorName}`, 40)}</div>
+      <Tooltip
+        anchorSelect={`#book-${book.id}`}
+        className="max-w-[240px] font-mulish"
+        clickable={isMobile}
+      >
+        <button onClick={() => router.push(getBookLink(book.slug))} disabled={!isMobile}>
+          <div className="text-center">{truncateString(`${book.title}`, 40)}</div>
+          <div className="text-center">{truncateString(`by ${book.authorName}`, 40)}</div>
+          {isMobile && <div className="underline">Go to page</div>}
+        </button>
       </Tooltip>
     </div>
   )
 }
 
-const CoverPlaceholder = ({ book, loading = false }) => (
+const CoverPlaceholder = ({ book, loading = false, isFavorite = false }) => (
   <div
     id={`book-${book.id}`}
-    className="w-[288px] h-[432px] sm:w-[144px] sm:h-[216px] p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center text-xl sm:text-sm text-gray-200"
+    className={`${
+      isFavorite
+        ? `${favoriteBookWidths} ${favoriteBookHeights}`
+        : `${defaultWidths} ${defaultHeights}`
+    } p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center text-sm text-gray-200`}
   >
     {loading ? (
       "Loading..."
     ) : (
       <>
-        <GiOpenBook className="mb-4 sm:mb-2 text-8xl sm:text-4xl text-gray-500" />
+        <GiOpenBook className="hidden sm:block mb-4 sm:mb-2 text-8xl sm:text-4xl text-gray-500" />
         <div className="mb-2 sm:mb-0">{truncateString(book.title, 20)}</div>
         <div>{truncateString(book.authorName, 20)}</div>
       </>

@@ -27,9 +27,9 @@ export default function BookPage({
   return (
     <>
       <div className="mt-16 max-w-4xl mx-auto">
-        <div className="mx-8 md:mx-8 lg:mx-16">
+        <div className="mx-8 lg:mx-16">
           <div className="md:flex">
-            <div className="flex-grow-0 flex-shrink-0 w-72 mx-auto mb-16">
+            <div className="flex-grow-0 flex-shrink-0 w-64 mx-auto mb-16">
               {book.coverImageUrl ? (
                 <img
                   src={book.coverImageUrl}
@@ -37,7 +37,7 @@ export default function BookPage({
                   className="object-top mx-auto shadow-md rounded-md"
                 />
               ) : (
-                <div className="w-[288px] h-[460px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded">
+                <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded">
                   <GiOpenBook className="mt-0 text-9xl text-gray-500" />
                 </div>
               )}
@@ -70,7 +70,13 @@ export default function BookPage({
                 {book.openLibraryWorkId && (
                   <div className="my-2">
                     <span className="text-gray-200">
-                      {book.editionsCount ? `${book.editionsCount} editions at` : "More at"}
+                      {book.editionsCount
+                        ? `${
+                            book.editionsCount === 1
+                              ? "1 edition"
+                              : `${book.editionsCount} editions`
+                          } at`
+                        : "More at"}
                     </span>{" "}
                     <Link
                       href={OpenLibrary.getOlWorkPageUrl(book.openLibraryWorkId)}

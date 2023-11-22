@@ -119,14 +119,12 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
       const updatedProfile = await api.profiles.update(userProfile.userId, formData)
 
       const successMessage = (
-        <>
+        <div className="flex flex-col xs:flex-row ml-2">
           Changes saved!&nbsp;
-          <a href={getUserProfileLink(userProfile.username)}>
-            <button type="button" className="cat-btn-link">
-              View your profile.
-            </button>
+          <a href={getUserProfileLink(userProfile.username)} className="underline">
+            View your profile.
           </a>
-        </>
+        </div>
       )
 
       toast.success(successMessage, { id: toastId, duration: 8000 })
@@ -202,12 +200,12 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
           </div>
           <div className="ml:ml-16 flex flex-col">
             <EditListBooks
-              heading="Top 5 books"
+              heading="Favorite (top 4) books"
               books={books}
               onBookSelect={addBook}
               onBookRemove={removeBook}
               onReorder={reorderBooks}
-              limit={5}
+              limit={4}
             />
           </div>
         </div>

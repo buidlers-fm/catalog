@@ -38,11 +38,13 @@ export default function UserNav({ currentUserProfile }) {
           <Menu.Button className="cat-btn-text mt-2 lg:mt-0 ml-4 mr-2">
             <div className="flex">
               {currentUserProfile.avatarUrl ? (
-                <img
-                  src={currentUserProfile.avatarUrl}
-                  alt="user avatar"
-                  className="mr-3 w-[24px] rounded-full"
-                />
+                <div className="mr-3 w-[24px] h-[24px] overflow-hidden rounded-full">
+                  <img
+                    src={currentUserProfile.avatarUrl}
+                    alt="user avatar"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
               ) : (
                 <FaUserCircle className="mr-3 text-2xl text-gold-100" />
               )}
