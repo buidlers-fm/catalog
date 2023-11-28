@@ -68,6 +68,7 @@ model List {
   updatedAt           DateTime?            @map("updated_at") @db.Timestamptz(6)
   listItemAssignments ListItemAssignment[]
   creator             UserProfile          @relation(fields: [creatorId], references: [id])
+  ranked              Boolean              @default(false)
 
   @@unique([slug, ownerId])
   @@index([creatorId])
