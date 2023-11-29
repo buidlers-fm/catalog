@@ -28,16 +28,18 @@ export default function SortableBook({ id, book, onRemove, isRanked, rank }) {
       {...attributes}
       className="flex items-center -my-[1px] px-2 py-3 bg-black border border-gray-700 first:rounded-tl first:rounded-tr last:rounded-bl last:rounded-br"
     >
-      <div {...listeners} className="shrink-0">
-        <button type="button" className="block hover:cursor-grab active:cursor-grabbing">
-          <RxDragHandleDots2 className="text-3xl text-gray-200" />
-        </button>
-      </div>
-      {isRanked && (
-        <div className="w-14 h-14 shrink-0 mx-2 flex justify-center items-center border rounded border-gray-700">
-          {rank}
+      <div className="flex flex-col sm:flex-row shrink-0 items-center">
+        <div {...listeners} className="shrink-0">
+          <button type="button" className="block hover:cursor-grab active:cursor-grabbing">
+            <RxDragHandleDots2 className="text-3xl text-gray-200" />
+          </button>
         </div>
-      )}
+        {isRanked && (
+          <div className="w-8 h-auto sm:w-14 sm:h-14 shrink-0 m-2 flex justify-center items-center border rounded border-gray-700">
+            {rank}
+          </div>
+        )}
+      </div>
       <div className="w-[76px] h-[76px] shrink-0 flex items-center justify-center">
         {book.coverImageUrl ? (
           <img
