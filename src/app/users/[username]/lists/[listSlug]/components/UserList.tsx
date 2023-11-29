@@ -10,7 +10,7 @@ import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 dayjs.extend(relativeTime)
 
 export default function UserList({ userProfile, list, isUsersList }) {
-  const { title, slug: listSlug, description, createdAt, updatedAt: _updatedAt } = list
+  const { title, slug: listSlug, description, createdAt, ranked, updatedAt: _updatedAt } = list
   const { username, displayName } = userProfile!
   const createdAtFromNow = dayjs(createdAt).fromNow()
   const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
@@ -48,8 +48,8 @@ export default function UserList({ userProfile, list, isUsersList }) {
       </Tooltip>
       <div className="sm:my-4">{description}</div>
       <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
-        {list.books.map((book) => (
-          <ListBook key={book!.id} book={book} />
+        {list.books.map((book, index: number) => (
+          <ListBook key={book!.id} book={book} ranked={ranked} index={index + 1} />
         ))}
       </div>
     </div>

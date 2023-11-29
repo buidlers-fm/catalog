@@ -22,6 +22,12 @@ type Props = {
   isEdit?: boolean
 }
 
+type ListMetadata = {
+  title: string
+  description: string
+  ranked: boolean
+}
+
 const MAX_LENGTHS = {
   title: 100,
   description: 2000,
@@ -55,7 +61,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<{ [k: string]: string }>({
+  } = useForm<ListMetadata>({
     defaultValues: list as any,
   })
 
@@ -70,17 +76,18 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     }
   }, [firstBook, addBook, books])
 
-  const submit = async (listData) => {
+  const submit = async (listData: ListMetadata) => {
     setIsSubmitting(true)
     setErrorMessage(undefined)
 
     const toastId = toast.loading("Saving your changes...")
 
-    const { title, description } = listData
+    const { title, description, ranked } = listData
 
     const requestData = {
       title,
       description,
+      ranked,
       books,
     }
 
@@ -133,6 +140,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
 
   const titleValue = watch("title")
   const descriptionValue = watch("description")
+  const ranked = watch("ranked")
   const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
   return (
@@ -160,12 +168,18 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               errorMessage={errors.description?.message}
               fullWidth={false}
             />
+            <label htmlFor="ranked">
+              <input id="ranked" type="checkbox" {...register("ranked")} />
+              &nbsp;
+              <span>Ranked list</span>
+            </label>
             <EditListBooks
               heading="Books"
               books={books}
               onBookSelect={addBook}
               onBookRemove={removeBook}
               onReorder={reorderBooks}
+              ranked={ranked}
             />
             <div className="flex justify-between">
               <button

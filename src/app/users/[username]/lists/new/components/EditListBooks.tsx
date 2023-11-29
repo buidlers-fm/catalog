@@ -14,6 +14,7 @@ type Props = {
   onBookRemove: (book: Book) => void
   onReorder: (reorderedIds: string[]) => void
   limit?: number
+  ranked: boolean
 }
 
 export default function EditListBooks({
@@ -23,6 +24,7 @@ export default function EditListBooks({
   onBookRemove,
   onReorder,
   limit,
+  ranked
 }: Props) {
   const [bookIds, setBookIds] = useState<string[]>([])
 
@@ -62,12 +64,14 @@ export default function EditListBooks({
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={bookIds} strategy={verticalListSortingStrategy}>
               <ul>
-                {books.map((book) => (
+                {books.map((book, index) => (
                   <SortableBook
                     key={book.openLibraryWorkId}
                     id={book.openLibraryWorkId}
                     book={book}
                     onRemove={onBookRemove}
+                    ranked={ranked}
+                    index={index}
                   />
                 ))}
               </ul>
