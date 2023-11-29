@@ -174,7 +174,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
                 &nbsp;
                 <span>Ranked list</span>
               </div>
-              <span className="text-sm text-gray-200">Show position for each film.</span>
+              <span className="text-sm text-gray-200">Show position for each book.</span>
             </label>
             <EditListBooks
               heading="Books"
