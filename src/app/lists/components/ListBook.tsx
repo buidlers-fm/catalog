@@ -26,7 +26,7 @@ const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
 const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[288px]"
 
-export default function ListBook({ book, ranked, index, isFavorite = false }) {
+export default function ListBook({ book, isRanked, rank, isFavorite = false }) {
   const router = useRouter()
 
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
@@ -78,8 +78,8 @@ export default function ListBook({ book, ranked, index, isFavorite = false }) {
           {isMobile && <div className="underline">Go to page</div>}
         </button>
       </Tooltip>
-      {ranked && (
-        <span className="flex justify-center w-full border rounded border-gray-700">{index}</span>
+      {isRanked && (
+        <span className="flex justify-center w-full border rounded border-gray-700">{rank}</span>
       )}
     </div>
   )

@@ -140,7 +140,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
 
   const titleValue = watch("title")
   const descriptionValue = watch("description")
-  const ranked = watch("ranked")
+  const isRanked = watch("ranked")
   const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
   return (
@@ -179,7 +179,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               onBookSelect={addBook}
               onBookRemove={removeBook}
               onReorder={reorderBooks}
-              ranked={ranked}
+              isRanked={isRanked}
             />
             <div className="flex justify-between">
               <button

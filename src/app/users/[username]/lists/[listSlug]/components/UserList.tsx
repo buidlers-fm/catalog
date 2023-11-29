@@ -49,7 +49,7 @@ export default function UserList({ userProfile, list, isUsersList }) {
       <div className="sm:my-4">{description}</div>
       <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
         {list.books.map((book, index: number) => (
-          <ListBook key={book!.id} book={book} ranked={ranked} index={index + 1} />
+          <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />
         ))}
       </div>
     </div>

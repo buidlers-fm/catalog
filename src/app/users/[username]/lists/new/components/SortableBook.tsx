@@ -8,7 +8,7 @@ import { BsXLg } from "react-icons/bs"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import { truncateString } from "lib/helpers/general"
 
-export default function SortableBook({ id, book, onRemove, ranked, index }) {
+export default function SortableBook({ id, book, onRemove, isRanked, rank }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   })
@@ -33,9 +33,9 @@ export default function SortableBook({ id, book, onRemove, ranked, index }) {
           <RxDragHandleDots2 className="text-3xl text-gray-200" />
         </button>
       </div>
-      {ranked && (
+      {isRanked && (
         <div className="w-14 h-14 shrink-0 mx-2 flex justify-center items-center border rounded border-gray-700">
-          {index + 1}
+          {rank}
         </div>
       )}
       <div className="w-[60px] h-[60px] shrink-0 flex items-center justify-center">
