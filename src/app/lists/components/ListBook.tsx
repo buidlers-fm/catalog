@@ -26,7 +26,7 @@ const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
 const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[288px]"
 
-export default function ListBook({ book, isRanked, rank, isFavorite = false }) {
+export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const router = useRouter()
 
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
