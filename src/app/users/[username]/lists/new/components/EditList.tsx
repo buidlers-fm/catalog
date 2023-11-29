@@ -168,10 +168,13 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               errorMessage={errors.description?.message}
               fullWidth={false}
             />
-            <label htmlFor="ranked">
-              <input id="ranked" type="checkbox" {...register("ranked")} />
-              &nbsp;
-              <span>Ranked list</span>
+            <label htmlFor="ranked" className="flex flex-col justify-between">
+              <div className="mb-2">
+                <input id="ranked" type="checkbox" {...register("ranked")} />
+                &nbsp;
+                <span>Ranked list</span>
+              </div>
+              <span className="text-sm text-gray-200">Show position for each film.</span>
             </label>
             <EditListBooks
               heading="Books"
