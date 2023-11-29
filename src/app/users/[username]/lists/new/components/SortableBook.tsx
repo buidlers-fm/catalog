@@ -38,7 +38,7 @@ export default function SortableBook({ id, book, onRemove, isRanked, rank }) {
           {rank}
         </div>
       )}
-      <div className="w-[60px] h-[60px] shrink-0 flex items-center justify-center">
+      <div className="w-[76px] h-[76px] shrink-0 flex items-center justify-center">
         {book.coverImageUrl ? (
           <img
             src={book.coverImageUrl}
