@@ -79,7 +79,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
         </button>
       </Tooltip>
       {isRanked && (
-        <span className="flex justify-center w-full border rounded border-gray-700">{rank}</span>
+        <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
       )}
     </div>
   )
