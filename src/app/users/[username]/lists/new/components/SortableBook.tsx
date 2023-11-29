@@ -28,8 +28,8 @@ export default function SortableBook({ id, book, onRemove, isRanked, rank }) {
       {...attributes}
       className="flex items-center -my-[1px] px-2 py-3 bg-black border border-gray-700 first:rounded-tl first:rounded-tr last:rounded-bl last:rounded-br"
     >
-      <div {...listeners} className="cursor-pointer shrink-0">
-        <button type="button" className="">
+      <div {...listeners} className="shrink-0">
+        <button type="button" className="block hover:cursor-grab active:cursor-grabbing">
           <RxDragHandleDots2 className="text-3xl text-gray-200" />
         </button>
       </div>
