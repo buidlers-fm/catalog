@@ -9,6 +9,7 @@ import useEditBookList from "lib/hooks/useEditBookList"
 import { getListLink, getEditListLink, getUserListsLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
+import FormToggle from "app/components/forms/FormToggle"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
@@ -60,6 +61,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm<ListMetadata>({
     defaultValues: list as any,
@@ -168,14 +170,13 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               errorMessage={errors.description?.message}
               fullWidth={false}
             />
-            <label htmlFor="ranked" className="flex flex-col justify-between">
-              <div className="mb-2">
-                <input id="ranked" type="checkbox" {...register("ranked")} />
-                &nbsp;
-                <span>Ranked list</span>
-              </div>
-              <span className="text-sm text-gray-200">Show position for each book.</span>
-            </label>
+            <FormToggle
+              label="Ranked list"
+              descriptionText="Show position for each book."
+              name="ranked"
+              control={control}
+              defaultValue={isRanked}
+            />
             <EditListBooks
               heading="Books"
               books={books}
