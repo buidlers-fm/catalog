@@ -1,14 +1,25 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import humps from "humps"
 import Search from "app/components/nav/Search"
 import UserNav from "app/components/nav/UserNav"
+import type Book from "types/Book"
 
 export default function Nav({ currentUserProfile }) {
   const router = useRouter()
 
-  const navigateToBookPage = (book) =>
-    router.push(`/books?open_library_work_id=${book.openLibraryWorkId}`)
+  const navigateToBookPage = (book: Book) => {
+    const queryParams = {
+      openLibraryWorkId: book.openLibraryWorkId,
+      openLibraryEditionId: book.openLibraryBestEditionId,
+    }
+
+    const queryStr = new URLSearchParams(humps.decamelizeKeys(queryParams))
+    const path = `/books?${queryStr}`
+
+    router.push(path)
+  }
 
   return (
     <div className="flex">

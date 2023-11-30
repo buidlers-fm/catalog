@@ -1,10 +1,11 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
-import { fetchJson } from "lib/helpers/general"
+import { fetchJson, isSameLanguage } from "lib/helpers/general"
 import type Book from "types/Book"
 
 dayjs.extend(customParseFormat)
 
+const OL_LANGUAGE_CODE = "en"
 const PUBLISH_DATE_FORMATS = ["YYYY", "MMMM YYYY", "MMMM D, YYYY", "MMM D, YYYY", "YYYY-MM-DD"]
 
 const BASE_URL = "https://openlibrary.org"
@@ -24,16 +25,27 @@ enum CoverSize {
 }
 
 const OpenLibrary = {
-  getFullBook: async (workId: string) => {
+  getFullBook: async (workId: string, bestEditionId?) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
     const work = await fetchJson(workUrl)
+
+    let bestEdition
+
+    if (bestEditionId) {
+      const editionUrl = `${BASE_URL}/editions/${bestEditionId}.json`
+      try {
+        bestEdition = await fetchJson(editionUrl)
+      } catch (error: any) {
+        console.error(error)
+      }
+    }
 
     // get editions and first book data
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
     const editionsRes = await fetchJson(editionsUrl)
     const _editions = editionsRes.entries
-    const editions = [..._editions].sort((a, b) => {
+    let editions = [..._editions].sort((a, b) => {
       if (!a.latestRevision) return 1
       if (!b.latestRevision) return -1
       return b.latestRevision - a.latestRevision
@@ -42,35 +54,18 @@ const OpenLibrary = {
     const isEnglishEdition = (e) =>
       e.languages && e.languages.length === 1 && e.languages[0].key === "/languages/eng"
 
-    const bestEdition = editions.filter(
-      (e) => isEnglishEdition(e) || !e.languages || e.languages.length === 0,
-    )[0]
+    if (bestEdition) {
+      // make it first in the array
+      const rest = editions.filter((e) => e.key !== bestEdition.key)
+      editions = [bestEdition, ...rest]
+    } else {
+      ;[bestEdition] = editions.filter(
+        (e) => isEnglishEdition(e) || !e.languages || e.languages.length === 0,
+      )
+    }
 
     // determine whether original language is english
     const bestEnglishEdition = editions.find((e) => isEnglishEdition(e))
-
-    const normalizeString = (str) => {
-      let result = str
-      const stringsToRemove = ["& ", "and "]
-
-      stringsToRemove.forEach((toRemove) => {
-        result = result.replace(new RegExp(toRemove, "g"), "")
-      })
-
-      return result
-    }
-
-    const isSameLanguage = (_a, _b) => {
-      const a = normalizeString(_a)
-      const b = normalizeString(_b)
-      return (
-        a.localeCompare(b, undefined, {
-          usage: "search",
-          sensitivity: "base",
-          ignorePunctuation: true,
-        }) === 0
-      )
-    }
 
     const isTranslated =
       !!bestEnglishEdition && !isSameLanguage(work.title, bestEnglishEdition.title)
@@ -82,7 +77,6 @@ const OpenLibrary = {
     if (authorKey) {
       let authorUrl = `${BASE_URL}/${authorKey}.json`
       let author = await fetchJson(authorUrl)
-      console.log(author)
       if (author.type.key === "/type/redirect") {
         const nextAuthorKey = author.location
         authorUrl = `${BASE_URL}/${nextAuthorKey}.json`
@@ -167,10 +161,26 @@ const OpenLibrary = {
       return pubDateA.isAfter(pubDateB) ? 1 : -1
     }),
 
-  search: async (searchString: string, limit: number = 3) => {
+  search: async (searchString: string, { includeEditions = false, limit = 3 }) => {
+    let searchFields = [
+      "key",
+      "title",
+      "author_name",
+      "cover_i",
+      "edition_count",
+      "first_publish_year",
+      "isbn",
+    ]
+
+    if (includeEditions) {
+      searchFields = [...searchFields, "editions", "editions.*"]
+    }
+
     const baseSearchUrl = `${BASE_URL}/${PATHS.search}`
     const url = new URL(baseSearchUrl)
     url.searchParams.append("q", searchString)
+    url.searchParams.append("lang", OL_LANGUAGE_CODE)
+    url.searchParams.append("fields", searchFields.join(","))
 
     const resBody = await fetchJson(url)
     let results = resBody.docs // returns up to 100 results per page
@@ -222,21 +232,39 @@ const OpenLibrary = {
     const books: Partial<Book>[] = []
 
     finalResults.forEach((result: any) => {
-      const { title, coverI: coverId } = result
-      const author = result.authorName?.join(", ")
-      const openLibraryWorkId = result.key.split("/works/").pop()
+      const {
+        title: workTitle,
+        coverI: workCoverId,
+        editionCount: editionsCount,
+        firstPublishYear: firstPublishedYear,
+        editions,
+      } = result
+      const bestEdition = editions?.docs?.[0]
+      const bestEditionCoverId = bestEdition?.coverI
 
-      const isDup = books.some((book) => book.title === title && book.authorName === author)
+      const isTranslated = !!bestEdition && !isSameLanguage(bestEdition.title, workTitle)
+
+      const title = bestEdition?.title || workTitle
+      const authorName = result.authorName?.join(", ")
+      const coverId = isTranslated && !!bestEditionCoverId ? bestEditionCoverId : workCoverId
+      const coverImageUrl =
+        coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M)
+      const openLibraryWorkId = result.key.split("/works/").pop()
+      const openLibraryBestEditionId = bestEdition
+        ? bestEdition.key.split("/books/").pop()
+        : undefined
+
+      const isDup = books.some((book) => book.title === title && book.authorName === authorName)
       if (isDup) return
 
       const book: Book = {
         title,
-        authorName: author,
+        authorName,
+        coverImageUrl,
+        editionsCount,
+        firstPublishedYear,
         openLibraryWorkId,
-        coverImageUrl:
-          coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M),
-        editionsCount: result.editionCount,
-        firstPublishedYear: result.firstPublishYear,
+        openLibraryBestEditionId,
       }
 
       books.push(book)

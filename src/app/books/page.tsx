@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation"
+import humps from "humps"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
@@ -8,7 +9,8 @@ import BookPage from "app/books/components/BookPage"
 export const dynamic = "force-dynamic"
 
 export default async function BookPageByQuery({ searchParams }) {
-  const { open_library_work_id: openLibraryWorkId } = searchParams
+  const { openLibraryWorkId, openLibraryEditionId: openLibraryBestEditionId } =
+    humps.camelizeKeys(searchParams)
 
   if (!openLibraryWorkId) notFound()
 
@@ -22,7 +24,7 @@ export default async function BookPageByQuery({ searchParams }) {
 
   let openLibraryBook: any = {}
   try {
-    openLibraryBook = await OpenLibrary.getFullBook(openLibraryWorkId)
+    openLibraryBook = await OpenLibrary.getFullBook(openLibraryWorkId, openLibraryBestEditionId)
   } catch (error: any) {
     if (error.message === "notfound") {
       notFound()

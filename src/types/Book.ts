@@ -11,4 +11,5 @@ export default interface Book {
   openLibraryWorkId: string
   isTranslated?: boolean
   originalTitle?: string
+  openLibraryBestEditionId?: string // in-memory only
 }

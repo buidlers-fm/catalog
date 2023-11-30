@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
+import humps from "humps"
 import "react-modern-drawer/dist/index.css"
 import { BsSearch, BsXLg } from "react-icons/bs"
 import Search from "app/components/nav/Search"
@@ -19,8 +20,17 @@ export default function MobileNav({ currentUserProfile }) {
     setShowMobileSearch(false)
   }, [pathname])
 
-  const navigateToBookPage = (book) =>
-    router.push(`/books?open_library_work_id=${book.openLibraryWorkId}`)
+  const navigateToBookPage = (book) => {
+    const queryParams = {
+      openLibraryWorkId: book.openLibraryWorkId,
+      openLibraryEditionId: book.openLibraryBestEditionId,
+    }
+
+    const queryStr = new URLSearchParams(humps.decamelizeKeys(queryParams))
+    const path = `/books?${queryStr}`
+
+    router.push(path)
+  }
 
   return (
     <div className="flex">
