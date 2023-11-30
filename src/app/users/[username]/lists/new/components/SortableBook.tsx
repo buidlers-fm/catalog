@@ -35,7 +35,7 @@ export default function SortableBook({ id, book, onRemove, isRanked, rank }) {
           </button>
         </div>
         {isRanked && (
-          <div className="w-8 h-auto sm:w-14 sm:h-14 shrink-0 m-2 flex justify-center items-center border rounded border-gray-700">
+          <div className="w-[30px] h-auto sm:w-14 sm:h-14 shrink-0 my-2 sm:mx-2 flex justify-center items-center border rounded border-gray-700">
             {rank}
           </div>
         )}
