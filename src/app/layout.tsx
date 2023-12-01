@@ -3,7 +3,6 @@ import Link from "next/link"
 import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
 import { UserProvider } from "lib/contexts/UserContext"
 import { getCurrentUserProfile } from "lib/server/auth"
-import MobileNav from "app/components/nav/MobileNav"
 import Nav from "app/components/nav/Nav"
 import Toast from "app/components/Toast"
 import type { Metadata } from "next"
@@ -57,12 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
                 <Link href="/">catalog</Link>
               </div>
-              <div className="inline-block lg:hidden">
-                <MobileNav currentUserProfile={currentUserProfile} />
-              </div>
-              <div className="hidden lg:inline-block">
-                <Nav currentUserProfile={currentUserProfile} />
-              </div>
+              <Nav currentUserProfile={currentUserProfile} />
             </header>
             <main className="mx-8 lg:mx-24 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
               {children}
