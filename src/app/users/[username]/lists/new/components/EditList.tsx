@@ -9,6 +9,7 @@ import useEditBookList from "lib/hooks/useEditBookList"
 import { getListLink, getEditListLink, getUserListsLink } from "lib/helpers/general"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
+import FormToggle from "app/components/forms/FormToggle"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
@@ -20,6 +21,12 @@ type Props = {
   firstBook?: Book
   currentUserProfile: UserProfile
   isEdit?: boolean
+}
+
+type ListMetadata = {
+  title: string
+  description: string
+  ranked: boolean
 }
 
 const MAX_LENGTHS = {
@@ -54,8 +61,9 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
-  } = useForm<{ [k: string]: string }>({
+  } = useForm<ListMetadata>({
     defaultValues: list as any,
   })
 
@@ -70,17 +78,18 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     }
   }, [firstBook, addBook, books])
 
-  const submit = async (listData) => {
+  const submit = async (listData: ListMetadata) => {
     setIsSubmitting(true)
     setErrorMessage(undefined)
 
     const toastId = toast.loading("Saving your changes...")
 
-    const { title, description } = listData
+    const { title, description, ranked } = listData
 
     const requestData = {
       title,
       description,
+      ranked,
       books,
     }
 
@@ -133,6 +142,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
 
   const titleValue = watch("title")
   const descriptionValue = watch("description")
+  const isRanked = watch("ranked")
   const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
   return (
@@ -160,12 +170,20 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               errorMessage={errors.description?.message}
               fullWidth={false}
             />
+            <FormToggle
+              label="Ranked list"
+              descriptionText="Show position for each book."
+              name="ranked"
+              control={control}
+              defaultValue={isRanked}
+            />
             <EditListBooks
               heading="Books"
               books={books}
               onBookSelect={addBook}
               onBookRemove={removeBook}
               onReorder={reorderBooks}
+              isRanked={isRanked}
             />
             <div className="flex justify-between">
               <button

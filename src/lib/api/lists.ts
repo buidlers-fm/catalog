@@ -8,6 +8,7 @@ const createList = async (params, userProfile) => {
     description: listDescription,
     books: selectedBooks,
     slug: _listSlug,
+    ranked: listRanked,
     designation,
   } = params
 
@@ -88,6 +89,7 @@ const createList = async (params, userProfile) => {
       slug: listSlug,
       title: listTitle,
       description: listDescription,
+      ranked: listRanked,
       designation,
       creatorId: userProfile.id,
       ownerId: userProfile.id,
@@ -104,7 +106,12 @@ const createList = async (params, userProfile) => {
 }
 
 const updateList = async (list, params, userProfile) => {
-  const { title: listTitle, description: listDescription, books: selectedBooks } = params
+  const {
+    title: listTitle,
+    description: listDescription,
+    ranked: listRanked,
+    books: selectedBooks,
+  } = params
 
   // find existing books
   const existingBooks = await prisma.book.findMany({
@@ -169,6 +176,7 @@ const updateList = async (list, params, userProfile) => {
       slug: listSlug,
       title: listTitle,
       description: listDescription,
+      ranked: listRanked,
       updatedAt: new Date(),
     },
   })

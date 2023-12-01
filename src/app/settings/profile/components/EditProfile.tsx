@@ -206,6 +206,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
               onBookRemove={removeBook}
               onReorder={reorderBooks}
               limit={4}
+              isRanked={false}
             />
           </div>
         </div>

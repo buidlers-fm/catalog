@@ -31,11 +31,12 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     )
   }
 
-  const { title, description, books } = reqJson
+  const { title, description, ranked, books } = reqJson
 
   const updatedListParams = {
     title,
     description,
+    ranked,
     books,
   }
 

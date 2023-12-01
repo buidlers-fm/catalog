@@ -26,7 +26,7 @@ const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
 const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[288px]"
 
-export default function ListBook({ book, isFavorite = false }) {
+export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const router = useRouter()
 
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
@@ -40,12 +40,12 @@ export default function ListBook({ book, isFavorite = false }) {
   return (
     <div
       key={book.id}
-      className={`${
-        isFavorite ? favoriteBookWidths : defaultWidths
-      } h-auto my-8 mx-auto sm:my-4 flex items-center justify-center`}
+      className="flex flex-col items-center justify-center"
     >
       <button
-        className="w-full"
+        className={`${
+          isFavorite ? favoriteBookWidths : defaultWidths
+        } h-auto my-8 mx-auto sm:my-4 grow`}
         onClick={() => router.push(getBookLink(book.slug))}
         disabled={isMobile}
       >
@@ -78,6 +78,9 @@ export default function ListBook({ book, isFavorite = false }) {
           {isMobile && <div className="underline">Go to page</div>}
         </button>
       </Tooltip>
+      {isRanked && (
+        <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
+      )}
     </div>
   )
 }

@@ -13,4 +13,5 @@ export default interface List {
   listItemAssignments: any[] // TODO
   createdAt?: Date
   books?: Book[]
+  ranked: boolean
 }
