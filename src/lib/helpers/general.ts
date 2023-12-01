@@ -132,3 +132,26 @@ export const decorateLists = async (lists) => {
     owner: listIdsToOwners[list.id],
   }))
 }
+
+export const normalizeString = (str) => {
+  let result = str
+  const stringsToRemove = ["& ", "and "]
+
+  stringsToRemove.forEach((toRemove) => {
+    result = result.replace(new RegExp(toRemove, "g"), "")
+  })
+
+  return result
+}
+
+export const isSameLanguage = (_a: string, _b: string) => {
+  const a = normalizeString(_a)
+  const b = normalizeString(_b)
+  return (
+    a.localeCompare(b, undefined, {
+      usage: "search",
+      sensitivity: "base",
+      ignorePunctuation: true,
+    }) === 0
+  )
+}

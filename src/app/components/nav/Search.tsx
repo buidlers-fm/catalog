@@ -22,12 +22,20 @@ type Props = {
   disabledMessage?: string
 }
 
-const mergeSearchResults = (resultsA, resultsB) => {
+const concatUniqueSearchResults = (resultsA, resultsB) => {
+  // resultsA has priority
   const uniqueResultsB = resultsB.filter(
     (bookB) => !resultsA.find((bookA) => bookA.openLibraryWorkId === bookB.openLibraryWorkId),
   )
 
   return [...resultsA, ...uniqueResultsB]
+}
+
+const mergeSearchResults = (resultsA, resultsB) => {
+  // preserve order of resultsA, but override with values from resultsB
+  const resultMap = new Map(resultsB.map((result) => [result.openLibraryWorkId, result]))
+
+  return resultsA.map((result) => resultMap.get(result.openLibraryWorkId) || result)
 }
 
 export default function Search({
@@ -58,10 +66,9 @@ export default function Search({
 
       setIsSearching(true)
 
-      let existingBooksResults = []
+      let existingBooksResults: any[] = []
       try {
         existingBooksResults = await api.books.search(searchString)
-        console.log(existingBooksResults)
         if (existingBooksResults.length > 0) {
           setSearchResults(existingBooksResults)
         }
@@ -69,13 +76,54 @@ export default function Search({
         console.error(error)
       }
 
-      try {
-        const { moreResultsExist: _moreResultsExist, resultsForPage: openLibraryResults } =
-          await OpenLibrary.search(searchString, RESULTS_LIMIT)
+      let allOpenLibraryResults: any[] = []
+      let searchWithEditionsFinished = false
 
-        const mergedResults = mergeSearchResults(existingBooksResults, openLibraryResults)
-        setSearchResults(mergedResults)
-        setMoreResultsExist(_moreResultsExist)
+      try {
+        const searchOpenLibrary = async () => {
+          const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
+            await OpenLibrary.search(searchString, { includeEditions: false, limit: RESULTS_LIMIT })
+
+          // because this search's results are just placeholders until the
+          // better, slower results come in
+          if (searchWithEditionsFinished) return
+
+          allOpenLibraryResults = results
+          const currentResults = concatUniqueSearchResults(existingBooksResults, results)
+
+          setSearchResults(currentResults)
+          setMoreResultsExist(_moreResultsExist)
+        }
+
+        const searchOpenLibraryWithEditions = async () => {
+          try {
+            const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
+              await OpenLibrary.search(searchString, {
+                includeEditions: true,
+                limit: RESULTS_LIMIT,
+              })
+
+            // existing books always come first, followed by the 2x openlibrary results,
+            // merged with each other such that we use the order of the first results,
+            // but override with the values of the later results.
+            // this prevents disorienting changes to the order of results; the arrival
+            // of later results should only result in titles and/or covers changing, in place.
+            allOpenLibraryResults = mergeSearchResults(allOpenLibraryResults, results)
+            const currentResults = concatUniqueSearchResults(
+              existingBooksResults,
+              allOpenLibraryResults,
+            )
+
+            setSearchResults(currentResults)
+            setMoreResultsExist(_moreResultsExist)
+          } catch (error: any) {
+            console.error(error)
+          }
+
+          searchWithEditionsFinished = true
+        }
+
+        await Promise.all([searchOpenLibrary(), searchOpenLibraryWithEditions()])
       } catch (error: any) {
         console.error(error)
       }
