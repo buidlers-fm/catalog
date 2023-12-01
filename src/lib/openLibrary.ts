@@ -33,9 +33,9 @@ const OpenLibrary = {
     let bestEdition
 
     if (bestEditionId) {
-      const editionUrl = `${BASE_URL}/editions/${bestEditionId}.json`
+      const bestEditionUrl = `${BASE_URL}/editions/${bestEditionId}.json`
       try {
-        bestEdition = await fetchJson(editionUrl)
+        bestEdition = await fetchJson(bestEditionUrl)
       } catch (error: any) {
         console.error(error)
       }
@@ -59,7 +59,7 @@ const OpenLibrary = {
       const rest = editions.filter((e) => e.key !== bestEdition.key)
       editions = [bestEdition, ...rest]
     } else {
-      ;[bestEdition] = editions.filter(
+      bestEdition = editions.find(
         (e) => isEnglishEdition(e) || !e.languages || e.languages.length === 0,
       )
     }

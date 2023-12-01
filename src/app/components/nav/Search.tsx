@@ -31,14 +31,12 @@ const concatUniqueSearchResults = (resultsA, resultsB) => {
   return [...resultsA, ...uniqueResultsB]
 }
 
-const mergeSearchResults = (resultsA, resultsB) =>
+const mergeSearchResults = (resultsA, resultsB) => {
   // preserve order of resultsA, but override with values from resultsB
-  resultsA.map((bookA) => {
-    const matchingBookB = resultsB.find(
-      (bookB) => bookB.openLibraryWorkId === bookA.openLibraryWorkId,
-    )
-    return matchingBookB || bookA
-  })
+  const resultMap = new Map(resultsB.map((result) => [result.openLibraryWorkId, result]))
+
+  return resultsA.map((result) => resultMap.get(result.openLibraryWorkId) || result)
+}
 
 export default function Search({
   onSelect,
