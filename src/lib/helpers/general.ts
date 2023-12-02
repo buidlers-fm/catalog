@@ -141,6 +141,8 @@ export const normalizeString = (str) => {
     result = result.replace(new RegExp(toRemove, "g"), "")
   })
 
+  result = stripPunctuation(result)
+
   return result
 }
 
@@ -155,3 +157,16 @@ export const isSameLanguage = (_a: string, _b: string) => {
     }) === 0
   )
 }
+
+export const stripPunctuation = (str) => str.replace(/[^\w\s]|_/g, "")
+
+// identical implementations for now, but could diverge later
+export const looseStringEquals = isSameLanguage
+
+export const isDevelopment = () => process.env.CATALOG_ENV === "development"
+
+export const isPreview = () => process.env.CATALOG_ENV === "preview"
+
+export const isStaging = () => process.env.CATALOG_ENV === "staging"
+
+export const isProduction = () => process.env.CATALOG_ENV === "production"

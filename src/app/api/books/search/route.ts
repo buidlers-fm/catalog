@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
 import { withApiHandling } from "lib/api/withApiHandling"
-import BooksQuickSearch from "lib/search/booksQuickSearch"
+import BooksQuickSearch from "lib/server/booksQuickSearch"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(

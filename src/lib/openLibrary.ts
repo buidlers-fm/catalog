@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
-import { fetchJson, isSameLanguage } from "lib/helpers/general"
+import { isProduction, fetchJson, isSameLanguage } from "lib/helpers/general"
 import type Book from "types/Book"
 
 dayjs.extend(customParseFormat)
@@ -8,7 +8,8 @@ dayjs.extend(customParseFormat)
 const OL_LANGUAGE_CODE = "en"
 const PUBLISH_DATE_FORMATS = ["YYYY", "MMMM YYYY", "MMMM D, YYYY", "MMM D, YYYY", "YYYY-MM-DD"]
 
-const BASE_URL = "https://openlibrary.org"
+// TODO: temp while OL is experimenting with search quality on their test env
+const BASE_URL = isProduction() ? "https://openlibrary.org" : "https://testing.openlibrary.org"
 const COVERS_BASE_URL = "https://covers.openlibrary.org/b"
 const PATHS = {
   search: "search.json",
@@ -194,44 +195,11 @@ const OpenLibrary = {
       (result: any) => result.isbn && result.authorName && result.authorName.length > 0,
     )
 
-    const resultsByEditionCount = [...results].sort((a, b) => b.editionCount - a.editionCount)
-
-    const resultsByFirstPublished = [...results].sort(
-      (a, b) => (a.firstPublishYear || Infinity) - (b.firstPublishYear || Infinity),
-    )
-
-    const decoratedResults = results.map((result, idx) => ({
-      result,
-      originalIndex: idx,
-      editionCountIndex: resultsByEditionCount.findIndex((r) => r.key === result.key),
-      firstPublishedIndex: resultsByFirstPublished.findIndex((r) => r.key === result.key),
-    }))
-
-    const scoreForResult = (decoratedResult) => {
-      const { originalIndex, editionCountIndex, firstPublishedIndex } = decoratedResult
-
-      // avoid 0 values in case we use multipliers at some point
-      const originalIndexScore = originalIndex + 1
-      const editionCountScore = editionCountIndex + 1
-      const firstPublishedScore = firstPublishedIndex + 1
-
-      const totalScore = originalIndexScore + editionCountScore + firstPublishedScore
-
-      return totalScore
-    }
-
-    const rankedResults = [...decoratedResults]
-      .sort((a, b) => scoreForResult(a) - scoreForResult(b))
-      .map((decoratedResult) => decoratedResult.result)
-
     // there are more pages of results in openlibrary OR
     // there are more filtered results than the limit
     moreResultsExist = moreResultsExist || results.length > limit
-    const finalResults = rankedResults.slice(0, limit)
 
-    const books: Partial<Book>[] = []
-
-    finalResults.forEach((result: any) => {
+    const books = results.map((result: any) => {
       const {
         title: workTitle,
         coverI: workCoverId,
@@ -254,9 +222,6 @@ const OpenLibrary = {
         ? bestEdition.key.split("/books/").pop()
         : undefined
 
-      const isDup = books.some((book) => book.title === title && book.authorName === authorName)
-      if (isDup) return
-
       const book: Book = {
         title,
         authorName,
@@ -265,9 +230,11 @@ const OpenLibrary = {
         firstPublishedYear,
         openLibraryWorkId,
         openLibraryBestEditionId,
+        isTranslated,
+        originalTitle: workTitle,
       }
 
-      books.push(book)
+      return book
     })
 
     return { resultsForPage: books, moreResultsExist }

@@ -165,6 +165,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@leeoniya/ufuzzy@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@leeoniya/ufuzzy/-/ufuzzy-1.0.11.tgz#2292e0cfa2b285e530b0cedd7f6609dfd6159fd4"
+  integrity sha512-QWyEseqEK9t50h9baDmoPkTPSczWZH5TaZAXSBBWbSI6+AxHFd6ldZRmyvCKfyNvjceJ6MwqKCeizsVT+gyJPw==
+
 "@next/env@13.4.16":
   version "13.4.16"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-13.4.16.tgz#382b565b35a2a69bd0e6b50f74c7b95f0c4b1097"
