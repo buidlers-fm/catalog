@@ -4,6 +4,7 @@ import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/helpers/general"
 import BookPage from "app/books/components/BookPage"
+import RemountOnPathChange from "app/components/RemountOnPathChange"
 
 export const dynamic = "force-dynamic"
 
@@ -103,6 +104,12 @@ export default async function BookPageBySlug({ params }: any) {
   const bookLists = await decorateLists(_bookLists)
 
   return (
-    <BookPage book={book} userLists={userLists} bookLists={bookLists} isSignedIn={!!userProfile} />
+    <RemountOnPathChange
+      ComponentToRemount={BookPage}
+      book={book}
+      userLists={userLists}
+      bookLists={bookLists}
+      isSignedIn={!!userProfile}
+    />
   )
 }
