@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { FaPlus } from "react-icons/fa6"
 import { GiOpenBook } from "react-icons/gi"
 import OpenLibrary from "lib/openLibrary"
@@ -22,7 +22,14 @@ export default function BookPage({
   bookLists?: List[]
   isSignedIn: boolean
 }) {
+  const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
+
+  const imgRef = useRef(null)
+
+  useEffect(() => {
+    if ((imgRef.current as any)?.complete) setImgLoaded(true)
+  }, [])
 
   return (
     <>
@@ -30,16 +37,19 @@ export default function BookPage({
         <div className="mx-8 lg:mx-16">
           <div className="md:flex">
             <div className="flex-grow-0 flex-shrink-0 w-64 mx-auto mb-16">
+              {book.coverImageUrl && !imgLoaded && <CoverPlaceholder loading />}
               {book.coverImageUrl ? (
                 <img
+                  ref={imgRef}
                   src={book.coverImageUrl}
                   alt="cover"
-                  className="object-top mx-auto shadow-md rounded-md"
+                  className={`${
+                    imgLoaded ? "block" : "hidden"
+                  } object-top mx-auto shadow-md rounded-md`}
+                  onLoad={() => setImgLoaded(true)}
                 />
               ) : (
-                <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded">
-                  <GiOpenBook className="mt-0 text-9xl text-gray-500" />
-                </div>
+                <CoverPlaceholder />
               )}
               {isSignedIn && (
                 <div className="my-8 font-mulish">
@@ -123,3 +133,13 @@ export default function BookPage({
     </>
   )
 }
+
+const CoverPlaceholder = ({ loading = false }) => (
+  <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center">
+    {loading ? (
+      <span className="text-sm text-gray-200">Loading...</span>
+    ) : (
+      <GiOpenBook className="mt-0 text-9xl text-gray-500" />
+    )}
+  </div>
+)
