@@ -2,7 +2,7 @@ import prisma from "lib/prisma"
 
 const BooksQuickSearch = {
   searchExistingBooks: async (searchString) => {
-    // TODO: limit
+    const LIMIT = 20 // just an arbitrary small value to cap it at
 
     // case-insensitive exact substring search OR full-text search
     // the former (`ILIKE` queries) handles exact search strings that aren't full words
@@ -23,7 +23,9 @@ const BooksQuickSearch = {
         (title || ' ' || author_name || ' ' || original_title) % ${searchString}
       ORDER BY
         trigram DESC,
-        ts_rank DESC;
+        ts_rank DESC
+      LIMIT
+        ${LIMIT};
     `
 
     return results
