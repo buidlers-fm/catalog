@@ -31,6 +31,8 @@ const createList = async (params, userProfile) => {
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear,
+      isTranslated,
+      originalTitle,
     } = selectedBook
 
     return {
@@ -41,6 +43,8 @@ const createList = async (params, userProfile) => {
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear: Number(firstPublishedYear),
+      isTranslated,
+      originalTitle,
     }
   })
 
@@ -132,6 +136,8 @@ const updateList = async (list, params, userProfile) => {
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear,
+      isTranslated,
+      originalTitle,
     } = selectedBook
 
     return {
@@ -142,6 +148,8 @@ const updateList = async (list, params, userProfile) => {
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear: Number(firstPublishedYear),
+      isTranslated,
+      originalTitle,
     }
   })
 
