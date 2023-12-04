@@ -79,17 +79,20 @@ export default function Search({
           const { moreResultsExist: _moreResultsExist, resultsForPage: _results } =
             await OpenLibrary.search(searchString, { includeEditions: false, limit: RESULTS_LIMIT })
 
-          const results = search.processResults(_results, searchString, {
-            limit: RESULTS_LIMIT,
-            applyFuzzySearch: false,
-          })
-
           // because this search's results are just placeholders until the
           // better, slower results come in
           if (searchWithEditionsFinished) return
 
+          const results = search.processResults(_results, searchString, {
+            applyFuzzySearch: false,
+          })
+
+          // apply limit for the results being rendered now, but don't apply limit
+          // for results that will get processed along with the other results when
+          // they come back, so that we have all results available
           allOpenLibraryResults = results
-          const currentResults = concatUniqueSearchResults(existingBooksResults, results)
+          let currentResults = concatUniqueSearchResults(existingBooksResults, results)
+          currentResults = currentResults.slice(0, RESULTS_LIMIT)
 
           setSearchResults(currentResults)
           setMoreResultsExist(_moreResultsExist)
@@ -107,14 +110,15 @@ export default function Search({
             allOpenLibraryResults = concatUniqueSearchResults(results, allOpenLibraryResults)
 
             allOpenLibraryResults = search.processResults(allOpenLibraryResults, searchString, {
-              limit: RESULTS_LIMIT,
               applyFuzzySearch: true,
             })
 
-            const currentResults = concatUniqueSearchResults(
+            let currentResults = concatUniqueSearchResults(
               existingBooksResults,
               allOpenLibraryResults,
             )
+
+            currentResults = currentResults.slice(0, RESULTS_LIMIT)
 
             setSearchResults(currentResults)
             setMoreResultsExist(_moreResultsExist)

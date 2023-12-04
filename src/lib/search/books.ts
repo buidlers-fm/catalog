@@ -89,7 +89,7 @@ const search = {
 
   // primary method to run all the steps
   processResults: (_results: Book[], searchString: string, options: any = {}) => {
-    const { limit, applyFuzzySearch } = options
+    const { applyFuzzySearch } = options
 
     let results = _results
 
@@ -98,10 +98,6 @@ const search = {
     }
 
     results = search.dedupe(results)
-
-    if (limit) {
-      results = results.slice(0, limit)
-    }
 
     return results
   },
