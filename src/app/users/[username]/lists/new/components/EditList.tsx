@@ -111,7 +111,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
       } else {
         const createdList: List = await api.lists.create(requestData)
 
-        toast.success("Changes saved!", { id: toastId })
+        toast.success("Changes saved! Navigating to your list...", { id: toastId })
         router.push(getListLink(currentUserProfile, createdList.slug!))
       }
     } catch (error: any) {
