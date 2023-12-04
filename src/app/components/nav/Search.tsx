@@ -8,11 +8,13 @@ import { GiOpenBook } from "react-icons/gi"
 import { ThreeDotsScale } from "react-svg-spinners"
 import debounce from "lodash.debounce"
 import api from "lib/api"
+import search from "lib/search/books"
 import OpenLibrary from "lib/openLibrary"
 import { truncateString } from "lib/helpers/general"
 import type Book from "types/Book"
 
-const RESULTS_LIMIT = 8
+const RESULTS_LIMIT = 5
+const DEBOUNCE_THRESHOLD_MS = 500
 
 type Props = {
   onSelect: (selectedBook) => void
@@ -29,13 +31,6 @@ const concatUniqueSearchResults = (resultsA, resultsB) => {
   )
 
   return [...resultsA, ...uniqueResultsB]
-}
-
-const mergeSearchResults = (resultsA, resultsB) => {
-  // preserve order of resultsA, but override with values from resultsB
-  const resultMap = new Map(resultsB.map((result) => [result.openLibraryWorkId, result]))
-
-  return resultsA.map((result) => resultMap.get(result.openLibraryWorkId) || result)
 }
 
 export default function Search({
@@ -81,15 +76,23 @@ export default function Search({
 
       try {
         const searchOpenLibrary = async () => {
-          const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
+          const { moreResultsExist: _moreResultsExist, resultsForPage: _results } =
             await OpenLibrary.search(searchString, { includeEditions: false, limit: RESULTS_LIMIT })
 
           // because this search's results are just placeholders until the
           // better, slower results come in
           if (searchWithEditionsFinished) return
 
+          const results = search.processResults(_results, searchString, {
+            applyFuzzySearch: false,
+          })
+
+          // apply limit for the results being rendered now, but don't apply limit
+          // for results that will get processed along with the other results when
+          // they come back, so that we have all results available
           allOpenLibraryResults = results
-          const currentResults = concatUniqueSearchResults(existingBooksResults, results)
+          let currentResults = concatUniqueSearchResults(existingBooksResults, results)
+          currentResults = currentResults.slice(0, RESULTS_LIMIT)
 
           setSearchResults(currentResults)
           setMoreResultsExist(_moreResultsExist)
@@ -103,16 +106,19 @@ export default function Search({
                 limit: RESULTS_LIMIT,
               })
 
-            // existing books always come first, followed by the 2x openlibrary results,
-            // merged with each other such that we use the order of the first results,
-            // but override with the values of the later results.
-            // this prevents disorienting changes to the order of results; the arrival
-            // of later results should only result in titles and/or covers changing, in place.
-            allOpenLibraryResults = mergeSearchResults(allOpenLibraryResults, results)
-            const currentResults = concatUniqueSearchResults(
+            // existing books always come first, followed by the 2x openlibrary results
+            allOpenLibraryResults = concatUniqueSearchResults(results, allOpenLibraryResults)
+
+            allOpenLibraryResults = search.processResults(allOpenLibraryResults, searchString, {
+              applyFuzzySearch: true,
+            })
+
+            let currentResults = concatUniqueSearchResults(
               existingBooksResults,
               allOpenLibraryResults,
             )
+
+            currentResults = currentResults.slice(0, RESULTS_LIMIT)
 
             setSearchResults(currentResults)
             setMoreResultsExist(_moreResultsExist)
@@ -131,7 +137,7 @@ export default function Search({
       setIsSearching(false)
     }
 
-    return debounce(onSearchChange, 300)
+    return debounce(onSearchChange, DEBOUNCE_THRESHOLD_MS)
   }, [])
 
   const handleSelect = (book: Book) => {
