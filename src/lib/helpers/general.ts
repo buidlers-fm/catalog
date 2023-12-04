@@ -56,7 +56,8 @@ export const getEditListLink = (userProfile, slug: string) =>
   `${getListLink(userProfile, slug)}/edit`
 
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {
-  const simpleSlug = slugify(str)
+  const MAX_BASE_LENGTH = 72
+  const simpleSlug = slugify(str).slice(0, MAX_BASE_LENGTH)
   const simpleSlugFilters = { slug: simpleSlug, ...additionalFilters }
   const isSimpleSlugAvailable = !(await (prisma[modelName] as any).findFirst({
     where: simpleSlugFilters,
