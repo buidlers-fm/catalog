@@ -212,7 +212,7 @@ const OpenLibrary = {
 
       const isTranslated = !!bestEdition && !isSameLanguage(bestEdition.title, workTitle)
 
-      const title = bestEdition?.title || workTitle
+      const title = isTranslated && bestEdition?.title ? bestEdition.title : workTitle
       const authorName = result.authorName?.join(", ")
       const coverId = isTranslated && !!bestEditionCoverId ? bestEditionCoverId : workCoverId
       const coverImageUrl =
