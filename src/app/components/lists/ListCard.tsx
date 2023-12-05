@@ -9,7 +9,7 @@ const NUM_BOOK_COVERS = 4
 export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
   const totalBookCount = list.books.length
   const books = list.books.slice(0, NUM_BOOK_COVERS)
-  const owner = UserProfile.build(list.owner)
+  const { name } = UserProfile.build(list.owner)
 
   return (
     <div
@@ -40,7 +40,7 @@ export default function ListCard({ list, withByline = false, separators = true, 
                 ) : (
                   <FaUserCircle className="mr-2 text-xl text-gold-100" />
                 )}
-                <span className="text-sm">{owner.name}</span>
+                <span className="text-sm">{name}</span>
               </div>
             )}
             {list.description && (

@@ -14,12 +14,12 @@ import EditListBooks from "app/users/[username]/lists/new/components/EditListBoo
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
 import type Book from "types/Book"
-import type UserProfile from "lib/models/UserProfile"
+import type { UserProfileProps } from "lib/models/UserProfile"
 
 type Props = {
   list?: List
   firstBook?: Book
-  currentUserProfile: UserProfile
+  currentUserProfile: UserProfileProps
   isEdit?: boolean
 }
 

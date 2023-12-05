@@ -13,7 +13,7 @@ import {
   sortListsByPinSortOrder,
   decorateLists,
 } from "lib/helpers/general"
-import UserProfile from "lib/models/UserProfile"
+import UserProfile, { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
@@ -24,7 +24,7 @@ export default async function UserProfilePage({ params }) {
   const { username } = params
   const currentUserProfile = await getCurrentUserProfile()
 
-  const prismaUserProfile = await prisma.userProfile.findFirst({
+  const prismaUserProfile: UserProfileProps | null = await prisma.userProfile.findFirst({
     where: {
       username,
     },
@@ -105,9 +105,9 @@ export default async function UserProfilePage({ params }) {
 
   lists = await decorateLists(lists)
 
-  const isUsersProfile = currentUserProfile?.id === userProfile!.id
+  const isUsersProfile = currentUserProfile?.id === userProfile.id
 
-  const { name, bio, location, website, avatarUrl } = userProfile!
+  const { name, bio, location, website, avatarUrl } = userProfile
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">

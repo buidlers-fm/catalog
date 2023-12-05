@@ -4,7 +4,7 @@ import { createContext, useState, useCallback, useEffect, useMemo, useContext } 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
 import api from "lib/api"
-import type UserProfile from "lib/models/UserProfile"
+import type { UserProfileProps } from "lib/models/UserProfile"
 
 type User = {
   id?: string
@@ -14,7 +14,7 @@ type User = {
 
 type UserProviderValue = {
   currentUser?: User | null
-  currentUserProfile?: UserProfile | null
+  currentUserProfile?: UserProfileProps | null
   signUp: (email: string, username: string, password: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
@@ -25,7 +25,7 @@ const UserContext = createContext<UserProviderValue | undefined>(undefined)
 
 export function UserProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>()
-  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>()
+  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfileProps | null>()
   const [isFetching, setIsFetching] = useState<boolean>(true)
 
   const supabase = createClientComponentClient()
