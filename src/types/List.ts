@@ -1,5 +1,5 @@
 import type Book from "types/Book"
-import type UserProfile from "types/UserProfile"
+import type UserProfile from "lib/models/UserProfile"
 
 export default interface List {
   id?: string

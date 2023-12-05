@@ -14,7 +14,7 @@ import EditListBooks from "app/users/[username]/lists/new/components/EditListBoo
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type List from "types/List"
 import type Book from "types/Book"
-import type UserProfile from "types/UserProfile"
+import type UserProfile from "lib/models/UserProfile"
 
 type Props = {
   list?: List

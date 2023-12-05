@@ -6,12 +6,13 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import ListBook from "app/lists/components/ListBook"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
+import UserProfile from "lib/models/UserProfile"
 
 dayjs.extend(relativeTime)
 
 export default function UserList({ userProfile, list, isUsersList }) {
   const { title, slug: listSlug, description, createdAt, ranked, updatedAt: _updatedAt } = list
-  const { username, displayName } = userProfile!
+  const { name, username } = UserProfile.build(userProfile)
   const createdAtFromNow = dayjs(createdAt).fromNow()
   const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
   const updatedAt = _updatedAt || createdAt
@@ -33,7 +34,7 @@ export default function UserList({ userProfile, list, isUsersList }) {
       <div className="my-2 text-gray-200 font-mulish">
         a list by{" "}
         <Link href={getUserProfileLink(username)} className="cat-underline">
-          {displayName}
+          {name}
         </Link>
       </div>
       <div className="my-3 text-gray-500 text-sm font-mulish">

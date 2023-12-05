@@ -4,7 +4,7 @@ import { createContext, useState, useCallback, useEffect, useMemo, useContext } 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
 import api from "lib/api"
-import type UserProfile from "types/UserProfile"
+import type UserProfile from "lib/models/UserProfile"
 
 type User = {
   id?: string
