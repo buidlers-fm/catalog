@@ -13,6 +13,7 @@ import {
   sortListsByPinSortOrder,
   decorateLists,
 } from "lib/helpers/general"
+import UserProfile, { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
@@ -23,13 +24,14 @@ export default async function UserProfilePage({ params }) {
   const { username } = params
   const currentUserProfile = await getCurrentUserProfile()
 
-  const userProfile = await prisma.userProfile.findFirst({
+  const prismaUserProfile: UserProfileProps | null = await prisma.userProfile.findFirst({
     where: {
       username,
     },
   })
 
-  if (!userProfile) notFound()
+  if (!prismaUserProfile) notFound()
+  const userProfile = UserProfile.build(prismaUserProfile)
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
@@ -103,9 +105,9 @@ export default async function UserProfilePage({ params }) {
 
   lists = await decorateLists(lists)
 
-  const isUsersProfile = currentUserProfile?.id === userProfile!.id
+  const isUsersProfile = currentUserProfile?.id === userProfile.id
 
-  const { displayName, bio, location, website, avatarUrl } = userProfile!
+  const { name, bio, location, website, avatarUrl } = userProfile
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
@@ -118,7 +120,7 @@ export default async function UserProfilePage({ params }) {
           <FaUserCircle className="mr-3 text-[96px] text-gray-500" />
         )}
         <div className="my-6 sm:my-0 sm:ml-4 grow">
-          <div className="text-2xl font-bold">{displayName || username}</div>
+          <div className="text-2xl font-bold">{name}</div>
           <div className="mt-2 max-w-lg whitespace-pre-wrap">{bio}</div>
           <div className="flex mt-3 text-gray-300">
             {location && (
@@ -156,7 +158,7 @@ export default async function UserProfilePage({ params }) {
           </div>
         ) : (
           <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
-            {isUsersProfile ? "You haven't" : `${displayName || username} hasn't`} added any
+            {isUsersProfile ? "You haven't" : `${name} hasn't`} added any
             favorite books yet.
             {isUsersProfile && (
               <>
@@ -201,7 +203,7 @@ export default async function UserProfilePage({ params }) {
           </div>
         ) : (
           <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            {isUsersProfile ? "You haven't" : `${displayName || username} hasn't`} created any lists
+            {isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists
             yet.
           </div>
         )}

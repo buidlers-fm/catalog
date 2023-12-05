@@ -1,5 +1,5 @@
 import type Book from "types/Book"
-import type UserProfile from "types/UserProfile"
+import type { UserProfileProps } from "lib/models/UserProfile"
 
 export default interface List {
   id?: string
@@ -7,9 +7,9 @@ export default interface List {
   title: string
   description?: string | null
   creatorId: string
-  creator?: UserProfile
+  creator?: UserProfileProps
   ownerId: string
-  owner?: UserProfile
+  owner?: UserProfileProps
   listItemAssignments: any[] // TODO
   createdAt?: Date
   books?: Book[]

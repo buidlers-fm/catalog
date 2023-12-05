@@ -2,12 +2,14 @@ import Link from "next/link"
 import { FaUserCircle } from "react-icons/fa"
 import { GiOpenBook } from "react-icons/gi"
 import { truncateString } from "lib/helpers/general"
+import UserProfile from "lib/models/UserProfile"
 
 const NUM_BOOK_COVERS = 4
 
 export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
   const totalBookCount = list.books.length
   const books = list.books.slice(0, NUM_BOOK_COVERS)
+  const { name } = UserProfile.build(list.owner)
 
   return (
     <div
@@ -38,7 +40,7 @@ export default function ListCard({ list, withByline = false, separators = true, 
                 ) : (
                   <FaUserCircle className="mr-2 text-xl text-gold-100" />
                 )}
-                <span className="text-sm">{list.owner.displayName}</span>
+                <span className="text-sm">{name}</span>
               </div>
             )}
             {list.description && (
