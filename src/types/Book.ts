@@ -1,3 +1,5 @@
+import type BookNote from "types/BookNote"
+
 export default interface Book {
   id?: string
   slug?: string
@@ -12,4 +14,5 @@ export default interface Book {
   isTranslated?: boolean
   originalTitle?: string
   openLibraryBestEditionId?: string // in-memory only
+  bookNotes?: BookNote[]
 }

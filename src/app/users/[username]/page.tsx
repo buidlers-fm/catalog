@@ -5,6 +5,7 @@ import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
+import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import {
@@ -24,9 +25,28 @@ export default async function UserProfilePage({ params }) {
   const { username } = params
   const currentUserProfile = await getCurrentUserProfile()
 
+  // causes too many type errors on included objects because nearly every field can be null
+  // @ts-ignore
   const prismaUserProfile: UserProfileProps | null = await prisma.userProfile.findFirst({
     where: {
       username,
+    },
+    include: {
+      bookNotes: {
+        where: {
+          text: {
+            not: null,
+            notIn: [""],
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          creator: true,
+          book: true,
+        },
+      },
     },
   })
 
@@ -108,6 +128,7 @@ export default async function UserProfilePage({ params }) {
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
   const { name, bio, location, website, avatarUrl } = userProfile
+  const notes = userProfile.bookNotes?.slice(0, 3) || []
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
@@ -148,7 +169,7 @@ export default async function UserProfilePage({ params }) {
         </div>
       </div>
       <div className="mt-12 font-mulish">
-        <div className="text-gray-300 text-sm uppercase tracking-wider">Favorite Books</div>
+        <div className="cat-eyebrow">Favorite Books</div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
           <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
@@ -158,8 +179,7 @@ export default async function UserProfilePage({ params }) {
           </div>
         ) : (
           <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
-            {isUsersProfile ? "You haven't" : `${name} hasn't`} added any
-            favorite books yet.
+            {isUsersProfile ? "You haven't" : `${name} hasn't`} added any favorite books yet.
             {isUsersProfile && (
               <>
                 <br />
@@ -169,11 +189,29 @@ export default async function UserProfilePage({ params }) {
           </div>
         )}
       </div>
+
+      {notes.length > 0 && (
+        <div className="mt-8 font-mulish">
+          <div className="flex justify-between text-gray-300 text-sm">
+            <div className="cat-eyebrow">Recent notes</div>
+            <div className="flex -mt-1">
+              <Link className="inline-block mt-1 mx-2" href="/">
+                See all
+              </Link>
+            </div>
+          </div>
+          <hr className="my-1 h-[1px] border-none bg-gray-300" />
+          <div className="">
+            {notes.map((note) => (
+              <BookNoteCard key={note.id} note={note} />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mt-16 font-mulish">
         <div className="flex justify-between text-gray-300 text-sm">
-          <div className="uppercase tracking-wider">
-            {hasPinnedLists ? "Pinned lists" : "Recent lists"}
-          </div>
+          <div className="cat-eyebrow">{hasPinnedLists ? "Pinned lists" : "Recent lists"}</div>
           <div
             className={`flex flex-col xs:flex-row items-end xs:items-stretch ${
               isUsersProfile ? "-mt-10 xs:-mt-3" : ""
@@ -203,8 +241,7 @@ export default async function UserProfilePage({ params }) {
           </div>
         ) : (
           <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            {isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists
-            yet.
+            {isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists yet.
           </div>
         )}
       </div>

@@ -1,15 +1,13 @@
 import Link from "next/link"
-import { FaUserCircle } from "react-icons/fa"
 import { GiOpenBook } from "react-icons/gi"
 import { truncateString } from "lib/helpers/general"
-import UserProfile from "lib/models/UserProfile"
+import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 
 const NUM_BOOK_COVERS = 4
 
 export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
   const totalBookCount = list.books.length
   const books = list.books.slice(0, NUM_BOOK_COVERS)
-  const { name } = UserProfile.build(list.owner)
 
   return (
     <div
@@ -29,20 +27,7 @@ export default function ListCard({ list, withByline = false, separators = true, 
               <span className="font-bold">{truncateString(list.title, 64)}</span>
               <span className="ml-2 text-gray-500 text-sm font-normal">{totalBookCount} books</span>
             </div>
-            {withByline && (
-              <div className="flex my-2">
-                {list.owner.avatarUrl ? (
-                  <img
-                    src={list.owner.avatarUrl}
-                    alt="user avatar"
-                    className="mr-2 w-[20px] rounded-full"
-                  />
-                ) : (
-                  <FaUserCircle className="mr-2 text-xl text-gold-100" />
-                )}
-                <span className="text-sm">{name}</span>
-              </div>
-            )}
+            {withByline && <NameWithAvatar userProfile={list.owner} />}
             {list.description && (
               <div className="text-sm">{truncateString(list.description, 100)}</div>
             )}
