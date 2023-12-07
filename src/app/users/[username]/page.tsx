@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { UserProfile as UserProfilePrisma } from "@prisma/client"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
@@ -14,10 +15,13 @@ import {
   sortListsByPinSortOrder,
   decorateLists,
 } from "lib/helpers/general"
-import UserProfile, { UserProfileProps } from "lib/models/UserProfile"
+import UserProfile from "lib/models/UserProfile"
+import BookNoteType from "enums/BookNoteType"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
+
+const BOOK_NOTES_LIMIT = 3
 
 const getDomainFromUrl = (url: string) => new URL(url).hostname
 
@@ -25,9 +29,7 @@ export default async function UserProfilePage({ params }) {
   const { username } = params
   const currentUserProfile = await getCurrentUserProfile()
 
-  // causes too many type errors on included objects because nearly every field can be null
-  // @ts-ignore
-  const prismaUserProfile: UserProfileProps | null = await prisma.userProfile.findFirst({
+  const prismaUserProfile: UserProfilePrisma | null = await prisma.userProfile.findFirst({
     where: {
       username,
     },
@@ -128,7 +130,10 @@ export default async function UserProfilePage({ params }) {
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
   const { name, bio, location, website, avatarUrl } = userProfile
-  const notes = userProfile.bookNotes?.slice(0, 3) || []
+  const notes =
+    (userProfile.bookNotes || [])
+      .filter((note) => note.noteType === BookNoteType.JournalEntry)
+      .slice(0, BOOK_NOTES_LIMIT) || []
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">

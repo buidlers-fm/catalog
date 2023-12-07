@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form"
 import dayjs from "dayjs"
 import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
-import { GiOpenBook } from "react-icons/gi"
 import api from "lib/api"
+import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import allValidations from "app/constants/validations"
 import { dateStringToDateTime } from "lib/helpers/general"
 import FormTextarea from "app/components/forms/FormTextarea"
@@ -25,15 +25,6 @@ export default function LogBookModal({ book, onClose, isOpen }) {
 
   const bookNoteValidations = allValidations.bookNote
 
-  const validations = {
-    text: {
-      maxLength: {
-        value: bookNoteValidations.text.maxLength,
-        message: `The text of your note cannot be longer than ${bookNoteValidations.text.maxLength} characters.`,
-      },
-    },
-  }
-
   const todayStr = dayjs().format("YYYY-MM-DD")
 
   const {
@@ -48,6 +39,22 @@ export default function LogBookModal({ book, onClose, isOpen }) {
       finished: true,
     },
   })
+
+  const startDateValue = watch("startDate")
+  const textValue = watch("text")
+
+  const validations = {
+    finishDate: {
+      validate: (value) =>
+        new Date(startDateValue) <= new Date(value) || "Finish date must be after start date.",
+    },
+    text: {
+      maxLength: {
+        value: bookNoteValidations.text.maxLength,
+        message: `The text of your note cannot be longer than ${bookNoteValidations.text.maxLength} characters.`,
+      },
+    },
+  }
 
   const handleClose = async () => {
     await onClose()
@@ -84,8 +91,6 @@ export default function LogBookModal({ book, onClose, isOpen }) {
 
     setIsBusy(false)
   }
-
-  const textValue = watch("text")
 
   return (
     <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
@@ -127,7 +132,7 @@ export default function LogBookModal({ book, onClose, isOpen }) {
                       errorMessage={errors.text?.message}
                       fullWidth
                       bgColor="bg-gray-800"
-                      moreClasses="my-1"
+                      moreClasses="mt-1"
                     />
                     <div className="flex flex-col sm:flex-row">
                       <div>
@@ -147,12 +152,15 @@ export default function LogBookModal({ book, onClose, isOpen }) {
                           <input
                             type="date"
                             max={todayStr}
-                            {...register("finishDate")}
+                            {...register("finishDate", validations.finishDate)}
                             className="block mt-1 w-full px-2 py-2 bg-gray-700 rounded-sm"
                           />
                         </label>
                       </div>
                     </div>
+                    {errors.finishDate && (
+                      <div className="mt-2 text-red-500">{errors.finishDate.message}</div>
+                    )}
                     <div className="mt-8 mb-2">
                       <label htmlFor="finished">
                         <input type="checkbox" {...register("finished")} />
@@ -181,9 +189,3 @@ export default function LogBookModal({ book, onClose, isOpen }) {
     </Dialog>
   )
 }
-
-const CoverPlaceholder = () => (
-  <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center">
-    <GiOpenBook className="mt-0 text-9xl text-gray-500" />
-  </div>
-)

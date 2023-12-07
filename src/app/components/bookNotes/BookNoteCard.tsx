@@ -3,7 +3,7 @@
 import { Tooltip } from "react-tooltip"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { GiOpenBook } from "react-icons/gi"
+import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 
 dayjs.extend(relativeTime)
@@ -46,9 +46,3 @@ export default function BookNoteCard({ note, withCover = true }) {
     </div>
   )
 }
-
-const CoverPlaceholder = () => (
-  <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center">
-    <GiOpenBook className="mt-0 text-9xl text-gray-500" />
-  </div>
-)

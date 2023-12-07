@@ -3,9 +3,9 @@
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { FaPlus } from "react-icons/fa6"
-import { GiOpenBook } from "react-icons/gi"
 import OpenLibrary from "lib/openLibrary"
 import { getBookListsLink } from "lib/helpers/general"
+import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import LogBookModal from "app/components/LogBookModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
@@ -13,6 +13,8 @@ import ListCard from "app/components/lists/ListCard"
 import BookNoteType from "enums/BookNoteType"
 import type Book from "types/Book"
 import type List from "types/List"
+
+const BOOK_NOTES_LIMIT = 3
 
 export default function BookPage({
   book,
@@ -35,9 +37,9 @@ export default function BookPage({
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
-  const bookNotes = book.bookNotes || []
-
-  const notes = bookNotes.filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry)
+  const notes = (book.bookNotes || [])
+    .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry)
+    .slice(0, BOOK_NOTES_LIMIT)
 
   return (
     <>
@@ -174,13 +176,3 @@ export default function BookPage({
     </>
   )
 }
-
-const CoverPlaceholder = ({ loading = false }) => (
-  <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center">
-    {loading ? (
-      <span className="text-sm text-gray-200">Loading...</span>
-    ) : (
-      <GiOpenBook className="mt-0 text-9xl text-gray-500" />
-    )}
-  </div>
-)
