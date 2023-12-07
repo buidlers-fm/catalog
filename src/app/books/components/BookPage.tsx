@@ -3,13 +3,18 @@
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { FaPlus } from "react-icons/fa6"
-import { GiOpenBook } from "react-icons/gi"
 import OpenLibrary from "lib/openLibrary"
 import { getBookListsLink } from "lib/helpers/general"
+import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
+import LogBookModal from "app/components/LogBookModal"
+import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import ListCard from "app/components/lists/ListCard"
+import BookNoteType from "enums/BookNoteType"
 import type Book from "types/Book"
 import type List from "types/List"
+
+const BOOK_NOTES_LIMIT = 3
 
 export default function BookPage({
   book,
@@ -24,12 +29,17 @@ export default function BookPage({
 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
+  const [showLogBookModal, setShowLogBookModal] = useState<boolean>(false)
 
   const imgRef = useRef(null)
 
   useEffect(() => {
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
+
+  const notes = (book.bookNotes || [])
+    .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry)
+    .slice(0, BOOK_NOTES_LIMIT)
 
   return (
     <>
@@ -56,9 +66,16 @@ export default function BookPage({
                   <button
                     type="button"
                     onClick={() => setShowAddBookToListsModal(true)}
-                    className="w-full bg-gray-800 py-2 px-4 text-gray-200 hover:text-white"
+                    className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                   >
                     <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> Add to list
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowLogBookModal(true)}
+                    className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
+                  >
+                    Log this book
                   </button>
                 </div>
               )}
@@ -102,10 +119,29 @@ export default function BookPage({
             </div>
           </div>
 
+          {notes.length > 0 && (
+            <div className="mt-8 font-mulish">
+              <div className="flex justify-between text-gray-300 text-sm">
+                <div className="cat-eyebrow">Recent notes</div>
+                <div className="flex -mt-1">
+                  <Link className="inline-block mt-1 mx-2" href="/">
+                    See all
+                  </Link>
+                </div>
+              </div>
+              <hr className="my-1 h-[1px] border-none bg-gray-300" />
+              <div className="">
+                {notes.map((note) => (
+                  <BookNoteCard key={note.id} note={note} withCover={false} />
+                ))}
+              </div>
+            </div>
+          )}
+
           {bookLists && bookLists.length > 0 && (
             <div className="mt-8 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
-                <div className="uppercase tracking-wider">As seen in</div>
+                <div className="cat-eyebrow">As seen in</div>
                 <div className="flex -mt-1">
                   <Link className="inline-block mt-1 mx-2" href={getBookListsLink(book.slug!)}>
                     See all
@@ -130,16 +166,13 @@ export default function BookPage({
           onClose={() => setShowAddBookToListsModal(false)}
         />
       )}
+      {isSignedIn && (
+        <LogBookModal
+          book={book}
+          isOpen={showLogBookModal}
+          onClose={() => setShowLogBookModal(false)}
+        />
+      )}
     </>
   )
 }
-
-const CoverPlaceholder = ({ loading = false }) => (
-  <div className="w-[256px] h-[410px] shrink-0 flex items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center">
-    {loading ? (
-      <span className="text-sm text-gray-200">Loading...</span>
-    ) : (
-      <GiOpenBook className="mt-0 text-9xl text-gray-500" />
-    )}
-  </div>
-)

@@ -171,3 +171,6 @@ export const isPreview = () => process.env.CATALOG_ENV === "preview"
 export const isStaging = () => process.env.CATALOG_ENV === "staging"
 
 export const isProduction = () => process.env.CATALOG_ENV === "production"
+
+// make it noon UTC so that all users view it as the same date
+export const dateStringToDateTime = (dateStr) => new Date(`${dateStr}T12:00:00Z`)

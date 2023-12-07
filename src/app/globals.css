@@ -6,6 +6,10 @@
   @apply text-3xl font-mulish;
 }
 
+.cat-eyebrow {
+  @apply text-sm text-gray-300 uppercase tracking-wider;
+}
+
 .cat-underline {
   border-bottom: 1px solid;
   @apply border-b-gold-500;

@@ -21,6 +21,13 @@ const api = {
       return fetchJson(url)
     },
   },
+  bookNotes: {
+    create: (requestData) =>
+      fetchJson(`/api/book_notes`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+  },
   lists: {
     create: (requestData) =>
       fetchJson(`/api/lists`, {

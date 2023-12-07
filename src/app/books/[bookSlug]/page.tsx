@@ -15,6 +15,23 @@ export default async function BookPageBySlug({ params }: any) {
     where: {
       slug: bookSlug,
     },
+    include: {
+      bookNotes: {
+        where: {
+          text: {
+            not: null,
+            notIn: [""],
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          creator: true,
+          book: true,
+        },
+      },
+    },
   })
 
   if (!dbBook) notFound()
@@ -27,7 +44,7 @@ export default async function BookPageBySlug({ params }: any) {
   } catch (error: any) {
     // if not found, let openLibraryBook stay blank
     if (error.message !== "notfound") {
-      throw error
+      console.error(error)
     }
   }
 

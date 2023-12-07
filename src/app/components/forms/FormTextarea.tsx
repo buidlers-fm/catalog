@@ -13,9 +13,12 @@ export default function FormTextarea({
   labelText,
   name,
   type,
+  rows = 3,
   formProps = {},
   remainingChars,
   errorMessage,
+  moreClasses,
+  bgColor = "bg-gray-900",
   fullWidth = true,
   ...moreProps
 }: Props) {
@@ -27,12 +30,12 @@ export default function FormTextarea({
       <div className={`${fullWidth ? "w-full" : "w-full xs:w-96"}`}>
         <textarea
           name={name}
-          rows={3}
+          rows={rows}
           {...formProps}
           {...moreProps}
-          className="w-full px-3 pt-3 pb-2 bg-gray-900 rounded border-none focus:outline-gold-500"
+          className={`w-full px-3 pt-3 pb-2 ${bgColor} rounded border-none focus:outline-gold-500 ${moreClasses}`}
         />
-        {remainingChars && (
+        {(remainingChars || remainingChars === 0) && (
           <div
             className={`flex justify-end text-sm ${
               remainingChars < 0 ? "text-red-500" : "text-gray-300"
@@ -41,8 +44,8 @@ export default function FormTextarea({
             {remainingChars}
           </div>
         )}
+        {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
       </div>
-      {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
     </div>
   )
 }

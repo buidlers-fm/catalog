@@ -1,5 +1,7 @@
+import type BookNote from "types/BookNote"
+
 export interface UserProfileProps {
-  id: string;
+  id: string
   userId: string
   createdAt: Date
   username: string
@@ -8,6 +10,7 @@ export interface UserProfileProps {
   bio?: string | null
   location?: string | null
   website?: string | null
+  bookNotes?: BookNote[]
 }
 
 export default class UserProfile {
@@ -29,6 +32,8 @@ export default class UserProfile {
 
   public website: string | null | undefined
 
+  public bookNotes: BookNote[] | undefined
+
   constructor(userProfileProps: UserProfileProps) {
     this.id = userProfileProps.id
     this.userId = userProfileProps.userId
@@ -39,6 +44,7 @@ export default class UserProfile {
     this.bio = userProfileProps.bio
     this.location = userProfileProps.location
     this.website = userProfileProps.website
+    this.bookNotes = userProfileProps.bookNotes
   }
 
   static buildMany(queryResults: UserProfileProps[]): UserProfile[] {

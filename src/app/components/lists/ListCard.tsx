@@ -1,15 +1,13 @@
 import Link from "next/link"
-import { FaUserCircle } from "react-icons/fa"
 import { GiOpenBook } from "react-icons/gi"
 import { truncateString } from "lib/helpers/general"
-import UserProfile from "lib/models/UserProfile"
+import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 
 const NUM_BOOK_COVERS = 4
 
 export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
   const totalBookCount = list.books.length
   const books = list.books.slice(0, NUM_BOOK_COVERS)
-  const { name } = UserProfile.build(list.owner)
 
   return (
     <div
@@ -17,38 +15,27 @@ export default function ListCard({ list, withByline = false, separators = true, 
         separators && "border-b border-b-gray-500 last:border-none"
       }`}
     >
-      <Link href={list.url}>
-        <div className="sm:flex items-center">
+      <div className="sm:flex items-center">
+        <Link href={list.url}>
           <div className="w-[208px] flex shrink-0 mr-4">
             {books.map((book, idx) => (
               <ListCardBook key={book.id} book={book} idx={idx} />
             ))}
           </div>
-          <div className="mt-4 sm:mt-2 sm:mx-4 grow">
+        </Link>
+        <div className="mt-4 sm:mt-2 sm:mx-4 grow">
+          <Link href={list.url}>
             <div className="mt-[-8px]">
               <span className="font-bold">{truncateString(list.title, 64)}</span>
               <span className="ml-2 text-gray-500 text-sm font-normal">{totalBookCount} books</span>
             </div>
-            {withByline && (
-              <div className="flex my-2">
-                {list.owner.avatarUrl ? (
-                  <img
-                    src={list.owner.avatarUrl}
-                    alt="user avatar"
-                    className="mr-2 w-[20px] rounded-full"
-                  />
-                ) : (
-                  <FaUserCircle className="mr-2 text-xl text-gold-100" />
-                )}
-                <span className="text-sm">{name}</span>
-              </div>
-            )}
-            {list.description && (
-              <div className="text-sm">{truncateString(list.description, 100)}</div>
-            )}
-          </div>
+          </Link>
+          {withByline && <NameWithAvatar userProfile={list.owner} />}
+          {list.description && (
+            <div className="text-sm">{truncateString(list.description, 100)}</div>
+          )}
         </div>
-      </Link>
+      </div>
     </div>
   )
 }
