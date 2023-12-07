@@ -5,11 +5,14 @@ import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { generateUniqueSlug } from "lib/helpers/general"
 import BookNoteType from "enums/BookNoteType"
+import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import type { NextRequest } from "next/server"
 
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile: userProfile } = params
-  const { book, text, startDate: startDateStr, finishDate: finishDateStr, finished } = reqJson
+  const { bookNote, bookRead, book } = reqJson
+
+  const { text, readingStatus } = bookNote
 
   const bookNoteValidations = validations.bookNote
 
@@ -18,35 +21,9 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     return NextResponse.json({ error: errorMsg }, { status: 400 })
   }
 
-  const bookNoteParams = {
-    noteType: BookNoteType.JournalEntry,
-    text,
-    startDate: new Date(startDateStr),
-    finishDate: new Date(finishDateStr),
-    finished,
-    creator: {
-      connect: {
-        id: userProfile.id,
-      },
-    },
-    updatedAt: new Date(),
-  }
-
-  let createdBookNote
-
   // create book if needed
-  if (book.id) {
-    createdBookNote = await prisma.bookNote.create({
-      data: {
-        ...bookNoteParams,
-        book: {
-          connect: {
-            id: book.id,
-          },
-        },
-      },
-    })
-  } else {
+  let bookId = book.id
+  if (!bookId) {
     const {
       title,
       authorName,
@@ -58,24 +35,116 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       originalTitle,
     } = book
 
-    createdBookNote = await prisma.bookNote.create({
+    const createdBook = await prisma.book.create({
       data: {
-        ...bookNoteParams,
-        book: {
-          create: {
-            slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
-            title,
-            authorName,
-            coverImageUrl,
-            openLibraryWorkId,
-            editionsCount,
-            firstPublishedYear: Number(firstPublishedYear),
-            isTranslated,
-            originalTitle,
-          },
-        },
+        slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
+        title,
+        authorName,
+        coverImageUrl,
+        openLibraryWorkId,
+        editionsCount,
+        firstPublishedYear: Number(firstPublishedYear),
+        isTranslated,
+        originalTitle,
       },
     })
+
+    bookId = createdBook.id
+  }
+
+  const connectBookParams = {
+    connect: {
+      id: bookId,
+    },
+  }
+
+  const { startDate: startDateStr, endDate: endDateStr } = bookRead
+  const startDate = startDateStr ? new Date(startDateStr) : undefined
+  const endDate = endDateStr ? new Date(endDateStr) : undefined
+
+  const bookReadParams = {
+    startDate,
+    endDate,
+    reader: {
+      connect: {
+        id: userProfile.id,
+      },
+    },
+    book: connectBookParams,
+    updatedAt: new Date(),
+  }
+
+  let connectOrCreateBookReadParams
+  let updateBookReadPromise
+
+  if (readingStatus === BookNoteReadingStatus.Started) {
+    // create a book read
+    connectOrCreateBookReadParams = {
+      create: bookReadParams,
+    }
+  } else {
+    // look for a matching book read. if found, connect it and update it. otherwise, create one.
+    const lastUnfinishedBookRead = await prisma.bookRead.findFirst({
+      where: {
+        bookId: book.id,
+        readerId: userProfile.id,
+        startDate: {
+          not: null,
+        },
+        endDate: null,
+      },
+      orderBy: {
+        startDate: "desc",
+      },
+    })
+
+    if (lastUnfinishedBookRead) {
+      connectOrCreateBookReadParams = {
+        connect: {
+          id: lastUnfinishedBookRead.id,
+        },
+      }
+
+      updateBookReadPromise = prisma.bookRead.update({
+        where: {
+          id: lastUnfinishedBookRead.id,
+        },
+        data: {
+          startDate,
+          endDate,
+          updatedAt: new Date(),
+        },
+      })
+    } else {
+      // create a book read
+      connectOrCreateBookReadParams = {
+        create: bookReadParams,
+      }
+    }
+  }
+
+  const createBookNotePromise = prisma.bookNote.create({
+    data: {
+      noteType: BookNoteType.JournalEntry,
+      text,
+      readingStatus,
+      creator: {
+        connect: {
+          id: userProfile.id,
+        },
+      },
+      book: connectBookParams,
+      bookRead: connectOrCreateBookReadParams,
+      updatedAt: new Date(),
+    },
+  })
+
+  let createdBookNote
+
+  if (updateBookReadPromise) {
+    ;[createdBookNote] = await prisma.$transaction([createBookNotePromise, updateBookReadPromise])
+  } else {
+    createdBookNote = await createBookNotePromise
   }
 
   const resBody = humps.decamelizeKeys(createdBookNote)

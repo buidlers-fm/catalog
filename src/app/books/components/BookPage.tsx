@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { FaPlus } from "react-icons/fa6"
@@ -27,6 +28,8 @@ export default function BookPage({
   bookLists?: List[]
   isSignedIn: boolean
 }) {
+  const router = useRouter()
+
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
   const [showLogBookModal, setShowLogBookModal] = useState<boolean>(false)
@@ -171,6 +174,7 @@ export default function BookPage({
           book={book}
           isOpen={showLogBookModal}
           onClose={() => setShowLogBookModal(false)}
+          onSuccess={() => router.refresh()}
         />
       )}
     </>

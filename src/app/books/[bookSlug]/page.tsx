@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic"
 
 export default async function BookPageBySlug({ params }: any) {
   const { bookSlug } = params
+  const userProfile = await getCurrentUserProfile()
 
   const dbBook = await prisma.book.findFirst({
     where: {
@@ -29,6 +30,14 @@ export default async function BookPageBySlug({ params }: any) {
         include: {
           creator: true,
           book: true,
+        },
+      },
+      bookReads: {
+        where: {
+          readerId: userProfile?.id,
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       },
     },
@@ -70,8 +79,6 @@ export default async function BookPageBySlug({ params }: any) {
   const book = { ...dbBook, ...openLibraryBook }
 
   console.log(book)
-
-  const userProfile = await getCurrentUserProfile()
 
   let userLists: any[] = []
 
