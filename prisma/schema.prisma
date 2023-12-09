@@ -22,6 +22,7 @@ model UserProfile {
   lists       List[]
   pins        Pin[]
   bookNotes   BookNote[]
+  bookReads   BookRead[]
   user        User       @relation(fields: [userId], references: [id])
 
   @@map("user_profiles")
@@ -52,6 +53,7 @@ model Book {
   subtitle           String?
   titleAuthorSearch  Unsupported("tsvector")? @default(dbgenerated("to_tsvector('english'::regconfig, ((((COALESCE(title, ''::text) || ' '::text) || COALESCE(original_title, ''::text)) || ' '::text) || COALESCE(author_name, ''::text)))")) @map("title_author_search")
   bookNotes          BookNote[]
+  bookReads          BookRead[]
 
   @@index([openLibraryWorkId])
   @@index([titleAuthorSearch], type: Gin)
@@ -111,22 +113,43 @@ model Pin {
 }
 
 model BookNote {
-  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  creatorId  String      @map("creator_id") @db.Uuid
-  bookId     String      @map("book_id") @db.Uuid
-  noteType   String      @map("note_type")
-  text       String?
-  title      String?
-  linkUrl    String?     @map("link_url")
-  startDate  DateTime?   @map("start_date")
-  finishDate DateTime?   @map("finish_date")
-  finished   Boolean     @default(true)
-  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime?   @map("updated_at")
-  creator    UserProfile @relation(fields: [creatorId], references: [id])
-  book       Book        @relation(fields: [bookId], references: [id])
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  creatorId     String      @map("creator_id") @db.Uuid
+  bookId        String      @map("book_id") @db.Uuid
+  bookReadId    String?     @map("book_read_id") @db.Uuid
+  noteType      String      @map("note_type")
+  text          String?
+  title         String?
+  linkUrl       String?     @map("link_url")
+  readingStatus String?     @map("reading_status")
+  startDate     DateTime?   @map("start_date")
+  finishDate    DateTime?   @map("finish_date")
+  finished      Boolean     @default(true)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?   @map("updated_at")
+  creator       UserProfile @relation(fields: [creatorId], references: [id])
+  book          Book        @relation(fields: [bookId], references: [id])
+  bookRead      BookRead?   @relation(fields: [bookReadId], references: [id])
 
   @@index([creatorId])
   @@index([bookId])
+  @@index([bookReadId])
   @@map("book_notes")
+}
+
+model BookRead {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  readerId  String      @map("reader_id") @db.Uuid
+  bookId    String      @map("book_id") @db.Uuid
+  startDate DateTime?   @map("start_date")
+  endDate   DateTime?   @map("end_date")
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?   @map("updated_at")
+  reader    UserProfile @relation(fields: [readerId], references: [id])
+  book      Book        @relation(fields: [bookId], references: [id])
+  bookNotes BookNote[]
+
+  @@index([readerId])
+  @@index([bookId])
+  @@map("book_reads")
 }

@@ -1,7 +1,7 @@
 const validations = {
   bookNote: {
     text: {
-      maxLength: 10_000,
+      maxLength: 1000,
     },
   },
 }
