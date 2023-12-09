@@ -122,9 +122,6 @@ model BookNote {
   title         String?
   linkUrl       String?     @map("link_url")
   readingStatus String?     @map("reading_status")
-  startDate     DateTime?   @map("start_date")
-  finishDate    DateTime?   @map("finish_date")
-  finished      Boolean     @default(true)
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?   @map("updated_at")
   creator       UserProfile @relation(fields: [creatorId], references: [id])

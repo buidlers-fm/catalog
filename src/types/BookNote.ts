@@ -9,9 +9,6 @@ export default interface BookNote {
   text?: string
   title?: string
   linkUrl?: string
-  startDate?: string | Date
-  finishDate?: string | Date
-  finished: boolean
   createdAt: Date
   updatedAt: Date
   creator: UserProfile
