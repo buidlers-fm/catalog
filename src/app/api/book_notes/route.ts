@@ -8,6 +8,45 @@ import BookNoteType from "enums/BookNoteType"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import type { NextRequest } from "next/server"
 
+export const GET = withApiHandling(
+  async (_req: NextRequest) => {
+    const queryParams = _req.nextUrl.searchParams
+    const bookId = queryParams.get("book_id") || undefined
+    const noteType = queryParams.get("note_type") || undefined
+    const userProfileId = queryParams.get("user_profile_id") || undefined
+    const limit = Number(queryParams.get("limit")) || undefined
+    const requireText = queryParams.get("require_text") === "true"
+
+    const bookNotes = await prisma.bookNote.findMany({
+      where: {
+        bookId,
+        noteType,
+        text: requireText
+          ? {
+              not: null,
+              notIn: [""],
+            }
+          : undefined,
+        creatorId: userProfileId,
+      },
+      include: {
+        creator: true,
+        book: true,
+        bookRead: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: limit,
+    })
+
+    const resBody = humps.decamelizeKeys(bookNotes)
+
+    return NextResponse.json(resBody, { status: 200 })
+  },
+  { requireJsonBody: false, requireSession: false, requireUserProfile: false },
+)
+
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile: userProfile } = params
   const { bookNote, bookRead, book } = reqJson

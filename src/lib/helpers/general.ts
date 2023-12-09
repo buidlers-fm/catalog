@@ -55,6 +55,10 @@ export const getNewListLink = (userProfile) => `${getUserListsLink(userProfile.u
 export const getEditListLink = (userProfile, slug: string) =>
   `${getListLink(userProfile, slug)}/edit`
 
+export const getUserBookNotesLink = (username: string) => `/users/${username}/notes`
+
+export const getBookNotesLink = (slug: string) => `/books/${slug}/notes`
+
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {
   const MAX_BASE_LENGTH = 72
   const simpleSlug = slugify(str).slice(0, MAX_BASE_LENGTH)

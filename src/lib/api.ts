@@ -22,10 +22,34 @@ const api = {
     },
   },
   bookNotes: {
+    get: ({ bookId, noteType, userProfileId, limit, requireText }: any) => {
+      const params = {
+        bookId,
+        noteType,
+        userProfileId,
+        limit,
+        requireText,
+      }
+
+      Object.keys(params).forEach((key) => params[key] === undefined && delete params[key])
+
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/book_notes?${queryString}`
+      return fetchJson(url)
+    },
     create: (requestData) =>
       fetchJson(`/api/book_notes`, {
         method: "POST",
         body: prepReqBody(requestData),
+      }),
+    update: (bookNoteId, requestData) =>
+      fetchJson(`/api/book_notes/${bookNoteId}`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
+    delete: (bookNoteId) =>
+      fetchJson(`/api/book_notes/${bookNoteId}`, {
+        method: "DELETE",
       }),
   },
   lists: {

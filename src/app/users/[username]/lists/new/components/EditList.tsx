@@ -211,6 +211,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
         </form>
       </div>
       <ConfirmationModal
+        title="Delete this list?"
         onConfirm={handleDelete}
         onClose={() => setShowDeleteModal(false)}
         isOpen={showDeleteModal}
