@@ -1,5 +1,5 @@
 type Props = {
-  labelText: string
+  labelText?: string
   name: string
   type: string
   formProps?: any
@@ -24,9 +24,11 @@ export default function FormTextarea({
 }: Props) {
   return (
     <div className="my-4 font-mulish text-white">
-      <div className="mb-1">
-        <label htmlFor={name}>{labelText}</label>
-      </div>
+      {labelText && (
+        <div className="mb-1">
+          <label htmlFor={name}>{labelText}</label>
+        </div>
+      )}
       <div className={`${fullWidth ? "w-full" : "w-full xs:w-96"}`}>
         <textarea
           name={name}

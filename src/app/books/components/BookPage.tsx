@@ -5,14 +5,16 @@ import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
+import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
-import { getBookListsLink } from "lib/helpers/general"
+import { getBookNotesLink, getBookListsLink } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import LogBookModal from "app/components/LogBookModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import ListCard from "app/components/lists/ListCard"
 import BookNoteType from "enums/BookNoteType"
+import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
 
@@ -23,14 +25,17 @@ export default function BookPage({
   userLists,
   bookLists,
   isSignedIn,
+  currentUserProfile,
 }: {
   book: Book
   userLists: List[]
   bookLists?: List[]
   isSignedIn: boolean
+  currentUserProfile: UserProfileProps
 }) {
   const router = useRouter()
 
+  const [notes, setNotes] = useState<any[]>([])
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
   const [showLogBookModal, setShowLogBookModal] = useState<boolean>(false)
@@ -41,9 +46,27 @@ export default function BookPage({
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
-  const notes = (book.bookNotes || [])
-    .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry)
-    .slice(0, BOOK_NOTES_LIMIT)
+  useEffect(() => {
+    const _notes = (book.bookNotes || [])
+      .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry && !!bookNote.text)
+      .slice(0, BOOK_NOTES_LIMIT)
+
+    setNotes(_notes)
+  }, [book.bookNotes])
+
+  const getBookNotes = async () => {
+    try {
+      const _notes = await api.bookNotes.get({
+        bookId: book.id,
+        noteType: BookNoteType.JournalEntry,
+        limit: BOOK_NOTES_LIMIT,
+        requireText: true,
+      })
+      setNotes(_notes)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
 
   return (
     <>
@@ -129,7 +152,7 @@ export default function BookPage({
               <div className="flex justify-between text-gray-300 text-sm">
                 <div className="cat-eyebrow">Recent notes</div>
                 <div className="flex -mt-1">
-                  <Link className="inline-block mt-1 mx-2" href="/">
+                  <Link className="inline-block mt-1 mx-2" href={getBookNotesLink(book.slug!)}>
                     See all
                   </Link>
                 </div>
@@ -137,7 +160,14 @@ export default function BookPage({
               <hr className="my-1 h-[1px] border-none bg-gray-300" />
               <div className="">
                 {notes.map((note) => (
-                  <BookNoteCard key={note.id} note={note} withCover={false} />
+                  <BookNoteCard
+                    key={note.id}
+                    note={note}
+                    withCover={false}
+                    currentUserProfile={currentUserProfile}
+                    onEditSuccess={getBookNotes}
+                    onDeleteSuccess={getBookNotes}
+                  />
                 ))}
               </div>
             </div>

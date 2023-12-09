@@ -2,7 +2,7 @@
 
 import { Dialog } from "@headlessui/react"
 
-export default function ConfirmationModal({ onConfirm, onClose, isOpen }) {
+export default function ConfirmationModal({ title, onConfirm, onClose, isOpen }) {
   const handleClose = async () => {
     await onClose()
   }
@@ -17,7 +17,7 @@ export default function ConfirmationModal({ onConfirm, onClose, isOpen }) {
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-sm rounded bg-gray-900 px-12 py-8">
           <Dialog.Title>
-            <div className="mb-12 text-center text-xl font-bold">Delete this list?</div>
+            <div className="mb-12 text-center text-xl font-bold">{title}</div>
           </Dialog.Title>
 
           <div className="flex justify-center">

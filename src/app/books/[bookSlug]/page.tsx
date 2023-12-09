@@ -134,6 +134,7 @@ export default async function BookPageBySlug({ params }: any) {
       userLists={userLists}
       bookLists={bookLists}
       isSignedIn={!!userProfile}
+      currentUserProfile={userProfile}
     />
   )
 }

@@ -7,7 +7,7 @@
 }
 
 .cat-eyebrow {
-  @apply text-sm text-gray-300 uppercase tracking-wider;
+  @apply text-sm text-gray-300 font-mulish uppercase tracking-wider;
 }
 
 .cat-underline {
@@ -55,8 +55,9 @@
 .cat-btn-green {
   @apply bg-green-500 text-black hover:bg-green-700 disabled:hover:bg-green-500 border-b-green-900 border-r-green-900;
 }
+
 .cat-btn-red-outline {
-  @apply text-red-500 border-red-500 border box-border;
+  @apply text-red-500 border-red-500 border-2 box-border;
 }
 
 .cat-btn-white-outline {
