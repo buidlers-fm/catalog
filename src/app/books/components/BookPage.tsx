@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
+import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
 import OpenLibrary from "lib/openLibrary"
 import { getBookListsLink } from "lib/helpers/general"
@@ -78,7 +79,8 @@ export default function BookPage({
                     onClick={() => setShowLogBookModal(true)}
                     className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                   >
-                    Log this book
+                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> Log this
+                    book
                   </button>
                 </div>
               )}

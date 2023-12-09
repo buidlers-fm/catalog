@@ -15,21 +15,25 @@ import FormTextarea from "app/components/forms/FormTextarea"
 
 const readingStatusToCopy = {
   [ReadingStatus.Started]: {
+    buttonClass: "cat-btn-green",
     buttonCopy: "Started",
     eyebrowCopy: "I started...",
     textPrompt: "Any thoughts going in?",
   },
   [ReadingStatus.Reading]: {
+    buttonClass: "cat-btn-teal",
     buttonCopy: "Still reading",
     eyebrowCopy: "I'm still reading...",
     textPrompt: "What's on your mind?",
   },
   [ReadingStatus.Finished]: {
+    buttonClass: "cat-btn-gold",
     buttonCopy: "Finished",
     eyebrowCopy: "I finished...",
     textPrompt: "What'd you think?",
   },
   [ReadingStatus.Abandoned]: {
+    buttonClass: "cat-btn-light-gray",
     buttonCopy: "Abandoned",
     eyebrowCopy: "I abandoned...",
     textPrompt: "What'd you think?",
@@ -172,7 +176,7 @@ export default function LogBookModal({ book, onClose, onSuccess, isOpen }) {
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
               <div className="">
-                {readingStatus && (
+                {readingStatus ? (
                   <div className="flex justify-between">
                     <div className="cat-eyebrow">
                       {readingStatusToCopy[readingStatus].eyebrowCopy}
@@ -184,6 +188,8 @@ export default function LogBookModal({ book, onClose, onSuccess, isOpen }) {
                       Change
                     </button>
                   </div>
+                ) : (
+                  <div className="cat-eyebrow">Journal entry for...</div>
                 )}
                 <div className="grow mt-4 text-2xl font-semibold font-newsreader">{book.title}</div>
                 <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
@@ -196,7 +202,7 @@ export default function LogBookModal({ book, onClose, onSuccess, isOpen }) {
                           setReadingStatus(rs)
                           setValue("readingStatus", rs)
                         }}
-                        className="my-1 sm:my-0 sm:mx-1 block cat-btn cat-btn-gray cat-btn-md"
+                        className={`my-1 sm:my-0 sm:mx-1 cat-btn cat-btn-md ${readingStatusToCopy[rs].buttonClass}`}
                       >
                         {readingStatusToCopy[rs].buttonCopy}
                       </button>
