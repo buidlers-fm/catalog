@@ -3,49 +3,31 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Tooltip } from "react-tooltip"
+import { TbExternalLink } from "react-icons/tb"
 import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { getBookLink } from "lib/helpers/general"
-import ExpandableText from "app/components/ExpandableText"
+import { getBookLink, getDomainFromUrl } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
-import EditBookNote from "app/components/bookNotes/EditBookNote"
-import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
+import EditBookLinkPost from "app/components/bookPosts/EditBookLinkPost"
 
 dayjs.extend(relativeTime)
 
-const TEXT_TRUNCATE_LENGTH = 500
-
-export default function BookNoteCard({
-  note,
+export default function BookLinkPostCard({
+  post,
   withCover = true,
   currentUserProfile,
   onEditSuccess,
   onDeleteSuccess,
 }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
-
-  const { id, creator, readingStatus, text, createdAt, book } = note
+  const { id, creator, title, linkUrl, createdAt, book } = post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
   const createdAtFromNow = dayjs(createdAt).fromNow()
   const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
-
-  const readingStatusColors = {
-    [BookNoteReadingStatus.Started]: "text-green-500",
-    [BookNoteReadingStatus.Reading]: "text-teal-300",
-    [BookNoteReadingStatus.Finished]: "text-gold-500",
-    [BookNoteReadingStatus.Abandoned]: "text-gray-300",
-  }
-
-  const readingStatusCopy = {
-    [BookNoteReadingStatus.Started]: "started",
-    [BookNoteReadingStatus.Reading]: "still reading",
-    [BookNoteReadingStatus.Finished]: "finished",
-    [BookNoteReadingStatus.Abandoned]: "abandoned",
-  }
 
   function handleEditSuccess() {
     setIsEditing(false)
@@ -71,15 +53,29 @@ export default function BookNoteCard({
           </div>
         )}
         <div className="grow">
+          {isEditing ? (
+            <EditBookLinkPost
+              bookPost={post}
+              onEditSuccess={handleEditSuccess}
+              onDeleteSuccess={onDeleteSuccess}
+              onCancel={() => setIsEditing(false)}
+            />
+          ) : (
+            <div>
+              <TbExternalLink className="inline-block -mt-1 mr-1 text-lg text-gray-300" />
+              <Link href={linkUrl} target="_blank" rel="noopener noreferrer">
+                <button className="mr-2 text-lg font-newsreader">{title}</button>
+              </Link>
+              <span className="text-sm text-gray-300 font-mulish">
+                ({getDomainFromUrl(linkUrl)})
+              </span>
+            </div>
+          )}
           <div className="flex flex-col xs:flex-row">
+            <div className="xs:my-2 mr-2 text-sm font-mulish">posted by</div>
             <NameWithAvatar userProfile={creator} />
 
             <div className="xs:my-2 xs:ml-2 text-gray-500 text-sm font-mulish">
-              <span
-                className={`mr-2 inline-block mb-1 text-sm font-bold ${readingStatusColors[readingStatus]}`}
-              >
-                {readingStatusCopy[readingStatus]}
-              </span>
               <span id={`created-at-${id}`} className="mr-2">
                 {createdAtFromNow}
               </span>
@@ -93,18 +89,6 @@ export default function BookNoteCard({
           <Tooltip anchorSelect={`#created-at-${id}`} className="max-w-[240px] font-mulish">
             <div className="text-center">{createdAtFormatted}</div>
           </Tooltip>
-          {isEditing ? (
-            <EditBookNote
-              bookNote={note}
-              onEditSuccess={handleEditSuccess}
-              onDeleteSuccess={onDeleteSuccess}
-              onCancel={() => setIsEditing(false)}
-            />
-          ) : (
-            <div className="mt-1 mb-2 font-newsreader">
-              <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
-            </div>
-          )}
         </div>
       </div>
     </div>

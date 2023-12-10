@@ -22,17 +22,13 @@ const api = {
     },
   },
   bookNotes: {
-    get: ({ bookId, noteType, userProfileId, limit, requireText }: any) => {
-      const params = {
-        bookId,
-        noteType,
-        userProfileId,
-        limit,
-        requireText,
-      }
-
-      Object.keys(params).forEach((key) => params[key] === undefined && delete params[key])
-
+    get: (params: {
+      bookId?: string
+      noteType?: string
+      userProfileId?: string
+      limit?: number
+      requireText?: boolean
+    }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/book_notes?${queryString}`
       return fetchJson(url)
@@ -50,6 +46,23 @@ const api = {
     delete: (bookNoteId) =>
       fetchJson(`/api/book_notes/${bookNoteId}`, {
         method: "DELETE",
+      }),
+  },
+  bookPosts: {
+    get: (params: {
+      bookId?: string
+      noteType?: string
+      userProfileId?: string
+      limit?: number
+    }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/book_posts?${queryString}`
+      return fetchJson(url)
+    },
+    create: (requestData) =>
+      fetchJson(`/api/book_posts`, {
+        method: "POST",
+        body: prepReqBody(requestData),
       }),
   },
   lists: {

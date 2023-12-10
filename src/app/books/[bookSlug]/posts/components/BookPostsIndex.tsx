@@ -4,29 +4,22 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
-import BookNoteCard from "app/components/bookNotes/BookNoteCard"
-import BookNoteType from "enums/BookNoteType"
+import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 
-export default function BookNotesIndex({ book, currentUserProfile }) {
-  const [notes, setNotes] = useState<any[]>()
+export default function BookPostsIndex({ book, currentUserProfile }) {
+  const [posts, setPosts] = useState<any[]>()
 
   useEffect(() => {
-    const _notes = (book.bookNotes || []).filter(
-      (note) => note.noteType === BookNoteType.JournalEntry && !!note.text,
-    )
-
-    setNotes(_notes)
+    setPosts(book.bookNotes || [])
   }, [book.bookNotes])
 
-  async function getBookNotes() {
+  async function getBookPosts() {
     try {
-      const _notes = await api.bookNotes.get({
-        noteType: BookNoteType.JournalEntry,
+      const _posts = await api.bookPosts.get({
         bookId: book.id,
-        requireText: true,
       })
 
-      setNotes(_notes)
+      setPosts(_posts)
     } catch (error: any) {
       console.log(error)
     }
@@ -34,27 +27,28 @@ export default function BookNotesIndex({ book, currentUserProfile }) {
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
-      <div className="cat-eyebrow">Notes on</div>
+      <div className="cat-eyebrow">Posts on</div>
       <Link href={getBookLink(book.slug)}>
         <h1 className="my-2 text-4xl font-semibold font-newsreader">{book.title}</h1>
       </Link>
       <div className="mt-4">
-        {notes ? (
-          notes.length > 0 ? (
+        {posts ? (
+          posts.length > 0 ? (
             <div className="">
-              {notes.map((note) => (
-                <BookNoteCard
-                  key={note.id}
-                  note={note}
+              {posts.map((post) => (
+                <BookLinkPostCard
+                  key={post.id}
+                  post={post}
                   currentUserProfile={currentUserProfile}
-                  onEditSuccess={getBookNotes}
-                  onDeleteSuccess={getBookNotes}
+                  withCover={false}
+                  onEditSuccess={getBookPosts}
+                  onDeleteSuccess={getBookPosts}
                 />
               ))}
             </div>
           ) : (
             <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              No notes yet.
+              No posts yet.
             </div>
           )
         ) : (

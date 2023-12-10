@@ -10,6 +10,7 @@ import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileB
 import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import {
+  getDomainFromUrl,
   getUserListsLink,
   getNewListLink,
   sortListsByPinSortOrder,
@@ -19,8 +20,6 @@ import UserProfile from "lib/models/UserProfile"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
-
-const getDomainFromUrl = (url: string) => new URL(url).hostname
 
 export default async function UserProfilePage({ params }) {
   const { username } = params

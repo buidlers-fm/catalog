@@ -39,6 +39,13 @@ export const isValidHttpUrl = (string) => {
   return url.protocol === "http:" || url.protocol === "https:"
 }
 
+export const getDomainFromUrl = (url: string) => {
+  const { hostname } = new URL(url)
+
+  // remove "www."" if present
+  return hostname.replace(/^www\./, "")
+}
+
 export const getUserProfileLink = (username: string) => `/users/${username}`
 
 export const getUserListsLink = (username: string) => `/users/${username}/lists`
@@ -58,6 +65,8 @@ export const getEditListLink = (userProfile, slug: string) =>
 export const getUserBookNotesLink = (username: string) => `/users/${username}/notes`
 
 export const getBookNotesLink = (slug: string) => `/books/${slug}/notes`
+
+export const getBookPostsLink = (slug: string) => `/books/${slug}/posts`
 
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {
   const MAX_BASE_LENGTH = 72
