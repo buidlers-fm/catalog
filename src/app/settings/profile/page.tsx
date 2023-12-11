@@ -26,7 +26,7 @@ export default async function SettingsProfilePage() {
   })) as List
 
   if (favoriteBooksList) {
-    ;[favoriteBooksList] = await decorateLists([favoriteBooksList])
+    ;[favoriteBooksList] = await decorateLists([favoriteBooksList], userProfile)
   }
 
   return <EditProfile userProfile={userProfile} favoriteBooksList={favoriteBooksList} />

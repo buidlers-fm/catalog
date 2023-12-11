@@ -40,7 +40,7 @@ export default async function UserListPage({ params }) {
 
   if (!_list) notFound()
 
-  const [list] = await decorateLists([_list])
+  const [list] = await decorateLists([_list], currentUserProfile)
 
   return <EditList list={list} currentUserProfile={currentUserProfile} isEdit />
 }

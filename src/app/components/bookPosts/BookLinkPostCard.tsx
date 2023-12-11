@@ -11,6 +11,8 @@ import { getBookLink, getDomainFromUrl } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookLinkPost from "app/components/bookPosts/EditBookLinkPost"
+import Likes from "app/components/Likes"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 dayjs.extend(relativeTime)
 
@@ -22,7 +24,7 @@ export default function BookLinkPostCard({
   onDeleteSuccess,
 }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const { id, creator, title, linkUrl, createdAt, book } = post
+  const { id, creator, title, linkUrl, createdAt, book, likeCount, currentUserLike } = post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
@@ -89,6 +91,15 @@ export default function BookLinkPostCard({
           <Tooltip anchorSelect={`#created-at-${id}`} className="max-w-[240px] font-mulish">
             <div className="text-center">{createdAtFormatted}</div>
           </Tooltip>
+          <div className="my-3">
+            <Likes
+              interactive={!!currentUserProfile}
+              likedObject={post}
+              likedObjectType={InteractionObjectType.BookNote}
+              likeCount={likeCount}
+              currentUserLike={currentUserLike}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { decorateWithLikes } from "lib/server/decorators"
 import UserBookNotesIndex from "app/users/[username]/notes/components/UserBookNotesIndex"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 export const dynamic = "force-dynamic"
 
@@ -27,6 +29,12 @@ export default async function UserBookNotesPage({ params }) {
   })
 
   if (!userProfile) notFound()
+
+  userProfile.bookNotes = await decorateWithLikes(
+    userProfile.bookNotes,
+    InteractionObjectType.BookNote,
+    currentUserProfile,
+  )
 
   return <UserBookNotesIndex userProfile={userProfile} currentUserProfile={currentUserProfile} />
 }

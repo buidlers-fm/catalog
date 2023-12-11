@@ -66,7 +66,7 @@ export default async function UserProfilePage({ params }) {
   })) as List | null
 
   if (favoriteBooksList) {
-    ;[favoriteBooksList] = await decorateLists([favoriteBooksList])
+    ;[favoriteBooksList] = await decorateLists([favoriteBooksList], currentUserProfile)
   }
 
   let lists: List[] = []
@@ -102,7 +102,7 @@ export default async function UserProfilePage({ params }) {
     lists = sortListsByPinSortOrder(_lists, pins)
     hasPinnedLists = true
   } else {
-    lists = await prisma.list.findMany({
+    lists = (await prisma.list.findMany({
       where: {
         ownerId: userProfile.id,
         designation: null,
@@ -118,10 +118,10 @@ export default async function UserProfilePage({ params }) {
           },
         },
       },
-    })
+    })) as List[]
   }
 
-  lists = await decorateLists(lists)
+  lists = await decorateLists(lists, currentUserProfile)
 
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 

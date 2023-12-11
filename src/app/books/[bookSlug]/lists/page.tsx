@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
+import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/helpers/general"
 import ListCard from "app/components/lists/ListCard"
 
@@ -7,6 +8,8 @@ export const dynamic = "force-dynamic"
 
 export default async function BookListsIndexPage({ params }) {
   const { bookSlug } = params
+
+  const currentUserProfile = await getCurrentUserProfile()
 
   const book = await prisma.book.findFirst({
     where: {
@@ -39,7 +42,7 @@ export default async function BookListsIndexPage({ params }) {
     take: 3,
   })
 
-  const lists = await decorateLists(_lists)
+  const lists = await decorateLists(_lists, currentUserProfile)
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
