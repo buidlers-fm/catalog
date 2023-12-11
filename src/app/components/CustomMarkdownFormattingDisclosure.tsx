@@ -10,7 +10,7 @@ const CustomMarkdownFormattingDisclosure = () => (
       <span>Formatting reference</span>
       <SlInfo className="pl-1" />
     </Disclosure.Button>
-    <Disclosure.Panel className="mt-2 border rounded solid p-2 ">
+    <Disclosure.Panel className="mt-2 p-2 text-gray-300 border rounded solid border-gray-700">
       <h1 className="font-bold">For bold header, use # or ## at the beginning of a line.</h1>
       <p>
         - For <span className="font-bold">bold text</span> within a paragraph, surround text with{" "}
