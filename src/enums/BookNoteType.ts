@@ -1,6 +1,7 @@
 enum BookNoteType {
   JournalEntry = "journal_entry",
-  Post = "post",
+  LinkPost = "link_post",
+  TextPost = "text_post",
 }
 
 export default BookNoteType

@@ -1,17 +1,15 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import BookNotesIndex from "app/books/[bookSlug]/notes/components/BookNotesIndex"
+import BookPostsIndex from "app/books/[bookSlug]/posts/components/BookPostsIndex"
 import BookNoteType from "enums/BookNoteType"
 
 export const dynamic = "force-dynamic"
 
-export default async function BookNotesPage({ params }) {
+export default async function BookPostsPage({ params }) {
   const currentUserProfile = await getCurrentUserProfile()
 
   const { bookSlug } = params
-
-  console.log("bookSlug", bookSlug)
 
   const book = await prisma.book.findFirst({
     where: {
@@ -20,10 +18,8 @@ export default async function BookNotesPage({ params }) {
     include: {
       bookNotes: {
         where: {
-          noteType: BookNoteType.JournalEntry,
-          text: {
-            not: null,
-            notIn: [""],
+          noteType: {
+            in: [BookNoteType.LinkPost, BookNoteType.TextPost],
           },
         },
         orderBy: {
@@ -37,7 +33,9 @@ export default async function BookNotesPage({ params }) {
     },
   })
 
+  console.log(book)
+
   if (!book) notFound()
 
-  return <BookNotesIndex book={book} currentUserProfile={currentUserProfile} />
+  return <BookPostsIndex book={book} currentUserProfile={currentUserProfile} />
 }

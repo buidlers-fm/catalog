@@ -12,6 +12,7 @@ import allValidations from "app/constants/validations"
 import { dateStringToDateTime } from "lib/helpers/general"
 import ReadingStatus from "enums/BookNoteReadingStatus"
 import FormTextarea from "app/components/forms/FormTextarea"
+import BookNoteType from "enums/BookNoteType"
 
 const readingStatusToCopy = {
   [ReadingStatus.Started]: {
@@ -128,6 +129,7 @@ export default function LogBookModal({ book, onClose, onSuccess, isOpen }) {
       bookNote: {
         text: formData.text,
         readingStatus: formData.readingStatus,
+        noteType: BookNoteType.JournalEntry,
       },
       bookRead: {
         startDate,

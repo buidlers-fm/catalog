@@ -18,12 +18,6 @@ export default async function BookPageBySlug({ params }: any) {
     },
     include: {
       bookNotes: {
-        where: {
-          text: {
-            not: null,
-            notIn: [""],
-          },
-        },
         orderBy: {
           createdAt: "desc",
         },

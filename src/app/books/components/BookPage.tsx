@@ -1,24 +1,27 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
-import { getBookNotesLink, getBookListsLink } from "lib/helpers/general"
+import { getBookNotesLink, getBookPostsLink, getBookListsLink } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import LogBookModal from "app/components/LogBookModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
+import NewBookPostModal from "app/components/NewBookPostModal"
+import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import ListCard from "app/components/lists/ListCard"
 import BookNoteType from "enums/BookNoteType"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
+import type BookNote from "types/BookNote"
 
 const BOOK_NOTES_LIMIT = 3
+const LISTS_LIMIT = 3
 
 export default function BookPage({
   book,
@@ -33,36 +36,50 @@ export default function BookPage({
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
-  const router = useRouter()
-
+  const [allBookNotes, setAllBookNotes] = useState<any[]>(book.bookNotes || [])
   const [notes, setNotes] = useState<any[]>([])
+  const [posts, setPosts] = useState<any[]>([])
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
   const [showLogBookModal, setShowLogBookModal] = useState<boolean>(false)
+  const [showNewBookPostModal, setShowNewBookPostModal] = useState<boolean>(false)
 
   const imgRef = useRef(null)
+
+  function filterForNotes(bookNotes?: BookNote[]) {
+    return (bookNotes || [])
+      .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry && !!bookNote.text)
+      .slice(0, BOOK_NOTES_LIMIT)
+  }
+
+  function filterForPosts(bookNotes?: BookNote[]) {
+    return (bookNotes || [])
+      .filter(
+        (bookNote) =>
+          bookNote.noteType === BookNoteType.LinkPost ||
+          bookNote.noteType === BookNoteType.TextPost,
+      )
+      .slice(0, BOOK_NOTES_LIMIT)
+  }
 
   useEffect(() => {
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
   useEffect(() => {
-    const _notes = (book.bookNotes || [])
-      .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry && !!bookNote.text)
-      .slice(0, BOOK_NOTES_LIMIT)
-
+    const _notes = filterForNotes(allBookNotes)
     setNotes(_notes)
-  }, [book.bookNotes])
+
+    const _posts = filterForPosts(allBookNotes)
+    setPosts(_posts)
+  }, [allBookNotes])
 
   const getBookNotes = async () => {
     try {
-      const _notes = await api.bookNotes.get({
+      const _allBookNotes = await api.bookNotes.get({
         bookId: book.id,
-        noteType: BookNoteType.JournalEntry,
-        limit: BOOK_NOTES_LIMIT,
-        requireText: true,
       })
-      setNotes(_notes)
+      setAllBookNotes(_allBookNotes)
     } catch (error: any) {
       console.error(error)
     }
@@ -173,8 +190,51 @@ export default function BookPage({
             </div>
           )}
 
+          <div className="mt-16 font-mulish">
+            <div className="flex justify-between text-gray-300 text-sm">
+              <div className="cat-eyebrow">Recent links</div>
+              <div className="flex -mt-1">
+                {isSignedIn && (
+                  <button
+                    onClick={() => setShowNewBookPostModal(true)}
+                    className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0"
+                  >
+                    + Add a link
+                  </button>
+                )}
+                <Link
+                  className={`inline-block ${isSignedIn ? "my-1 xs:mb-0" : ""} mx-2`}
+                  href={getBookPostsLink(book.slug!)}
+                >
+                  See all
+                </Link>
+              </div>
+            </div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+            <div className="">
+              {posts.length > 0 ? (
+                <div>
+                  {posts.map((post) => (
+                    <BookLinkPostCard
+                      key={post.id}
+                      post={post}
+                      withCover={false}
+                      currentUserProfile={currentUserProfile}
+                      onEditSuccess={getBookNotes}
+                      onDeleteSuccess={getBookNotes}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
+                  No links yet.
+                </div>
+              )}
+            </div>
+          </div>
+
           {bookLists && bookLists.length > 0 && (
-            <div className="mt-8 font-mulish">
+            <div className="mt-16 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
                 <div className="cat-eyebrow">As seen in</div>
                 <div className="flex -mt-1">
@@ -185,7 +245,7 @@ export default function BookPage({
               </div>
               <hr className="my-1 h-[1px] border-none bg-gray-300" />
               <div className="">
-                {bookLists.map((list) => (
+                {bookLists.slice(0, LISTS_LIMIT).map((list) => (
                   <ListCard key={list.id} list={list} withByline />
                 ))}
               </div>
@@ -194,20 +254,26 @@ export default function BookPage({
         </div>
       </div>
       {isSignedIn && (
-        <AddBookToListsModal
-          book={book}
-          userLists={userLists}
-          isOpen={showAddBookToListsModal}
-          onClose={() => setShowAddBookToListsModal(false)}
-        />
-      )}
-      {isSignedIn && (
-        <LogBookModal
-          book={book}
-          isOpen={showLogBookModal}
-          onClose={() => setShowLogBookModal(false)}
-          onSuccess={() => router.refresh()}
-        />
+        <>
+          <AddBookToListsModal
+            book={book}
+            userLists={userLists}
+            isOpen={showAddBookToListsModal}
+            onClose={() => setShowAddBookToListsModal(false)}
+          />
+          <LogBookModal
+            book={book}
+            isOpen={showLogBookModal}
+            onClose={() => setShowLogBookModal(false)}
+            onSuccess={getBookNotes}
+          />
+          <NewBookPostModal
+            book={book}
+            isOpen={showNewBookPostModal}
+            onClose={() => setShowNewBookPostModal(false)}
+            onSuccess={getBookNotes}
+          />
+        </>
       )}
     </>
   )

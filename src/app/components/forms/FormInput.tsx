@@ -1,5 +1,5 @@
 type Props = {
-  labelText: string
+  labelText?: string
   name: string
   type: string
   descriptionText?: string
@@ -17,6 +17,7 @@ export default function FormInput({
   type,
   descriptionText,
   accentColor = "gold",
+  bgColor = "bg-gray-900",
   formProps = {},
   remainingChars,
   errorMessage,
@@ -32,9 +33,11 @@ export default function FormInput({
 
   return (
     <div className="my-4 font-mulish text-white">
-      <div className="mb-2">
-        <label htmlFor={name}>{labelText}</label>
-      </div>
+      {labelText && (
+        <div className="mb-2">
+          <label htmlFor={name}>{labelText}</label>
+        </div>
+      )}
       {descriptionText && <div className="mb-2 text-sm text-gray-200">{descriptionText}</div>}
       <div className={`${fullWidth ? "w-full" : "w-full xs:w-96"}`}>
         <input
@@ -42,7 +45,7 @@ export default function FormInput({
           type={type}
           {...formProps}
           {...moreProps}
-          className={`w-full mb-2 px-3 pt-3 pb-2 bg-gray-900 disabled:text-gray-500 rounded border-none ${accentColorClasses}`}
+          className={`w-full mb-2 px-3 pt-3 pb-2 ${bgColor} disabled:text-gray-500 rounded border-none ${accentColorClasses}`}
         />
         {(remainingChars || remainingChars === 0) && (
           <div
@@ -54,7 +57,7 @@ export default function FormInput({
           </div>
         )}
       </div>
-      {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
+      {errorMessage && <div className="text-red-500">{errorMessage}</div>}
     </div>
   )
 }

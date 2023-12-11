@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
-import validations from "app/constants/validations"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import type { NextRequest } from "next/server"
@@ -15,24 +14,22 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     },
   })
 
+  if (!bookNote) {
+    return NextResponse.json({ error: "Book note not found" }, { status: 404 })
+  }
+
   if (bookNote?.creatorId !== userProfile.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
 
-  const { text } = reqJson
-
-  const bookNoteValidations = validations.bookNote
-
-  if (text && text.length > bookNoteValidations.text.maxLength) {
-    const errorMsg = `Text cannot be longer than ${bookNoteValidations.text.maxLength} characters.`
-    return NextResponse.json({ error: errorMsg }, { status: 400 })
-  }
+  const { title, text } = reqJson
 
   const updatedBookNote = await prisma.bookNote.update({
     where: {
       id: bookNoteId,
     },
     data: {
+      title,
       text,
       updatedAt: new Date(),
     },
@@ -53,6 +50,10 @@ export const DELETE = withApiHandling(
         id: bookNoteId,
       },
     })
+
+    if (!bookNote) {
+      return NextResponse.json({ error: "Book note not found" }, { status: 404 })
+    }
 
     if (bookNote?.creatorId !== userProfile.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
