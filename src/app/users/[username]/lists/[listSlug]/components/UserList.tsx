@@ -7,6 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import ListBook from "app/lists/components/ListBook"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
+import CustomMarkdown from "app/components/CustomMarkdown"
 
 dayjs.extend(relativeTime)
 
@@ -47,7 +48,9 @@ export default function UserList({ userProfile, list, isUsersList }) {
       <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{updatedAtFormatted}</div>
       </Tooltip>
-      <div className="sm:my-4">{description}</div>
+      <div className="sm:my-4">
+        <CustomMarkdown markdown={description} />
+      </div>
       <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
         {list.books.map((book, index: number) => (
           <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />

@@ -16,6 +16,7 @@ import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import ListCard from "app/components/lists/ListCard"
 import BookNoteType from "enums/BookNoteType"
 import type { UserProfileProps } from "lib/models/UserProfile"
+import CustomMarkdown from "app/components/CustomMarkdown"
 import type Book from "types/Book"
 import type List from "types/List"
 import type BookNote from "types/BookNote"
@@ -137,7 +138,9 @@ export default function BookPage({
               )}
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
-              <div className="my-8 whitespace-pre-wrap md:w-11/12">{book.description}</div>
+              <div className="my-8 whitespace-pre-wrap md:w-11/12">
+                <CustomMarkdown markdown={book.description} />
+              </div>
               <div className="my-8">
                 {book.openLibraryWorkId && (
                   <div className="my-2">
