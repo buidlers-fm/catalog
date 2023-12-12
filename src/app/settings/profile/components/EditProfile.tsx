@@ -11,7 +11,6 @@ import AvatarUpload from "app/settings/profile/components/AvatarUpload"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
-import CustomMarkdownFormattingDisclosure from "app/components/CustomMarkdownFormattingDisclosure"
 
 const MAX_LENGTHS = {
   displayName: 80,
@@ -197,7 +196,6 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 errorMessage={errors.bio?.message}
                 fullWidth={false}
               />
-              <CustomMarkdownFormattingDisclosure />
             </div>
           </div>
           <div className="ml:ml-16 flex flex-col">

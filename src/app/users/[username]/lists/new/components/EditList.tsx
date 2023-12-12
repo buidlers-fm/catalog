@@ -12,7 +12,6 @@ import FormTextarea from "app/components/forms/FormTextarea"
 import FormToggle from "app/components/forms/FormToggle"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
-import CustomMarkdownFormattingDisclosure from "app/components/CustomMarkdownFormattingDisclosure"
 import type List from "types/List"
 import type Book from "types/Book"
 import type { UserProfileProps } from "lib/models/UserProfile"
@@ -171,7 +170,6 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               errorMessage={errors.description?.message}
               fullWidth={false}
             />
-            <CustomMarkdownFormattingDisclosure />
             <FormToggle
               label="Ranked list"
               descriptionText="Show position for each book."

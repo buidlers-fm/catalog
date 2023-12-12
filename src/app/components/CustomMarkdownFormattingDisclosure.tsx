@@ -1,18 +1,18 @@
 "use client"
 
 import React from "react"
-import { Disclosure } from "@headlessui/react"
+import { Tooltip } from "react-tooltip"
 import { SlInfo } from "react-icons/sl"
 
 const tdClasses = "bg-gray-900 p-2"
 
 const CustomMarkdownFormattingDisclosure = () => (
-  <Disclosure>
-    <Disclosure.Button className="flex items-center text-sm -mt-8">
+  <>
+    <div id="formatting-reference" className="flex items-center text-sm">
       <span>Formatting reference</span>
       <SlInfo className="pl-1 text-base" />
-    </Disclosure.Button>
-    <Disclosure.Panel className="mt-2 text-sm">
+    </div>
+    <Tooltip clickable anchorSelect="#formatting-reference" className="text-sm max-w-fit z-10">
       <table className="border-separate rounded bg-gray-700">
         <thead>
           <td className="bg-gray-700 p-2 rounded-tl">Markdown</td>
@@ -85,8 +85,8 @@ const CustomMarkdownFormattingDisclosure = () => (
           </tr>
         </tbody>
       </table>
-    </Disclosure.Panel>
-  </Disclosure>
+    </Tooltip>
+  </>
 )
 
 export default CustomMarkdownFormattingDisclosure
