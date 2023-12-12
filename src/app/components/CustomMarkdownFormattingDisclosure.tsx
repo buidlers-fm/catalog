@@ -16,7 +16,7 @@ const CustomMarkdownFormattingDisclosure = () => (
       <table className="border-separate rounded bg-gray-700">
         <thead>
           <td className="bg-gray-700 p-2 rounded-tl">Markdown</td>
-          <td className="bg-gray-700 p-2 rounded-tr">Rendered Output</td>
+          <td className="bg-gray-700 p-2 rounded-tr">Result</td>
         </thead>
         <tbody>
           <tr>
