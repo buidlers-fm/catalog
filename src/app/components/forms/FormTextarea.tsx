@@ -26,11 +26,12 @@ export default function FormTextarea({
   fullWidth = true,
   ...moreProps
 }: Props) {
+  const showRemainingChars = remainingChars || remainingChars === 0
   const rowBelowTextArea =
-    showFormattingDisclosure || remainingChars ? (
+    showFormattingDisclosure || showRemainingChars ? (
       <div className="flex justify-between">
         {showFormattingDisclosure ? <CustomMarkdownFormattingDisclosure /> : <div />}
-        {remainingChars || remainingChars === 0 && (
+        {showRemainingChars && (
           <div className={`text-sm ${remainingChars < 0 ? "text-red-500" : "text-gray-300"}`}>
             {remainingChars}
           </div>
