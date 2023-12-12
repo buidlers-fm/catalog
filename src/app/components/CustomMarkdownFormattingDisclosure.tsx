@@ -1,9 +1,11 @@
 "use client"
 
 import React from "react"
+import dynamic from "next/dynamic"
 import { Tooltip } from "react-tooltip"
 import { SlInfo } from "react-icons/sl"
 
+const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 const tdClasses = "bg-gray-900 p-2"
 
 const CustomMarkdownFormattingDisclosure = () => (
@@ -12,7 +14,12 @@ const CustomMarkdownFormattingDisclosure = () => (
       <span>Formatting reference</span>
       <SlInfo className="pl-1 text-base" />
     </div>
-    <Tooltip clickable anchorSelect="#formatting-reference" className="text-sm max-w-fit z-10">
+    <Tooltip
+      anchorSelect="#formatting-reference"
+      className="text-sm max-w-fit z-10"
+      place={isMobile ? "top" : "right"}
+      clickable={!isMobile}
+    >
       <table className="border-separate rounded bg-gray-700">
         <thead>
           <td className="bg-gray-700 p-2 rounded-tl">Markdown</td>
