@@ -51,6 +51,7 @@
     "react-modern-drawer": "^1.2.2",
     "react-svg-spinners": "^0.3.1",
     "react-tooltip": "^5.21.5",
+    "remark": "^15.0.1",
     "remark-linkify-regex": "^1.2.1",
     "slug": "^8.2.3",
     "tailwindcss": "3.3.3",
