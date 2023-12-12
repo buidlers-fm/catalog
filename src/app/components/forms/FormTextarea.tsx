@@ -27,7 +27,7 @@ export default function FormTextarea({
   ...moreProps
 }: Props) {
   const showRemainingChars = remainingChars || remainingChars === 0
-  const rowBelowTextArea =
+  const textFormattingAndRemainingChars =
     showFormattingDisclosure || showRemainingChars ? (
       <div className="flex justify-between">
         {showFormattingDisclosure ? <CustomMarkdownFormattingDisclosure /> : <div />}
@@ -54,7 +54,7 @@ export default function FormTextarea({
           {...moreProps}
           className={`w-full px-3 pt-3 pb-2 ${bgColor} rounded border-none focus:outline-gold-500 ${moreClasses}`}
         />
-        {rowBelowTextArea}
+        {textFormattingAndRemainingChars}
       </div>
     </div>
   )
