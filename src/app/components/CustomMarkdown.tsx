@@ -20,6 +20,21 @@ const components: Components = {
       {children}
     </a>
   ),
+  ol: ({ node, children, ...props }) => (
+    <ol {...props} className="ml-4 -my-3 last:-mb-10 list-decimal">
+      {children}
+    </ol>
+  ),
+  ul: ({ node, children, ...props }) => (
+    <ul {...props} className="ml-4 -my-3 last:-mb-10 list-disc">
+      {children}
+    </ul>
+  ),
+  li: ({ node, children, ...props }) => (
+    <li {...props} className="-my-3">
+      {children}
+    </li>
+  ),
 }
 
 // Taken from https://www.freecodecamp.org/news/how-to-write-a-regular-expression-for-a-url/
