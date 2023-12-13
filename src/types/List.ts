@@ -12,6 +12,9 @@ export default interface List {
   owner?: UserProfileProps
   listItemAssignments: any[] // TODO
   createdAt?: Date
+  updatedAt?: Date
   books?: Book[]
   ranked: boolean
+  likeCount?: number // in-memory only
+  currentUserLike?: any // in-memory only
 }

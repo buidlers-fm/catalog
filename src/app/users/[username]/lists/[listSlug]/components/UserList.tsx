@@ -5,14 +5,37 @@ import { Tooltip } from "react-tooltip"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import ListBook from "app/lists/components/ListBook"
+import Likes from "app/components/Likes"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
+import InteractionObjectType from "enums/InteractionObjectType"
 import CustomMarkdown from "app/components/CustomMarkdown"
+import type { UserProfileProps } from "lib/models/UserProfile"
+import type List from "types/List"
 
 dayjs.extend(relativeTime)
 
-export default function UserList({ userProfile, list, isUsersList }) {
-  const { title, slug: listSlug, description, createdAt, ranked, updatedAt: _updatedAt } = list
+export default function UserList({
+  userProfile,
+  list,
+  isUsersList,
+  currentUserProfile,
+}: {
+  userProfile: UserProfileProps
+  list: List
+  isUsersList: boolean
+  currentUserProfile?: UserProfileProps
+}) {
+  const {
+    title,
+    slug: listSlug,
+    description,
+    createdAt,
+    ranked,
+    updatedAt: _updatedAt,
+    likeCount,
+    currentUserLike,
+  } = list
   const { name, username } = UserProfile.build(userProfile)
   const createdAtFromNow = dayjs(createdAt).fromNow()
   const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
@@ -22,23 +45,21 @@ export default function UserList({ userProfile, list, isUsersList }) {
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
-      <div className="sm:flex">
-        <div className="text-4xl font-semibold mb-1">{title}</div>
+      <div className="sm:flex sm:items-start">
+        <div className="text-4xl font-semibold mb-1 sm:mr-6">{title}</div>
         {isUsersList && (
-          <Link href={getEditListLink(userProfile, listSlug)}>
-            <button className="cat-btn cat-btn-sm cat-btn-gray my-2 sm:my-0 sm:ml-6">
-              Edit list
-            </button>
+          <Link href={getEditListLink(userProfile, listSlug!)}>
+            <button className="cat-btn cat-btn-sm cat-btn-gray my-2 sm:my-0">Edit list</button>
           </Link>
         )}
       </div>
-      <div className="my-2 text-gray-200 font-mulish">
+      <div className="my-1 text-gray-200 font-mulish">
         a list by{" "}
         <Link href={getUserProfileLink(username)} className="cat-underline">
           {name}
         </Link>
       </div>
-      <div className="my-3 text-gray-500 text-sm font-mulish">
+      <div className="mt-1 mb-2 text-gray-500 text-sm font-mulish">
         created <span id="created-at">{createdAtFromNow}</span>, last updated{" "}
         <span id="updated-at">{updatedAtFromNow}</span>
       </div>
@@ -48,11 +69,20 @@ export default function UserList({ userProfile, list, isUsersList }) {
       <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{updatedAtFormatted}</div>
       </Tooltip>
+      <div className="my-1">
+        <Likes
+          interactive={!!currentUserProfile}
+          likedObject={list}
+          likedObjectType={InteractionObjectType.List}
+          likeCount={likeCount}
+          currentUserLike={currentUserLike}
+        />
+      </div>
       <div className="sm:my-4">
         <CustomMarkdown markdown={description} />
       </div>
       <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
-        {list.books.map((book, index: number) => (
+        {list.books!.map((book, index: number) => (
           <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />
         ))}
       </div>

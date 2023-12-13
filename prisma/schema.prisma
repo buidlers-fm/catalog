@@ -150,3 +150,19 @@ model BookRead {
   @@index([bookId])
   @@map("book_reads")
 }
+
+model Interaction {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  agentType       String    @map("agent_type")
+  agentId         String    @map("agent_id") @db.Uuid
+  interactionType String    @map("interaction_type")
+  objectType      String    @map("object_type")
+  objectId        String    @map("object_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime? @updatedAt @map("updated_at")
+
+  @@unique([agentId, agentType, interactionType, objectId, objectType])
+  @@index([agentId, agentType])
+  @@index([objectId, objectType])
+  @@map("interactions")
+}

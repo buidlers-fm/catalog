@@ -11,7 +11,9 @@ import ExpandableText from "app/components/ExpandableText"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookNote from "app/components/bookNotes/EditBookNote"
+import Likes from "app/components/Likes"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 dayjs.extend(relativeTime)
 
@@ -26,7 +28,7 @@ export default function BookNoteCard({
 }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
 
-  const { id, creator, readingStatus, text, createdAt, book } = note
+  const { id, creator, readingStatus, text, createdAt, book, likeCount, currentUserLike } = note
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
@@ -105,6 +107,15 @@ export default function BookNoteCard({
               <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
             </div>
           )}
+          <div className="my-3">
+            <Likes
+              interactive={!!currentUserProfile}
+              likedObject={note}
+              likedObjectType={InteractionObjectType.BookNote}
+              likeCount={likeCount}
+              currentUserLike={currentUserLike}
+            />
+          </div>
         </div>
       </div>
     </div>

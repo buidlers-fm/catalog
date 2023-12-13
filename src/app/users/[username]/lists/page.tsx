@@ -36,7 +36,7 @@ export default async function UserListsIndexPage({ params }) {
     },
   })
 
-  const lists = await decorateLists(_lists)
+  const lists = await decorateLists(_lists, currentUserProfile)
 
   const pins = await prisma.pin.findMany({
     where: {

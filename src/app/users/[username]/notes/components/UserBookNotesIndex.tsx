@@ -19,9 +19,9 @@ export default function UserBookNotesIndex({ userProfile, currentUserProfile }) 
   async function getBookNotes() {
     try {
       const _notes = await api.bookNotes.get({
-        noteType: BookNoteType.JournalEntry,
         userProfileId: userProfile.id,
         requireText: true,
+        noteTypes: [BookNoteType.JournalEntry],
       })
 
       setNotes(_notes)
