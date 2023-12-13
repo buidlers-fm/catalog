@@ -140,7 +140,7 @@ export default async function UserProfilePage({ params }) {
         )}
         <div className="my-6 sm:my-0 sm:ml-4 grow">
           <div className="text-2xl font-bold">{name}</div>
-          <div className="mt-2 max-w-lg whitespace-pre-wrap">
+          <div className="mt-2 max-w-lg">
             <CustomMarkdown markdown={bio} />
           </div>
           <div className="flex mt-3 text-gray-300">

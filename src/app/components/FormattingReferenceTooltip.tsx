@@ -1,6 +1,3 @@
-"use client"
-
-import React from "react"
 import dynamic from "next/dynamic"
 import { Tooltip } from "react-tooltip"
 import { SlInfo } from "react-icons/sl"
@@ -8,9 +5,9 @@ import { SlInfo } from "react-icons/sl"
 const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 const tdClasses = "bg-gray-900 p-2"
 
-const CustomMarkdownFormattingDisclosure = () => (
+const FormattingReferenceTooltip = () => (
   <>
-    <div id="formatting-reference" className="flex items-center text-sm">
+    <div id="formatting-reference" className="flex items-center text-sm text-gray-300">
       <span>Formatting reference</span>
       <SlInfo className="pl-1 text-base" />
     </div>
@@ -96,4 +93,4 @@ const CustomMarkdownFormattingDisclosure = () => (
   </>
 )
 
-export default CustomMarkdownFormattingDisclosure
+export default FormattingReferenceTooltip

@@ -1,4 +1,4 @@
-import CustomMarkdownFormattingDisclosure from "../CustomMarkdownFormattingDisclosure"
+import FormattingReferenceTooltip from "app/components/FormattingReferenceTooltip"
 
 type Props = {
   labelText?: string
@@ -6,7 +6,7 @@ type Props = {
   type: string
   formProps?: any
   remainingChars?: number
-  showFormattingDisclosure?: boolean
+  showFormattingReferenceTooltip?: boolean
   errorMessage?: string
   fullWidth?: boolean
   [moreProps: string]: any
@@ -19,7 +19,7 @@ export default function FormTextarea({
   rows = 3,
   formProps = {},
   remainingChars,
-  showFormattingDisclosure = true,
+  showFormattingReferenceTooltip = true,
   errorMessage,
   moreClasses,
   bgColor = "bg-gray-900",
@@ -28,9 +28,9 @@ export default function FormTextarea({
 }: Props) {
   const showRemainingChars = remainingChars || remainingChars === 0
   const textFormattingAndRemainingChars =
-    showFormattingDisclosure || showRemainingChars ? (
+    showFormattingReferenceTooltip || showRemainingChars ? (
       <div className="flex justify-between">
-        {showFormattingDisclosure ? <CustomMarkdownFormattingDisclosure /> : <div />}
+        {showFormattingReferenceTooltip ? <FormattingReferenceTooltip /> : <div />}
         {showRemainingChars && (
           <div className={`text-sm ${remainingChars < 0 ? "text-red-500" : "text-gray-300"}`}>
             {remainingChars}

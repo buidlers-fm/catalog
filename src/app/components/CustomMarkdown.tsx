@@ -1,8 +1,6 @@
-"use client"
-
-import React from "react"
 import Markdown, { Components } from "react-markdown"
 import linkifyRegex from "remark-linkify-regex"
+import { isValidHttpUrl } from "lib/helpers/general"
 
 const components: Components = {
   h1: ({ node, children, ...props }) => (
@@ -15,11 +13,12 @@ const components: Components = {
       {children}
     </h2>
   ),
-  a: ({ node, children, ...props }) => (
-    <a {...props} className="cat-btn-link" target="_blank">
-      {children}
-    </a>
-  ),
+  a: ({ node, href, children, ...props }) =>
+    isValidHttpUrl(href) ? (
+      <a {...props} href={href} className="cat-btn-link" target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    ) : href,
   ol: ({ node, children, ...props }) => (
     <ol {...props} className="ml-4 -my-3 last:-mb-10 list-decimal">
       {children}
@@ -37,13 +36,10 @@ const components: Components = {
   ),
 }
 
-// Taken from https://www.freecodecamp.org/news/how-to-write-a-regular-expression-for-a-url/
-// but removed the ?s in order to require a scheme
-const pattern =
-  /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/g
+const plugins = [linkifyRegex(/(?:https?):\/\/\S+/g)]
 
 const CustomMarkdown = ({ markdown }) => (
-  <Markdown components={components} remarkPlugins={[linkifyRegex(pattern)]}>
+  <Markdown className="whitespace-pre-wrap" components={components} remarkPlugins={plugins}>
     {markdown}
   </Markdown>
 )

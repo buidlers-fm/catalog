@@ -138,7 +138,7 @@ export default function BookPage({
               )}
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
-              <div className="my-8 whitespace-pre-wrap md:w-11/12">
+              <div className="my-8 md:w-11/12">
                 <CustomMarkdown markdown={book.description} />
               </div>
               <div className="my-8">
