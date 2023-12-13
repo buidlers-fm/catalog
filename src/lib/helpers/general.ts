@@ -2,6 +2,8 @@ import humps from "humps"
 import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
 import prisma from "lib/prisma"
+import { decorateWithLikes } from "lib/server/decorators"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const res = await fetch(url, options)
@@ -105,7 +107,7 @@ export const sortListsByPinSortOrder = (lists, pins) =>
       return orderA - orderB
     })
 
-export const decorateLists = async (lists) => {
+export const decorateLists = async (lists, currentUserProfile?) => {
   const allBookIds = lists
     .map((list) =>
       list.listItemAssignments
@@ -137,7 +139,7 @@ export const decorateLists = async (lists) => {
     return result
   }, {})
 
-  return lists.map((list: any) => ({
+  const _lists = lists.map((list: any) => ({
     ...list,
     books: list.listItemAssignments
       .map((lia) => (lia.listedObjectType === "book" ? bookIdsToBooks[lia.listedObjectId] : null))
@@ -145,6 +147,8 @@ export const decorateLists = async (lists) => {
     url: getListLink(listIdsToOwners[list.id], list.slug),
     owner: listIdsToOwners[list.id],
   }))
+
+  return decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
 }
 
 export const normalizeString = (str) => {

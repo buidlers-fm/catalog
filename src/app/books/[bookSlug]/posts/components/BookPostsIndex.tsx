@@ -5,18 +5,22 @@ import { useState, useEffect } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
+import BookNoteType from "enums/BookNoteType"
+import Sort from "enums/Sort"
 
 export default function BookPostsIndex({ book, currentUserProfile }) {
   const [posts, setPosts] = useState<any[]>()
 
   useEffect(() => {
-    setPosts(book.bookNotes || [])
-  }, [book.bookNotes])
+    setPosts(book.bookPosts || [])
+  }, [book.bookPosts])
 
   async function getBookPosts() {
     try {
-      const _posts = await api.bookPosts.get({
+      const _posts = await api.bookNotes.get({
         bookId: book.id,
+        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        sort: Sort.Popular,
       })
 
       setPosts(_posts)

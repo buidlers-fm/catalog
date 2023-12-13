@@ -56,13 +56,18 @@ export default async function BookPageByQuery({ searchParams }) {
       },
     })
 
-    userLists = await decorateLists(_userLists)
+    userLists = await decorateLists(_userLists, userProfile)
+  }
+
+  const book = {
+    ...openLibraryBook,
+    likeCount: 0,
   }
 
   return (
     <RemountOnPathChange
       ComponentToRemount={BookPage}
-      book={openLibraryBook}
+      book={book}
       isSignedIn={!!userProfile}
       userLists={userLists}
     />

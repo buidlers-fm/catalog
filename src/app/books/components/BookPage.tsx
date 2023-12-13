@@ -2,12 +2,14 @@
 
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
+import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
 import { getBookNotesLink, getBookPostsLink, getBookListsLink } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
+import Likes from "app/components/Likes"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import LogBookModal from "app/components/LogBookModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
@@ -15,10 +17,12 @@ import NewBookPostModal from "app/components/NewBookPostModal"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import ListCard from "app/components/lists/ListCard"
 import BookNoteType from "enums/BookNoteType"
+import Sort from "enums/Sort"
+import InteractionObjectType from "enums/InteractionObjectType"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
-import type BookNote from "types/BookNote"
+import type Like from "types/Like"
 
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
@@ -36,50 +40,95 @@ export default function BookPage({
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
-  const [allBookNotes, setAllBookNotes] = useState<any[]>(book.bookNotes || [])
   const [notes, setNotes] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
+  const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
+  const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
   const [showLogBookModal, setShowLogBookModal] = useState<boolean>(false)
   const [showNewBookPostModal, setShowNewBookPostModal] = useState<boolean>(false)
+  const [showAddNoteTooltip, setShowAddNoteTooltip] = useState<boolean>(false)
 
   const imgRef = useRef(null)
-
-  function filterForNotes(bookNotes?: BookNote[]) {
-    return (bookNotes || [])
-      .filter((bookNote) => bookNote.noteType === BookNoteType.JournalEntry && !!bookNote.text)
-      .slice(0, BOOK_NOTES_LIMIT)
-  }
-
-  function filterForPosts(bookNotes?: BookNote[]) {
-    return (bookNotes || [])
-      .filter(
-        (bookNote) =>
-          bookNote.noteType === BookNoteType.LinkPost ||
-          bookNote.noteType === BookNoteType.TextPost,
-      )
-      .slice(0, BOOK_NOTES_LIMIT)
-  }
 
   useEffect(() => {
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
   useEffect(() => {
-    const _notes = filterForNotes(allBookNotes)
-    setNotes(_notes)
+    setNotes((book.bookNotes || []).slice(0, BOOK_NOTES_LIMIT))
+  }, [book.bookNotes])
 
-    const _posts = filterForPosts(allBookNotes)
-    setPosts(_posts)
-  }, [allBookNotes])
+  useEffect(() => {
+    setPosts((book.bookPosts || []).slice(0, BOOK_NOTES_LIMIT))
+  }, [book.bookPosts])
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showAddNoteTooltip) {
+        setShowAddNoteTooltip(false)
+      }
+    }
+
+    document.addEventListener("click", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside)
+    }
+  }, [showAddNoteTooltip])
+
+  const onLikeChange = (_likeCount?: number, _currentUserLike?: Like) => {
+    setLikeCount(_likeCount)
+    setCurrentUserLike(_currentUserLike)
+    setShowAddNoteTooltip(true)
+  }
+
+  const updateLikes = async () => {
+    if (!book.id) return
+
+    const likes = await api.likes.get({
+      likedObjectId: book.id,
+      likedObjectType: InteractionObjectType.Book,
+    })
+
+    const _likeCount = likes.length
+    const _currentUserLike = likes.find((like) => like.agentId === currentUserProfile?.id)
+
+    book.likeCount = _likeCount
+    book.currentUserLike = _currentUserLike
+
+    setLikeCount(_likeCount)
+    setCurrentUserLike(_currentUserLike)
+  }
 
   const getBookNotes = async () => {
     try {
-      const _allBookNotes = await api.bookNotes.get({
+      const _notes = await api.bookNotes.get({
         bookId: book.id,
+        requireText: true,
+        noteTypes: [BookNoteType.JournalEntry],
+        sort: Sort.Popular,
       })
-      setAllBookNotes(_allBookNotes)
+      setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  const updateBookNotesAndLikes = async () => {
+    await updateLikes()
+    await getBookNotes()
+  }
+
+  const getBookPosts = async () => {
+    try {
+      const _posts = await api.bookNotes.get({
+        bookId: book.id,
+        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        sort: Sort.Popular,
+      })
+      setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
     } catch (error: any) {
       console.error(error)
     }
@@ -105,8 +154,34 @@ export default function BookPage({
               ) : (
                 <CoverPlaceholder />
               )}
+              <div id="book-likes" className="mt-2 mb-4 mx-2 w-fit">
+                <Likes
+                  interactive={isSignedIn}
+                  likedObject={book}
+                  likedObjectType={InteractionObjectType.Book}
+                  likeCount={likeCount}
+                  currentUserLike={currentUserLike}
+                  onChange={onLikeChange}
+                />
+              </div>
+              <Tooltip
+                anchorSelect="#book-likes"
+                className="font-mulish"
+                place="right"
+                clickable
+                isOpen={showAddNoteTooltip}
+              >
+                <button
+                  onClick={() => {
+                    setShowLogBookModal(true)
+                    setShowAddNoteTooltip(false)
+                  }}
+                >
+                  <div className="underline">Add a note?</div>
+                </button>
+              </Tooltip>
               {isSignedIn && (
-                <div className="my-8 font-mulish">
+                <div className="mt-4 mb-8 font-mulish">
                   <button
                     type="button"
                     onClick={() => setShowAddBookToListsModal(true)}
@@ -167,7 +242,7 @@ export default function BookPage({
           {notes.length > 0 && (
             <div className="mt-8 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
-                <div className="cat-eyebrow">Recent notes</div>
+                <div className="cat-eyebrow">Popular notes</div>
                 <div className="flex -mt-1">
                   <Link className="inline-block mt-1 mx-2" href={getBookNotesLink(book.slug!)}>
                     See all
@@ -192,7 +267,7 @@ export default function BookPage({
 
           <div className="mt-16 font-mulish">
             <div className="flex justify-between text-gray-300 text-sm">
-              <div className="cat-eyebrow">Recent links</div>
+              <div className="cat-eyebrow">Popular links</div>
               <div className="flex -mt-1">
                 {isSignedIn && (
                   <button
@@ -220,8 +295,8 @@ export default function BookPage({
                       post={post}
                       withCover={false}
                       currentUserProfile={currentUserProfile}
-                      onEditSuccess={getBookNotes}
-                      onDeleteSuccess={getBookNotes}
+                      onEditSuccess={getBookPosts}
+                      onDeleteSuccess={getBookPosts}
                     />
                   ))}
                 </div>
@@ -262,16 +337,18 @@ export default function BookPage({
             onClose={() => setShowAddBookToListsModal(false)}
           />
           <LogBookModal
+            key={currentUserLike?.id}
             book={book}
+            like={!!currentUserLike}
             isOpen={showLogBookModal}
             onClose={() => setShowLogBookModal(false)}
-            onSuccess={getBookNotes}
+            onSuccess={updateBookNotesAndLikes}
           />
           <NewBookPostModal
             book={book}
             isOpen={showNewBookPostModal}
             onClose={() => setShowNewBookPostModal(false)}
-            onSuccess={getBookNotes}
+            onSuccess={getBookPosts}
           />
         </>
       )}

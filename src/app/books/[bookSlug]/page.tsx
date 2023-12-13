@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
-import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/helpers/general"
+import { getCurrentUserProfile } from "lib/server/auth"
+import { getBookNotes } from "lib/server/bookNotes"
+import { decorateWithLikes } from "lib/server/decorators"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
+import InteractionObjectType from "enums/InteractionObjectType"
+import BookNoteType from "enums/BookNoteType"
+import Sort from "enums/Sort"
 
 export const dynamic = "force-dynamic"
 
@@ -17,15 +22,6 @@ export default async function BookPageBySlug({ params }: any) {
       slug: bookSlug,
     },
     include: {
-      bookNotes: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          creator: true,
-          book: true,
-        },
-      },
       bookReads: {
         where: {
           readerId: userProfile?.id,
@@ -70,7 +66,7 @@ export default async function BookPageBySlug({ params }: any) {
     })
   }
 
-  const book = { ...dbBook, ...openLibraryBook }
+  let book = { ...dbBook, ...openLibraryBook }
 
   console.log(book)
 
@@ -94,7 +90,7 @@ export default async function BookPageBySlug({ params }: any) {
       },
     })
 
-    userLists = await decorateLists(_userLists)
+    userLists = await decorateLists(_userLists, userProfile)
   }
 
   const _bookLists = await prisma.list.findMany({
@@ -119,7 +115,24 @@ export default async function BookPageBySlug({ params }: any) {
     },
   })
 
-  const bookLists = await decorateLists(_bookLists)
+  const bookLists = await decorateLists(_bookLists, userProfile)
+
+  book.bookNotes = await getBookNotes({
+    bookId: book.id,
+    sort: Sort.Popular,
+    noteTypes: [BookNoteType.JournalEntry],
+    currentUserProfile: userProfile,
+  })
+
+  book.bookPosts = await getBookNotes({
+    bookId: book.id,
+    sort: Sort.Popular,
+    noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+    currentUserProfile: userProfile,
+  })
+
+  book = (await decorateWithLikes([book], InteractionObjectType.Book, userProfile))[0]
+  console.log(book)
 
   return (
     <RemountOnPathChange

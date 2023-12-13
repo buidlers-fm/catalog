@@ -6,39 +6,6 @@ import { generateUniqueSlug } from "lib/helpers/general"
 import BookNoteType from "enums/BookNoteType"
 import type { NextRequest } from "next/server"
 
-export const GET = withApiHandling(
-  async (_req: NextRequest) => {
-    const queryParams = _req.nextUrl.searchParams
-    const bookId = queryParams.get("book_id") || undefined
-    const noteType = queryParams.get("note_type") || {
-      in: [BookNoteType.LinkPost, BookNoteType.TextPost],
-    }
-    const userProfileId = queryParams.get("user_profile_id") || undefined
-    const limit = Number(queryParams.get("limit")) || undefined
-
-    const bookNotes = await prisma.bookNote.findMany({
-      where: {
-        bookId,
-        noteType,
-        creatorId: userProfileId,
-      },
-      include: {
-        creator: true,
-        book: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: limit,
-    })
-
-    const resBody = humps.decamelizeKeys(bookNotes)
-
-    return NextResponse.json(resBody, { status: 200 })
-  },
-  { requireJsonBody: false, requireSession: false, requireUserProfile: false },
-)
-
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile: userProfile } = params
   const { title, linkUrl, noteType, book } = reqJson
@@ -65,7 +32,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
     const createdBook = await prisma.book.create({
       data: {
-        slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
+        slug: await generateUniqueSlug(`${bookTitle} ${authorName}`, "book"),
         title: bookTitle,
         authorName,
         coverImageUrl,

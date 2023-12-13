@@ -39,9 +39,16 @@ export default async function UserListPage({ params }) {
 
   if (!_list) notFound()
 
-  const [list] = await decorateLists([_list])
+  const [list] = await decorateLists([_list], currentUserProfile)
 
   const isUsersList = currentUserProfile?.id === userProfile!.id
 
-  return <UserList userProfile={userProfile} list={list} isUsersList={isUsersList} />
+  return (
+    <UserList
+      userProfile={userProfile}
+      list={list}
+      isUsersList={isUsersList}
+      currentUserProfile={currentUserProfile}
+    />
+  )
 }

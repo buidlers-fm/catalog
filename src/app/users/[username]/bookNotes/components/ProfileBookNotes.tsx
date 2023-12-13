@@ -24,10 +24,10 @@ export default function BookNotes({ userProfile, currentUserProfile }: any) {
   async function getBookNotes() {
     try {
       const _notes = await api.bookNotes.get({
-        noteType: BookNoteType.JournalEntry,
         userProfileId: userProfile.id,
         limit: BOOK_NOTES_LIMIT,
         requireText: true,
+        noteTypes: [BookNoteType.JournalEntry],
       })
 
       setNotes(_notes)

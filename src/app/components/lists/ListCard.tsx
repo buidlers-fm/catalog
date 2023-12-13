@@ -2,11 +2,14 @@ import Link from "next/link"
 import { GiOpenBook } from "react-icons/gi"
 import { truncateString } from "lib/helpers/general"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
+import Likes from "app/components/Likes"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 const NUM_BOOK_COVERS = 4
 
 export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
   const totalBookCount = list.books.length
+  const { likeCount } = list
   const books = list.books.slice(0, NUM_BOOK_COVERS)
 
   return (
@@ -24,12 +27,24 @@ export default function ListCard({ list, withByline = false, separators = true, 
           </div>
         </Link>
         <div className="mt-4 sm:mt-2 sm:mx-4 grow">
-          <Link href={list.url}>
-            <div className="mt-[-8px]">
-              <span className="font-bold">{truncateString(list.title, 64)}</span>
-              <span className="ml-2 text-gray-500 text-sm font-normal">{totalBookCount} books</span>
+          <div className="mt-[-8px] flex flex-col sm:flex-row items-baseline">
+            <Link href={list.url}>
+              <div className="mb-2 sm:mb-0 font-bold">{truncateString(list.title, 64)}</div>
+            </Link>
+            <div className="flex">
+              <div className="mb-2 sm:mb-0 sm:ml-2 mr-3 text-gray-500 text-sm font-normal">
+                {totalBookCount} books
+              </div>
+              <div className="">
+                <Likes
+                  interactive={false}
+                  likedObject={list}
+                  likedObjectType={InteractionObjectType.List}
+                  likeCount={likeCount}
+                />
+              </div>
             </div>
-          </Link>
+          </div>
           {withByline && <NameWithAvatar userProfile={list.owner} />}
           {list.description && (
             <div className="text-sm">{truncateString(list.description, 100)}</div>

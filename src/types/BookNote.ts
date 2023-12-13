@@ -1,5 +1,6 @@
 import type { UserProfileProps as UserProfile } from "lib/models/UserProfile"
 import type Book from "types/Book"
+import type Like from "types/Like"
 
 export default interface BookNote {
   id?: string
@@ -13,4 +14,6 @@ export default interface BookNote {
   updatedAt: Date
   creator: UserProfile
   book: Book
+  likeCount?: number // in-memory only
+  currentUserLike?: Like // in-memory only
 }

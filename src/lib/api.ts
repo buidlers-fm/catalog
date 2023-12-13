@@ -1,5 +1,6 @@
 import humps from "humps"
 import { fetchJson } from "lib/helpers/general"
+import Sort from "enums/Sort"
 
 const prepReqBody = (data) => JSON.stringify(humps.decamelizeKeys(data))
 
@@ -24,10 +25,11 @@ const api = {
   bookNotes: {
     get: (params: {
       bookId?: string
-      noteType?: string
       userProfileId?: string
+      noteTypes?: string[]
       limit?: number
       requireText?: boolean
+      sort?: Sort
     }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/book_notes?${queryString}`
@@ -49,20 +51,26 @@ const api = {
       }),
   },
   bookPosts: {
-    get: (params: {
-      bookId?: string
-      noteType?: string
-      userProfileId?: string
-      limit?: number
-    }) => {
-      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
-      const url = `/api/book_posts?${queryString}`
-      return fetchJson(url)
-    },
     create: (requestData) =>
       fetchJson(`/api/book_posts`, {
         method: "POST",
         body: prepReqBody(requestData),
+      }),
+  },
+  likes: {
+    get: (params: { likedObjectId: string; likedObjectType?: string; userProfileId?: string }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/likes?${queryString}`
+      return fetchJson(url)
+    },
+    create: (requestData) =>
+      fetchJson(`/api/likes`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+    delete: (likeId) =>
+      fetchJson(`/api/likes/${likeId}`, {
+        method: "DELETE",
       }),
   },
   lists: {

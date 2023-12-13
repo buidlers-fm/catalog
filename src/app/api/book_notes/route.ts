@@ -3,41 +3,35 @@ import humps from "humps"
 import validations from "app/constants/validations"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
-import { generateUniqueSlug } from "lib/helpers/general"
+import { getBookNotes } from "lib/server/bookNotes"
+import { findOrCreateBook } from "lib/api/books"
 import BookNoteType from "enums/BookNoteType"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
+import InteractionType from "enums/InteractionType"
+import InteractionAgentType from "enums/InteractionAgentType"
+import InteractionObjectType from "enums/InteractionObjectType"
+import Sort from "enums/Sort"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(
-  async (_req: NextRequest) => {
+  async (_req: NextRequest, { params }) => {
+    const { currentUserProfile } = params
     const queryParams = _req.nextUrl.searchParams
     const bookId = queryParams.get("book_id") || undefined
-    const noteType = queryParams.get("note_type") || undefined
     const userProfileId = queryParams.get("user_profile_id") || undefined
+    const noteTypes = queryParams.get("note_types")?.split(",") as BookNoteType[]
     const limit = Number(queryParams.get("limit")) || undefined
     const requireText = queryParams.get("require_text") === "true"
+    const sort = (queryParams.get("sort") as Sort) || undefined
 
-    const bookNotes = await prisma.bookNote.findMany({
-      where: {
-        bookId,
-        noteType,
-        text: requireText
-          ? {
-              not: null,
-              notIn: [""],
-            }
-          : undefined,
-        creatorId: userProfileId,
-      },
-      include: {
-        creator: true,
-        book: true,
-        bookRead: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: limit,
+    const bookNotes = await getBookNotes({
+      currentUserProfile,
+      bookId,
+      userProfileId,
+      noteTypes,
+      limit,
+      requireText,
+      sort,
     })
 
     const resBody = humps.decamelizeKeys(bookNotes)
@@ -49,7 +43,7 @@ export const GET = withApiHandling(
 
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile: userProfile } = params
-  const { bookNote, bookRead, book } = reqJson
+  const { bookNote, bookRead, book, like } = reqJson
 
   const { text, readingStatus } = bookNote
 
@@ -60,35 +54,10 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     return NextResponse.json({ error: errorMsg }, { status: 400 })
   }
 
-  // create book if needed
   let bookId = book.id
   if (!bookId) {
-    const {
-      title,
-      authorName,
-      coverImageUrl,
-      openLibraryWorkId,
-      editionsCount,
-      firstPublishedYear,
-      isTranslated,
-      originalTitle,
-    } = book
-
-    const createdBook = await prisma.book.create({
-      data: {
-        slug: await generateUniqueSlug(`${title} ${authorName}`, "book"),
-        title,
-        authorName,
-        coverImageUrl,
-        openLibraryWorkId,
-        editionsCount,
-        firstPublishedYear: Number(firstPublishedYear),
-        isTranslated,
-        originalTitle,
-      },
-    })
-
-    bookId = createdBook.id
+    const dbBook = await findOrCreateBook(book)
+    bookId = dbBook.id
   }
 
   const connectBookParams = {
@@ -184,6 +153,32 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     ;[createdBookNote] = await prisma.$transaction([createBookNotePromise, updateBookReadPromise])
   } else {
     createdBookNote = await createBookNotePromise
+  }
+
+  if (like !== undefined) {
+    const likeParams = {
+      interactionType: InteractionType.Like,
+      objectId: bookId,
+      objectType: InteractionObjectType.Book,
+      agentId: userProfile.id,
+      agentType: InteractionAgentType.User,
+    }
+
+    if (like) {
+      const existingLike = await prisma.interaction.findFirst({
+        where: likeParams,
+      })
+
+      if (!existingLike) {
+        await prisma.interaction.create({
+          data: likeParams,
+        })
+      }
+    } else {
+      await prisma.interaction.deleteMany({
+        where: likeParams,
+      })
+    }
   }
 
   const resBody = humps.decamelizeKeys(createdBookNote)
