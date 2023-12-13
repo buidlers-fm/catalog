@@ -8,6 +8,7 @@ import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileBookNotes"
 import ListBook from "app/lists/components/ListBook"
+import CustomMarkdown from "app/components/CustomMarkdown"
 import ListCard from "app/components/lists/ListCard"
 import {
   getDomainFromUrl,
@@ -139,7 +140,9 @@ export default async function UserProfilePage({ params }) {
         )}
         <div className="my-6 sm:my-0 sm:ml-4 grow">
           <div className="text-2xl font-bold">{name}</div>
-          <div className="mt-2 max-w-lg whitespace-pre-wrap">{bio}</div>
+          <div className="mt-2 max-w-lg">
+            <CustomMarkdown markdown={bio} />
+          </div>
           <div className="flex mt-3 text-gray-300">
             {location && (
               <div>

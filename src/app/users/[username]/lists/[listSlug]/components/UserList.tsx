@@ -9,6 +9,7 @@ import Likes from "app/components/Likes"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
 import InteractionObjectType from "enums/InteractionObjectType"
+import CustomMarkdown from "app/components/CustomMarkdown"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
@@ -77,7 +78,9 @@ export default function UserList({
           currentUserLike={currentUserLike}
         />
       </div>
-      <div className="sm:my-4">{description}</div>
+      <div className="sm:my-4">
+        <CustomMarkdown markdown={description} />
+      </div>
       <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
         {list.books!.map((book, index: number) => (
           <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />
