@@ -141,7 +141,6 @@ export default function Search({
   }, [])
 
   const handleSelect = (book: Book) => {
-    if (isSearching) return
     if (isNav) setSelectedBook(book)
     setSearchResults(undefined)
     onSelect(book)
