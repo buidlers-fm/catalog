@@ -39,6 +39,7 @@
     "lodash.debounce": "^4.0.8",
     "next": "13.4.16",
     "postcss": "8.4.26",
+    "postinstall-postinstall": "^2.1.0",
     "prisma": "^5.2.0",
     "react": "18.2.0",
     "react-device-detect": "^2.2.3",
