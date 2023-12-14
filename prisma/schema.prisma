@@ -20,7 +20,7 @@ model UserProfile {
   website     String?
   createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user        User       @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Restrict)
   lists       List[]
   pins        Pin[]
   bookNotes   BookNote[]
@@ -108,7 +108,7 @@ model Pin {
   sortOrder        Int         @map("sort_order")
   createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  pinner           UserProfile @relation(fields: [pinnerId], references: [id])
+  pinner           UserProfile @relation(fields: [pinnerId], references: [id], onDelete: Cascade)
 
   @@unique([pinnerId, pinnedObjectId, pinnedObjectType])
   @@unique([pinnerId, sortOrder])
@@ -129,9 +129,9 @@ model BookNote {
   readingStatus String?     @map("reading_status")
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  creator       UserProfile @relation(fields: [creatorId], references: [id])
+  creator       UserProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   book          Book        @relation(fields: [bookId], references: [id])
-  bookRead      BookRead?   @relation(fields: [bookReadId], references: [id])
+  bookRead      BookRead?   @relation(fields: [bookReadId], references: [id], onDelete: Cascade)
 
   @@index([creatorId])
   @@index([bookId])
@@ -147,7 +147,7 @@ model BookRead {
   endDate   DateTime?   @map("end_date") @db.Timestamptz(6)
   createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  reader    UserProfile @relation(fields: [readerId], references: [id])
+  reader    UserProfile @relation(fields: [readerId], references: [id], onDelete: Cascade)
   book      Book        @relation(fields: [bookId], references: [id])
   bookNotes BookNote[]
 
