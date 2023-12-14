@@ -14,16 +14,17 @@ model UserProfile {
   username    String     @unique
   bio         String?
   userId      String     @unique @map("user_id") @db.Uuid
-  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   avatarUrl   String?    @map("avatar_url")
   displayName String?    @map("display_name")
   location    String?
   website     String?
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user        User       @relation(fields: [userId], references: [id])
   lists       List[]
   pins        Pin[]
   bookNotes   BookNote[]
   bookReads   BookRead[]
-  user        User       @relation(fields: [userId], references: [id])
 
   @@map("user_profiles")
 }
@@ -32,6 +33,7 @@ model User {
   id        String       @id @db.Uuid
   email     String       @unique
   createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?    @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile   UserProfile?
 
   @@map("users")
@@ -44,7 +46,6 @@ model Book {
   authorName         String?                  @map("author_name")
   openLibraryWorkId  String?                  @unique @map("open_library_work_id")
   coverImageUrl      String?                  @map("cover_image_url")
-  createdAt          DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
   editionsCount      Int?                     @map("editions_count")
   firstPublishedYear Int?                     @map("first_published_year")
   description        String?
@@ -52,6 +53,8 @@ model Book {
   originalTitle      String?                  @map("original_title")
   subtitle           String?
   titleAuthorSearch  Unsupported("tsvector")? @default(dbgenerated("to_tsvector('english'::regconfig, ((((COALESCE(title, ''::text) || ' '::text) || COALESCE(original_title, ''::text)) || ' '::text) || COALESCE(author_name, ''::text)))")) @map("title_author_search")
+  createdAt          DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime?                @updatedAt @map("updated_at") @db.Timestamptz(6)
   bookNotes          BookNote[]
   bookReads          BookRead[]
 
@@ -67,12 +70,12 @@ model List {
   description         String?
   creatorId           String               @map("creator_id") @db.Uuid
   ownerId             String               @map("owner_id") @db.Uuid
-  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   designation         String?
-  updatedAt           DateTime?            @map("updated_at") @db.Timestamptz(6)
-  listItemAssignments ListItemAssignment[]
-  creator             UserProfile          @relation(fields: [creatorId], references: [id])
   ranked              Boolean              @default(false)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime?            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  creator             UserProfile          @relation(fields: [creatorId], references: [id])
+  listItemAssignments ListItemAssignment[]
 
   @@unique([slug, ownerId])
   @@index([creatorId])
@@ -81,13 +84,14 @@ model List {
 }
 
 model ListItemAssignment {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  listId           String   @map("list_id") @db.Uuid
-  listedObjectType String   @map("listed_object_type")
-  listedObjectId   String   @map("listed_object_id") @db.Uuid
-  sortOrder        Int      @map("sort_order")
-  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  list             List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  listId           String    @map("list_id") @db.Uuid
+  listedObjectType String    @map("listed_object_type")
+  listedObjectId   String    @map("listed_object_id") @db.Uuid
+  sortOrder        Int       @map("sort_order")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  list             List      @relation(fields: [listId], references: [id], onDelete: Cascade)
 
   @@unique([listId, listedObjectId, listedObjectType])
   @@unique([listId, sortOrder])
@@ -101,8 +105,9 @@ model Pin {
   pinnerId         String      @map("pinner_id") @db.Uuid
   pinnedObjectType String      @map("pinned_object_type")
   pinnedObjectId   String      @map("pinned_object_id") @db.Uuid
-  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   sortOrder        Int         @map("sort_order")
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
   pinner           UserProfile @relation(fields: [pinnerId], references: [id])
 
   @@unique([pinnerId, pinnedObjectId, pinnedObjectType])
@@ -123,7 +128,7 @@ model BookNote {
   linkUrl       String?     @map("link_url")
   readingStatus String?     @map("reading_status")
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime?   @map("updated_at")
+  updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
   creator       UserProfile @relation(fields: [creatorId], references: [id])
   book          Book        @relation(fields: [bookId], references: [id])
   bookRead      BookRead?   @relation(fields: [bookReadId], references: [id])
@@ -138,10 +143,10 @@ model BookRead {
   id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   readerId  String      @map("reader_id") @db.Uuid
   bookId    String      @map("book_id") @db.Uuid
-  startDate DateTime?   @map("start_date")
-  endDate   DateTime?   @map("end_date")
+  startDate DateTime?   @map("start_date") @db.Timestamptz(6)
+  endDate   DateTime?   @map("end_date") @db.Timestamptz(6)
   createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime?   @map("updated_at")
+  updatedAt DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
   reader    UserProfile @relation(fields: [readerId], references: [id])
   book      Book        @relation(fields: [bookId], references: [id])
   bookNotes BookNote[]
@@ -159,7 +164,7 @@ model Interaction {
   objectType      String    @map("object_type")
   objectId        String    @map("object_id") @db.Uuid
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime? @updatedAt @map("updated_at")
+  updatedAt       DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@unique([agentId, agentType, interactionType, objectId, objectType])
   @@index([agentId, agentType])

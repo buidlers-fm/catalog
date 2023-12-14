@@ -39,7 +39,6 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
         },
       },
       book: connectBookParams,
-      updatedAt: new Date(),
     },
   })
 
