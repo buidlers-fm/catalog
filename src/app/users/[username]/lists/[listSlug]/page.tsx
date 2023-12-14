@@ -4,7 +4,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import UserList from "app/users/[username]/lists/[listSlug]/components/UserList"
-import { decorateLists } from "lib/helpers/general"
+import { decorateLists } from "lib/server/decorators"
 
 export const dynamic = "force-dynamic"
 

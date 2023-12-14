@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateLists } from "lib/helpers/general"
+import { decorateLists } from "lib/server/decorators"
 import ListCard from "app/components/lists/ListCard"
 
 export const dynamic = "force-dynamic"

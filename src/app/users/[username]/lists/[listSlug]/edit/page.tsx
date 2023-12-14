@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateLists } from "lib/helpers/general"
+import { decorateLists } from "lib/server/decorators"
 import EditList from "app/users/[username]/lists/new/components/EditList"
 import type List from "types/List"
 
