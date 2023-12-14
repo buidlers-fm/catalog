@@ -68,8 +68,13 @@ export default function BookLinkPostCard({
           ) : (
             <div>
               <TbExternalLink className="inline-block -mt-1 mr-1 text-lg text-gray-300" />
-              <Link href={linkUrl} target="_blank" rel="noopener noreferrer">
-                <button className="mr-2 text-lg font-newsreader">{title}</button>
+              <Link
+                href={linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mr-2 text-lg font-newsreader"
+              >
+                {title}
               </Link>
               <span className="text-sm text-gray-300 font-mulish">
                 ({getDomainFromUrl(linkUrl)})
