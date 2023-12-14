@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
@@ -27,6 +28,7 @@ import type Like from "types/Like"
 
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
+const DEFAULT_DESCRIPTION = "No description found."
 
 export default function BookPage({
   book,
@@ -41,6 +43,8 @@ export default function BookPage({
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
+  const router = useRouter()
+
   const [notes, setNotes] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
@@ -88,13 +92,11 @@ export default function BookPage({
   const updateLikes = async () => {
     if (!book.id) return
 
-    const likes = await api.likes.get({
+    const { likeCount: _likeCount, currentUserLike: _currentUserLike } = await api.likes.get({
       likedObjectId: book.id,
       likedObjectType: InteractionObjectType.Book,
+      compact: true,
     })
-
-    const _likeCount = likes.length
-    const _currentUserLike = likes.find((like) => like.agentId === currentUserProfile?.id)
 
     book.likeCount = _likeCount
     book.currentUserLike = _currentUserLike
@@ -104,6 +106,8 @@ export default function BookPage({
   }
 
   const getBookNotes = async () => {
+    if (!book.id) router.refresh()
+
     try {
       const _notes = await api.bookNotes.get({
         bookId: book.id,
@@ -123,6 +127,8 @@ export default function BookPage({
   }
 
   const getBookPosts = async () => {
+    if (!book.id) router.refresh()
+
     try {
       const _posts = await api.bookNotes.get({
         bookId: book.id,
@@ -135,13 +141,15 @@ export default function BookPage({
     }
   }
 
+  const description = book.description || DEFAULT_DESCRIPTION
+
   return (
     <>
       <div className="mt-16 max-w-4xl mx-auto">
         <div className="mx-8 lg:mx-16">
           <div className="md:flex">
             <div className="flex-grow-0 flex-shrink-0 w-64 mx-auto mb-16">
-              {book.coverImageUrl && !imgLoaded && <CoverPlaceholder loading />}
+              {book.coverImageUrl && !imgLoaded && <CoverPlaceholder size="lg" loading />}
               {book.coverImageUrl ? (
                 <img
                   ref={imgRef}
@@ -153,7 +161,7 @@ export default function BookPage({
                   onLoad={() => setImgLoaded(true)}
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="lg" />
               )}
               <div id="book-likes" className="mt-2 mb-4 mx-2 w-fit">
                 <Likes
@@ -214,7 +222,7 @@ export default function BookPage({
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
               <div className="my-8 md:w-11/12">
-                <CustomMarkdown markdown={book.description} />
+                <CustomMarkdown markdown={description} />
               </div>
               <div className="my-8">
                 {book.openLibraryWorkId && (

@@ -15,8 +15,8 @@ import {
   getUserListsLink,
   getNewListLink,
   sortListsByPinSortOrder,
-  decorateLists,
 } from "lib/helpers/general"
+import { decorateLists } from "lib/server/decorators"
 import UserProfile from "lib/models/UserProfile"
 import type List from "types/List"
 

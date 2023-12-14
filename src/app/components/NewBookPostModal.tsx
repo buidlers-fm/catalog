@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import api from "lib/api"
-import allValidations from "app/constants/validations"
+import allValidations from "lib/constants/validations"
 import { isValidHttpUrl } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormInput from "app/components/forms/FormInput"
@@ -98,7 +98,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
     <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
       <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
-        <Dialog.Panel className="relative rounded max-w-xs xs:max-w-md sm:max-w-xl md:max-w-none bg-gray-900 px-16 py-8">
+        <Dialog.Panel className="relative rounded max-h-[90vh] overflow-y-auto max-w-xs xs:max-w-md sm:max-w-xl md:max-w-none bg-gray-900 px-16 py-8">
           <button onClick={handleClose} className="absolute top-[24px] right-[16px]">
             <BsXLg className="text-xl" />
           </button>
@@ -112,11 +112,13 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
                   className="w-full mx-auto shadow-md rounded-md"
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="md" />
               )}
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
               <div className="cat-eyebrow">New link post</div>
+              <div className="grow mt-4 text-2xl font-semibold font-newsreader">{book.title}</div>
+              <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
               <div className="">
                 <form onSubmit={handleSubmit(submit)}>
                   <div className="my-4">

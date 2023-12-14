@@ -31,7 +31,6 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     data: {
       title,
       text,
-      updatedAt: new Date(),
     },
   })
 

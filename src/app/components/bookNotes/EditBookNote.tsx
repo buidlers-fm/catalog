@@ -4,7 +4,7 @@ import { TbTrash } from "react-icons/tb"
 import api from "lib/api"
 import FormTextarea from "app/components/forms/FormTextarea"
 import ConfirmationModal from "app/components/ConfirmationModal"
-import validations from "app/constants/validations"
+import validations from "lib/constants/validations"
 
 export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess, onCancel }) {
   const { id, text: _initialText } = bookNote

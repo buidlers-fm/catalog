@@ -1,7 +1,7 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import humps from "humps"
 import "react-modern-drawer/dist/index.css"
@@ -14,6 +14,8 @@ const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
 export default function Nav({ currentUserProfile }) {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const navigateToBookPage = (book: Book) => {
     const queryParams = {
@@ -24,7 +26,11 @@ export default function Nav({ currentUserProfile }) {
     const queryStr = new URLSearchParams(humps.decamelizeKeys(queryParams))
     const path = `/books?${queryStr}`
 
-    router.push(path)
+    const sameAsCurrentPath = pathname === path || searchParams.toString() === queryStr.toString()
+
+    if (!sameAsCurrentPath) router.push(path)
+
+    return { shouldReset: sameAsCurrentPath }
   }
 
   return (

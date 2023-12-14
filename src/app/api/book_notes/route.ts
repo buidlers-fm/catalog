@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
-import validations from "app/constants/validations"
+import validations from "lib/constants/validations"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { getBookNotes } from "lib/server/bookNotes"
@@ -79,7 +79,6 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       },
     },
     book: connectBookParams,
-    updatedAt: new Date(),
   }
 
   let connectOrCreateBookReadParams
@@ -120,7 +119,6 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
         data: {
           startDate,
           endDate,
-          updatedAt: new Date(),
         },
       })
     } else {
@@ -143,7 +141,6 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       },
       book: connectBookParams,
       bookRead: connectOrCreateBookReadParams,
-      updatedAt: new Date(),
     },
   })
 

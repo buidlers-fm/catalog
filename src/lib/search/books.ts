@@ -79,9 +79,9 @@ const search = {
     let orderedResults: Book[] = []
 
     if (orderedIndexes) {
-      orderedResults = orderedIndexes!.map((idx) => results[idx])
+      orderedResults = orderedIndexes.map((idx) => results[idx])
     } else if (matchingIndexes && matchingIndexes.length > 0) {
-      orderedResults = matchingIndexes!.map((idx) => results[idx])
+      orderedResults = matchingIndexes.map((idx) => results[idx])
     }
 
     return orderedResults

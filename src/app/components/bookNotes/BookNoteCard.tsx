@@ -7,6 +7,7 @@ import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { getBookLink } from "lib/helpers/general"
+import { dateTimeFormats } from "lib/constants/dateTime"
 import ExpandableText from "app/components/ExpandableText"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
@@ -16,6 +17,8 @@ import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 dayjs.extend(relativeTime)
+
+const { longAmericanDate: timestampFormat } = dateTimeFormats
 
 const TEXT_TRUNCATE_LENGTH = 500
 
@@ -33,7 +36,7 @@ export default function BookNoteCard({
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
   const createdAtFromNow = dayjs(createdAt).fromNow()
-  const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
+  const createdAtFormatted = dayjs(createdAt).format(timestampFormat)
 
   const readingStatusColors = {
     [BookNoteReadingStatus.Started]: "text-green-500",
@@ -67,7 +70,7 @@ export default function BookNoteCard({
                   className="w-full mx-auto shadow-md rounded-xs"
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="sm" />
               )}
             </Link>
           </div>

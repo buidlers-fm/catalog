@@ -2,8 +2,6 @@ import humps from "humps"
 import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
 import prisma from "lib/prisma"
-import { decorateWithLikes } from "lib/server/decorators"
-import InteractionObjectType from "enums/InteractionObjectType"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const res = await fetch(url, options)
@@ -106,50 +104,6 @@ export const sortListsByPinSortOrder = (lists, pins) =>
 
       return orderA - orderB
     })
-
-export const decorateLists = async (lists, currentUserProfile?) => {
-  const allBookIds = lists
-    .map((list) =>
-      list.listItemAssignments
-        .filter((lia) => lia.listedObjectType === "book")
-        .map((lia) => lia.listedObjectId),
-    )
-    .flat()
-
-  const allBooks = await prisma.book.findMany({
-    where: {
-      id: {
-        in: allBookIds,
-      },
-    },
-  })
-
-  const bookIdsToBooks = allBooks.reduce((result, book) => ({ ...result, [book.id]: book }), {})
-
-  const listOwners = await prisma.userProfile.findMany({
-    where: {
-      id: {
-        in: lists.map((list) => list.ownerId),
-      },
-    },
-  })
-
-  const listIdsToOwners = lists.reduce((result, list) => {
-    result[list.id] = listOwners.find((owner) => owner.id === list.ownerId)
-    return result
-  }, {})
-
-  const _lists = lists.map((list: any) => ({
-    ...list,
-    books: list.listItemAssignments
-      .map((lia) => (lia.listedObjectType === "book" ? bookIdsToBooks[lia.listedObjectId] : null))
-      .filter((b) => !!b),
-    url: getListLink(listIdsToOwners[list.id], list.slug),
-    owner: listIdsToOwners[list.id],
-  }))
-
-  return decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
-}
 
 export const normalizeString = (str) => {
   let result = str

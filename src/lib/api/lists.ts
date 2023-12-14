@@ -102,7 +102,6 @@ const createList = async (params, userProfile) => {
           data: listItemAssignments,
         },
       },
-      updatedAt: new Date(),
     },
   })
 
@@ -185,7 +184,6 @@ const updateList = async (list, params, userProfile) => {
       title: listTitle,
       description: listDescription,
       ranked: listRanked,
-      updatedAt: new Date(),
     },
   })
 

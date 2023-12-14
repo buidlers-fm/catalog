@@ -4,7 +4,7 @@ import { TbTrash } from "react-icons/tb"
 import api from "lib/api"
 import FormInput from "app/components/forms/FormInput"
 import ConfirmationModal from "app/components/ConfirmationModal"
-import validations from "app/constants/validations"
+import validations from "lib/constants/validations"
 
 export default function EditBookLinkPost({ bookPost, onEditSuccess, onDeleteSuccess, onCancel }) {
   const { id, title: _initialTitle, linkUrl } = bookPost

@@ -118,7 +118,7 @@ const OpenLibrary = {
     }
 
     // polyfill schema inconsistencies
-    const description = work.description?.value || work.description || "No description found."
+    const description = work.description?.value || work.description
 
     const getFirstPublishedYear = () => {
       const pubYears = editions

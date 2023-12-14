@@ -9,12 +9,15 @@ import { BsXLg } from "react-icons/bs"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import api from "lib/api"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
-import allValidations from "app/constants/validations"
+import FormTextarea from "app/components/forms/FormTextarea"
+import allValidations from "lib/constants/validations"
+import { dateTimeFormats } from "lib/constants/dateTime"
 import { dateStringToDateTime } from "lib/helpers/general"
 import ReadingStatus from "enums/BookNoteReadingStatus"
-import FormTextarea from "app/components/forms/FormTextarea"
 import BookNoteType from "enums/BookNoteType"
 import type Book from "types/Book"
+
+const { inputFieldDate } = dateTimeFormats
 
 const readingStatusToCopy = {
   [ReadingStatus.Started]: {
@@ -105,7 +108,7 @@ export default function LogBookModal({
     setLike(_like)
   }, [_like])
 
-  const todayStr = dayjs().format("YYYY-MM-DD")
+  const todayStr = dayjs().format(inputFieldDate)
 
   // set existing or default start and end dates
   useEffect(() => {
@@ -118,7 +121,7 @@ export default function LogBookModal({
 
     let startDateStr = todayStr
     if (lastUnfinishedBookRead) {
-      startDateStr = dayjs(lastUnfinishedBookRead.startDate).format("YYYY-MM-DD")
+      startDateStr = dayjs(lastUnfinishedBookRead.startDate).format(inputFieldDate)
     }
     if (readingStatus === ReadingStatus.Started) {
       setValue("startDate", todayStr)
@@ -199,7 +202,7 @@ export default function LogBookModal({
                   className="w-full mx-auto shadow-md rounded-md"
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="md" />
               )}
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
@@ -274,7 +277,7 @@ export default function LogBookModal({
                                 type="date"
                                 max={todayStr}
                                 {...register("endDate", validations.endDate)}
-                                className="block mt-1 w-full px-2 py-2 bg-gray-700 rounded-sm"
+                                className="block mt-1 w-full px-3 py-1 bg-gray-700 rounded-sm"
                               />
                             </label>
                           </div>

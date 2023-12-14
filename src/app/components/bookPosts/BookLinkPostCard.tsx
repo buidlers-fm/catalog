@@ -8,6 +8,7 @@ import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { getBookLink, getDomainFromUrl } from "lib/helpers/general"
+import { dateTimeFormats } from "lib/constants/dateTime"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookLinkPost from "app/components/bookPosts/EditBookLinkPost"
@@ -15,6 +16,8 @@ import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 dayjs.extend(relativeTime)
+
+const { longAmericanDate: timestampFormat } = dateTimeFormats
 
 export default function BookLinkPostCard({
   post,
@@ -29,7 +32,7 @@ export default function BookLinkPostCard({
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
   const createdAtFromNow = dayjs(createdAt).fromNow()
-  const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
+  const createdAtFormatted = dayjs(createdAt).format(timestampFormat)
 
   function handleEditSuccess() {
     setIsEditing(false)
@@ -49,7 +52,7 @@ export default function BookLinkPostCard({
                   className="w-full mx-auto shadow-md rounded-xs"
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="sm" />
               )}
             </Link>
           </div>
@@ -65,8 +68,13 @@ export default function BookLinkPostCard({
           ) : (
             <div>
               <TbExternalLink className="inline-block -mt-1 mr-1 text-lg text-gray-300" />
-              <Link href={linkUrl} target="_blank" rel="noopener noreferrer">
-                <button className="mr-2 text-lg font-newsreader">{title}</button>
+              <Link
+                href={linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mr-2 text-lg font-newsreader"
+              >
+                {title}
               </Link>
               <span className="text-sm text-gray-300 font-mulish">
                 ({getDomainFromUrl(linkUrl)})
