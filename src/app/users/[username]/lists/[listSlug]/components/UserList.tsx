@@ -7,6 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import ListBook from "app/lists/components/ListBook"
 import Likes from "app/components/Likes"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
+import { dateTimeFormats } from "lib/constants/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CustomMarkdown from "app/components/CustomMarkdown"
@@ -14,6 +15,8 @@ import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
 dayjs.extend(relativeTime)
+
+const { longAmericanDate: timestampFormat } = dateTimeFormats
 
 export default function UserList({
   userProfile,
@@ -38,10 +41,10 @@ export default function UserList({
   } = list
   const { name, username } = UserProfile.build(userProfile)
   const createdAtFromNow = dayjs(createdAt).fromNow()
-  const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
+  const createdAtFormatted = dayjs(createdAt).format(timestampFormat)
   const updatedAt = _updatedAt || createdAt
   const updatedAtFromNow = dayjs(updatedAt).fromNow()
-  const updatedAtFormatted = dayjs(updatedAt).format("MMMM D, YYYY")
+  const updatedAtFormatted = dayjs(updatedAt).format(timestampFormat)
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">

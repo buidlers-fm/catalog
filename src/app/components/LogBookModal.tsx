@@ -9,12 +9,15 @@ import { BsXLg } from "react-icons/bs"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import api from "lib/api"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
-import allValidations from "app/constants/validations"
+import FormTextarea from "app/components/forms/FormTextarea"
+import allValidations from "lib/constants/validations"
+import { dateTimeFormats } from "lib/constants/dateTime"
 import { dateStringToDateTime } from "lib/helpers/general"
 import ReadingStatus from "enums/BookNoteReadingStatus"
-import FormTextarea from "app/components/forms/FormTextarea"
 import BookNoteType from "enums/BookNoteType"
 import type Book from "types/Book"
+
+const { inputFieldDate } = dateTimeFormats
 
 const readingStatusToCopy = {
   [ReadingStatus.Started]: {
@@ -105,7 +108,7 @@ export default function LogBookModal({
     setLike(_like)
   }, [_like])
 
-  const todayStr = dayjs().format("YYYY-MM-DD")
+  const todayStr = dayjs().format(inputFieldDate)
 
   // set existing or default start and end dates
   useEffect(() => {
@@ -118,7 +121,7 @@ export default function LogBookModal({
 
     let startDateStr = todayStr
     if (lastUnfinishedBookRead) {
-      startDateStr = dayjs(lastUnfinishedBookRead.startDate).format("YYYY-MM-DD")
+      startDateStr = dayjs(lastUnfinishedBookRead.startDate).format(inputFieldDate)
     }
     if (readingStatus === ReadingStatus.Started) {
       setValue("startDate", todayStr)

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
-import validations from "app/constants/validations"
+import validations from "lib/constants/validations"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { getBookNotes } from "lib/server/bookNotes"

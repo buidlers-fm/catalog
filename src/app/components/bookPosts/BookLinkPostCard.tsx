@@ -8,6 +8,7 @@ import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { getBookLink, getDomainFromUrl } from "lib/helpers/general"
+import { dateTimeFormats } from "lib/constants/dateTime"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookLinkPost from "app/components/bookPosts/EditBookLinkPost"
@@ -15,6 +16,8 @@ import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 dayjs.extend(relativeTime)
+
+const { longAmericanDate: timestampFormat } = dateTimeFormats
 
 export default function BookLinkPostCard({
   post,
@@ -29,7 +32,7 @@ export default function BookLinkPostCard({
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
   const createdAtFromNow = dayjs(createdAt).fromNow()
-  const createdAtFormatted = dayjs(createdAt).format("MMMM D, YYYY")
+  const createdAtFormatted = dayjs(createdAt).format(timestampFormat)
 
   function handleEditSuccess() {
     setIsEditing(false)
