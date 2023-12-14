@@ -58,7 +58,12 @@ const api = {
       }),
   },
   likes: {
-    get: (params: { likedObjectId: string; likedObjectType?: string; userProfileId?: string }) => {
+    get: (params: {
+      likedObjectId: string
+      likedObjectType?: string
+      userProfileId?: string
+      compact?: boolean
+    }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/likes?${queryString}`
       return fetchJson(url)

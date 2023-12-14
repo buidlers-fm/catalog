@@ -92,13 +92,11 @@ export default function BookPage({
   const updateLikes = async () => {
     if (!book.id) return
 
-    const likes = await api.likes.get({
+    const { likeCount: _likeCount, currentUserLike: _currentUserLike } = await api.likes.get({
       likedObjectId: book.id,
       likedObjectType: InteractionObjectType.Book,
+      compact: true,
     })
-
-    const _likeCount = likes.length
-    const _currentUserLike = likes.find((like) => like.agentId === currentUserProfile?.id)
 
     book.likeCount = _likeCount
     book.currentUserLike = _currentUserLike
