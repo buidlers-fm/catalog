@@ -27,6 +27,7 @@ import type Like from "types/Like"
 
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
+const DEFAULT_DESCRIPTION = "No description found."
 
 export default function BookPage({
   book,
@@ -135,6 +136,8 @@ export default function BookPage({
     }
   }
 
+  const description = book.description || DEFAULT_DESCRIPTION
+
   return (
     <>
       <div className="mt-16 max-w-4xl mx-auto">
@@ -214,7 +217,7 @@ export default function BookPage({
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
               <div className="my-8 md:w-11/12">
-                <CustomMarkdown markdown={book.description} />
+                <CustomMarkdown markdown={description} />
               </div>
               <div className="my-8">
                 {book.openLibraryWorkId && (
