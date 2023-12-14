@@ -199,7 +199,7 @@ export default function LogBookModal({
                   className="w-full mx-auto shadow-md rounded-md"
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="md" />
               )}
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
@@ -274,7 +274,7 @@ export default function LogBookModal({
                                 type="date"
                                 max={todayStr}
                                 {...register("endDate", validations.endDate)}
-                                className="block mt-1 w-full px-2 py-2 bg-gray-700 rounded-sm"
+                                className="block mt-1 w-full px-3 py-1 bg-gray-700 rounded-sm"
                               />
                             </label>
                           </div>

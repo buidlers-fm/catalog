@@ -141,7 +141,7 @@ export default function BookPage({
         <div className="mx-8 lg:mx-16">
           <div className="md:flex">
             <div className="flex-grow-0 flex-shrink-0 w-64 mx-auto mb-16">
-              {book.coverImageUrl && !imgLoaded && <CoverPlaceholder loading />}
+              {book.coverImageUrl && !imgLoaded && <CoverPlaceholder size="lg" loading />}
               {book.coverImageUrl ? (
                 <img
                   ref={imgRef}
@@ -153,7 +153,7 @@ export default function BookPage({
                   onLoad={() => setImgLoaded(true)}
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="lg" />
               )}
               <div id="book-likes" className="mt-2 mb-4 mx-2 w-fit">
                 <Likes

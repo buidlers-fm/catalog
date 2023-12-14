@@ -67,7 +67,7 @@ export default function BookNoteCard({
                   className="w-full mx-auto shadow-md rounded-xs"
                 />
               ) : (
-                <CoverPlaceholder />
+                <CoverPlaceholder size="sm" />
               )}
             </Link>
           </div>
