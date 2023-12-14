@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
@@ -42,6 +43,8 @@ export default function BookPage({
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
+  const router = useRouter()
+
   const [notes, setNotes] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
@@ -105,6 +108,8 @@ export default function BookPage({
   }
 
   const getBookNotes = async () => {
+    if (!book.id) router.refresh()
+
     try {
       const _notes = await api.bookNotes.get({
         bookId: book.id,
@@ -124,6 +129,8 @@ export default function BookPage({
   }
 
   const getBookPosts = async () => {
+    if (!book.id) router.refresh()
+
     try {
       const _posts = await api.bookNotes.get({
         bookId: book.id,
