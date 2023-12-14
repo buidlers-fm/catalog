@@ -17,7 +17,7 @@ const RESULTS_LIMIT = 5
 const DEBOUNCE_THRESHOLD_MS = 500
 
 type Props = {
-  onSelect: (selectedBook) => void
+  onSelect: (selectedBook) => any
   isNav?: boolean
   isMobileNav?: boolean
   disabled?: boolean
@@ -140,10 +140,17 @@ export default function Search({
     return debounce(onSearchChange, DEBOUNCE_THRESHOLD_MS)
   }, [])
 
+  const resetSearch = () => {
+    setIsSearching(false)
+    setSearchResults(undefined)
+    setSelectedBook(null)
+  }
+
   const handleSelect = (book: Book) => {
     if (isNav) setSelectedBook(book)
     setSearchResults(undefined)
-    onSelect(book)
+    const { shouldReset } = onSelect(book) || {}
+    if (shouldReset) resetSearch()
   }
 
   useEffect(() => {
