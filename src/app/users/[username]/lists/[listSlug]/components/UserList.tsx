@@ -52,7 +52,7 @@ export default function UserList({
         <div className="text-4xl font-semibold mb-1 sm:mr-6">{title}</div>
         {isUsersList && (
           <Link href={getEditListLink(userProfile, listSlug!)}>
-            <button className="cat-btn cat-btn-sm cat-btn-gray my-2 sm:my-0">Edit list</button>
+            <button className="cat-btn cat-btn-sm cat-btn-gray my-2 sm:my-0">edit list</button>
           </Link>
         )}
       </div>

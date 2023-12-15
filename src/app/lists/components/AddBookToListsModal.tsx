@@ -71,7 +71,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
       <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
         <Dialog.Panel className="relative max-w-lg rounded bg-gray-900 px-16 py-8">
           <Dialog.Title>
-            <div className="grow mb-8 text-xl font-bold">Add "{book.title}" to lists</div>
+            <div className="grow mb-8 text-xl font-bold">add "{book.title}" to lists</div>
           </Dialog.Title>
 
           <button onClick={handleClose} className="absolute top-[24px] right-[16px]">
@@ -86,7 +86,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
               className="relative block w-full text-left py-2 px-10 bg-gray-800 text-gray-300 border border-gray-900 hover:text-white"
             >
               <FaPlus className="inline-block -mt-[5px] mr-2 text-xs" />
-              Start a new list...
+              start a new list...
             </button>
             {userLists.map((list) => (
               <button
@@ -113,7 +113,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
               disabled={isBusy}
               className="cat-btn cat-btn-gold ml-4"
             >
-              Add to {listsStr}
+              add to {listsStr}
             </button>
           </div>
         </Dialog.Panel>

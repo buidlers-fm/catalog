@@ -46,7 +46,7 @@ export default function BookNotes({ userProfile, currentUserProfile }: any) {
               className="inline-block mt-1 mx-2"
               href={getUserBookNotesLink(userProfile.username)}
             >
-              See all
+              more
             </Link>
           </div>
         </div>

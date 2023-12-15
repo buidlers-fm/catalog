@@ -148,11 +148,11 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   return (
     <>
       <div className="my-8 max-w-3xl mx-auto font-mulish">
-        <div className="my-8 cat-page-title">{isEdit ? "Edit" : "New"} List</div>
+        <div className="my-8 cat-page-title">{isEdit ? "edit" : "new"} list</div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="my-8">
             <FormInput
-              labelText="Title"
+              labelText="title"
               name="title"
               type="text"
               descriptionText={isEdit ? "Changing the title may change the list's URL." : undefined}
@@ -162,7 +162,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               fullWidth={false}
             />
             <FormTextarea
-              labelText="Description"
+              labelText="description"
               name="description"
               type="text"
               formProps={register("description", validations.description)}
@@ -170,15 +170,17 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               errorMessage={errors.description?.message}
               fullWidth={false}
             />
-            <FormToggle
-              label="Ranked list"
-              descriptionText="Show position for each book."
-              name="ranked"
-              control={control}
-              defaultValue={isRanked}
-            />
+            <div className="my-12">
+              <FormToggle
+                label="ranked list"
+                descriptionText="Show position for each book."
+                name="ranked"
+                control={control}
+                defaultValue={isRanked}
+              />
+            </div>
             <EditListBooks
-              heading="Books"
+              heading="books"
               books={books}
               onBookSelect={addBook}
               onBookRemove={removeBook}
@@ -191,7 +193,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
                 className="cat-btn cat-btn-gold my-4"
                 disabled={isSubmitting || !readyToSubmit}
               >
-                Save changes
+                save
               </button>
               {isEdit && (
                 <button
@@ -200,7 +202,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
                   className="cat-btn cat-btn-red-outline my-4 ml-4"
                   disabled={isSubmitting || !readyToSubmit}
                 >
-                  Delete list
+                  delete list
                 </button>
               )}
             </div>

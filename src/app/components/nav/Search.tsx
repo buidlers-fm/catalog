@@ -174,7 +174,7 @@ export default function Search({
                 onChange={debouncedSearchHandler}
                 displayValue={() => selectedBook?.title || ""}
                 placeholder={
-                  isMobileNav ? undefined : `${isNav ? "Search" : "Add"} by title and author`
+                  isMobileNav ? undefined : `${isNav ? "search" : "add"} by title and author`
                 }
                 className={`${isMobileNav ? "w-full" : "w-full xs:w-96"} ${
                   isNav ? "px-11" : "px-4"

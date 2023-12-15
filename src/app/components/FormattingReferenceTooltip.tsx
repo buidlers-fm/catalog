@@ -8,7 +8,7 @@ const tdClasses = "bg-gray-900 p-2"
 const FormattingReferenceTooltip = () => (
   <>
     <div id="formatting-reference" className="flex items-center text-sm text-gray-300">
-      <span>Formatting reference</span>
+      <span>formatting reference</span>
       <SlInfo className="pl-1 text-base" />
     </div>
     <Tooltip
@@ -19,8 +19,10 @@ const FormattingReferenceTooltip = () => (
     >
       <table className="border-separate rounded bg-gray-700">
         <thead>
-          <td className="bg-gray-700 p-2 rounded-tl">Markdown</td>
-          <td className="bg-gray-700 p-2 rounded-tr">Result</td>
+          <tr>
+            <th className="bg-gray-700 p-2 rounded-tl">Markdown</th>
+            <th className="bg-gray-700 p-2 rounded-tr">Result</th>
+          </tr>
         </thead>
         <tbody>
           <tr>

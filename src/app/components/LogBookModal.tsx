@@ -23,38 +23,38 @@ const { inputFieldDate } = dateTimeFormats
 const readingStatusToCopy = {
   [BookNoteReadingStatus.Started]: {
     buttonClass: "cat-btn-green",
-    buttonCopy: "Started",
+    buttonCopy: "started",
     eyebrowCopy: "I started...",
     textPrompt: "Any thoughts going in?",
-    editDatesCopy: "Edit start date",
-    clearDatesCopy: "Clear",
+    editDatesCopy: "edit start date",
+    clearDatesCopy: "clear",
     likeButtonCopy: "I love this book already.",
   },
   [BookNoteReadingStatus.Reading]: {
     buttonClass: "cat-btn-teal",
-    buttonCopy: "Still reading",
+    buttonCopy: "still reading",
     eyebrowCopy: "I'm still reading...",
     textPrompt: "What's on your mind?",
-    editDatesCopy: "Edit start date",
-    clearDatesCopy: "Clear",
+    editDatesCopy: "edit start date",
+    clearDatesCopy: "clear",
     likeButtonCopy: "I love this book.",
   },
   [BookNoteReadingStatus.Finished]: {
     buttonClass: "cat-btn-gold",
-    buttonCopy: "Finished",
+    buttonCopy: "finished",
     eyebrowCopy: "I finished...",
     textPrompt: "What'd you think?",
-    editDatesCopy: "Edit start/finish dates",
-    clearDatesCopy: "Clear dates",
+    editDatesCopy: "edit start/finish dates",
+    clearDatesCopy: "clear dates",
     likeButtonCopy: "I loved this book.",
   },
   [BookNoteReadingStatus.Abandoned]: {
     buttonClass: "cat-btn-light-gray",
-    buttonCopy: "Abandoned",
+    buttonCopy: "abandoned",
     eyebrowCopy: "I abandoned...",
     textPrompt: "What'd you think?",
-    editDatesCopy: "Edit start/stop dates",
-    clearDatesCopy: "Clear dates",
+    editDatesCopy: "edit start/stop dates",
+    clearDatesCopy: "clear dates",
     likeButtonCopy: "I loved this book.",
   },
 }
@@ -235,14 +235,14 @@ export default function LogBookModal({
               <div className="">
                 {readingStatus ? (
                   <div className="flex justify-between">
-                    <div className="cat-eyebrow">
+                    <div className="cat-eyebrow-uppercase">
                       {readingStatusToCopy[readingStatus].eyebrowCopy}
                     </div>
                     <button
                       onClick={() => setReadingStatus(undefined)}
                       className="cat-btn-link ml-4 text-sm text-gray-300"
                     >
-                      Change
+                      change
                     </button>
                   </div>
                 ) : (
@@ -295,7 +295,7 @@ export default function LogBookModal({
                         <div className="flex flex-col sm:flex-row">
                           <div>
                             <label htmlFor="startDate">
-                              Started
+                              started
                               <input
                                 type="date"
                                 max={todayStr}
@@ -309,8 +309,8 @@ export default function LogBookModal({
                             <div className="mt-4 sm:mt-0 sm:ml-8">
                               <label htmlFor="endDate">
                                 {readingStatus === BookNoteReadingStatus.Finished
-                                  ? "Finished"
-                                  : "Stopped"}
+                                  ? "finished"
+                                  : "stopped"}
                                 <input
                                   type="date"
                                   max={todayStr}
@@ -357,7 +357,7 @@ export default function LogBookModal({
                           className="mt-4 cat-btn cat-btn-md cat-btn-gold"
                           disabled={isBusy}
                         >
-                          Save
+                          save
                         </button>
                       </div>
                       <div className="w-96">
