@@ -13,39 +13,48 @@ import FormTextarea from "app/components/forms/FormTextarea"
 import allValidations from "lib/constants/validations"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import { dateStringToDateTime } from "lib/helpers/general"
-import ReadingStatus from "enums/BookNoteReadingStatus"
+import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import BookNoteType from "enums/BookNoteType"
 import type Book from "types/Book"
+import type BookRead from "types/BookRead"
 
 const { inputFieldDate } = dateTimeFormats
 
 const readingStatusToCopy = {
-  [ReadingStatus.Started]: {
+  [BookNoteReadingStatus.Started]: {
     buttonClass: "cat-btn-green",
     buttonCopy: "Started",
     eyebrowCopy: "I started...",
     textPrompt: "Any thoughts going in?",
+    editDatesCopy: "Edit start date",
+    clearDatesCopy: "Clear",
     likeButtonCopy: "I love this book already.",
   },
-  [ReadingStatus.Reading]: {
+  [BookNoteReadingStatus.Reading]: {
     buttonClass: "cat-btn-teal",
     buttonCopy: "Still reading",
     eyebrowCopy: "I'm still reading...",
     textPrompt: "What's on your mind?",
+    editDatesCopy: "Edit start date",
+    clearDatesCopy: "Clear",
     likeButtonCopy: "I love this book.",
   },
-  [ReadingStatus.Finished]: {
+  [BookNoteReadingStatus.Finished]: {
     buttonClass: "cat-btn-gold",
     buttonCopy: "Finished",
     eyebrowCopy: "I finished...",
     textPrompt: "What'd you think?",
+    editDatesCopy: "Edit start/finish dates",
+    clearDatesCopy: "Clear dates",
     likeButtonCopy: "I loved this book.",
   },
-  [ReadingStatus.Abandoned]: {
+  [BookNoteReadingStatus.Abandoned]: {
     buttonClass: "cat-btn-light-gray",
     buttonCopy: "Abandoned",
     eyebrowCopy: "I abandoned...",
     textPrompt: "What'd you think?",
+    editDatesCopy: "Edit start/stop dates",
+    clearDatesCopy: "Clear dates",
     likeButtonCopy: "I loved this book.",
   },
 }
@@ -56,15 +65,21 @@ export default function LogBookModal({
   onSuccess,
   isOpen,
   like: _like,
+  lastUnfinishedBookRead: _lastUnfinishedBookRead,
 }: {
   book: Book
   onClose: () => void
   onSuccess: () => void
   isOpen: boolean
   like: boolean
+  lastUnfinishedBookRead?: BookRead
 }) {
+  const [readingStatus, setReadingStatus] = useState<BookNoteReadingStatus>()
   const [like, setLike] = useState<boolean>(_like)
-  const [readingStatus, setReadingStatus] = useState<ReadingStatus>()
+  const [lastUnfinishedBookRead, setLastUnfinishedBookRead] = useState<BookRead | undefined>(
+    _lastUnfinishedBookRead,
+  )
+  const [isEditingDates, setIsEditingDates] = useState<boolean>(false)
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
 
@@ -108,35 +123,46 @@ export default function LogBookModal({
     setLike(_like)
   }, [_like])
 
+  useEffect(() => {
+    setLastUnfinishedBookRead(_lastUnfinishedBookRead)
+  }, [_lastUnfinishedBookRead])
+
+  useEffect(() => {
+    setIsEditingDates(false)
+  }, [readingStatus])
+
   const todayStr = dayjs().format(inputFieldDate)
 
   // set existing or default start and end dates
   useEffect(() => {
-    let lastUnfinishedBookRead
-    if (book.bookReads) {
-      lastUnfinishedBookRead = book.bookReads
-        .filter((br) => !!br.startDate && !br.endDate)
-        .sort((a, b) => b.startDate - a.startDate)[0]
+    let startDateStr = todayStr
+
+    // lastUnfinishedBookRead's startDate overrides todayStr,
+    // whether it's present or null
+    if (lastUnfinishedBookRead) {
+      const { startDate } = lastUnfinishedBookRead
+      startDateStr = startDate ? dayjs(startDate).format(inputFieldDate) : ""
     }
 
-    let startDateStr = todayStr
-    if (lastUnfinishedBookRead) {
-      startDateStr = dayjs(lastUnfinishedBookRead.startDate).format(inputFieldDate)
-    }
-    if (readingStatus === ReadingStatus.Started) {
+    if (readingStatus === BookNoteReadingStatus.Started) {
       setValue("startDate", todayStr)
       setValue("endDate", "")
-    } else if (readingStatus === ReadingStatus.Reading) {
+    } else if (readingStatus === BookNoteReadingStatus.Reading) {
       setValue("startDate", startDateStr)
       setValue("endDate", "")
     } else if (
-      readingStatus === ReadingStatus.Finished ||
-      readingStatus === ReadingStatus.Abandoned
+      readingStatus === BookNoteReadingStatus.Finished ||
+      readingStatus === BookNoteReadingStatus.Abandoned
     ) {
       setValue("startDate", startDateStr)
       setValue("endDate", todayStr)
     }
-  }, [readingStatus, setValue, book.bookReads, todayStr])
+  }, [readingStatus, setValue, lastUnfinishedBookRead, todayStr])
+
+  const clearDates = () => {
+    setValue("startDate", "")
+    setValue("endDate", "")
+  }
 
   const handleClose = async () => {
     await onClose()
@@ -226,7 +252,7 @@ export default function LogBookModal({
                 <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
                 {!readingStatus && (
                   <div className="my-4 flex flex-col sm:flex-row">
-                    {Object.values(ReadingStatus).map((rs) => (
+                    {Object.values(BookNoteReadingStatus).map((rs) => (
                       <button
                         key={rs}
                         onClick={() => setReadingStatus(rs)}
@@ -256,36 +282,58 @@ export default function LogBookModal({
                         bgColor="bg-gray-800"
                         moreClasses="mt-1"
                       />
-                      <div className="flex flex-col sm:flex-row">
-                        <div>
-                          <label htmlFor="startDate">
-                            Started
-                            <input
-                              type="date"
-                              max={todayStr}
-                              {...register("startDate")}
-                              className="block mt-1 w-full px-3 py-1 bg-gray-700 rounded-sm"
-                            />
-                          </label>
-                        </div>
-                        {(readingStatus === ReadingStatus.Finished ||
-                          readingStatus === ReadingStatus.Abandoned) && (
-                          <div className="mt-4 sm:mt-0 sm:ml-8">
-                            <label htmlFor="endDate">
-                              {readingStatus === ReadingStatus.Finished ? "Finished" : "Stopped"}
+                      <div className="">
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingDates(true)}
+                          className={`mt-2 cat-btn-link text-sm ${isEditingDates ? "hidden" : ""}`}
+                        >
+                          {readingStatusToCopy[readingStatus].editDatesCopy}
+                        </button>
+                      </div>
+                      <div className={isEditingDates ? "" : "hidden"}>
+                        <div className="flex flex-col sm:flex-row">
+                          <div>
+                            <label htmlFor="startDate">
+                              Started
                               <input
                                 type="date"
                                 max={todayStr}
-                                {...register("endDate", validations.endDate)}
+                                {...register("startDate")}
                                 className="block mt-1 w-full px-3 py-1 bg-gray-700 rounded-sm"
                               />
                             </label>
                           </div>
+                          {(readingStatus === BookNoteReadingStatus.Finished ||
+                            readingStatus === BookNoteReadingStatus.Abandoned) && (
+                            <div className="mt-4 sm:mt-0 sm:ml-8">
+                              <label htmlFor="endDate">
+                                {readingStatus === BookNoteReadingStatus.Finished
+                                  ? "Finished"
+                                  : "Stopped"}
+                                <input
+                                  type="date"
+                                  max={todayStr}
+                                  {...register("endDate", validations.endDate)}
+                                  className="block mt-1 w-full px-3 py-1 bg-gray-700 rounded-sm"
+                                />
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                        <div className="">
+                          <button
+                            type="button"
+                            onClick={clearDates}
+                            className="mt-1 cat-btn-link text-sm text-gray-300"
+                          >
+                            {readingStatusToCopy[readingStatus].clearDatesCopy}
+                          </button>
+                        </div>
+                        {errors.endDate && (
+                          <div className="mt-2 text-red-500">{errors.endDate.message}</div>
                         )}
                       </div>
-                      {errors.endDate && (
-                        <div className="mt-2 text-red-500">{errors.endDate.message}</div>
-                      )}
 
                       <div className="mt-8 my-4 flex">
                         {like ? (

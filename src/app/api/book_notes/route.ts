@@ -7,6 +7,7 @@ import { getBookNotes } from "lib/server/bookNotes"
 import { findOrCreateBook } from "lib/api/books"
 import BookNoteType from "enums/BookNoteType"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
+import BookReadStatus from "enums/BookReadStatus"
 import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -67,12 +68,20 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   }
 
   const { startDate: startDateStr, endDate: endDateStr } = bookRead
-  const startDate = startDateStr ? new Date(startDateStr) : undefined
-  const endDate = endDateStr ? new Date(endDateStr) : undefined
+  const startDate = startDateStr ? new Date(startDateStr) : null
+  const endDate = endDateStr ? new Date(endDateStr) : null
+
+  let bookReadStatus
+  if (readingStatus === BookNoteReadingStatus.Reading) {
+    bookReadStatus = BookReadStatus.Started
+  } else {
+    bookReadStatus = readingStatus
+  }
 
   const bookReadParams = {
     startDate,
     endDate,
+    status: bookReadStatus,
     reader: {
       connect: {
         id: userProfile.id,
@@ -95,13 +104,10 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       where: {
         bookId: book.id,
         readerId: userProfile.id,
-        startDate: {
-          not: null,
-        },
-        endDate: null,
+        status: BookReadStatus.Started,
       },
       orderBy: {
-        startDate: "desc",
+        createdAt: "desc",
       },
     })
 
@@ -119,6 +125,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
         data: {
           startDate,
           endDate,
+          status: bookReadStatus,
         },
       })
     } else {

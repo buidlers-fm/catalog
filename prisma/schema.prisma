@@ -143,6 +143,7 @@ model BookRead {
   id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   readerId  String      @map("reader_id") @db.Uuid
   bookId    String      @map("book_id") @db.Uuid
+  status    String
   startDate DateTime?   @map("start_date") @db.Timestamptz(6)
   endDate   DateTime?   @map("end_date") @db.Timestamptz(6)
   createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)

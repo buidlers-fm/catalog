@@ -17,14 +17,16 @@ import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import NewBookPostModal from "app/components/NewBookPostModal"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import ListCard from "app/components/lists/ListCard"
+import CustomMarkdown from "app/components/CustomMarkdown"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
-import CustomMarkdown from "app/components/CustomMarkdown"
+import BookReadStatus from "enums/BookReadStatus"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
 import type Like from "types/Like"
+import type BookRead from "types/BookRead"
 
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
@@ -47,6 +49,7 @@ export default function BookPage({
 
   const [notes, setNotes] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
+  const [lastUnfinishedBookRead, setLastUnfinishedBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
@@ -70,6 +73,11 @@ export default function BookPage({
   }, [book.bookPosts])
 
   useEffect(() => {
+    const _lastUnfinishedBookRead = findLastUnfinishedBookRead(book.bookReads)
+    setLastUnfinishedBookRead(_lastUnfinishedBookRead)
+  }, [book.bookReads])
+
+  useEffect(() => {
     const handleClickOutside = () => {
       if (showAddNoteTooltip) {
         setShowAddNoteTooltip(false)
@@ -82,6 +90,11 @@ export default function BookPage({
       document.removeEventListener("click", handleClickOutside)
     }
   }, [showAddNoteTooltip])
+
+  const findLastUnfinishedBookRead = (bookReads: BookRead[] = []) =>
+    bookReads
+      .filter((br) => br.status === BookReadStatus.Started)
+      .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())[0]
 
   const onLikeChange = (_likeCount?: number, _currentUserLike?: Like) => {
     setLikeCount(_likeCount)
@@ -121,10 +134,24 @@ export default function BookPage({
     }
   }
 
-  const updateBookNotesAndLikes = async () => {
-    await updateLikes()
-    await getBookNotes()
+  const getBookReads = async () => {
+    if (!book.id) router.refresh()
+
+    try {
+      const _bookReads = await api.bookReads.get({
+        bookId: book.id,
+        forCurrentUser: true,
+      })
+
+      const _lastUnfinishedBookRead = findLastUnfinishedBookRead(_bookReads)
+
+      setLastUnfinishedBookRead(_lastUnfinishedBookRead)
+    } catch (error: any) {
+      console.error(error)
+    }
   }
+
+  const refetchBookData = async () => Promise.all([updateLikes(), getBookNotes(), getBookReads()])
 
   const getBookPosts = async () => {
     if (!book.id) router.refresh()
@@ -351,9 +378,10 @@ export default function BookPage({
             key={currentUserLike?.id}
             book={book}
             like={!!currentUserLike}
+            lastUnfinishedBookRead={lastUnfinishedBookRead}
             isOpen={showLogBookModal}
             onClose={() => setShowLogBookModal(false)}
-            onSuccess={updateBookNotesAndLikes}
+            onSuccess={refetchBookData}
           />
           <NewBookPostModal
             book={book}

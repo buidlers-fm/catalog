@@ -57,6 +57,13 @@ const api = {
         body: prepReqBody(requestData),
       }),
   },
+  bookReads: {
+    get: (params: { bookId?: string; forCurrentUser?: boolean }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/book_reads?${queryString}`
+      return fetchJson(url)
+    },
+  },
   likes: {
     get: (params: {
       likedObjectId: string
