@@ -22,9 +22,9 @@ const convertImageUrlToLarge = (imageUrl) => {
 }
 
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
-const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
+const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
-const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[288px]"
+const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
 
 export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const router = useRouter()
@@ -38,10 +38,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
   }, [])
 
   return (
-    <div
-      key={book.id}
-      className="flex flex-col items-center justify-center"
-    >
+    <div key={book.id} className="flex flex-col items-center justify-center">
       <button
         className={`${
           isFavorite ? favoriteBookWidths : defaultWidths

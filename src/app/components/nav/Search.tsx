@@ -22,6 +22,7 @@ type Props = {
   isMobileNav?: boolean
   disabled?: boolean
   disabledMessage?: string
+  fullWidth?: boolean
 }
 
 const concatUniqueSearchResults = (resultsA, resultsB) => {
@@ -39,6 +40,7 @@ export default function Search({
   isMobileNav = false,
   disabled = false,
   disabledMessage,
+  fullWidth: _fullWidth,
 }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -46,6 +48,8 @@ export default function Search({
   const [moreResultsExist, setMoreResultsExist] = useState<boolean>(false)
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>()
+
+  const fullWidth = _fullWidth === undefined ? isMobileNav : _fullWidth
 
   const debouncedSearchHandler = useMemo(() => {
     async function onSearchChange(e: any) {
@@ -176,7 +180,7 @@ export default function Search({
                 placeholder={
                   isMobileNav ? undefined : `${isNav ? "search" : "add"} by title and author`
                 }
-                className={`${isMobileNav ? "w-full" : "w-full xs:w-96"} ${
+                className={`${fullWidth ? "w-full" : "w-full xs:w-96"} ${
                   isNav ? "px-11" : "px-4"
                 } pt-3 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-mulish`}
               />
@@ -184,7 +188,7 @@ export default function Search({
                 <Combobox.Options
                   static
                   className={`${
-                    isMobileNav ? "w-full" : "w-full xs:w-96"
+                    fullWidth ? "w-full" : "w-full xs:w-96"
                   } absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
                 >
                   {isLoading && (

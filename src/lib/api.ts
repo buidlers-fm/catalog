@@ -134,6 +134,17 @@ const api = {
         body: formData,
       }),
   },
+  userCurrentStatuses: {
+    create: (requestData) =>
+      fetchJson(`/api/user_current_statuses`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+    delete: () =>
+      fetchJson(`/api/user_current_statuses`, {
+        method: "DELETE",
+      }),
+  },
 }
 
 export default api

@@ -1,4 +1,6 @@
 import type BookNote from "types/BookNote"
+import type BookRead from "types/BookRead"
+import type UserCurrentStatus from "types/UserCurrentStatus"
 
 export interface UserProfileProps {
   id: string
@@ -11,6 +13,8 @@ export interface UserProfileProps {
   location?: string | null
   website?: string | null
   bookNotes?: BookNote[]
+  bookReads?: BookRead[]
+  currentStatuses?: UserCurrentStatus[]
 }
 
 export default class UserProfile {
@@ -34,6 +38,10 @@ export default class UserProfile {
 
   public bookNotes: BookNote[] | undefined
 
+  public bookReads: BookRead[] | undefined
+
+  public currentStatuses: UserCurrentStatus[] | undefined
+
   constructor(userProfileProps: UserProfileProps) {
     this.id = userProfileProps.id
     this.userId = userProfileProps.userId
@@ -45,6 +53,8 @@ export default class UserProfile {
     this.location = userProfileProps.location
     this.website = userProfileProps.website
     this.bookNotes = userProfileProps.bookNotes
+    this.bookReads = userProfileProps.bookReads
+    this.currentStatuses = userProfileProps.currentStatuses
   }
 
   static buildMany(queryResults: UserProfileProps[]): UserProfile[] {
