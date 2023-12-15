@@ -246,7 +246,7 @@ export default function LogBookModal({
                     </button>
                   </div>
                 ) : (
-                  <div className="cat-eyebrow">Journal entry for...</div>
+                  <div className="cat-eyebrow-uppercase">Journal entry for...</div>
                 )}
                 <div className="grow mt-4 text-2xl font-semibold font-newsreader">{book.title}</div>
                 <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
