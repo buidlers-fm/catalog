@@ -44,14 +44,14 @@ export default function SignInForm({ toggleAuth }) {
   return (
     <div>
       <FormInput
-        labelText="Email address"
+        labelText="email address"
         name="email"
         type="email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
       />
       <FormInput
-        labelText="Password"
+        labelText="password"
         name="password"
         type="password"
         onChange={(e) => setPassword(e.target.value)}
@@ -63,7 +63,7 @@ export default function SignInForm({ toggleAuth }) {
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
       <div>
         Don't have an account?{" "}
-        <button onClick={toggleAuth} className="cat-btn-link text-teal-500">
+        <button onClick={toggleAuth} className="cat-link text-none text-teal-500">
           Sign up
         </button>
         .

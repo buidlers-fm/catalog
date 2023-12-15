@@ -15,10 +15,12 @@ const components: Components = {
   ),
   a: ({ node, href, children, ...props }) =>
     isValidHttpUrl(href) ? (
-      <a {...props} href={href} className="cat-btn-link" target="_blank" rel="noopener noreferrer">
+      <a {...props} href={href} className="cat-link" target="_blank" rel="noopener noreferrer">
         {children}
       </a>
-    ) : href,
+    ) : (
+      href
+    ),
   ol: ({ node, children, ...props }) => (
     <ol {...props} className="ml-4 -my-3 last:-mb-10 list-decimal">
       {children}

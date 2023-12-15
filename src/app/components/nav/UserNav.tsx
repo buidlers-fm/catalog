@@ -87,7 +87,7 @@ export default function UserNav({ currentUserProfile }) {
             <div className="p-8">
               <div className="flex">
                 <div className="grow">
-                  <h1 className="text-xl">{isSignIn ? "Sign in" : "Sign up"}</h1>
+                  <h1 className="text-xl">{isSignIn ? "sign in" : "sign up"}</h1>
                 </div>
                 <button className="ml-8" onClick={() => setShowAuth(false)}>
                   <BsXLg className="text-xl text-gray-200" />

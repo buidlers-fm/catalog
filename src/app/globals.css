@@ -3,10 +3,14 @@
 @tailwind utilities;
 
 .cat-page-title {
-  @apply text-3xl font-mulish;
+  @apply text-3xl font-mulish lowercase;
 }
 
 .cat-eyebrow {
+  @apply text-sm text-gray-300 font-mulish lowercase;
+}
+
+.cat-eyebrow-uppercase {
   @apply text-sm text-gray-300 font-mulish uppercase tracking-wider;
 }
 
@@ -16,7 +20,7 @@
 }
 
 .cat-btn {
-  @apply font-mulish font-semibold rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
+  @apply font-mulish font-semibold lowercase rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
   @apply cat-btn-md;
 }
 
@@ -65,11 +69,15 @@
 }
 
 .cat-btn-link {
-  @apply border-b border-b-gray-200;
+  @apply border-b border-b-gray-200 lowercase;
 }
 
 .cat-btn-text {
-  @apply text-gray-100 font-mulish;
+  @apply text-gray-100 font-mulish lowercase;
+}
+
+.cat-link {
+  @apply border-b border-b-gray-200;
 }
 
 /* filepond styles */

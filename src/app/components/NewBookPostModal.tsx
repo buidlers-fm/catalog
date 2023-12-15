@@ -116,14 +116,14 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
               )}
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
-              <div className="cat-eyebrow">New link post</div>
+              <div className="cat-eyebrow-uppercase">New link post</div>
               <div className="grow mt-4 text-2xl font-semibold font-newsreader">{book.title}</div>
               <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
               <div className="">
                 <form onSubmit={handleSubmit(submit)}>
                   <div className="my-4">
                     <FormInput
-                      labelText="Title"
+                      labelText="title"
                       name="title"
                       type="text"
                       formProps={register("title", validations.title)}
@@ -134,7 +134,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
                       errorMessage={errors.title?.message}
                     />
                     <FormInput
-                      labelText="Link URL"
+                      labelText="link URL"
                       name="linkUrl"
                       type="text"
                       formProps={register("linkUrl", validations.linkUrl)}
@@ -159,7 +159,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
                         className="mt-4 cat-btn cat-btn-md cat-btn-gold"
                         disabled={isBusy}
                       >
-                        Save
+                        save
                       </button>
                     </div>
                     <div className="w-96">

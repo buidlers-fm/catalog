@@ -223,14 +223,14 @@ export default function BookPage({
                     onClick={() => setShowAddBookToListsModal(true)}
                     className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                   >
-                    <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> Add to list
+                    <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> add to list
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowLogBookModal(true)}
                     className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                   >
-                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> Log this
+                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> log this
                     book
                   </button>
                 </div>
@@ -280,10 +280,10 @@ export default function BookPage({
           {notes.length > 0 && (
             <div className="mt-8 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
-                <div className="cat-eyebrow">Popular notes</div>
+                <div className="cat-eyebrow">top notes</div>
                 <div className="flex -mt-1">
                   <Link className="inline-block mt-1 mx-2" href={getBookNotesLink(book.slug!)}>
-                    See all
+                    more
                   </Link>
                 </div>
               </div>
@@ -305,21 +305,21 @@ export default function BookPage({
 
           <div className="mt-16 font-mulish">
             <div className="flex justify-between text-gray-300 text-sm">
-              <div className="cat-eyebrow">Popular links</div>
+              <div className="cat-eyebrow">top links</div>
               <div className="flex -mt-1">
                 {isSignedIn && (
                   <button
                     onClick={() => setShowNewBookPostModal(true)}
                     className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0"
                   >
-                    + Add a link
+                    + add a link
                   </button>
                 )}
                 <Link
                   className={`inline-block ${isSignedIn ? "my-1 xs:mb-0" : ""} mx-2`}
                   href={getBookPostsLink(book.slug!)}
                 >
-                  See all
+                  more
                 </Link>
               </div>
             </div>
@@ -349,10 +349,10 @@ export default function BookPage({
           {bookLists && bookLists.length > 0 && (
             <div className="mt-16 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
-                <div className="cat-eyebrow">As seen in</div>
+                <div className="cat-eyebrow">as seen in</div>
                 <div className="flex -mt-1">
                   <Link className="inline-block mt-1 mx-2" href={getBookListsLink(book.slug!)}>
-                    See all
+                    more
                   </Link>
                 </div>
               </div>

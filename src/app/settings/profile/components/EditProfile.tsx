@@ -153,7 +153,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
             />
             <div className="mt-8">
               <FormInput
-                labelText="Username (not editable)"
+                labelText="username (not editable)"
                 name="username"
                 type="text"
                 formProps={register("username")}
@@ -161,7 +161,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 disabled
               />
               <FormInput
-                labelText="Display name"
+                labelText="display name"
                 name="displayName"
                 type="text"
                 formProps={register("displayName", validations.displayName)}
@@ -170,7 +170,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 fullWidth={false}
               />
               <FormInput
-                labelText="Location"
+                labelText="location"
                 name="location"
                 type="text"
                 formProps={register("location", validations.location)}
@@ -179,7 +179,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 fullWidth={false}
               />
               <FormInput
-                labelText="Website"
+                labelText="website"
                 name="website"
                 type="text"
                 formProps={register("website", validations.website)}
@@ -188,7 +188,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 placeholder="https://example.com"
               />
               <FormTextarea
-                labelText="Bio"
+                labelText="bio"
                 name="bio"
                 type="text"
                 formProps={register("bio", validations.bio)}
@@ -200,7 +200,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
           </div>
           <div className="ml:ml-16 flex flex-col">
             <EditListBooks
-              heading="Favorite (top 4) books"
+              heading="favorite (top 4) books"
               books={books}
               onBookSelect={addBook}
               onBookRemove={removeBook}
@@ -211,8 +211,12 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
           </div>
         </div>
         <div className="inline-block">
-          <button type="submit" className="cat-btn cat-btn-gold my-4" disabled={isSubmitting}>
-            Save changes
+          <button
+            type="submit"
+            className="cat-btn cat-btn-sm cat-btn-gold my-4"
+            disabled={isSubmitting}
+          >
+            Save
           </button>
         </div>
         <div className="w-96">

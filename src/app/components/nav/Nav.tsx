@@ -75,7 +75,7 @@ function MobileNav({ currentUserProfile, onSelectBook }) {
             </button>
           </div>
 
-          <div className="ml-2 text-gray-200">Search by title and author.</div>
+          <div className="ml-2 text-gray-200">search by title and author.</div>
         </div>
       </Drawer>
     </div>

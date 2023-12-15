@@ -163,13 +163,13 @@ export default async function UserProfilePage({ params }) {
         <div>
           {isUsersProfile && (
             <Link href="/settings/profile">
-              <button className="cat-btn cat-btn-gray">Edit Profile</button>
+              <button className="cat-btn cat-btn-sm cat-btn-gray">edit profile</button>
             </Link>
           )}
         </div>
       </div>
       <div className="mt-12 font-mulish">
-        <div className="cat-eyebrow">Favorite Books</div>
+        <div className="cat-eyebrow">favorite books</div>
         <hr className="my-1 h-[1px] border-none bg-gray-300" />
         {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
           <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
@@ -194,7 +194,7 @@ export default async function UserProfilePage({ params }) {
 
       <div className="mt-16 font-mulish">
         <div className="flex justify-between text-gray-300 text-sm">
-          <div className="cat-eyebrow">{hasPinnedLists ? "Pinned lists" : "Recent lists"}</div>
+          <div className="cat-eyebrow">{hasPinnedLists ? "pinned lists" : "recent lists"}</div>
           <div
             className={`flex flex-col xs:flex-row items-end xs:items-stretch ${
               isUsersProfile ? "-mt-10 xs:-mt-3" : ""
@@ -203,7 +203,7 @@ export default async function UserProfilePage({ params }) {
             {isUsersProfile && (
               <Link href={getNewListLink(currentUserProfile)}>
                 <button className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0">
-                  + Create a list
+                  + create a list
                 </button>
               </Link>
             )}
@@ -211,7 +211,7 @@ export default async function UserProfilePage({ params }) {
               className={`inline-block ${isUsersProfile ? "my-1 xs:mb-0" : ""} mx-2`}
               href={getUserListsLink(username)}
             >
-              {isUsersProfile ? "See all / Manage" : "See all"}
+              {isUsersProfile ? "manage / more" : "more"}
             </Link>
           </div>
         </div>

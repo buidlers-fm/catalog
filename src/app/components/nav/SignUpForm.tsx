@@ -53,7 +53,7 @@ export default function SignUpForm({ toggleAuth }) {
   return (
     <div>
       <FormInput
-        labelText="Email address"
+        labelText="email address"
         name="email"
         type="email"
         onChange={(e) => setEmail(e.target.value)}
@@ -61,7 +61,7 @@ export default function SignUpForm({ toggleAuth }) {
         accentColor="teal"
       />
       <FormInput
-        labelText="Username"
+        labelText="username"
         descriptionText="Choose a username between 3 and 30 characters, that contains only letters, numbers, dashes (-), and underscores (_)."
         name="username"
         type="text"
@@ -70,7 +70,7 @@ export default function SignUpForm({ toggleAuth }) {
         accentColor="teal"
       />
       <FormInput
-        labelText="Password"
+        labelText="password"
         descriptionText="Choose a password at least 8 characters long."
         name="password"
         type="password"
@@ -84,7 +84,7 @@ export default function SignUpForm({ toggleAuth }) {
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
       <div>
         Already have an account?{" "}
-        <button onClick={toggleAuth} className="cat-btn-link text-gold-500">
+        <button onClick={toggleAuth} className="cat-link text-gold-500">
           Sign in
         </button>
         .
