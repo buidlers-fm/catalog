@@ -4,8 +4,8 @@ import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { GiOpenBook } from "react-icons/gi"
-import { Tooltip } from "react-tooltip"
 import { getBookLink, truncateString } from "lib/helpers/general"
+import BookTooltip from "app/components/books/BookTooltip"
 
 const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 
@@ -22,9 +22,9 @@ const convertImageUrlToLarge = (imageUrl) => {
 }
 
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
-const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[180px]"
+const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
-const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[288px]"
+const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
 
 export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const router = useRouter()
@@ -38,10 +38,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
   }, [])
 
   return (
-    <div
-      key={book.id}
-      className="flex flex-col items-center justify-center"
-    >
+    <div key={book.id} className="flex flex-col items-center justify-center">
       <button
         className={`${
           isFavorite ? favoriteBookWidths : defaultWidths
@@ -67,17 +64,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
           )}
         </div>
       </button>
-      <Tooltip
-        anchorSelect={`#book-${book.id}`}
-        className="max-w-[240px] font-mulish"
-        clickable={isMobile}
-      >
-        <button onClick={() => router.push(getBookLink(book.slug))} disabled={!isMobile}>
-          <div className="text-center">{truncateString(`${book.title}`, 40)}</div>
-          <div className="text-center">{truncateString(`by ${book.authorName}`, 40)}</div>
-          {isMobile && <div className="underline">Go to page</div>}
-        </button>
-      </Tooltip>
+      <BookTooltip book={book} anchorSelect={`#book-${book.id}`} />
       {isRanked && (
         <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
       )}

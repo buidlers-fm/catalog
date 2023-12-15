@@ -93,7 +93,7 @@ export default function Likes({
         <FaHeart className="inline-block mt-1 mr-1.5 text-gray-500 text-sm" />
       )}
       {(likeCount || likeCount === 0) && (
-        <span className="inline-block mt-1 text-sm text-gray-300">{likeCount}</span>
+        <span className="inline-block mt-0.5 text-sm text-gray-300">{likeCount}</span>
       )}
     </div>
   )

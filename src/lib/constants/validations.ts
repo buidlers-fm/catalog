@@ -12,6 +12,11 @@ const validations = {
       maxLength: 100,
     },
   },
+  userCurrentStatus: {
+    text: {
+      maxLength: 300,
+    },
+  },
 }
 
 export default validations

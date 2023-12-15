@@ -58,7 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </div>
               <Nav currentUserProfile={currentUserProfile} />
             </header>
-            <main className="mx-8 lg:mx-24 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
+            <main className="mx-8 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
               {children}
             </main>
             <footer className="mt-32 px-8 py-4 font-chivo-mono text-lg tracking-wider">

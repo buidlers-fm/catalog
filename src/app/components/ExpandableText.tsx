@@ -8,7 +8,7 @@ export default function ExpandableText({ text, maxChars = 500 }) {
     <>
       <span className="mr-2">{isExpanded ? text : truncateString(text, maxChars)}</span>
       <button className="cat-eyebrow" onClick={() => setIsExpanded(!isExpanded)}>
-        {isExpanded ? "Less" : "More"}
+        {isExpanded ? "less" : "more"}
       </button>
     </>
   ) : (

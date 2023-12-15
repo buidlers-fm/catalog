@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
+import ProfileCurrentStatus from "app/users/[username]/components/ProfileCurrentStatus"
 import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileBookNotes"
 import ListBook from "app/lists/components/ListBook"
 import CustomMarkdown from "app/components/CustomMarkdown"
@@ -46,8 +47,17 @@ export default async function UserProfilePage({ params }) {
           book: true,
         },
       },
+      currentStatuses: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          book: true,
+        },
+      },
     },
   })
+  console.log(prismaUserProfile)
 
   if (!prismaUserProfile) notFound()
   const userProfile = UserProfile.build(prismaUserProfile)
@@ -129,7 +139,7 @@ export default async function UserProfilePage({ params }) {
   const { name, bio, location, website, avatarUrl } = userProfile
 
   return (
-    <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
+    <div className="mt-4 xs:w-[400px] sm:w-[600px] lg:w-[960px] mx-auto">
       <div className="sm:flex font-mulish">
         {avatarUrl ? (
           <div className="shrink-0 sm:mr-3 w-24 h-24 overflow-hidden rounded-full">
@@ -168,65 +178,80 @@ export default async function UserProfilePage({ params }) {
           )}
         </div>
       </div>
-      <div className="mt-12 font-mulish">
-        <div className="cat-eyebrow">favorite books</div>
-        <hr className="my-1 h-[1px] border-none bg-gray-300" />
-        {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
-          <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
-            {favoriteBooksList.books.map((book) => (
-              <ListBook key={book!.id} book={book} isFavorite />
-            ))}
-          </div>
-        ) : (
-          <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
-            {isUsersProfile ? "You haven't" : `${name} hasn't`} added any favorite books yet.
-            {isUsersProfile && (
-              <>
-                <br />
-                Edit your profile to add some.
-              </>
+      <div className="mt-4 flex flex-col lg:flex-row">
+        <div className="lg:w-64 mt-4 lg:mr-16 font-mulish">
+          <ProfileCurrentStatus
+            userProfile={prismaUserProfile}
+            // @ts-ignore
+            userCurrentStatus={prismaUserProfile.currentStatuses[0]}
+            isUsersProfile={isUsersProfile}
+          />
+        </div>
+        <div className="xs:w-[400px] sm:w-[600px] lg:w-[640px] mt-8 lg:mt-4">
+          <div className="font-mulish">
+            <div className="cat-eyebrow">favorite books</div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+            {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
+              <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
+                {favoriteBooksList.books.map((book) => (
+                  <ListBook key={book!.id} book={book} isFavorite />
+                ))}
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
+                {isUsersProfile ? "You haven't" : `${name} hasn't`} added any favorite books yet.
+                {isUsersProfile && (
+                  <>
+                    <br />
+                    Edit your profile to add some.
+                  </>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
 
-      <ProfileBookNotes userProfile={prismaUserProfile} currentUserProfile={currentUserProfile} />
+          <ProfileBookNotes
+            userProfile={prismaUserProfile}
+            currentUserProfile={currentUserProfile}
+          />
 
-      <div className="mt-16 font-mulish">
-        <div className="flex justify-between text-gray-300 text-sm">
-          <div className="cat-eyebrow">{hasPinnedLists ? "pinned lists" : "recent lists"}</div>
-          <div
-            className={`flex flex-col xs:flex-row items-end xs:items-stretch ${
-              isUsersProfile ? "-mt-10 xs:-mt-3" : ""
-            }`}
-          >
-            {isUsersProfile && (
-              <Link href={getNewListLink(currentUserProfile)}>
-                <button className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0">
-                  + create a list
-                </button>
-              </Link>
+          <div className="mt-16 font-mulish">
+            <div className="flex justify-between text-gray-300 text-sm">
+              <div className="cat-eyebrow">{hasPinnedLists ? "pinned lists" : "recent lists"}</div>
+              <div
+                className={`flex flex-col xs:flex-row items-end xs:items-stretch ${
+                  isUsersProfile ? "-mt-10 xs:-mt-3" : ""
+                }`}
+              >
+                {isUsersProfile && (
+                  <Link href={getNewListLink(currentUserProfile)}>
+                    <button className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0">
+                      + create a list
+                    </button>
+                  </Link>
+                )}
+                <Link
+                  className={`inline-block ${isUsersProfile ? "my-1 xs:mb-0" : ""} mx-2`}
+                  href={getUserListsLink(username)}
+                >
+                  {isUsersProfile ? "manage / more" : "more"}
+                </Link>
+              </div>
+            </div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+            {lists.length > 0 ? (
+              <div className="">
+                {lists.map((list) => (
+                  <ListCard key={list.id} list={list} />
+                ))}
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
+                {isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists yet.
+              </div>
             )}
-            <Link
-              className={`inline-block ${isUsersProfile ? "my-1 xs:mb-0" : ""} mx-2`}
-              href={getUserListsLink(username)}
-            >
-              {isUsersProfile ? "manage / more" : "more"}
-            </Link>
           </div>
         </div>
-        <hr className="my-1 h-[1px] border-none bg-gray-300" />
-        {lists.length > 0 ? (
-          <div className="">
-            {lists.map((list) => (
-              <ListCard key={list.id} list={list} />
-            ))}
-          </div>
-        ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            {isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists yet.
-          </div>
-        )}
       </div>
     </div>
   )
