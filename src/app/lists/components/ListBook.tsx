@@ -4,8 +4,8 @@ import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { GiOpenBook } from "react-icons/gi"
-import { Tooltip } from "react-tooltip"
 import { getBookLink, truncateString } from "lib/helpers/general"
+import BookTooltip from "app/components/books/BookTooltip"
 
 const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 
@@ -64,17 +64,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
           )}
         </div>
       </button>
-      <Tooltip
-        anchorSelect={`#book-${book.id}`}
-        className="max-w-[240px] font-mulish"
-        clickable={isMobile}
-      >
-        <button onClick={() => router.push(getBookLink(book.slug))} disabled={!isMobile}>
-          <div className="text-center">{truncateString(`${book.title}`, 40)}</div>
-          <div className="text-center">{truncateString(`by ${book.authorName}`, 40)}</div>
-          {isMobile && <div className="underline">Go to page</div>}
-        </button>
-      </Tooltip>
+      <BookTooltip book={book} anchorSelect={`#book-${book.id}`} />
       {isRanked && (
         <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
       )}

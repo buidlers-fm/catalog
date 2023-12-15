@@ -182,6 +182,7 @@ export default async function UserProfilePage({ params }) {
         <div className="lg:w-64 mt-4 lg:mr-16 font-mulish">
           <ProfileCurrentStatus
             userProfile={prismaUserProfile}
+            // @ts-ignore
             userCurrentStatus={prismaUserProfile.currentStatuses[0]}
             isUsersProfile={isUsersProfile}
           />

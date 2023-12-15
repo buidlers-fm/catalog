@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { isMobile } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
