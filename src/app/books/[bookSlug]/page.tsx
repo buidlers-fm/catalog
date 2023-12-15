@@ -67,8 +67,6 @@ export default async function BookPageBySlug({ params }: any) {
 
   let book = { ...dbBook, ...openLibraryBook }
 
-  console.log(book)
-
   let userLists: any[] = []
 
   if (userProfile) {
@@ -121,6 +119,7 @@ export default async function BookPageBySlug({ params }: any) {
     sort: Sort.Popular,
     noteTypes: [BookNoteType.JournalEntry],
     currentUserProfile: userProfile,
+    requireText: true,
   })
 
   book.bookPosts = await getBookNotes({
@@ -131,7 +130,6 @@ export default async function BookPageBySlug({ params }: any) {
   })
 
   book = (await decorateWithLikes([book], InteractionObjectType.Book, userProfile))[0]
-  console.log(book)
 
   return (
     <RemountOnPathChange
