@@ -1,22 +1,31 @@
 import { useRouter } from "next/navigation"
 import { isMobile } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
+import UserProfile from "lib/models/UserProfile"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
 
-export default function CurrentStatus({ userProfile, userCurrentStatus, isUsersProfile }) {
+export default function CurrentStatus({
+  userProfile: _userProfile,
+  userCurrentStatus,
+  isUsersProfile = false,
+  isProfilePage = true,
+}) {
   const router = useRouter()
 
+  const userProfile = UserProfile.build(_userProfile)
   const { name } = userProfile
   const { text, book } = userCurrentStatus || {}
 
   return userCurrentStatus ? (
-    <div className="flex flex-row lg:flex-col">
+    <div className={`flex flex-row ${isProfilePage && "lg:flex-col"}`}>
       {book && (
         <>
           <div
             id="current-status-book"
-            className="shrink-0 w-[72px] xs:w-[96px] ml-4 mr-6 my-4 lg:w-2/3 lg:mx-auto lg:mt-6"
+            className={`shrink-0 w-[72px] xs:w-[96px] ml-4 mr-6 my-4 ${
+              isProfilePage && "lg:w-2/3 lg:mx-auto lg:mt-6"
+            }`}
           >
             <button onClick={() => router.push(getBookLink(book.slug))} disabled={isMobile}>
               {book.coverImageUrl ? (
@@ -28,7 +37,9 @@ export default function CurrentStatus({ userProfile, userCurrentStatus, isUsersP
               ) : (
                 <CoverPlaceholder
                   book={book}
-                  sizeClasses="w-[72px] h-[108px] xs:w-[96px] xs:h-[144px] lg:w-[144px] lg:h-[216px]"
+                  sizeClasses={`w-[72px] h-[108px] xs:w-[96px] xs:h-[144px] ${
+                    isProfilePage && "lg:w-[144px] lg:h-[216px]"
+                  }`}
                 />
               )}
             </button>
@@ -38,8 +49,8 @@ export default function CurrentStatus({ userProfile, userCurrentStatus, isUsersP
       )}
       {text && (
         <div className="grow">
-          <div className="mt-4 mb-2 lg:my-2 font-newsreader">{text}</div>
-          <div className="my-2 px-6 text-right text-sm">— {name}</div>
+          <div className={`mt-4 mb-2 ${isProfilePage && "lg:my-2"} font-newsreader`}>{text}</div>
+          {isProfilePage && <div className="my-2 px-6 text-right text-sm">— {name}</div>}
         </div>
       )}
     </div>

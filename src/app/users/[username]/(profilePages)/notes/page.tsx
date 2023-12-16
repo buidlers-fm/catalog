@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithLikes } from "lib/server/decorators"
-import UserBookNotesIndex from "app/users/[username]/notes/components/UserBookNotesIndex"
+import UserBookNotesIndex from "app/users/[username]/(profilePages)/notes/components/UserBookNotesIndex"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 export const dynamic = "force-dynamic"

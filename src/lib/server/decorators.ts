@@ -108,3 +108,78 @@ export const decorateWithLikes = async (
     currentUserLike: objectIdsToCurrentUserLikes[obj.id],
   }))
 }
+
+export const decorateWithFollowers = async (userProfiles) => {
+  const allFollows = await prisma.interaction.findMany({
+    where: {
+      interactionType: InteractionType.Follow,
+      objectId: {
+        in: userProfiles.map((userProfile) => userProfile.id),
+      },
+      objectType: InteractionObjectType.User,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const followerIds = allFollows.map((follow) => follow.agentId)
+
+  const allFollowers = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: followerIds,
+      },
+    },
+  })
+
+  const allFollowersById = Object.fromEntries(allFollowers.map((profile) => [profile.id, profile]))
+
+  return userProfiles.map((userProfile) => ({
+    ...userProfile,
+    followers: allFollows
+      .filter((follow) => follow.objectId === userProfile.id)
+      .map((follow) => allFollowersById[follow.agentId])
+      .filter((follower) => !!follower) as UserProfileProps[],
+  }))
+}
+
+export const decorateWithFollowing = async (userProfiles, options: any = {}) => {
+  const { include } = options
+
+  const allFollows = await prisma.interaction.findMany({
+    where: {
+      interactionType: InteractionType.Follow,
+      agentId: {
+        in: userProfiles.map((userProfile) => userProfile.id),
+      },
+      objectType: InteractionObjectType.User,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const followingIds = allFollows.map((follow) => follow.objectId)
+
+  const allFollowedProfiles = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: followingIds,
+      },
+    },
+    include,
+  })
+
+  const allFollowingById = Object.fromEntries(
+    allFollowedProfiles.map((profile) => [profile.id, profile]),
+  )
+
+  return userProfiles.map((userProfile) => ({
+    ...userProfile,
+    following: allFollows
+      .filter((follow) => follow.agentId === userProfile.id)
+      .map((follow) => allFollowingById[follow.objectId])
+      .filter((followedUserProfile) => !!followedUserProfile) as UserProfileProps[],
+  }))
+}

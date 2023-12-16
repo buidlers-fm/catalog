@@ -6,6 +6,7 @@ export interface UserProfileProps {
   id: string
   userId: string
   createdAt: Date
+  updatedAt?: Date | null
   username: string
   avatarUrl?: string | null
   displayName?: string | null
@@ -15,6 +16,8 @@ export interface UserProfileProps {
   bookNotes?: BookNote[]
   bookReads?: BookRead[]
   currentStatuses?: UserCurrentStatus[]
+  followers?: UserProfileProps[]
+  following?: UserProfileProps[]
 }
 
 export default class UserProfile {
@@ -23,6 +26,8 @@ export default class UserProfile {
   public userId: string | null | undefined
 
   public createdAt: Date
+
+  public updatedAt: Date | null | undefined
 
   public username: string
 
@@ -42,10 +47,15 @@ export default class UserProfile {
 
   public currentStatuses: UserCurrentStatus[] | undefined
 
+  public followers: UserProfile[] | UserProfileProps[] | undefined
+
+  public following: UserProfile[] | UserProfileProps[] | undefined
+
   constructor(userProfileProps: UserProfileProps) {
     this.id = userProfileProps.id
     this.userId = userProfileProps.userId
     this.createdAt = userProfileProps.createdAt
+    this.updatedAt = userProfileProps.updatedAt
     this.username = userProfileProps.username
     this.avatarUrl = userProfileProps.avatarUrl
     this.displayName = userProfileProps.displayName
@@ -55,6 +65,13 @@ export default class UserProfile {
     this.bookNotes = userProfileProps.bookNotes
     this.bookReads = userProfileProps.bookReads
     this.currentStatuses = userProfileProps.currentStatuses
+
+    if (userProfileProps.followers) {
+      this.followers = UserProfile.buildMany(userProfileProps.followers)
+    }
+    if (userProfileProps.following) {
+      this.following = UserProfile.buildMany(userProfileProps.following)
+    }
   }
 
   static buildMany(queryResults: UserProfileProps[]): UserProfile[] {

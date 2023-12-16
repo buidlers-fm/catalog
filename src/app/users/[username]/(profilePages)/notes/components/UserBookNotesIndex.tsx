@@ -34,7 +34,6 @@ export default function UserBookNotesIndex({ userProfile, currentUserProfile }) 
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
-      <div className="cat-page-title">{userProfile.username}'s notes</div>
       <div className="mt-8">
         {notes ? (
           notes.length > 0 ? (

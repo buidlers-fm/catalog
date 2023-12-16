@@ -118,7 +118,6 @@ export default function ManageLists({ lists, pins }) {
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
-      <div className="cat-page-title">Your lists</div>
       <div className="mt-8 flex justify-end">
         <Link href={currentUser ? getNewListLink(currentUser) : ""}>
           <button className="cat-btn cat-btn-sm cat-btn-gray ml-4">+ Create a list</button>
@@ -127,7 +126,11 @@ export default function ManageLists({ lists, pins }) {
       <div className="my-4">Pinned lists appear on your profile.</div>
       {lists.length > 0 ? (
         <ul className="">
-          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <DndContext
+            id="manage-lists-dnd-context"
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
             <SortableContext items={pinnedListIds} strategy={verticalListSortingStrategy}>
               {pinnedLists.map((list) => (
                 <ListRowPinned
