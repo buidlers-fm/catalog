@@ -149,6 +149,13 @@ const api = {
         body: formData,
       }),
   },
+  userBookShelves: {
+    set: (requestData) =>
+      fetchJson(`/api/user_book_shelves`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+  },
   userCurrentStatuses: {
     create: (requestData) =>
       fetchJson(`/api/user_current_statuses`, {

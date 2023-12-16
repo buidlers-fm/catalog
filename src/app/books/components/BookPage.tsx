@@ -11,6 +11,7 @@ import OpenLibrary from "lib/openLibrary"
 import { getBookNotesLink, getBookPostsLink, getBookListsLink } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
+import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import LogBookModal from "app/components/LogBookModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
@@ -190,32 +191,42 @@ export default function BookPage({
               ) : (
                 <CoverPlaceholder size="lg" />
               )}
-              <div id="book-likes" className="mt-2 mb-4 mx-2 w-fit">
-                <Likes
-                  interactive={isSignedIn}
-                  likedObject={book}
-                  likedObjectType={InteractionObjectType.Book}
-                  likeCount={likeCount}
-                  currentUserLike={currentUserLike}
-                  onChange={onLikeChange}
-                />
-              </div>
-              <Tooltip
-                anchorSelect="#book-likes"
-                className="font-mulish"
-                place="right"
-                clickable
-                isOpen={showAddNoteTooltip}
-              >
-                <button
-                  onClick={() => {
-                    setShowLogBookModal(true)
-                    setShowAddNoteTooltip(false)
-                  }}
+              <div className="flex mt-2 mb-4 ">
+                <div id="book-likes" className="mx-2 w-fit">
+                  <Likes
+                    interactive={isSignedIn}
+                    likedObject={book}
+                    likedObjectType={InteractionObjectType.Book}
+                    likeCount={likeCount}
+                    currentUserLike={currentUserLike}
+                    onChange={onLikeChange}
+                  />
+                </div>
+                <Tooltip
+                  anchorSelect="#book-likes"
+                  className="font-mulish"
+                  place="right"
+                  clickable
+                  isOpen={showAddNoteTooltip}
                 >
-                  <div className="underline">Add a note?</div>
-                </button>
-              </Tooltip>
+                  <button
+                    onClick={() => {
+                      setShowLogBookModal(true)
+                      setShowAddNoteTooltip(false)
+                    }}
+                  >
+                    <div className="underline">Add a note?</div>
+                  </button>
+                </Tooltip>
+                {isSignedIn && (
+                  <div className="ml-2">
+                    <UserBookShelfMenu
+                      book={book}
+                      userBookShelfAssignment={book.userBookShelfAssignments?.[0]}
+                    />
+                  </div>
+                )}
+              </div>
               {isSignedIn && (
                 <div className="mt-4 mb-8 font-mulish">
                   <button

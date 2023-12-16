@@ -1,5 +1,6 @@
 import type BookNote from "types/BookNote"
 import type Like from "types/Like"
+import type UserBookShelfAssignment from "types/UserBookShelfAssignment"
 
 export default interface Book {
   id?: string
@@ -18,6 +19,7 @@ export default interface Book {
   bookNotes?: BookNote[]
   bookPosts?: BookNote[]
   bookReads?: any[] // TODO
+  userBookShelfAssignments?: UserBookShelfAssignment[]
   likeCount?: number // in-memory only
   currentUserLike?: Like // in-memory only
 }

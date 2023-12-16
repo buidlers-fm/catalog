@@ -29,6 +29,14 @@ export default async function BookPageBySlug({ params }: any) {
           createdAt: "desc",
         },
       },
+      userShelfAssignments: {
+        where: {
+          userProfileId: userProfile?.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   })
 

@@ -113,6 +113,32 @@ export const POST = withApiHandling(
 
     console.log(createUserRes)
 
+    const startingLists = [
+      {
+        title: "_favorite",
+        slug: "_favorite",
+        designation: "favorite",
+      },
+      {
+        title: "_read",
+        slug: "_read",
+        designation: "read",
+      },
+      {
+        title: "_abandoned",
+        slug: "_abandoned",
+        designation: "abandoned",
+      },
+    ]
+
+    await prisma.list.createMany({
+      data: startingLists.map((list) => ({
+        ...list,
+        creatorId: userId,
+        ownerId: userId,
+      })),
+    })
+
     const resData = {
       email,
       username,
