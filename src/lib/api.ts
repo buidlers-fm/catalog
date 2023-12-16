@@ -64,6 +64,21 @@ const api = {
       return fetchJson(url)
     },
   },
+  follows: {
+    create: (userProfileId) =>
+      fetchJson(`/api/follows`, {
+        method: "POST",
+        body: prepReqBody({ userProfileId }),
+      }),
+    delete: (userProfileId) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys({ userProfileId })).toString()
+      const url = `/api/follows?${queryString}`
+
+      return fetchJson(url, {
+        method: "DELETE",
+      })
+    },
+  },
   likes: {
     get: (params: {
       likedObjectId: string

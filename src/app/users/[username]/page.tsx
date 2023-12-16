@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
+import FollowButton from "app/users/[username]/components/FollowButton"
 import ProfileCurrentStatus from "app/users/[username]/components/ProfileCurrentStatus"
 import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileBookNotes"
 import ListBook from "app/lists/components/ListBook"
@@ -17,7 +18,7 @@ import {
   getNewListLink,
   sortListsByPinSortOrder,
 } from "lib/helpers/general"
-import { decorateLists } from "lib/server/decorators"
+import { decorateLists, decorateWithFollowers } from "lib/server/decorators"
 import UserProfile from "lib/models/UserProfile"
 import type List from "types/List"
 
@@ -57,10 +58,11 @@ export default async function UserProfilePage({ params }) {
       },
     },
   })
-  console.log(prismaUserProfile)
 
   if (!prismaUserProfile) notFound()
-  const userProfile = UserProfile.build(prismaUserProfile)
+
+  const decoratedUserProfile = await decorateWithFollowers(prismaUserProfile)
+  const userProfile = UserProfile.build(decoratedUserProfile)
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
@@ -171,10 +173,15 @@ export default async function UserProfilePage({ params }) {
           </div>
         </div>
         <div>
-          {isUsersProfile && (
+          {isUsersProfile ? (
             <Link href="/settings/profile">
               <button className="cat-btn cat-btn-sm cat-btn-gray">edit profile</button>
             </Link>
+          ) : (
+            <FollowButton
+              userProfile={decoratedUserProfile}
+              currentUserProfile={currentUserProfile}
+            />
           )}
         </div>
       </div>

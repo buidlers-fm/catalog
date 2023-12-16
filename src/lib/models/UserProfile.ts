@@ -15,6 +15,7 @@ export interface UserProfileProps {
   bookNotes?: BookNote[]
   bookReads?: BookRead[]
   currentStatuses?: UserCurrentStatus[]
+  followers?: UserProfileProps[]
 }
 
 export default class UserProfile {
@@ -42,6 +43,10 @@ export default class UserProfile {
 
   public currentStatuses: UserCurrentStatus[] | undefined
 
+  public followers: UserProfile[] | UserProfileProps[] | undefined
+
+  public following: UserProfile[] | UserProfileProps[] | undefined
+
   constructor(userProfileProps: UserProfileProps) {
     this.id = userProfileProps.id
     this.userId = userProfileProps.userId
@@ -55,6 +60,10 @@ export default class UserProfile {
     this.bookNotes = userProfileProps.bookNotes
     this.bookReads = userProfileProps.bookReads
     this.currentStatuses = userProfileProps.currentStatuses
+
+    if (userProfileProps.followers) {
+      this.followers = UserProfile.buildMany(userProfileProps.followers)
+    }
   }
 
   static buildMany(queryResults: UserProfileProps[]): UserProfile[] {
@@ -71,5 +80,9 @@ export default class UserProfile {
 
   get name(): string {
     return this.displayName || this.username
+  }
+
+  isFollowedBy(otherUser: UserProfile): boolean {
+    return !!this.followers?.find((follower) => follower.id === otherUser.id)
   }
 }

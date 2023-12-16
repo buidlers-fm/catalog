@@ -108,3 +108,31 @@ export const decorateWithLikes = async (
     currentUserLike: objectIdsToCurrentUserLikes[obj.id],
   }))
 }
+
+export const decorateWithFollowers = async (userProfile: UserProfileProps) => {
+  const follows = await prisma.interaction.findMany({
+    where: {
+      interactionType: InteractionType.Follow,
+      objectId: userProfile.id,
+      objectType: InteractionObjectType.User,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const followerIds = follows.map((follow) => follow.agentId)
+
+  const followers = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: followerIds,
+      },
+    },
+  })
+
+  return {
+    ...userProfile,
+    followers,
+  }
+}
