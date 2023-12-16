@@ -1,7 +1,13 @@
 "use client"
 
 import { useSelectedLayoutSegment } from "next/navigation"
-import { getUserProfileLink, getUserListsLink, getUserBookNotesLink } from "lib/helpers/general"
+import {
+  getUserProfileLink,
+  getUserListsLink,
+  getUserBookNotesLink,
+  getUserFollowersLink,
+  getUserFollowingLink,
+} from "lib/helpers/general"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -30,12 +36,12 @@ export default function UserProfileTabs({ userProfile }) {
     {
       name: "followers",
       layoutPath: "followers",
-      href: "#",
+      href: getUserFollowersLink(username),
     },
     {
       name: "following",
       layoutPath: "following",
-      href: "#",
+      href: getUserFollowingLink(username),
     },
   ]
 

@@ -16,7 +16,11 @@ export default function FollowButton({
   const userProfile = UserProfile.build(_userProfile)
   const currentUserProfile = UserProfile.build(_currentUserProfile)
 
-  const [isFollowing, setIsFollowing] = useState(userProfile.isFollowedBy(currentUserProfile))
+  const _isFollowing = (userProfile.followers || []).some(
+    (follower) => follower.id === currentUserProfile.id,
+  )
+
+  const [isFollowing, setIsFollowing] = useState(_isFollowing)
 
   async function follow() {
     setIsFollowing(true)

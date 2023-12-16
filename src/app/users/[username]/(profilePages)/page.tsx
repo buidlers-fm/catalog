@@ -51,7 +51,7 @@ export default async function UserProfilePage({ params }) {
 
   if (!prismaUserProfile) notFound()
 
-  const decoratedUserProfile = await decorateWithFollowers(prismaUserProfile)
+  const [decoratedUserProfile] = await decorateWithFollowers([prismaUserProfile])
   const userProfile = UserProfile.build(decoratedUserProfile)
 
   let favoriteBooksList = (await prisma.list.findFirst({

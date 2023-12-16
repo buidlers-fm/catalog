@@ -109,11 +109,13 @@ export const decorateWithLikes = async (
   }))
 }
 
-export const decorateWithFollowers = async (userProfile: UserProfileProps) => {
-  const follows = await prisma.interaction.findMany({
+export const decorateWithFollowers = async (userProfiles) => {
+  const allFollows = await prisma.interaction.findMany({
     where: {
       interactionType: InteractionType.Follow,
-      objectId: userProfile.id,
+      objectId: {
+        in: userProfiles.map((userProfile) => userProfile.id),
+      },
       objectType: InteractionObjectType.User,
     },
     orderBy: {
@@ -121,9 +123,9 @@ export const decorateWithFollowers = async (userProfile: UserProfileProps) => {
     },
   })
 
-  const followerIds = follows.map((follow) => follow.agentId)
+  const followerIds = allFollows.map((follow) => follow.agentId)
 
-  const followers = await prisma.userProfile.findMany({
+  const allFollowers = await prisma.userProfile.findMany({
     where: {
       id: {
         in: followerIds,
@@ -131,8 +133,53 @@ export const decorateWithFollowers = async (userProfile: UserProfileProps) => {
     },
   })
 
-  return {
+  const allFollowersById = Object.fromEntries(allFollowers.map((profile) => [profile.id, profile]))
+
+  return userProfiles.map((userProfile) => ({
     ...userProfile,
-    followers,
-  }
+    followers: allFollows
+      .filter((follow) => follow.objectId === userProfile.id)
+      .map((follow) => allFollowersById[follow.agentId])
+      .filter((follower) => !!follower) as UserProfileProps[],
+  }))
+}
+
+export const decorateWithFollowing = async (userProfiles, options: any = {}) => {
+  const { include } = options
+
+  const allFollows = await prisma.interaction.findMany({
+    where: {
+      interactionType: InteractionType.Follow,
+      agentId: {
+        in: userProfiles.map((userProfile) => userProfile.id),
+      },
+      objectType: InteractionObjectType.User,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const followingIds = allFollows.map((follow) => follow.objectId)
+
+  const allFollowedProfiles = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: followingIds,
+      },
+    },
+    include,
+  })
+
+  const allFollowingById = Object.fromEntries(
+    allFollowedProfiles.map((profile) => [profile.id, profile]),
+  )
+
+  return userProfiles.map((userProfile) => ({
+    ...userProfile,
+    following: allFollows
+      .filter((follow) => follow.agentId === userProfile.id)
+      .map((follow) => allFollowingById[follow.objectId])
+      .filter((followedUserProfile) => !!followedUserProfile) as UserProfileProps[],
+  }))
 }

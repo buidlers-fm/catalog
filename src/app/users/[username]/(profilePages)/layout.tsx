@@ -6,7 +6,7 @@ import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import FollowButton from "app/users/[username]/components/FollowButton"
+import FollowButton from "app/components/userProfiles/FollowButton"
 import UserProfileTabs from "app/users/[username]/components/UserProfileTabs"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import { getDomainFromUrl } from "lib/helpers/general"
@@ -52,10 +52,11 @@ export default async function UserProfileLayout({ params, children }) {
 
   if (!prismaUserProfile) notFound()
 
-  const decoratedUserProfile = await decorateWithFollowers(prismaUserProfile)
+  const [decoratedUserProfile] = await decorateWithFollowers([prismaUserProfile])
   const userProfile = UserProfile.build(decoratedUserProfile)
 
   const isUsersProfile = currentUserProfile?.id === userProfile.id
+  const isSignedIn = !!currentUserProfile
 
   const { name, bio, location, website, avatarUrl } = userProfile
 
@@ -97,10 +98,12 @@ export default async function UserProfileLayout({ params, children }) {
               <button className="cat-btn cat-btn-sm cat-btn-gray">edit profile</button>
             </Link>
           ) : (
-            <FollowButton
-              userProfile={decoratedUserProfile}
-              currentUserProfile={currentUserProfile}
-            />
+            isSignedIn && (
+              <FollowButton
+                userProfile={decoratedUserProfile}
+                currentUserProfile={currentUserProfile}
+              />
+            )
           )}
         </div>
       </div>
