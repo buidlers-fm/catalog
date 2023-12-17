@@ -74,23 +74,18 @@ export default function BookNoteModal({
   onSuccess,
   isOpen,
   like: _like,
-  lastUnfinishedBookRead: _lastUnfinishedBookRead,
-  activeBookRead: _activeBookRead,
+  existingBookRead: _existingBookRead,
 }: {
   book: Book
   onClose: () => void
   onSuccess: () => void
   isOpen: boolean
   like: boolean
-  lastUnfinishedBookRead?: BookRead
-  activeBookRead?: BookRead
+  existingBookRead?: BookRead
 }) {
   const [readingStatus, setReadingStatus] = useState<BookNoteReadingStatus>()
   const [like, setLike] = useState<boolean>(_like)
-  const [activeBookRead, setActiveBookRead] = useState<BookRead | undefined>(_activeBookRead)
-  const [lastUnfinishedBookRead, setLastUnfinishedBookRead] = useState<BookRead | undefined>(
-    _lastUnfinishedBookRead,
-  )
+  const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>(_existingBookRead)
   const [isEditingDates, setIsEditingDates] = useState<boolean>(false)
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -136,12 +131,8 @@ export default function BookNoteModal({
   }, [_like])
 
   useEffect(() => {
-    setLastUnfinishedBookRead(_lastUnfinishedBookRead)
-  }, [_lastUnfinishedBookRead])
-
-  useEffect(() => {
-    setActiveBookRead(_activeBookRead)
-  }, [_activeBookRead])
+    setExistingBookRead(_existingBookRead)
+  }, [_existingBookRead])
 
   useEffect(() => {
     setIsEditingDates(false)
@@ -152,8 +143,6 @@ export default function BookNoteModal({
   // set existing or default start and end dates
   useEffect(() => {
     let startDateStr = todayStr
-
-    const existingBookRead = activeBookRead || lastUnfinishedBookRead
 
     // existingBookRead's startDate overrides todayStr,
     // whether it's present or null
@@ -175,7 +164,7 @@ export default function BookNoteModal({
       setValue("startDate", startDateStr)
       setValue("endDate", todayStr)
     }
-  }, [readingStatus, setValue, activeBookRead, lastUnfinishedBookRead, todayStr])
+  }, [readingStatus, setValue, existingBookRead, todayStr])
 
   const clearDates = () => {
     setValue("startDate", "")
@@ -204,7 +193,7 @@ export default function BookNoteModal({
         noteType: BookNoteType.JournalEntry,
       },
       bookRead: {
-        id: activeBookRead?.id || lastUnfinishedBookRead?.id,
+        id: existingBookRead?.id,
         startDate,
         endDate,
       },

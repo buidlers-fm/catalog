@@ -51,8 +51,7 @@ export default function BookPage({
 
   const [notes, setNotes] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
-  const [bookReadFromShelfChange, setBookReadFromShelfChange] = useState<BookRead | undefined>()
-  const [lastUnfinishedBookRead, setLastUnfinishedBookRead] = useState<BookRead | undefined>()
+  const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
   const [currentUserShelf, setCurrentUserShelf] = useState<string | undefined>(
@@ -80,8 +79,8 @@ export default function BookPage({
   }, [book.bookPosts])
 
   useEffect(() => {
-    const _lastUnfinishedBookRead = findLastUnfinishedBookRead(book.bookReads)
-    setLastUnfinishedBookRead(_lastUnfinishedBookRead)
+    const _existingBookRead = findLastUnfinishedBookRead(book.bookReads)
+    setExistingBookRead(_existingBookRead)
   }, [book.bookReads])
 
   useEffect(() => {
@@ -156,7 +155,9 @@ export default function BookPage({
 
       const _lastUnfinishedBookRead = findLastUnfinishedBookRead(_bookReads)
 
-      setLastUnfinishedBookRead(_lastUnfinishedBookRead)
+      // in case you add a note, changing the book reads
+      // history, and then go to add another note
+      setExistingBookRead(_lastUnfinishedBookRead)
 
       return _bookReads
     } catch (error: any) {
@@ -198,7 +199,7 @@ export default function BookPage({
       // in case you change the shelf and then go to add a note,
       // tells BookNoteModal (and eventually the book notes api route)
       // to use this bookRead rather than create a new one
-      setBookReadFromShelfChange(lastUpdatedBookRead)
+      setExistingBookRead(lastUpdatedBookRead)
 
       setShowShelvesAddNoteTooltip(true)
     }
@@ -459,8 +460,7 @@ export default function BookPage({
             key={currentUserLike?.id}
             book={book}
             like={!!currentUserLike}
-            activeBookRead={bookReadFromShelfChange}
-            lastUnfinishedBookRead={lastUnfinishedBookRead}
+            existingBookRead={existingBookRead}
             isOpen={showBookNoteModal}
             onClose={() => setShowBookNoteModal(false)}
             onSuccess={refetchBookData}
