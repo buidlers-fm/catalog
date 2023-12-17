@@ -72,6 +72,8 @@ export const getUserFollowersLink = (username: string) => `/users/${username}/fo
 
 export const getUserFollowingLink = (username: string) => `/users/${username}/following`
 
+export const getUserShelvesLink = (username: string) => `/users/${username}/shelves`
+
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {
   const MAX_BASE_LENGTH = 72
   const simpleSlug = slugify(str).slice(0, MAX_BASE_LENGTH)
@@ -149,3 +151,8 @@ export const isProduction = () => process.env.CATALOG_ENV === "production"
 
 // make it noon UTC so that all users view it as the same date
 export const dateStringToDateTime = (dateStr) => new Date(`${dateStr}T12:00:00Z`)
+
+export const todayNoonUtc = () => {
+  const dateString = new Date().toISOString().substring(0, 10)
+  return dateStringToDateTime(dateString)
+}

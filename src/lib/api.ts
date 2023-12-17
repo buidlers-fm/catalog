@@ -149,6 +149,18 @@ const api = {
         body: formData,
       }),
   },
+  userBookShelves: {
+    get: (params: { bookId?: string }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/user_book_shelves?${queryString}`
+      return fetchJson(url)
+    },
+    set: (requestData) =>
+      fetchJson(`/api/user_book_shelves`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+  },
   userCurrentStatuses: {
     create: (requestData) =>
       fetchJson(`/api/user_current_statuses`, {

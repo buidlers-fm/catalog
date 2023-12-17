@@ -26,6 +26,7 @@ model UserProfile {
   bookNotes       BookNote[]
   bookReads       BookRead[]
   currentStatuses UserCurrentStatus[]
+  bookShelfAssignments         UserBookShelfAssignment[]
 
   @@map("user_profiles")
 }
@@ -59,6 +60,7 @@ model Book {
   bookNotes           BookNote[]
   bookReads           BookRead[]
   userCurrentStatuses UserCurrentStatus[]
+  userShelfAssignments         UserBookShelfAssignment[]
 
   @@index([openLibraryWorkId])
   @@index([titleAuthorSearch], type: Gin)
@@ -188,4 +190,20 @@ model UserCurrentStatus {
   @@index([userProfileId])
   @@index([bookId])
   @@map("user_current_statuses")
+}
+
+model UserBookShelfAssignment {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userProfileId String      @map("user_profile_id") @db.Uuid
+  bookId        String      @map("book_id") @db.Uuid
+  shelf         String
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  book          Book        @relation(fields: [bookId], references: [id])
+
+  @@unique([userProfileId, bookId])
+  @@index([userProfileId])
+  @@index([bookId])
+  @@map("user_book_shelf_assignments")
 }

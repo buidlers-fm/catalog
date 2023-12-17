@@ -5,9 +5,11 @@ import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { getBookNotes } from "lib/server/bookNotes"
 import { findOrCreateBook } from "lib/api/books"
+import { setUserBookShelf } from "lib/api/userBookShelves"
 import BookNoteType from "enums/BookNoteType"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import BookReadStatus from "enums/BookReadStatus"
+import UserBookShelf from "enums/UserBookShelf"
 import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -90,14 +92,35 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     book: connectBookParams,
   }
 
+  const existingBookReadId = bookRead.id
   let connectOrCreateBookReadParams
   let updateBookReadPromise
 
-  if (readingStatus === BookNoteReadingStatus.Started) {
+  if (existingBookReadId) {
+    connectOrCreateBookReadParams = {
+      connect: {
+        id: existingBookReadId,
+      },
+    }
+
+    updateBookReadPromise = prisma.bookRead.update({
+      where: {
+        id: existingBookReadId,
+      },
+      data: {
+        startDate,
+        endDate,
+        status: bookReadStatus,
+      },
+    })
+  } else if (readingStatus === BookNoteReadingStatus.Started) {
     // create a book read
     connectOrCreateBookReadParams = {
       create: bookReadParams,
     }
+  } else if (readingStatus === BookNoteReadingStatus.None) {
+    // don't connect or create a book read
+    connectOrCreateBookReadParams = undefined
   } else {
     // look for a matching book read. if found, connect it and update it. otherwise, create one.
     const lastUnfinishedBookRead = await prisma.bookRead.findFirst({
@@ -157,6 +180,21 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     ;[createdBookNote] = await prisma.$transaction([createBookNotePromise, updateBookReadPromise])
   } else {
     createdBookNote = await createBookNotePromise
+  }
+
+  const statusToShelfMapping = {
+    [BookNoteReadingStatus.Started]: UserBookShelf.CurrentlyReading,
+    [BookNoteReadingStatus.Reading]: UserBookShelf.CurrentlyReading,
+    [BookNoteReadingStatus.Finished]: UserBookShelf.Read,
+    [BookNoteReadingStatus.Abandoned]: UserBookShelf.Abandoned,
+  }
+
+  if (readingStatus !== BookNoteReadingStatus.None) {
+    await setUserBookShelf({
+      book,
+      shelf: statusToShelfMapping[readingStatus],
+      userProfile,
+    })
   }
 
   if (like !== undefined) {
