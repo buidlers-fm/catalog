@@ -53,6 +53,20 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     userProfile: currentUserProfile,
   })
 
+  const { bookId } = updatedUserBookShelfAssignment
+
+  const connectBookParams = {
+    connect: {
+      id: bookId,
+    },
+  }
+
+  const connectReaderParams = {
+    connect: {
+      id: currentUserProfile.id,
+    },
+  }
+
   const shelfToBookReadStatus = {
     [UserBookShelf.ToRead]: undefined,
     [UserBookShelf.UpNext]: undefined,
@@ -66,8 +80,8 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   if (bookReadStatus === BookReadStatus.Started) {
     await prisma.bookRead.create({
       data: {
-        bookId: book.id,
-        readerId: currentUserProfile.id,
+        book: connectBookParams,
+        reader: connectReaderParams,
         status: BookReadStatus.Started,
         startDate: todayNoonUtc(),
       },
@@ -79,7 +93,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     // look for a matching book read. if found, connect it and update it. otherwise, create one.
     const lastUnfinishedBookRead = await prisma.bookRead.findFirst({
       where: {
-        bookId: book.id,
+        bookId,
         readerId: currentUserProfile.id,
         status: BookReadStatus.Started,
       },
@@ -102,8 +116,8 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       // create a book read
       await prisma.bookRead.create({
         data: {
-          bookId: book.id,
-          readerId: currentUserProfile.id,
+          book: connectBookParams,
+          reader: connectReaderParams,
           status: bookReadStatus,
           startDate: todayNoonUtc(),
           endDate: todayNoonUtc(),

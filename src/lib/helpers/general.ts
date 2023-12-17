@@ -72,6 +72,8 @@ export const getUserFollowersLink = (username: string) => `/users/${username}/fo
 
 export const getUserFollowingLink = (username: string) => `/users/${username}/following`
 
+export const getUserShelvesLink = (username: string) => `/users/${username}/shelves`
+
 export const generateUniqueSlug = async (str, modelName, additionalFilters = {}) => {
   const MAX_BASE_LENGTH = 72
   const simpleSlug = slugify(str).slice(0, MAX_BASE_LENGTH)

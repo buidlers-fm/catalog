@@ -2,53 +2,41 @@
 
 import Link from "next/link"
 import { useSelectedLayoutSegment } from "next/navigation"
-import {
-  getUserProfileLink,
-  getUserListsLink,
-  getUserShelvesLink,
-  getUserBookNotesLink,
-  getUserFollowersLink,
-  getUserFollowingLink,
-} from "lib/helpers/general"
+import { getUserShelvesLink } from "lib/helpers/general"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
-export default function UserProfileTabs({ userProfile }) {
+export default function UserShelvesTabs({ userProfile }) {
   const selectedLayoutSegment = useSelectedLayoutSegment()
 
   const { username } = userProfile
   const tabs = [
     {
-      name: "profile",
-      layoutPath: null,
-      href: getUserProfileLink(username),
+      name: "to read",
+      layoutPath: "to-read",
+      href: `${getUserShelvesLink(username)}/to-read`,
     },
     {
-      name: "lists",
-      layoutPath: "lists",
-      href: getUserListsLink(username),
+      name: "up next",
+      layoutPath: "up-next",
+      href: `${getUserShelvesLink(username)}/up-next`,
     },
     {
-      name: "shelves",
-      layoutPath: "shelves",
-      href: getUserShelvesLink(username),
+      name: "currently reading",
+      layoutPath: "currently-reading",
+      href: `${getUserShelvesLink(username)}/currently-reading`,
     },
     {
-      name: "notes",
-      layoutPath: "notes",
-      href: getUserBookNotesLink(username),
+      name: "read",
+      layoutPath: "read",
+      href: `${getUserShelvesLink(username)}/read`,
     },
     {
-      name: "followers",
-      layoutPath: "followers",
-      href: getUserFollowersLink(username),
-    },
-    {
-      name: "following",
-      layoutPath: "following",
-      href: getUserFollowingLink(username),
+      name: "abandoned",
+      layoutPath: "abandoned",
+      href: `${getUserShelvesLink(username)}/abandoned`,
     },
   ]
 
@@ -59,7 +47,7 @@ export default function UserProfileTabs({ userProfile }) {
   return (
     <div className="font-mulish">
       <div className="sm:hidden">
-        <div className="border border-gray-700 px-8 rounded-sm">
+        <div className="border-b border-gray-700 px-8 rounded-sm">
           <nav className="-mb-px" aria-label="Tabs">
             <div className="flex space-x-8 justify-center">
               {tabs.slice(0, 3).map((tab) => (
@@ -75,7 +63,7 @@ export default function UserProfileTabs({ userProfile }) {
         </div>
       </div>
       <div className="hidden sm:block">
-        <div className="border border-gray-700 px-8 rounded-sm">
+        <div className="border-b border-gray-700 px-8 rounded-sm">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             {tabs.map((tab) => (
               <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
@@ -93,8 +81,8 @@ function TabLink({ tab, isCurrentTab }) {
       key={tab.name}
       href={tab.href}
       className={classNames(
-        isCurrentTab ? "border-gold-500" : "border-transparent text-gray-500 hover:border-gray-300",
-        "whitespace-nowrap border-b-2 py-2 px-1 text-sm font-medium",
+        isCurrentTab ? "text-gold-500" : "text-gray-500",
+        "whitespace-nowrap py-2 px-1 text-sm",
       )}
       aria-current={isCurrentTab ? "page" : undefined}
       scroll={false}
