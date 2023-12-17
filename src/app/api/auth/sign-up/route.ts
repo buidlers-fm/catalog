@@ -124,11 +124,6 @@ export const POST = withApiHandling(
         slug: "_read",
         designation: "read",
       },
-      {
-        title: "_abandoned",
-        slug: "_abandoned",
-        designation: "abandoned",
-      },
     ]
 
     await prisma.list.createMany({

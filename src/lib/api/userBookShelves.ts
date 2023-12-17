@@ -58,17 +58,6 @@ export async function setUserBookShelf({ book, shelf, userProfile }) {
     if (readList) {
       await addBook(book, readList)
     }
-  } else if (shelf === UserBookShelf.Abandoned) {
-    const abandonedList = await prisma.list.findFirst({
-      where: {
-        creatorId: userProfile.id,
-        designation: ListDesignation.Abandoned,
-      },
-    })
-
-    if (abandonedList) {
-      await addBook(book, abandonedList)
-    }
   }
 
   return updatedUserBookShelfAssignment
