@@ -149,3 +149,8 @@ export const isProduction = () => process.env.CATALOG_ENV === "production"
 
 // make it noon UTC so that all users view it as the same date
 export const dateStringToDateTime = (dateStr) => new Date(`${dateStr}T12:00:00Z`)
+
+export const todayNoonUtc = () => {
+  const dateString = new Date().toISOString().substring(0, 10)
+  return dateStringToDateTime(dateString)
+}

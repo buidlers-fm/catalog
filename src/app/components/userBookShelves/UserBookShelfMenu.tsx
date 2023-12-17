@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Menu } from "@headlessui/react"
 import { FaBookmark, FaRegBookmark } from "react-icons/fa"
 import toast from "react-hot-toast"
@@ -27,11 +27,12 @@ const shelfToCopy = {
   },
 }
 
-export default function UserBookShelfMenu({
-  book,
-  userBookShelfAssignment: _userBookShelfAssignment,
-}) {
-  const [selectedShelf, setSelectedShelf] = useState<UserBookShelf>(_userBookShelfAssignment?.shelf)
+export default function UserBookShelfMenu({ book, currentUserShelf, onChange }) {
+  const [selectedShelf, setSelectedShelf] = useState<UserBookShelf>(currentUserShelf)
+
+  useEffect(() => {
+    setSelectedShelf(currentUserShelf)
+  }, [currentUserShelf])
 
   function isCurrentShelf(shelf) {
     return selectedShelf === shelf
@@ -50,6 +51,8 @@ export default function UserBookShelfMenu({
           book,
           shelf,
         })
+
+        if (onChange) await onChange(shelf)
       } catch (error: any) {
         setSelectedShelf(originalSelectedShelf)
         throw error
@@ -71,7 +74,7 @@ export default function UserBookShelfMenu({
         ) : (
           <div className="mt-[1px] flex items-center text-gray-300">
             <FaRegBookmark className="text-gray-300 text-sm" />
-            <div className="ml-1.5">shelve</div>
+            <div className="ml-1.5">shelves</div>
           </div>
         )}
       </Menu.Button>

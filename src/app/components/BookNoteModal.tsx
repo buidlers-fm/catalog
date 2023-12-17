@@ -57,15 +57,25 @@ const readingStatusToCopy = {
     clearDatesCopy: "clear dates",
     likeButtonCopy: "I loved this book.",
   },
+  [BookNoteReadingStatus.None]: {
+    buttonClass: "cat-btn-white-outline",
+    buttonCopy: "none of these",
+    eyebrowCopy: "a note on...",
+    textPrompt: "What's on your mind?",
+    editDatesCopy: "",
+    clearDatesCopy: "",
+    likeButtonCopy: "I love this book.",
+  },
 }
 
-export default function LogBookModal({
+export default function BookNoteModal({
   book,
   onClose,
   onSuccess,
   isOpen,
   like: _like,
   lastUnfinishedBookRead: _lastUnfinishedBookRead,
+  activeBookRead: _activeBookRead,
 }: {
   book: Book
   onClose: () => void
@@ -73,9 +83,11 @@ export default function LogBookModal({
   isOpen: boolean
   like: boolean
   lastUnfinishedBookRead?: BookRead
+  activeBookRead?: BookRead
 }) {
   const [readingStatus, setReadingStatus] = useState<BookNoteReadingStatus>()
   const [like, setLike] = useState<boolean>(_like)
+  const [activeBookRead, setActiveBookRead] = useState<BookRead | undefined>(_activeBookRead)
   const [lastUnfinishedBookRead, setLastUnfinishedBookRead] = useState<BookRead | undefined>(
     _lastUnfinishedBookRead,
   )
@@ -128,6 +140,10 @@ export default function LogBookModal({
   }, [_lastUnfinishedBookRead])
 
   useEffect(() => {
+    setActiveBookRead(_activeBookRead)
+  }, [_activeBookRead])
+
+  useEffect(() => {
     setIsEditingDates(false)
   }, [readingStatus])
 
@@ -137,10 +153,12 @@ export default function LogBookModal({
   useEffect(() => {
     let startDateStr = todayStr
 
-    // lastUnfinishedBookRead's startDate overrides todayStr,
+    const existingBookRead = activeBookRead || lastUnfinishedBookRead
+
+    // existingBookRead's startDate overrides todayStr,
     // whether it's present or null
-    if (lastUnfinishedBookRead) {
-      const { startDate } = lastUnfinishedBookRead
+    if (existingBookRead) {
+      const { startDate } = existingBookRead
       startDateStr = startDate ? dayjs(startDate).format(inputFieldDate) : ""
     }
 
@@ -157,7 +175,7 @@ export default function LogBookModal({
       setValue("startDate", startDateStr)
       setValue("endDate", todayStr)
     }
-  }, [readingStatus, setValue, lastUnfinishedBookRead, todayStr])
+  }, [readingStatus, setValue, activeBookRead, lastUnfinishedBookRead, todayStr])
 
   const clearDates = () => {
     setValue("startDate", "")
@@ -173,7 +191,7 @@ export default function LogBookModal({
     setErrorMessage(undefined)
     setIsBusy(true)
 
-    const toastId = toast.loading("Saving your entry...")
+    const toastId = toast.loading("Saving your note...")
 
     const { text, startDate: startDateStr, endDate: endDateStr } = formData
     const startDate = startDateStr ? dateStringToDateTime(startDateStr) : undefined
@@ -186,6 +204,7 @@ export default function LogBookModal({
         noteType: BookNoteType.JournalEntry,
       },
       bookRead: {
+        id: activeBookRead?.id || lastUnfinishedBookRead?.id,
         startDate,
         endDate,
       },
@@ -196,7 +215,7 @@ export default function LogBookModal({
     try {
       await api.bookNotes.create(requestData)
 
-      toast.success(`Entry saved!`, { id: toastId })
+      toast.success(`Note saved!`, { id: toastId })
 
       await handleClose()
       await onSuccess()
@@ -246,7 +265,7 @@ export default function LogBookModal({
                     </button>
                   </div>
                 ) : (
-                  <div className="cat-eyebrow-uppercase">Journal entry for...</div>
+                  <div className="cat-eyebrow-uppercase">a note on...</div>
                 )}
                 <div className="grow mt-4 text-2xl font-semibold font-newsreader">{book.title}</div>
                 <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
@@ -287,7 +306,11 @@ export default function LogBookModal({
                         <button
                           type="button"
                           onClick={() => setIsEditingDates(true)}
-                          className={`mt-2 cat-btn-link text-sm ${isEditingDates ? "hidden" : ""}`}
+                          className={`mt-2 cat-btn-link text-sm ${
+                            isEditingDates || readingStatus === BookNoteReadingStatus.None
+                              ? "hidden"
+                              : ""
+                          }`}
                         >
                           {readingStatusToCopy[readingStatus].editDatesCopy}
                         </button>

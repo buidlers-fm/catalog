@@ -19,7 +19,7 @@ export default interface Book {
   bookNotes?: BookNote[]
   bookPosts?: BookNote[]
   bookReads?: any[] // TODO
-  userBookShelfAssignments?: UserBookShelfAssignment[]
+  userShelfAssignments?: UserBookShelfAssignment[]
   likeCount?: number // in-memory only
   currentUserLike?: Like // in-memory only
 }

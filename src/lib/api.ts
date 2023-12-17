@@ -150,6 +150,11 @@ const api = {
       }),
   },
   userBookShelves: {
+    get: (params: { bookId?: string }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/user_book_shelves?${queryString}`
+      return fetchJson(url)
+    },
     set: (requestData) =>
       fetchJson(`/api/user_book_shelves`, {
         method: "POST",

@@ -80,11 +80,13 @@ export default function BookNoteCard({
             <NameWithAvatar userProfile={creator} />
 
             <div className="xs:my-2 xs:ml-2 text-gray-500 text-sm font-mulish">
-              <span
-                className={`mr-2 inline-block mb-1 text-sm font-bold ${readingStatusColors[readingStatus]}`}
-              >
-                {readingStatusCopy[readingStatus]}
-              </span>
+              {readingStatus && readingStatus !== BookNoteReadingStatus.None && (
+                <span
+                  className={`mr-2 inline-block mb-1 text-sm font-bold ${readingStatusColors[readingStatus]}`}
+                >
+                  {readingStatusCopy[readingStatus]}
+                </span>
+              )}
               <span id={`created-at-${id}`} className="mr-2">
                 {createdAtFromNow}
               </span>

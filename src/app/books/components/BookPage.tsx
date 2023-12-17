@@ -13,7 +13,7 @@ import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
-import LogBookModal from "app/components/LogBookModal"
+import BookNoteModal from "app/components/BookNoteModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import NewBookPostModal from "app/components/NewBookPostModal"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
@@ -23,6 +23,7 @@ import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookReadStatus from "enums/BookReadStatus"
+import UserBookShelf from "enums/UserBookShelf"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
@@ -50,14 +51,19 @@ export default function BookPage({
 
   const [notes, setNotes] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
+  const [bookReadFromShelfChange, setBookReadFromShelfChange] = useState<BookRead | undefined>()
   const [lastUnfinishedBookRead, setLastUnfinishedBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
+  const [currentUserShelf, setCurrentUserShelf] = useState<string | undefined>(
+    book.userShelfAssignments?.[0]?.shelf,
+  )
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
-  const [showLogBookModal, setShowLogBookModal] = useState<boolean>(false)
+  const [showBookNoteModal, setShowBookNoteModal] = useState<boolean>(false)
   const [showNewBookPostModal, setShowNewBookPostModal] = useState<boolean>(false)
-  const [showAddNoteTooltip, setShowAddNoteTooltip] = useState<boolean>(false)
+  const [showLikeAddNoteTooltip, setShowLikeAddNoteTooltip] = useState<boolean>(false)
+  const [showShelvesAddNoteTooltip, setShowShelvesAddNoteTooltip] = useState<boolean>(false)
 
   const imgRef = useRef(null)
 
@@ -80,8 +86,12 @@ export default function BookPage({
 
   useEffect(() => {
     const handleClickOutside = () => {
-      if (showAddNoteTooltip) {
-        setShowAddNoteTooltip(false)
+      if (showLikeAddNoteTooltip) {
+        setShowLikeAddNoteTooltip(false)
+      }
+
+      if (showShelvesAddNoteTooltip) {
+        setShowShelvesAddNoteTooltip(false)
       }
     }
 
@@ -90,7 +100,7 @@ export default function BookPage({
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
-  }, [showAddNoteTooltip])
+  }, [showLikeAddNoteTooltip, showShelvesAddNoteTooltip])
 
   const findLastUnfinishedBookRead = (bookReads: BookRead[] = []) =>
     bookReads
@@ -100,7 +110,7 @@ export default function BookPage({
   const onLikeChange = (_likeCount?: number, _currentUserLike?: Like) => {
     setLikeCount(_likeCount)
     setCurrentUserLike(_currentUserLike)
-    setShowAddNoteTooltip(true)
+    setShowLikeAddNoteTooltip(true)
   }
 
   const updateLikes = async () => {
@@ -147,12 +157,55 @@ export default function BookPage({
       const _lastUnfinishedBookRead = findLastUnfinishedBookRead(_bookReads)
 
       setLastUnfinishedBookRead(_lastUnfinishedBookRead)
+
+      return _bookReads
     } catch (error: any) {
       console.error(error)
     }
   }
 
-  const refetchBookData = async () => Promise.all([updateLikes(), getBookNotes(), getBookReads()])
+  const getCurrentUserShelf = async () => {
+    if (!book.id) router.refresh()
+
+    try {
+      const _currentUserShelf = (
+        await api.userBookShelves.get({
+          bookId: book.id,
+        })
+      )?.shelf
+
+      setCurrentUserShelf(_currentUserShelf)
+    } catch (error: any) {
+      console.error(error)
+    }
+  }
+
+  const onShelfChange = async (shelf) => {
+    setCurrentUserShelf(shelf)
+
+    const shelvesWithBookReadUpdate = [
+      UserBookShelf.CurrentlyReading,
+      UserBookShelf.Read,
+      UserBookShelf.Abandoned,
+    ]
+
+    if (shelvesWithBookReadUpdate.includes(shelf)) {
+      const _bookReads = (await getBookReads()) || []
+      const lastUpdatedBookRead = _bookReads.sort(
+        (a, b) => new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf(),
+      )[0]
+
+      // in case you change the shelf and then go to add a note,
+      // tells BookNoteModal (and eventually the book notes api route)
+      // to use this bookRead rather than create a new one
+      setBookReadFromShelfChange(lastUpdatedBookRead)
+
+      setShowShelvesAddNoteTooltip(true)
+    }
+  }
+
+  const refetchBookData = async () =>
+    Promise.all([updateLikes(), getBookNotes(), getBookReads(), getCurrentUserShelf()])
 
   const getBookPosts = async () => {
     if (!book.id) router.refresh()
@@ -191,7 +244,7 @@ export default function BookPage({
               ) : (
                 <CoverPlaceholder size="lg" />
               )}
-              <div className="flex mt-2 mb-4 ">
+              <div className="flex mt-2 mb-4">
                 <div id="book-likes" className="mx-2 w-fit">
                   <Likes
                     interactive={isSignedIn}
@@ -207,25 +260,42 @@ export default function BookPage({
                   className="font-mulish"
                   place="right"
                   clickable
-                  isOpen={showAddNoteTooltip}
+                  isOpen={showLikeAddNoteTooltip}
                 >
                   <button
                     onClick={() => {
-                      setShowLogBookModal(true)
-                      setShowAddNoteTooltip(false)
+                      setShowBookNoteModal(true)
+                      setShowLikeAddNoteTooltip(false)
                     }}
                   >
                     <div className="underline">Add a note?</div>
                   </button>
                 </Tooltip>
                 {isSignedIn && (
-                  <div className="ml-2">
+                  <div id="book-shelves" className="ml-2 w-fit">
                     <UserBookShelfMenu
                       book={book}
-                      userBookShelfAssignment={book.userBookShelfAssignments?.[0]}
+                      currentUserShelf={currentUserShelf}
+                      onChange={onShelfChange}
                     />
                   </div>
                 )}
+                <Tooltip
+                  anchorSelect="#book-shelves"
+                  className="font-mulish"
+                  place="right"
+                  clickable
+                  isOpen={showShelvesAddNoteTooltip}
+                >
+                  <button
+                    onClick={() => {
+                      setShowBookNoteModal(true)
+                      setShowShelvesAddNoteTooltip(false)
+                    }}
+                  >
+                    <div className="underline">Edit dates or add a note?</div>
+                  </button>
+                </Tooltip>
               </div>
               {isSignedIn && (
                 <div className="mt-4 mb-8 font-mulish">
@@ -238,11 +308,11 @@ export default function BookPage({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowLogBookModal(true)}
+                    onClick={() => setShowBookNoteModal(true)}
                     className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                   >
-                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> log this
-                    book
+                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> write a
+                    note
                   </button>
                 </div>
               )}
@@ -385,13 +455,14 @@ export default function BookPage({
             isOpen={showAddBookToListsModal}
             onClose={() => setShowAddBookToListsModal(false)}
           />
-          <LogBookModal
+          <BookNoteModal
             key={currentUserLike?.id}
             book={book}
             like={!!currentUserLike}
+            activeBookRead={bookReadFromShelfChange}
             lastUnfinishedBookRead={lastUnfinishedBookRead}
-            isOpen={showLogBookModal}
-            onClose={() => setShowLogBookModal(false)}
+            isOpen={showBookNoteModal}
+            onClose={() => setShowBookNoteModal(false)}
             onSuccess={refetchBookData}
           />
           <NewBookPostModal
