@@ -156,7 +156,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
                     <div className="flex justify-end">
                       <button
                         type="submit"
-                        className="mt-4 cat-btn cat-btn-md cat-btn-gold"
+                        className="mt-4 cat-btn cat-btn-sm cat-btn-gold"
                         disabled={isBusy}
                       >
                         save

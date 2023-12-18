@@ -224,7 +224,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
             <div className="flex justify-between">
               <button
                 type="submit"
-                className="cat-btn cat-btn-gold my-4"
+                className="cat-btn cat-btn-sm cat-btn-gold my-4"
                 disabled={isSubmitting || !readyToSubmit}
               >
                 save
@@ -233,7 +233,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(true)}
-                  className="cat-btn cat-btn-red-outline my-4 ml-4"
+                  className="cat-btn cat-btn-sm cat-btn-red-outline my-4 ml-4"
                   disabled={isSubmitting || !readyToSubmit}
                 >
                   delete list

@@ -21,10 +21,18 @@ export default function ConfirmationModal({ title, onConfirm, onClose, isOpen })
           </Dialog.Title>
 
           <div className="flex justify-center">
-            <button type="button" onClick={handleClose} className="cat-btn cat-btn-white-outline">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="cat-btn cat-btn-sm cat-btn-white-outline"
+            >
               Cancel
             </button>
-            <button type="button" onClick={handleConfirm} className="cat-btn cat-btn-red ml-4">
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className="cat-btn cat-btn-sm cat-btn-red ml-4"
+            >
               Delete
             </button>
           </div>
