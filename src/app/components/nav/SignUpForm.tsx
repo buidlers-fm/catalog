@@ -7,7 +7,7 @@ import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
-export default function SignUpForm({ toggleAuth }) {
+export default function SignUpForm({ toggleAuth, onSuccess }) {
   const router = useRouter()
   const { signUp } = useUser()
 
@@ -38,9 +38,11 @@ export default function SignUpForm({ toggleAuth }) {
 
       validateInput()
 
-      await signUp(email, username, password)
+      const { currentUserProfile } = await signUp(email, username, password)
 
       toast.success("Signed up!")
+
+      onSuccess(currentUserProfile)
 
       router.push(getUserProfileLink(username))
     } catch (error: any) {

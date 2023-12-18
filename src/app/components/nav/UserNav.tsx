@@ -2,8 +2,7 @@
 
 import Link from "next/link"
 import dynamic from "next/dynamic"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Menu } from "@headlessui/react"
 import { BsXLg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
@@ -14,21 +13,31 @@ import "react-modern-drawer/dist/index.css"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
-export default function UserNav({ currentUserProfile }) {
-  const router = useRouter()
+export default function UserNav({ currentUserProfile: _initialCurrentUserProfile }) {
   const { signOut } = useUser()
+
+  const [currentUserProfile, setCurrentUserProfile] = useState(_initialCurrentUserProfile)
   const [showAuth, setShowAuth] = useState<boolean>(false)
   const [isSignIn, setIsSignIn] = useState<boolean>(true)
 
-  const onClickSignIn = () => {
+  useEffect(() => {
+    setCurrentUserProfile(_initialCurrentUserProfile)
+  }, [_initialCurrentUserProfile])
+
+  function onClickSignIn() {
     setIsSignIn(true)
     setShowAuth(true)
   }
 
-  const onClickSignOut = async () => {
+  async function onClickSignOut() {
     await signOut()
     setShowAuth(false)
-    router.refresh()
+    window.location.reload()
+  }
+
+  function handleAuthSuccess(_currentUserProfile) {
+    setCurrentUserProfile(_currentUserProfile)
+    setShowAuth(false)
   }
 
   return (
@@ -95,9 +104,9 @@ export default function UserNav({ currentUserProfile }) {
               </div>
               <div>
                 {isSignIn ? (
-                  <SignInForm toggleAuth={() => setIsSignIn(false)} />
+                  <SignInForm onSuccess={handleAuthSuccess} toggleAuth={() => setIsSignIn(false)} />
                 ) : (
-                  <SignUpForm toggleAuth={() => setIsSignIn(true)} />
+                  <SignUpForm onSuccess={handleAuthSuccess} toggleAuth={() => setIsSignIn(true)} />
                 )}
               </div>
             </div>

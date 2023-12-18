@@ -6,7 +6,7 @@ import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
-export default function SignInForm({ toggleAuth }) {
+export default function SignInForm({ toggleAuth, onSuccess }) {
   const pathname = usePathname()
   const router = useRouter()
   const { signIn } = useUser()
@@ -29,10 +29,11 @@ export default function SignInForm({ toggleAuth }) {
       validateInput()
       const { currentUserProfile } = await signIn(email, password)
 
+      onSuccess(currentUserProfile)
       if (pathname === "/") {
         router.push(getUserProfileLink(currentUserProfile.username))
       } else {
-        router.refresh()
+        window.location.reload()
       }
     } catch (error: any) {
       setErrorMessage(error.message)
