@@ -50,7 +50,6 @@ export default function CurrentStatus({
       {text && (
         <div className="grow">
           <div className={`mt-4 mb-2 ${isProfilePage && "lg:my-2"} font-newsreader`}>{text}</div>
-          {isProfilePage && <div className="my-2 px-6 text-right text-sm">— {name}</div>}
         </div>
       )}
     </div>
