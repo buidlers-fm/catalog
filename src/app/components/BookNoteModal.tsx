@@ -264,7 +264,7 @@ export default function BookNoteModal({
                       <button
                         key={rs}
                         onClick={() => setReadingStatus(rs)}
-                        className={`my-1 sm:my-0 sm:mx-1 cat-btn cat-btn-md ${readingStatusToCopy[rs].buttonClass}`}
+                        className={`my-1 sm:my-0 sm:mx-1 cat-btn cat-btn-sm ${readingStatusToCopy[rs].buttonClass}`}
                       >
                         {readingStatusToCopy[rs].buttonCopy}
                       </button>
@@ -289,7 +289,6 @@ export default function BookNoteModal({
                         fullWidth
                         bgColor="bg-gray-800"
                         moreClasses="mt-1"
-                        showFormattingReferenceTooltip={false}
                       />
                       <div className="">
                         <button
@@ -367,7 +366,7 @@ export default function BookNoteModal({
                       <div className="flex justify-end">
                         <button
                           type="submit"
-                          className="mt-4 cat-btn cat-btn-md cat-btn-gold"
+                          className="mt-4 cat-btn cat-btn-sm cat-btn-gold"
                           disabled={isBusy}
                         >
                           save

@@ -55,18 +55,38 @@ export const decorateWithLikes = async (
   objectType: InteractionObjectType,
   currentUserProfile?: UserProfileProps,
 ) => {
-  // fetch like count per object
-  const likeCounts = await prisma.interaction.groupBy({
-    by: ["objectId"],
-    where: {
-      objectId: {
-        in: objects.map((obj) => obj.id),
+  let objectIdsToLikeCounts
+
+  if (objectType === InteractionObjectType.BookNote) {
+    // book notes already have likeCount, so use it
+    objectIdsToLikeCounts = objects.reduce(
+      (result, obj) => ({
+        ...result,
+        [obj.id]: obj.likeCount,
+      }),
+      {},
+    )
+    console.log("book notes")
+    console.log(objectIdsToLikeCounts)
+  } else {
+    // fetch like count per object
+    const likeCounts = await prisma.interaction.groupBy({
+      by: ["objectId"],
+      where: {
+        objectId: {
+          in: objects.map((obj) => obj.id),
+        },
+        objectType,
+        interactionType: InteractionType.Like,
       },
-      objectType,
-      interactionType: InteractionType.Like,
-    },
-    _count: true,
-  })
+      _count: true,
+    })
+
+    objectIdsToLikeCounts = likeCounts.reduce(
+      (result, likeCount) => ({ ...result, [likeCount.objectId]: likeCount._count }),
+      {},
+    )
+  }
 
   // fetch current user's likes for these objects
   let currentUserLikes: Like[] = []
@@ -91,11 +111,6 @@ export const decorateWithLikes = async (
       createdAt: interaction.createdAt,
     }))
   }
-
-  const objectIdsToLikeCounts = likeCounts.reduce(
-    (result, likeCount) => ({ ...result, [likeCount.objectId]: likeCount._count }),
-    {},
-  )
 
   const objectIdsToCurrentUserLikes = currentUserLikes.reduce(
     (result, like) => ({ ...result, [like.likedObjectId]: like }),

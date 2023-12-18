@@ -3,6 +3,7 @@ import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
 import ListCard from "app/components/lists/ListCard"
+import EmptyState from "app/components/EmptyState"
 
 export const dynamic = "force-dynamic"
 
@@ -56,9 +57,7 @@ export default async function BookListsIndexPage({ params }) {
             ))}
           </div>
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            {book.title} isn't on any lists yet.
-          </div>
+          <EmptyState text={`${book.title} isn't on any lists yet.`} />
         )}
       </div>
     </div>

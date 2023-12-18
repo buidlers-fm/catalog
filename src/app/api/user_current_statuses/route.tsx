@@ -10,11 +10,21 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { book: _book, text } = reqJson
 
   let book = _book
-  let bookId = _book.id
-  if (!bookId) {
-    const dbBook = await findOrCreateBook(_book)
-    bookId = dbBook.id
-    book = dbBook
+  let bookId = _book?.id
+  let connectBookParams
+
+  if (book) {
+    if (!bookId) {
+      const dbBook = await findOrCreateBook(_book)
+      bookId = dbBook.id
+      book = dbBook
+    }
+
+    connectBookParams = {
+      connect: {
+        id: bookId,
+      },
+    }
   }
 
   const deleteExistingUserCurrentStatuses = prisma.userCurrentStatus.deleteMany({
@@ -31,11 +41,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
           id: userProfile.id,
         },
       },
-      book: {
-        connect: {
-          id: bookId,
-        },
-      },
+      book: connectBookParams,
     },
   })
 

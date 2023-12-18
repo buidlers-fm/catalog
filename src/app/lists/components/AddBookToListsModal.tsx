@@ -111,7 +111,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
               type="button"
               onClick={handleSubmit}
               disabled={isBusy}
-              className="cat-btn cat-btn-gold ml-4"
+              className="cat-btn cat-btn-sm cat-btn-gold ml-4"
             >
               add to {listsStr}
             </button>

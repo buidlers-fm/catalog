@@ -1,36 +1,36 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
+import Sort from "enums/Sort"
 
 export default function BookNotesIndex({ book, currentUserProfile }) {
   const [notes, setNotes] = useState<any[]>()
 
-  useEffect(() => {
-    const _notes = (book.bookNotes || []).filter(
-      (note) => note.noteType === BookNoteType.JournalEntry && !!note.text,
-    )
-
-    setNotes(_notes)
-  }, [book.bookNotes])
-
-  async function getBookNotes() {
+  const getBookNotes = useCallback(async () => {
     try {
       const _notes = await api.bookNotes.get({
         bookId: book.id,
         requireText: true,
         noteTypes: [BookNoteType.JournalEntry],
+        sort: Sort.Popular,
       })
 
       setNotes(_notes)
     } catch (error: any) {
       console.log(error)
     }
-  }
+  }, [book.id])
+
+  useEffect(() => {
+    getBookNotes()
+  }, [getBookNotes])
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
@@ -53,14 +53,10 @@ export default function BookNotesIndex({ book, currentUserProfile }) {
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              No notes yet.
-            </div>
+            <EmptyState text="No notes yet." />
           )
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection />
         )}
       </div>
     </div>

@@ -29,17 +29,22 @@ export default function FormToggle({
         control={control}
         defaultValue={defaultValue}
         render={({ field }) => (
+          // from Tailwind UI: https://tailwindui.com/components/application-ui/forms/toggles
           <Switch
             checked={field.value}
             onChange={field.onChange}
-            className={`${field.value ? "bg-gold-500" : "bg-gold-900"}
-            relative inline-flex items-center h-[26px] w-[50px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
+            className="group relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
           >
             <span className="sr-only">{label}</span>
             <span
               aria-hidden="true"
-              className={`${field.value ? "translate-x-6" : "translate-x-0.5"}
-              pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+              className={`${field.value ? "bg-gold-500" : "bg-gold-900"}
+                 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out`}
+            />
+            <span
+              aria-hidden="true"
+              className={`${field.value ? "translate-x-5" : "translate-x-0"}
+                pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-gray-200 bg-white shadow ring-0 transition-transform duration-200 ease-in-out`}
             />
           </Switch>
         )}

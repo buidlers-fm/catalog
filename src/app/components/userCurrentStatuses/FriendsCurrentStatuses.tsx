@@ -1,5 +1,7 @@
 import { decorateWithFollowing } from "lib/server/decorators"
 import UserCurrentStatusCard from "app/components/userCurrentStatuses/UserCurrentStatusCard"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 
 export default async function FriendsCurrentStatuses({ currentUserProfile }) {
   const followingQueryOptions = {
@@ -47,19 +49,13 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
                 ))}
               </div>
             ) : (
-              <div className="h-24 flex items-center justify-center font-newsreader italic text-gray-300">
-                None of your friends have a current status right now.
-              </div>
+              <EmptyState text="None of your friends have a current status right now." small />
             )
           ) : (
-            <div className="h-24 flex items-center justify-center font-newsreader italic text-gray-300">
-              You're not following anyone yet.
-            </div>
+            <EmptyState text="You're not following anyone yet." small />
           )
         ) : (
-          <div className="h-24 flex items-center justify-center font-newsreader italic text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection small />
         )}
       </div>
     </div>

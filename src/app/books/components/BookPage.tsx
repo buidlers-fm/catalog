@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
@@ -19,6 +19,8 @@ import NewBookPostModal from "app/components/NewBookPostModal"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import ListCard from "app/components/lists/ListCard"
 import CustomMarkdown from "app/components/CustomMarkdown"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -49,8 +51,8 @@ export default function BookPage({
 }) {
   const router = useRouter()
 
-  const [notes, setNotes] = useState<any[]>([])
-  const [posts, setPosts] = useState<any[]>([])
+  const [notes, setNotes] = useState<any[]>()
+  const [posts, setPosts] = useState<any[]>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
@@ -70,13 +72,43 @@ export default function BookPage({
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
-  useEffect(() => {
-    setNotes((book.bookNotes || []).slice(0, BOOK_NOTES_LIMIT))
-  }, [book.bookNotes])
+  const getBookNotes = useCallback(async () => {
+    if (!book.id) router.refresh()
+
+    try {
+      const _notes = await api.bookNotes.get({
+        bookId: book.id,
+        noteTypes: [BookNoteType.JournalEntry],
+        sort: Sort.Popular,
+      })
+      setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
+    } catch (error: any) {
+      console.error(error)
+    }
+  }, [book.id, router])
+
+  const getBookPosts = useCallback(async () => {
+    if (!book.id) router.refresh()
+
+    try {
+      const _posts = await api.bookNotes.get({
+        bookId: book.id,
+        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        sort: Sort.Popular,
+      })
+      setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
+    } catch (error: any) {
+      console.error(error)
+    }
+  }, [book.id, router])
 
   useEffect(() => {
-    setPosts((book.bookPosts || []).slice(0, BOOK_NOTES_LIMIT))
-  }, [book.bookPosts])
+    if (book.id) getBookNotes()
+  }, [book.id, getBookNotes])
+
+  useEffect(() => {
+    if (book.id) getBookPosts()
+  }, [book.id, getBookPosts])
 
   useEffect(() => {
     const _existingBookRead = findLastUnfinishedBookRead(book.bookReads)
@@ -126,22 +158,6 @@ export default function BookPage({
 
     setLikeCount(_likeCount)
     setCurrentUserLike(_currentUserLike)
-  }
-
-  const getBookNotes = async () => {
-    if (!book.id) router.refresh()
-
-    try {
-      const _notes = await api.bookNotes.get({
-        bookId: book.id,
-        requireText: true,
-        noteTypes: [BookNoteType.JournalEntry],
-        sort: Sort.Popular,
-      })
-      setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
-    } catch (error: any) {
-      console.error(error)
-    }
   }
 
   const getBookReads = async () => {
@@ -207,21 +223,6 @@ export default function BookPage({
 
   const refetchBookData = async () =>
     Promise.all([updateLikes(), getBookNotes(), getBookReads(), getCurrentUserShelf()])
-
-  const getBookPosts = async () => {
-    if (!book.id) router.refresh()
-
-    try {
-      const _posts = await api.bookNotes.get({
-        bookId: book.id,
-        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
-        sort: Sort.Popular,
-      })
-      setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
-    } catch (error: any) {
-      console.error(error)
-    }
-  }
 
   const description = book.description || DEFAULT_DESCRIPTION
 
@@ -359,7 +360,7 @@ export default function BookPage({
             </div>
           </div>
 
-          {notes.length > 0 && (
+          {notes && notes.length > 0 && (
             <div className="mt-8 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
                 <div className="cat-eyebrow">top notes</div>
@@ -407,23 +408,25 @@ export default function BookPage({
             </div>
             <hr className="my-1 h-[1px] border-none bg-gray-300" />
             <div className="">
-              {posts.length > 0 ? (
-                <div>
-                  {posts.map((post) => (
-                    <BookLinkPostCard
-                      key={post.id}
-                      post={post}
-                      withCover={false}
-                      currentUserProfile={currentUserProfile}
-                      onEditSuccess={getBookPosts}
-                      onDeleteSuccess={getBookPosts}
-                    />
-                  ))}
-                </div>
+              {posts ? (
+                posts.length > 0 ? (
+                  <div>
+                    {posts.map((post) => (
+                      <BookLinkPostCard
+                        key={post.id}
+                        post={post}
+                        withCover={false}
+                        currentUserProfile={currentUserProfile}
+                        onEditSuccess={getBookPosts}
+                        onDeleteSuccess={getBookPosts}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState text="No links yet." />
+                )
               ) : (
-                <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-                  No links yet.
-                </div>
+                <LoadingSection />
               )}
             </div>
           </div>

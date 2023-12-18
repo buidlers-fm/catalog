@@ -2,13 +2,10 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { getBookNotes } from "lib/server/bookNotes"
 import { decorateWithLikes, decorateLists } from "lib/server/decorators"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
 import InteractionObjectType from "enums/InteractionObjectType"
-import BookNoteType from "enums/BookNoteType"
-import Sort from "enums/Sort"
 
 export const dynamic = "force-dynamic"
 
@@ -121,21 +118,6 @@ export default async function BookPageBySlug({ params }: any) {
   })
 
   const bookLists = await decorateLists(_bookLists, userProfile)
-
-  book.bookNotes = await getBookNotes({
-    bookId: book.id,
-    sort: Sort.Popular,
-    noteTypes: [BookNoteType.JournalEntry],
-    currentUserProfile: userProfile,
-    requireText: true,
-  })
-
-  book.bookPosts = await getBookNotes({
-    bookId: book.id,
-    sort: Sort.Popular,
-    noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
-    currentUserProfile: userProfile,
-  })
 
   book = (await decorateWithLikes([book], InteractionObjectType.Book, userProfile))[0]
 

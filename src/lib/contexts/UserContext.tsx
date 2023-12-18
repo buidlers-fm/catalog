@@ -15,7 +15,7 @@ type User = {
 type UserProviderValue = {
   currentUser?: User | null
   currentUserProfile?: UserProfileProps | null
-  signUp: (email: string, username: string, password: string) => Promise<void>
+  signUp: (email: string, username: string, password: string) => Promise<any>
   signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
   isFetching: boolean
@@ -120,7 +120,7 @@ export function UserProvider({ children }) {
       }
 
       await api.auth.signUp(requestData)
-      await signIn(email, password)
+      return signIn(email, password)
     },
     [signIn],
   )

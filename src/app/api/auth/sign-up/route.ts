@@ -109,6 +109,9 @@ export const POST = withApiHandling(
           },
         },
       },
+      include: {
+        profile: true,
+      },
     })
 
     console.log(createUserRes)
@@ -129,8 +132,8 @@ export const POST = withApiHandling(
     await prisma.list.createMany({
       data: startingLists.map((list) => ({
         ...list,
-        creatorId: userId,
-        ownerId: userId,
+        creatorId: createUserRes.profile!.id,
+        ownerId: createUserRes.profile!.id,
       })),
     })
 

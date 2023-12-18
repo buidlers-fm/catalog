@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import api from "lib/api"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 
 export default function UserBookNotesIndex({ userProfile, currentUserProfile }) {
@@ -49,15 +51,15 @@ export default function UserBookNotesIndex({ userProfile, currentUserProfile }) 
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              {isUsersProfile ? "You haven't" : `${userProfile.username} hasn't`} written any notes
-              yet.
-            </div>
+            <EmptyState
+              text={`${
+                isUsersProfile ? "You haven't" : `${userProfile.username} hasn't`
+              } written any notes
+              yet.`}
+            />
           )
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection />
         )}
       </div>
     </div>

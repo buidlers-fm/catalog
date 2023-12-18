@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
-import { isProduction, fetchJson, isSameLanguage } from "lib/helpers/general"
+import { fetchJson, isSameLanguage } from "lib/helpers/general"
 import type Book from "types/Book"
 
 dayjs.extend(customParseFormat)
@@ -8,8 +8,7 @@ dayjs.extend(customParseFormat)
 const OL_LANGUAGE_CODE = "en"
 const PUBLISH_DATE_FORMATS = ["YYYY", "MMMM YYYY", "MMMM D, YYYY", "MMM D, YYYY", "YYYY-MM-DD"]
 
-// TODO: temp while OL is experimenting with search quality on their test env
-const BASE_URL = isProduction() ? "https://openlibrary.org" : "https://testing.openlibrary.org"
+const BASE_URL = "https://openlibrary.org"
 const COVERS_BASE_URL = "https://covers.openlibrary.org/b"
 const PATHS = {
   search: "search.json",
