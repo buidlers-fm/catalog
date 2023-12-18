@@ -5,7 +5,6 @@ import Search from "app/components/nav/Search"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormTextarea from "app/components/forms/FormTextarea"
 import validations from "lib/constants/validations"
-import ConfirmationModal from "app/components/ConfirmationModal"
 import type Book from "types/Book"
 
 export default function EditProfileCurrentStatus({
@@ -14,11 +13,10 @@ export default function EditProfileCurrentStatus({
   onDeleteSuccess,
   onCancel,
 }) {
-  const [selectedBook, setSelectedBook] = useState<Book | null>(userCurrentStatus?.book)
+  const [selectedBook, setSelectedBook] = useState<Book | null | undefined>(userCurrentStatus?.book)
   const [text, setText] = useState<string>(userCurrentStatus?.text)
   const [textErrorMsg, setTextErrorMsg] = useState<string>()
   const [isBusy, setIsBusy] = useState<boolean>(false)
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
 
   const {
     text: { maxLength: textMaxLength },
@@ -30,6 +28,11 @@ export default function EditProfileCurrentStatus({
 
   async function submit() {
     setTextErrorMsg(undefined)
+
+    if (!text && !selectedBook) {
+      await handleDelete()
+      return
+    }
 
     if (text && text.length > textMaxLength) {
       setTextErrorMsg(`The text of your status cannot be longer than ${textMaxLength} characters.`)
@@ -90,14 +93,22 @@ export default function EditProfileCurrentStatus({
               ) : (
                 <CoverPlaceholder book={selectedBook} />
               )}
+              <button
+                onClick={() => setSelectedBook(undefined)}
+                className="mt-2 cat-btn-link text-sm text-gray-300"
+              >
+                remove
+              </button>
             </div>
           ) : (
             <CoverPlaceholder />
           )}
         </div>
-        <div className="my-4">
-          <Search isNav={false} onSelect={onBookSelect} fullWidth />
-        </div>
+        {!selectedBook && (
+          <div className="my-4">
+            <Search isNav={false} onSelect={onBookSelect} fullWidth />
+          </div>
+        )}
       </div>
       <div className="grow">
         <FormTextarea
@@ -114,13 +125,6 @@ export default function EditProfileCurrentStatus({
         <div className="flex justify-end">
           <button
             disabled={isBusy}
-            className="mr-2 cat-btn cat-btn-sm cat-btn-red-outline text-red-500"
-            onClick={() => setShowDeleteConfirmation(true)}
-          >
-            clear
-          </button>
-          <button
-            disabled={isBusy}
             className="mr-2 cat-btn cat-btn-sm cat-btn-white-outline"
             onClick={onCancel}
           >
@@ -131,14 +135,6 @@ export default function EditProfileCurrentStatus({
           </button>
         </div>
       </div>
-      {showDeleteConfirmation && (
-        <ConfirmationModal
-          title="Clear status?"
-          onConfirm={handleDelete}
-          onClose={() => setShowDeleteConfirmation(false)}
-          isOpen={showDeleteConfirmation}
-        />
-      )}
     </div>
   )
 }
