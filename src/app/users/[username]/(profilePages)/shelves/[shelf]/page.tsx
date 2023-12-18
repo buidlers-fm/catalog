@@ -3,6 +3,7 @@ import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
 import ListBook from "app/lists/components/ListBook"
+import EmptyState from "app/components/EmptyState"
 import UserBookShelf from "enums/UserBookShelf"
 import type { UserProfileProps as UserProfile } from "lib/models/UserProfile"
 
@@ -69,9 +70,7 @@ export default async function UserShelfPage({ params }) {
   return (
     <div className="mt-4 xs:mx-8 lg:mx-16 font-mulish">
       {books.length === 0 ? (
-        <div className="h-24 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-          No books in this shelf.
-        </div>
+        <EmptyState text="No books in this shelf." small />
       ) : (
         <>
           {isUsersProfile && shelf === UserBookShelf.Read && (

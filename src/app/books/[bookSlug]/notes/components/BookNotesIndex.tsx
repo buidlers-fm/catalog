@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 
 export default function BookNotesIndex({ book, currentUserProfile }) {
@@ -53,14 +55,10 @@ export default function BookNotesIndex({ book, currentUserProfile }) {
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              No notes yet.
-            </div>
+            <EmptyState text="No notes yet." />
           )
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection />
         )}
       </div>
     </div>

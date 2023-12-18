@@ -3,6 +3,8 @@ import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithFollowers } from "lib/server/decorators"
 import UserProfileCard from "app/components/userProfiles/UserProfileCard"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import type { UserProfileProps as UserProfile } from "lib/models/UserProfile"
 
 export const dynamic = "force-dynamic"
@@ -38,14 +40,10 @@ export default async function UserFollowersPage({ params }) {
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              No followers yet.
-            </div>
+            <EmptyState text="No followers yet." />
           )
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection />
         )}
       </div>
     </div>

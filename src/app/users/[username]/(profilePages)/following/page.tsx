@@ -2,6 +2,8 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithFollowers, decorateWithFollowing } from "lib/server/decorators"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import UserProfileCard from "app/components/userProfiles/UserProfileCard"
 import UserProfile, { UserProfileProps } from "lib/models/UserProfile"
 
@@ -19,6 +21,8 @@ export default async function UserFollowingPage({ params }) {
 
   if (!userProfile) notFound()
   ;[userProfile] = await decorateWithFollowing([userProfile])
+
+  const isUsersProfile = currentUserProfile?.id === userProfile.id
 
   const decoratedUserProfile = UserProfile.build(userProfile)
 
@@ -40,14 +44,12 @@ export default async function UserFollowingPage({ params }) {
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              {name} isn't following anyone yet.
-            </div>
+            <EmptyState
+              text={`${isUsersProfile ? "You're not" : `${name} isn't`} following anyone yet.`}
+            />
           )
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection />
         )}
       </div>
     </div>

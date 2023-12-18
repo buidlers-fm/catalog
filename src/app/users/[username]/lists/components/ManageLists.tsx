@@ -18,6 +18,7 @@ import api from "lib/api"
 import { useUser } from "lib/contexts/UserContext"
 import { sortListsByPinSortOrder, getEditListLink, getNewListLink } from "lib/helpers/general"
 import ListCard from "app/components/lists/ListCard"
+import EmptyState from "app/components/EmptyState"
 import type List from "types/List"
 
 export default function ManageLists({ lists, pins }) {
@@ -154,9 +155,7 @@ export default function ManageLists({ lists, pins }) {
           </DndContext>
         </ul>
       ) : (
-        <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-          You don't have any lists yet.
-        </div>
+        <EmptyState text="You don't have any lists yet." />
       )}
     </div>
   )

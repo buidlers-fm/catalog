@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 
@@ -51,14 +53,10 @@ export default function BookPostsIndex({ book, currentUserProfile }) {
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              No posts yet.
-            </div>
+            <EmptyState text="No posts yet." />
           )
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            Loading...
-          </div>
+          <LoadingSection />
         )}
       </div>
     </div>

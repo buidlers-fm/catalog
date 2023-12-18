@@ -7,6 +7,7 @@ import ProfileCurrentStatus from "app/users/[username]/components/ProfileCurrent
 import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileBookNotes"
 import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
+import EmptyState from "app/components/EmptyState"
 import { getUserListsLink, getNewListLink, sortListsByPinSortOrder } from "lib/helpers/general"
 import { decorateLists, decorateWithFollowers } from "lib/server/decorators"
 import UserProfile from "lib/models/UserProfile"
@@ -196,9 +197,9 @@ export default async function UserProfilePage({ params }) {
               ))}
             </div>
           ) : (
-            <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-              {isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists yet.
-            </div>
+            <EmptyState
+              text={`${isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists yet.`}
+            />
           )}
         </div>
       </div>

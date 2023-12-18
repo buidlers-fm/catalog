@@ -1,6 +1,7 @@
 "use client"
 
 import ListCard from "app/components/lists/ListCard"
+import EmptyState from "app/components/EmptyState"
 
 export default function UserListsIndex({ lists, userProfile }) {
   return (
@@ -13,9 +14,7 @@ export default function UserListsIndex({ lists, userProfile }) {
             ))}
           </div>
         ) : (
-          <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-            {userProfile.username} doesn't have any lists yet.
-          </div>
+          <EmptyState text={`${userProfile.username} doesn't have any lists yet.`} />
         )}
       </div>
     </div>

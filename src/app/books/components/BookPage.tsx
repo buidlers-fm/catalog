@@ -19,6 +19,8 @@ import NewBookPostModal from "app/components/NewBookPostModal"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import ListCard from "app/components/lists/ListCard"
 import CustomMarkdown from "app/components/CustomMarkdown"
+import EmptyState from "app/components/EmptyState"
+import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -49,8 +51,8 @@ export default function BookPage({
 }) {
   const router = useRouter()
 
-  const [notes, setNotes] = useState<any[]>([])
-  const [posts, setPosts] = useState<any[]>([])
+  const [notes, setNotes] = useState<any[]>()
+  const [posts, setPosts] = useState<any[]>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
@@ -359,7 +361,7 @@ export default function BookPage({
             </div>
           </div>
 
-          {notes.length > 0 && (
+          {notes && notes.length > 0 && (
             <div className="mt-8 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
                 <div className="cat-eyebrow">top notes</div>
@@ -407,23 +409,25 @@ export default function BookPage({
             </div>
             <hr className="my-1 h-[1px] border-none bg-gray-300" />
             <div className="">
-              {posts.length > 0 ? (
-                <div>
-                  {posts.map((post) => (
-                    <BookLinkPostCard
-                      key={post.id}
-                      post={post}
-                      withCover={false}
-                      currentUserProfile={currentUserProfile}
-                      onEditSuccess={getBookPosts}
-                      onDeleteSuccess={getBookPosts}
-                    />
-                  ))}
-                </div>
+              {posts ? (
+                posts.length > 0 ? (
+                  <div>
+                    {posts.map((post) => (
+                      <BookLinkPostCard
+                        key={post.id}
+                        post={post}
+                        withCover={false}
+                        currentUserProfile={currentUserProfile}
+                        onEditSuccess={getBookPosts}
+                        onDeleteSuccess={getBookPosts}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState text="No links yet." />
+                )
               ) : (
-                <div className="h-48 flex items-center justify-center font-newsreader italic text-lg text-gray-300">
-                  No links yet.
-                </div>
+                <LoadingSection />
               )}
             </div>
           </div>
