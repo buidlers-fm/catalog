@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
@@ -13,11 +13,7 @@ import Sort from "enums/Sort"
 export default function BookPostsIndex({ book, currentUserProfile }) {
   const [posts, setPosts] = useState<any[]>()
 
-  useEffect(() => {
-    setPosts(book.bookPosts || [])
-  }, [book.bookPosts])
-
-  async function getBookPosts() {
+  const getBookPosts = useCallback(async () => {
     try {
       const _posts = await api.bookNotes.get({
         bookId: book.id,
@@ -29,7 +25,11 @@ export default function BookPostsIndex({ book, currentUserProfile }) {
     } catch (error: any) {
       console.log(error)
     }
-  }
+  }, [book.id])
+
+  useEffect(() => {
+    getBookPosts()
+  }, [getBookPosts])
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">

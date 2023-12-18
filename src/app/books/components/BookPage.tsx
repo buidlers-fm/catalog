@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
@@ -72,13 +72,42 @@ export default function BookPage({
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
-  useEffect(() => {
-    setNotes((book.bookNotes || []).slice(0, BOOK_NOTES_LIMIT))
-  }, [book.bookNotes])
+  const getBookNotes = useCallback(async () => {
+    if (!book.id) router.refresh()
+
+    try {
+      const _notes = await api.bookNotes.get({
+        bookId: book.id,
+        noteTypes: [BookNoteType.JournalEntry],
+      })
+      setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
+    } catch (error: any) {
+      console.error(error)
+    }
+  }, [book.id, router])
+
+  const getBookPosts = useCallback(async () => {
+    if (!book.id) router.refresh()
+
+    try {
+      const _posts = await api.bookNotes.get({
+        bookId: book.id,
+        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        sort: Sort.Popular,
+      })
+      setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
+    } catch (error: any) {
+      console.error(error)
+    }
+  }, [book.id, router])
 
   useEffect(() => {
-    setPosts((book.bookPosts || []).slice(0, BOOK_NOTES_LIMIT))
-  }, [book.bookPosts])
+    if (book.id) getBookNotes()
+  }, [book.id, getBookNotes])
+
+  useEffect(() => {
+    if (book.id) getBookPosts()
+  }, [book.id, getBookPosts])
 
   useEffect(() => {
     const _existingBookRead = findLastUnfinishedBookRead(book.bookReads)
@@ -128,22 +157,6 @@ export default function BookPage({
 
     setLikeCount(_likeCount)
     setCurrentUserLike(_currentUserLike)
-  }
-
-  const getBookNotes = async () => {
-    if (!book.id) router.refresh()
-
-    try {
-      const _notes = await api.bookNotes.get({
-        bookId: book.id,
-        requireText: true,
-        noteTypes: [BookNoteType.JournalEntry],
-        sort: Sort.Popular,
-      })
-      setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
-    } catch (error: any) {
-      console.error(error)
-    }
   }
 
   const getBookReads = async () => {
@@ -209,21 +222,6 @@ export default function BookPage({
 
   const refetchBookData = async () =>
     Promise.all([updateLikes(), getBookNotes(), getBookReads(), getCurrentUserShelf()])
-
-  const getBookPosts = async () => {
-    if (!book.id) router.refresh()
-
-    try {
-      const _posts = await api.bookNotes.get({
-        bookId: book.id,
-        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
-        sort: Sort.Popular,
-      })
-      setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
-    } catch (error: any) {
-      console.error(error)
-    }
-  }
 
   const description = book.description || DEFAULT_DESCRIPTION
 
