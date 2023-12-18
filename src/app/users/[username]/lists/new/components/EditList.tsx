@@ -203,8 +203,8 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
             />
             <div className="my-12">
               <FormToggle
-                label="ranked list"
-                descriptionText="Show position for each book."
+                label="ranked list?"
+                descriptionText="show position for each book."
                 name="ranked"
                 control={control}
                 defaultValue={isRanked}
