@@ -2,7 +2,14 @@
 
 import { Dialog } from "@headlessui/react"
 
-export default function ConfirmationModal({ title, onConfirm, onClose, isOpen }) {
+export default function ConfirmationModal({
+  title,
+  onConfirm,
+  onClose,
+  isOpen,
+  confirmColor = "cat-btn-red",
+  confirmText = "delete",
+}) {
   const handleClose = async () => {
     await onClose()
   }
@@ -26,14 +33,14 @@ export default function ConfirmationModal({ title, onConfirm, onClose, isOpen })
               onClick={handleClose}
               className="cat-btn cat-btn-sm cat-btn-white-outline"
             >
-              Cancel
+              cancel
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className="cat-btn cat-btn-sm cat-btn-red ml-4"
+              className={`cat-btn cat-btn-sm ${confirmColor} ml-4`}
             >
-              Delete
+              {confirmText}
             </button>
           </div>
         </Dialog.Panel>
