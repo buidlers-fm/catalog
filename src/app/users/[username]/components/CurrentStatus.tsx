@@ -4,6 +4,7 @@ import { getBookLink } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
+import CustomMarkdown from "app/components/CustomMarkdown"
 
 export default function CurrentStatus({
   userProfile: _userProfile,
@@ -49,7 +50,9 @@ export default function CurrentStatus({
       )}
       {text && (
         <div className="grow">
-          <div className={`mt-4 mb-2 ${isProfilePage && "lg:my-2"} font-newsreader`}>{text}</div>
+          <div className={`mt-4 mb-2 ${isProfilePage && "lg:my-2"} font-newsreader`}>
+            <CustomMarkdown markdown={text} />
+          </div>
         </div>
       )}
     </div>

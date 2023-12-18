@@ -289,7 +289,6 @@ export default function BookNoteModal({
                         fullWidth
                         bgColor="bg-gray-800"
                         moreClasses="mt-1"
-                        showFormattingReferenceTooltip={false}
                       />
                       <div className="">
                         <button
