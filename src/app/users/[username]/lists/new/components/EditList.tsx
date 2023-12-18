@@ -53,6 +53,7 @@ const validations = {
 export default function EditList({ list, firstBook, currentUserProfile, isEdit = false }: Props) {
   const router = useRouter()
   const { books, addBook, removeBook, reorderBooks } = useEditBookList(list)
+  const [bookIdsToNotes, setBookIdsToNotes] = useState<any>({})
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
@@ -78,6 +79,28 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
     }
   }, [firstBook, addBook, books])
 
+  useEffect(() => {
+    if (!list) return
+
+    const bookIdsToBooks =
+      list.books?.reduce((obj, book) => {
+        obj[book.id!] = book
+        return obj
+      }, {}) || {}
+
+    const _bookIdsToNotes = list.listItemAssignments.reduce((obj, lta) => {
+      const book = bookIdsToBooks[lta.listedObjectId]
+      obj[book.openLibraryWorkId] = lta.note
+      return obj
+    }, {})
+
+    setBookIdsToNotes(_bookIdsToNotes)
+  }, [list])
+
+  function handleBookNoteChange(openLibraryWorkId, note) {
+    setBookIdsToNotes({ ...bookIdsToNotes, [openLibraryWorkId]: note })
+  }
+
   const submit = async (listData: ListMetadata) => {
     setIsSubmitting(true)
     setErrorMessage(undefined)
@@ -86,11 +109,19 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
 
     const { title, description, ranked } = listData
 
+    // don't use openLibraryWorkIds as keys because they don't
+    // decamelize/camelize properly
+    const bookNotes = Object.entries(bookIdsToNotes).map(([openLibraryWorkId, note]) => ({
+      openLibraryWorkId,
+      note,
+    }))
+
     const requestData = {
       title,
       description,
       ranked,
       books,
+      bookNotes,
     }
 
     try {
@@ -186,6 +217,9 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               onBookRemove={removeBook}
               onReorder={reorderBooks}
               isRanked={isRanked}
+              notesEnabled
+              bookIdsToNotes={bookIdsToNotes}
+              onBookNoteChange={handleBookNoteChange}
             />
             <div className="flex justify-between">
               <button

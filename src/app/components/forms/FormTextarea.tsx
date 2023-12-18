@@ -55,6 +55,7 @@ export default function FormTextarea({
           className={`w-full px-3 pt-3 pb-2 ${bgColor} rounded border-none focus:outline-gold-500 ${moreClasses}`}
         />
         {textFormattingAndRemainingChars}
+        {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
       </div>
     </div>
   )

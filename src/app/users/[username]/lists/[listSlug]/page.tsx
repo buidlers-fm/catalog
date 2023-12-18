@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import humps from "humps"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import prisma from "lib/prisma"
@@ -10,8 +11,9 @@ export const dynamic = "force-dynamic"
 
 dayjs.extend(relativeTime)
 
-export default async function UserListPage({ params }) {
+export default async function UserListPage({ params, searchParams }) {
   const { username, listSlug } = params
+  const { view } = humps.camelizeKeys(searchParams)
 
   const currentUserProfile = await getCurrentUserProfile()
 
@@ -49,6 +51,7 @@ export default async function UserListPage({ params }) {
       list={list}
       isUsersList={isUsersList}
       currentUserProfile={currentUserProfile}
+      view={view}
     />
   )
 }

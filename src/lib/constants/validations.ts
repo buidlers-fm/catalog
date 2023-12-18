@@ -12,6 +12,11 @@ const validations = {
       maxLength: 100,
     },
   },
+  list: {
+    bookNote: {
+      maxLength: 300,
+    },
+  },
   userCurrentStatus: {
     text: {
       maxLength: 300,
