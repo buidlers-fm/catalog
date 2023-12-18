@@ -79,6 +79,7 @@ export default function BookPage({
       const _notes = await api.bookNotes.get({
         bookId: book.id,
         noteTypes: [BookNoteType.JournalEntry],
+        sort: Sort.Popular,
       })
       setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
     } catch (error: any) {
