@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { isMobile } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
@@ -12,8 +12,6 @@ export default function CurrentStatus({
   isUsersProfile = false,
   isProfilePage = true,
 }) {
-  const router = useRouter()
-
   const userProfile = UserProfile.build(_userProfile)
   const { name } = userProfile
   const { text, book } = userCurrentStatus || {}
@@ -28,22 +26,24 @@ export default function CurrentStatus({
               isProfilePage && "lg:w-2/3 lg:mx-auto lg:mt-6"
             }`}
           >
-            <button onClick={() => router.push(getBookLink(book.slug))} disabled={isMobile}>
-              {book.coverImageUrl ? (
-                <img
-                  src={book.coverImageUrl}
-                  alt="cover"
-                  className="object-top mx-auto shadow-md rounded-sm"
-                />
-              ) : (
-                <CoverPlaceholder
-                  book={book}
-                  sizeClasses={`w-[72px] h-[108px] xs:w-[96px] xs:h-[144px] ${
-                    isProfilePage && "lg:w-[144px] lg:h-[216px]"
-                  }`}
-                />
-              )}
-            </button>
+            <Link href={getBookLink(book.slug)}>
+              <button disabled={isMobile}>
+                {book.coverImageUrl ? (
+                  <img
+                    src={book.coverImageUrl}
+                    alt="cover"
+                    className="object-top mx-auto shadow-md rounded-sm"
+                  />
+                ) : (
+                  <CoverPlaceholder
+                    book={book}
+                    sizeClasses={`w-[72px] h-[108px] xs:w-[96px] xs:h-[144px] ${
+                      isProfilePage && "lg:w-[144px] lg:h-[216px]"
+                    }`}
+                  />
+                )}
+              </button>
+            </Link>
           </div>
           <BookTooltip book={book} anchorSelect="#current-status-book" />
         </>
