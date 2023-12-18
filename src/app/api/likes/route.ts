@@ -3,6 +3,7 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { findOrCreateBook } from "lib/api/books"
+import { findOrCreateLike } from "lib/api/likes"
 import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -92,17 +93,13 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     likedObjectId = dbBook.id
   }
 
-  const like = await prisma.interaction.create({
-    data: {
-      interactionType: InteractionType.Like,
-      objectId: likedObjectId,
-      objectType: likedObjectType,
-      agentId: userProfile.id,
-      agentType: InteractionAgentType.User,
-    },
+  const createdLike = await findOrCreateLike({
+    likedObjectType,
+    likedObjectId,
+    userProfile,
   })
 
-  const resBody = humps.decamelizeKeys(like)
+  const resBody = humps.decamelizeKeys(createdLike)
 
   return NextResponse.json(resBody, { status: 200 })
 })

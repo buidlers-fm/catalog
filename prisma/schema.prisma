@@ -132,6 +132,7 @@ model BookNote {
   title         String?
   linkUrl       String?     @map("link_url")
   readingStatus String?     @map("reading_status")
+  likeCount     Int         @default(0) @map("like_count")
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
   creator       UserProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)

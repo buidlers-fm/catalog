@@ -6,12 +6,11 @@ import { withApiHandling } from "lib/api/withApiHandling"
 import { getBookNotes } from "lib/server/bookNotes"
 import { findOrCreateBook } from "lib/api/books"
 import { setUserBookShelf } from "lib/api/userBookShelves"
+import { findOrCreateLike, deleteLikeByParams } from "lib/api/likes"
 import BookNoteType from "enums/BookNoteType"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import BookReadStatus from "enums/BookReadStatus"
 import UserBookShelf from "enums/UserBookShelf"
-import InteractionType from "enums/InteractionType"
-import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import Sort from "enums/Sort"
 import type { NextRequest } from "next/server"
@@ -199,27 +198,15 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   if (like !== undefined) {
     const likeParams = {
-      interactionType: InteractionType.Like,
-      objectId: bookId,
-      objectType: InteractionObjectType.Book,
-      agentId: userProfile.id,
-      agentType: InteractionAgentType.User,
+      likedObjectId: bookId,
+      likedObjectType: InteractionObjectType.Book,
+      userProfile,
     }
 
     if (like) {
-      const existingLike = await prisma.interaction.findFirst({
-        where: likeParams,
-      })
-
-      if (!existingLike) {
-        await prisma.interaction.create({
-          data: likeParams,
-        })
-      }
+      await findOrCreateLike(likeParams)
     } else {
-      await prisma.interaction.deleteMany({
-        where: likeParams,
-      })
+      await deleteLikeByParams(likeParams)
     }
   }
 
