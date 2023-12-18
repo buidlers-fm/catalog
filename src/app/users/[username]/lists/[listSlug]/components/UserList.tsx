@@ -1,10 +1,14 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
+import { useState } from "react"
 import { Tooltip } from "react-tooltip"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import GridCardViewToggle from "app/lists/components/GridCardViewToggle"
 import ListBook from "app/lists/components/ListBook"
+import ListBookCard from "app/lists/components/ListBookCard"
 import Likes from "app/components/Likes"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
@@ -18,17 +22,26 @@ dayjs.extend(relativeTime)
 
 const { longAmericanDate: timestampFormat } = dateTimeFormats
 
+type ViewType = "grid" | "card"
+
 export default function UserList({
   userProfile,
   list,
   isUsersList,
   currentUserProfile,
+  view = "grid",
 }: {
   userProfile: UserProfileProps
   list: List
   isUsersList: boolean
   currentUserProfile?: UserProfileProps
+  view?: ViewType
 }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const [activeView, setActiveView] = useState<ViewType>(view)
+
   const {
     title,
     slug: listSlug,
@@ -45,6 +58,18 @@ export default function UserList({
   const updatedAt = _updatedAt || createdAt
   const updatedAtFromNow = dayjs(updatedAt).fromNow()
   const updatedAtFormatted = dayjs(updatedAt).format(timestampFormat)
+
+  const hasNotes = list.listItemAssignments.some((lta) => lta.note)
+
+  const bookIdsToNotes = list.listItemAssignments.reduce((obj, lta) => {
+    obj[lta.listedObjectId] = lta.note
+    return obj
+  }, {})
+
+  function handleViewChange(_view: ViewType) {
+    router.push(`${pathname}?view=${_view}`, { scroll: false })
+    setActiveView(_view)
+  }
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
@@ -84,11 +109,34 @@ export default function UserList({
       <div className="sm:my-4">
         <CustomMarkdown markdown={description} />
       </div>
-      <div className="sm:my-8 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
-        {list.books!.map((book, index: number) => (
-          <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />
-        ))}
+      <div className="flex justify-end">
+        {hasNotes && activeView === "grid" && (
+          <button
+            onClick={() => handleViewChange("card")}
+            className="cat-btn-link mr-4 text-sm text-gray-300 font-mulish"
+          >
+            show notes
+          </button>
+        )}
+        <GridCardViewToggle activeView={activeView} onChange={handleViewChange} />
       </div>
+      {activeView === "grid" ? (
+        <div className="sm:my-4 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
+          {list.books!.map((book, index: number) => (
+            <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />
+          ))}
+        </div>
+      ) : (
+        list.books!.map((book, index: number) => (
+          <ListBookCard
+            key={book!.id}
+            book={book}
+            note={bookIdsToNotes[book.id!]}
+            isRanked={ranked}
+            rank={index + 1}
+          />
+        ))
+      )}
     </div>
   )
 }

@@ -10,6 +10,7 @@ const createList = async (params, userProfile) => {
     slug: _listSlug,
     ranked: listRanked,
     designation,
+    bookNotes = [],
   } = params
 
   // find existing books
@@ -82,10 +83,16 @@ const createList = async (params, userProfile) => {
     return indexOfA - indexOfB
   })
 
+  const bookIdsToNotes = bookNotes.reduce((obj, item) => {
+    obj[item.openLibraryWorkId] = item.note
+    return obj
+  }, {})
+
   const listItemAssignments = orderedSelectedBookRecords.map((book, idx) => ({
     listedObjectType: "book",
     listedObjectId: book.id,
     sortOrder: idx + 1,
+    note: bookIdsToNotes[book.openLibraryWorkId!],
   }))
 
   const createdList = await prisma.list.create({
@@ -114,6 +121,7 @@ const updateList = async (list, params, userProfile) => {
     description: listDescription,
     ranked: listRanked,
     books: selectedBooks,
+    bookNotes = [],
   } = params
 
   // find existing books
@@ -208,11 +216,17 @@ const updateList = async (list, params, userProfile) => {
     return indexOfA - indexOfB
   })
 
+  const bookIdsToNotes = bookNotes.reduce((obj, item) => {
+    obj[item.openLibraryWorkId] = item.note
+    return obj
+  }, {})
+
   const listItemAssignments = orderedSelectedBookRecords.map((book, idx) => ({
     listId: list.id,
     listedObjectType: "book",
     listedObjectId: book.id,
     sortOrder: idx + 1,
+    note: bookIdsToNotes[book.openLibraryWorkId!],
   }))
 
   await prisma.listItemAssignment.createMany({

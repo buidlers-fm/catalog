@@ -6,9 +6,9 @@ import type { NextRequest } from "next/server"
 
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile: userProfile } = params
-  const { title, description, ranked, books } = reqJson
+  const { title, description, ranked, books, bookNotes } = reqJson
 
-  const listParams = { title, description, ranked, books }
+  const listParams = { title, description, ranked, books, bookNotes }
   const createdList = await createList(listParams, userProfile)
 
   const resBody = humps.decamelizeKeys(createdList)

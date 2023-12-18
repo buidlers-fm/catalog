@@ -15,6 +15,9 @@ type Props = {
   onReorder: (reorderedIds: string[]) => void
   limit?: number
   isRanked: boolean
+  notesEnabled?: boolean
+  bookIdsToNotes?: any
+  onBookNoteChange?: (openLibraryWorkId: string, note: string) => void
 }
 
 export default function EditListBooks({
@@ -25,6 +28,9 @@ export default function EditListBooks({
   onReorder,
   limit,
   isRanked,
+  notesEnabled = false,
+  bookIdsToNotes = {},
+  onBookNoteChange = () => {},
 }: Props) {
   const [bookIds, setBookIds] = useState<string[]>([])
 
@@ -72,6 +78,9 @@ export default function EditListBooks({
                     onRemove={onBookRemove}
                     isRanked={isRanked}
                     rank={index + 1}
+                    notesEnabled={notesEnabled}
+                    note={bookIdsToNotes[book.openLibraryWorkId]}
+                    onNoteChange={onBookNoteChange}
                   />
                 ))}
               </ul>
