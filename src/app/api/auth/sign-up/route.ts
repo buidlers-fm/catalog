@@ -17,7 +17,26 @@ const PASSWORD_MIN_LENGTH = 8
 export const POST = withApiHandling(
   async (req: NextRequest, { params }) => {
     const { reqJson } = params
-    const { email, username, password } = reqJson
+    const { email, username, password, inviteCode } = reqJson
+
+    // validate invite code
+    if (!inviteCode) {
+      return NextResponse.json({ error: "Invite code is required." }, { status: 400 })
+    }
+
+    const matchingInvite = await prisma.userInvite.findFirst({
+      where: {
+        code: inviteCode,
+      },
+    })
+
+    if (!matchingInvite) {
+      return NextResponse.json({ error: "Invite code is invalid." }, { status: 400 })
+    }
+
+    if (matchingInvite.claimedAt) {
+      return NextResponse.json({ error: "Invite has already been claimed." }, { status: 400 })
+    }
 
     // validations
     if (!email || !username || !password) {
@@ -116,6 +135,18 @@ export const POST = withApiHandling(
 
     console.log(createUserRes)
 
+    // claim invite
+    await prisma.userInvite.update({
+      where: {
+        id: matchingInvite.id,
+      },
+      data: {
+        claimedAt: new Date(),
+        claimedByUserId: createUserRes.id,
+      },
+    })
+
+    // seed book lists
     const startingLists = [
       {
         title: "_favorite",

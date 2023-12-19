@@ -62,12 +62,17 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
         Sign in
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
-      <div>
+      {/* disabling general sign up */}
+      <div className="hidden">
         Don't have an account?{" "}
         <button onClick={toggleAuth} className="cat-link text-none text-teal-500">
           Sign up
         </button>
         .
+      </div>
+      {/* end disabled general sign up */}
+      <div className="mt-4 text-sm text-gray-300">
+        catalog is in closed alpha. You need an invite to sign up!
       </div>
     </div>
   )

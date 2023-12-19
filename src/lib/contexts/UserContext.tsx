@@ -15,7 +15,7 @@ type User = {
 type UserProviderValue = {
   currentUser?: User | null
   currentUserProfile?: UserProfileProps | null
-  signUp: (email: string, username: string, password: string) => Promise<any>
+  signUp: (email: string, username: string, password: string, options?: any) => Promise<any>
   signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
   isFetching: boolean
@@ -112,11 +112,14 @@ export function UserProvider({ children }) {
   )
 
   const signUp = useCallback(
-    async (email: string, username: string, password: string) => {
+    async (email: string, username: string, password: string, options: any = {}) => {
+      const { inviteCode } = options
+
       const requestData = {
         email,
         username,
         password,
+        inviteCode,
       }
 
       await api.auth.signUp(requestData)

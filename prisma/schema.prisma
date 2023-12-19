@@ -27,16 +27,19 @@ model UserProfile {
   bookReads            BookRead[]
   currentStatuses      UserCurrentStatus[]
   bookShelfAssignments UserBookShelfAssignment[]
+  roleAssignments      UserRole[]
+  invitesCreated       UserInvite[]
 
   @@map("user_profiles")
 }
 
 model User {
-  id        String       @id @db.Uuid
-  email     String       @unique
-  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime?    @updatedAt @map("updated_at") @db.Timestamptz(6)
-  profile   UserProfile?
+  id            String       @id @db.Uuid
+  email         String       @unique
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  profile       UserProfile?
+  inviteClaimed UserInvite?
 
   @@map("users")
 }
@@ -208,4 +211,34 @@ model UserBookShelfAssignment {
   @@index([userProfileId])
   @@index([bookId])
   @@map("user_book_shelf_assignments")
+}
+
+model UserRole {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userProfileId String      @map("user_profile_id") @db.Uuid
+  role          String      @map("role")
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userProfileId, role])
+  @@index([userProfileId])
+  @@map("user_roles")
+}
+
+model UserInvite {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inviterId       String      @map("inviter_id") @db.Uuid
+  code            String      @map("code")
+  claimedByUserId String?     @map("claimed_by_user_id") @db.Uuid
+  claimedAt       DateTime?   @map("claimed_at") @db.Timestamptz(6)
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  inviter         UserProfile @relation(fields: [inviterId], references: [id])
+  claimedByUser   User?       @relation(fields: [claimedByUserId], references: [id])
+
+  @@unique([code])
+  @@unique([claimedByUserId])
+  @@index([inviterId])
+  @@map("user_invites")
 }
