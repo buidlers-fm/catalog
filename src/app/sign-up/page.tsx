@@ -1,26 +1,35 @@
 import humps from "humps"
 import prisma from "lib/prisma"
 import SignUpForm from "app/components/nav/SignUpForm"
+import FeatureFlag from "enums/FeatureFlag"
 
 export default async function SignUpPage({ searchParams }) {
   const { inviteCode } = humps.camelizeKeys(searchParams)
 
-  if (!inviteCode) {
-    return <ErrorPage errorMessage="You need an invite code to sign up!" />
-  }
-
-  const invite = await prisma.userInvite.findFirst({
+  const invitesFeatureFlag = await prisma.featureFlag.findFirst({
     where: {
-      code: inviteCode,
+      name: FeatureFlag.RequireInvites,
     },
   })
 
-  if (!invite) {
-    return <ErrorPage errorMessage="Invalid invite code." />
-  }
+  if (invitesFeatureFlag?.enabled) {
+    if (!inviteCode) {
+      return <ErrorPage errorMessage="You need an invite code to sign up!" />
+    }
 
-  if (invite.claimedAt) {
-    return <ErrorPage errorMessage="This invite has already been claimed." />
+    const invite = await prisma.userInvite.findFirst({
+      where: {
+        code: inviteCode,
+      },
+    })
+
+    if (!invite) {
+      return <ErrorPage errorMessage="Invalid invite code." />
+    }
+
+    if (invite.claimedAt) {
+      return <ErrorPage errorMessage="This invite has already been claimed." />
+    }
   }
 
   return (

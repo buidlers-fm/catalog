@@ -242,3 +242,15 @@ model UserInvite {
   @@index([inviterId])
   @@map("user_invites")
 }
+
+model FeatureFlag {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String    @map("name")
+  enabled   Boolean   @default(false) @map("enabled")
+  scope     String?   @map("scope")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([name, scope])
+  @@map("feature_flags")
+}
