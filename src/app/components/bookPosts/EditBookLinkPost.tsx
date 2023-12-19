@@ -2,6 +2,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { TbTrash } from "react-icons/tb"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import FormInput from "app/components/forms/FormInput"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import validations from "lib/constants/validations"
@@ -37,7 +38,7 @@ export default function EditBookLinkPost({ bookPost, onEditSuccess, onDeleteSucc
 
       await onEditSuccess()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, { bookPostId: id, title })
       toast.error("Hmm, something went wrong.", { id: toastId })
       setTitleErrorMsg(error.message)
     }
@@ -57,7 +58,7 @@ export default function EditBookLinkPost({ bookPost, onEditSuccess, onDeleteSucc
 
       await onDeleteSuccess()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, { bookPostId: id })
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 

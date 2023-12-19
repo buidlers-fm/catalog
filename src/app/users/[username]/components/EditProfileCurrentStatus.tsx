@@ -1,6 +1,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import Search from "app/components/nav/Search"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormTextarea from "app/components/forms/FormTextarea"
@@ -43,16 +44,18 @@ export default function EditProfileCurrentStatus({
 
     const toastId = toast.loading("Saving...")
 
+    const requestData = {
+      book: selectedBook,
+      text,
+    }
+
     try {
-      const createdUserCurrentStatus = await api.userCurrentStatuses.create({
-        book: selectedBook,
-        text,
-      })
+      const createdUserCurrentStatus = await api.userCurrentStatuses.create(requestData)
 
       toast.success(`Current status saved!`, { id: toastId })
       onEditSuccess(createdUserCurrentStatus)
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
       setTextErrorMsg(error.message)
     }
@@ -71,7 +74,7 @@ export default function EditProfileCurrentStatus({
       toast.success(`Current status cleared!`, { id: toastId })
       onDeleteSuccess()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error)
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 

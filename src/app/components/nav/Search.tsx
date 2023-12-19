@@ -10,6 +10,7 @@ import debounce from "lodash.debounce"
 import api from "lib/api"
 import search from "lib/search/books"
 import OpenLibrary from "lib/openLibrary"
+import { reportToSentry } from "lib/sentry"
 import { truncateString } from "lib/helpers/general"
 import type Book from "types/Book"
 
@@ -72,7 +73,7 @@ export default function Search({
           setSearchResults(existingBooksResults)
         }
       } catch (error: any) {
-        console.error(error)
+        reportToSentry(error, { searchString })
       }
 
       let allOpenLibraryResults: any[] = []
@@ -127,7 +128,12 @@ export default function Search({
             setSearchResults(currentResults)
             setMoreResultsExist(_moreResultsExist)
           } catch (error: any) {
-            console.error(error)
+            reportToSentry(error, {
+              searchString,
+              options: {
+                includeEditions: true,
+              },
+            })
           }
 
           searchWithEditionsFinished = true
@@ -135,7 +141,7 @@ export default function Search({
 
         await Promise.all([searchOpenLibrary(), searchOpenLibraryWithEditions()])
       } catch (error: any) {
-        console.error(error)
+        reportToSentry(error, { searchString })
       }
 
       setIsSearching(false)

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
@@ -19,16 +20,21 @@ export default function UserBookNotesIndex({ userProfile, currentUserProfile }) 
   }, [userProfile.bookNotes])
 
   async function getBookNotes() {
+    const requestData = {
+      userProfileId: userProfile.id,
+      requireText: true,
+      noteTypes: [BookNoteType.JournalEntry],
+    }
+
     try {
-      const _notes = await api.bookNotes.get({
-        userProfileId: userProfile.id,
-        requireText: true,
-        noteTypes: [BookNoteType.JournalEntry],
-      })
+      const _notes = await api.bookNotes.get(requestData)
 
       setNotes(_notes)
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
   }
 

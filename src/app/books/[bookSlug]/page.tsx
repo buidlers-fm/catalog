@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
+import { reportToSentry } from "lib/sentry"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithLikes, decorateLists } from "lib/server/decorators"
 import BookPage from "app/books/components/BookPage"
@@ -47,7 +48,7 @@ export default async function BookPageBySlug({ params }: any) {
   } catch (error: any) {
     // if not found, let openLibraryBook stay blank
     if (error.message !== "notfound") {
-      console.error(error)
+      reportToSentry(error, { workId })
     }
   }
 

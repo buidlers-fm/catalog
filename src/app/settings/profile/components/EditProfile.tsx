@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import humps from "humps"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import useEditBookList from "lib/hooks/useEditBookList"
 import { isValidHttpUrl, getUserProfileLink } from "lib/helpers/general"
 import AvatarUpload from "app/settings/profile/components/AvatarUpload"
@@ -112,9 +113,6 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
 
     formData.append("data", JSON.stringify(humps.decamelizeKeys(requestData)))
 
-    console.log(requestData)
-    console.log(errors)
-
     try {
       const updatedProfile = await api.profiles.update(userProfile.userId, formData)
 
@@ -133,8 +131,16 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
       setAvatarUpdated(false)
       setAvatarUrl(updatedProfile.avatarUrl)
     } catch (error: any) {
+      reportToSentry(error, {
+        ...requestData,
+        avatarUpdated,
+        avatar,
+        formData,
+        currentUserProfile: userProfile,
+      })
+
       setErrorMessage(error.message)
-      toast.error("Oh no! There was an error updating your profile.", { id: toastId })
+      toast.error("Hmm, something went wrong.", { id: toastId })
     }
 
     setIsSubmitting(false)

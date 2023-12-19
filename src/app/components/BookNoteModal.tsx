@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormTextarea from "app/components/forms/FormTextarea"
 import allValidations from "lib/constants/validations"
@@ -210,7 +211,7 @@ export default function BookNoteModal({
       await onSuccess()
       reset()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
       setErrorMessage(error.message)
     }

@@ -15,6 +15,7 @@ import { BsPinAngle, BsPinAngleFill } from "react-icons/bs"
 import { MdEdit } from "react-icons/md"
 import { toast } from "react-hot-toast"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import { useUser } from "lib/contexts/UserContext"
 import { sortListsByPinSortOrder, getEditListLink, getNewListLink } from "lib/helpers/general"
 import ListCard from "app/components/lists/ListCard"
@@ -50,7 +51,7 @@ export default function ManageLists({ lists, pins }) {
       const _updated = [...pinnedLists, list]
       setPinnedLists(_updated)
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 
@@ -74,7 +75,7 @@ export default function ManageLists({ lists, pins }) {
       const _updated = pinnedLists.filter((pinnedList) => pinnedList.id !== list.id)
       setPinnedLists(_updated)
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 
@@ -109,7 +110,7 @@ export default function ManageLists({ lists, pins }) {
 
       toast.success("Pinned lists order saved!", { id: toastId })
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
       setPinnedLists(_originalPinnedLists)
     }
