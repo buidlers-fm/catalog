@@ -3,6 +3,7 @@ import humps from "humps"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
+import FeatureFlag from "enums/FeatureFlag"
 import type { NextRequest } from "next/server"
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -19,23 +20,32 @@ export const POST = withApiHandling(
     const { reqJson } = params
     const { email, username, password, inviteCode } = reqJson
 
-    // validate invite code
-    if (!inviteCode) {
-      return NextResponse.json({ error: "Invite code is required." }, { status: 400 })
-    }
-
-    const matchingInvite = await prisma.userInvite.findFirst({
+    let matchingInvite
+    const invitesFeatureFlag = await prisma.featureFlag.findFirst({
       where: {
-        code: inviteCode,
+        name: FeatureFlag.RequireInvites,
       },
     })
 
-    if (!matchingInvite) {
-      return NextResponse.json({ error: "Invite code is invalid." }, { status: 400 })
-    }
+    if (invitesFeatureFlag?.enabled) {
+      // validate invite code
+      if (!inviteCode) {
+        return NextResponse.json({ error: "Invite code is required." }, { status: 400 })
+      }
 
-    if (matchingInvite.claimedAt) {
-      return NextResponse.json({ error: "Invite has already been claimed." }, { status: 400 })
+      matchingInvite = await prisma.userInvite.findFirst({
+        where: {
+          code: inviteCode,
+        },
+      })
+
+      if (!matchingInvite) {
+        return NextResponse.json({ error: "Invite code is invalid." }, { status: 400 })
+      }
+
+      if (matchingInvite.claimedAt) {
+        return NextResponse.json({ error: "Invite has already been claimed." }, { status: 400 })
+      }
     }
 
     // validations
@@ -135,16 +145,18 @@ export const POST = withApiHandling(
 
     console.log(createUserRes)
 
-    // claim invite
-    await prisma.userInvite.update({
-      where: {
-        id: matchingInvite.id,
-      },
-      data: {
-        claimedAt: new Date(),
-        claimedByUserId: createUserRes.id,
-      },
-    })
+    if (invitesFeatureFlag?.enabled) {
+      // claim invite
+      await prisma.userInvite.update({
+        where: {
+          id: matchingInvite.id,
+        },
+        data: {
+          claimedAt: new Date(),
+          claimedByUserId: createUserRes.id,
+        },
+      })
+    }
 
     // seed book lists
     const startingLists = [
