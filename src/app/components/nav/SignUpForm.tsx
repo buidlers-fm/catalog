@@ -7,7 +7,15 @@ import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
-export default function SignUpForm({ toggleAuth, onSuccess }) {
+export default function SignUpForm({
+  toggleAuth,
+  onSuccess,
+  inviteCode,
+}: {
+  toggleAuth?: () => void
+  onSuccess?: (currentUserProfile) => void
+  inviteCode?: string
+}) {
   const router = useRouter()
   const { signUp } = useUser()
 
@@ -38,11 +46,13 @@ export default function SignUpForm({ toggleAuth, onSuccess }) {
 
       validateInput()
 
-      const { currentUserProfile } = await signUp(email, username, password)
+      const { currentUserProfile } = await signUp(email, username, password, { inviteCode })
 
-      toast.success("Signed up!")
+      toast.success("Signed up! Navigating to your profile...")
 
-      onSuccess(currentUserProfile)
+      if (onSuccess) {
+        onSuccess(currentUserProfile)
+      }
 
       router.push(getUserProfileLink(username))
     } catch (error: any) {
@@ -84,13 +94,15 @@ export default function SignUpForm({ toggleAuth, onSuccess }) {
         Sign up
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
-      <div>
-        Already have an account?{" "}
-        <button onClick={toggleAuth} className="cat-link text-gold-500">
-          Sign in
-        </button>
-        .
-      </div>
+      {toggleAuth && (
+        <div>
+          Already have an account?{" "}
+          <button onClick={toggleAuth} className="cat-link text-gold-500">
+            Sign in
+          </button>
+          .
+        </div>
+      )}
     </div>
   )
 }

@@ -141,13 +141,13 @@ export const stripPunctuation = (str) => str.replace(/[^\w\s]|_/g, "")
 // identical implementations for now, but could diverge later
 export const looseStringEquals = isSameLanguage
 
-export const isDevelopment = () => process.env.CATALOG_ENV === "development"
+export const isDevelopment = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "development"
 
-export const isPreview = () => process.env.CATALOG_ENV === "preview"
+export const isPreview = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "preview"
 
-export const isStaging = () => process.env.CATALOG_ENV === "staging"
+export const isStaging = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "staging"
 
-export const isProduction = () => process.env.CATALOG_ENV === "production"
+export const isProduction = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "production"
 
 // make it noon UTC so that all users view it as the same date
 export const dateStringToDateTime = (dateStr) => new Date(`${dateStr}T12:00:00Z`)

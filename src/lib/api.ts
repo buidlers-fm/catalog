@@ -79,6 +79,13 @@ const api = {
       })
     },
   },
+  invites: {
+    get: () => fetchJson(`/api/user_invites`),
+    create: () =>
+      fetchJson(`/api/user_invites`, {
+        method: "POST",
+      }),
+  },
   likes: {
     get: (params: {
       likedObjectId: string

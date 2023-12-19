@@ -77,13 +77,13 @@ export default async function UserProfileLayout({ params, children }) {
           </div>
           <div className="flex mt-3 text-gray-300">
             {location && (
-              <div>
+              <div className="mr-4">
                 <PiMapPinFill className="inline-block -mt-[5px] mr-1" />
                 {location}
               </div>
             )}
             {website && (
-              <div className="ml-4">
+              <div>
                 <BsLink45Deg className="inline-block -mt-[3px] mr-1 text-lg " />
                 <Link href={website} target="_blank" rel="noopener noreferrer">
                   {getDomainFromUrl(website)}

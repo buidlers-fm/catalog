@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import prisma from "lib/prisma"
+import UserRole from "enums/UserRole"
 import type { NextRequest } from "next/server"
 
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -11,18 +12,23 @@ type Options = {
   requireSession?: boolean
   requireUserProfile?: boolean
   requireJsonBody?: boolean
+  requireAdmin?: boolean
 }
 
 const defaults = {
   requireSession: true,
   requireUserProfile: true,
   requireJsonBody: true,
+  requireAdmin: false,
 }
 
 export function withApiHandling(requestHandler, options: Options = defaults) {
   return async (req: NextRequest, { params: routeParams }) => {
     try {
-      const { requireSession, requireUserProfile, requireJsonBody } = { ...defaults, ...options }
+      const { requireSession, requireUserProfile, requireJsonBody, requireAdmin } = {
+        ...defaults,
+        ...options,
+      }
 
       // auth check
       const supabase = createRouteHandlerClient(
@@ -39,9 +45,19 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
       if (session) {
         currentUserProfile = await prisma.userProfile.findFirst({
           where: { userId: session.user.id },
+          include: { roleAssignments: requireAdmin },
         })
       }
       if (!currentUserProfile && requireUserProfile) throw new Error("User profile not found")
+
+      if (requireAdmin) {
+        const roles = currentUserProfile.roleAssignments.map(
+          (roleAssignment) => roleAssignment.role,
+        )
+        if (!roles.includes(UserRole.Admin)) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+        }
+      }
 
       let reqJson = {}
       if (requireJsonBody) {

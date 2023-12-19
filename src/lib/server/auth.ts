@@ -6,10 +6,12 @@ import prisma from "lib/prisma"
 
 type Options = {
   requireSignedIn?: boolean
+  withRoles?: boolean
 }
 
 const defaultOptions = {
   requireSignedIn: false,
+  withRoles: false,
 }
 
 // prevents vercel error. ref: https://github.com/vercel/next.js/issues/49373
@@ -19,7 +21,7 @@ const createServerSupabaseClient = cache(() => {
 })
 
 const getCurrentUserProfile = async (options: Options = defaultOptions) => {
-  const { requireSignedIn } = options
+  const { requireSignedIn, withRoles } = options
 
   const supabase = createServerSupabaseClient()
 
@@ -35,6 +37,9 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
     currentUserProfile = await prisma.userProfile.findFirst({
       where: {
         userId: session.user.id,
+      },
+      include: {
+        roleAssignments: withRoles,
       },
     })
   }

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .cat-page-title {
-  @apply text-3xl font-mulish lowercase;
+  @apply text-2xl font-mulish lowercase;
 }
 
 .cat-eyebrow {
