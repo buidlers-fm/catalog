@@ -9,23 +9,29 @@ import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
+import { reportToSentry } from "lib/sentry"
 
 export default function BookPostsIndex({ book, currentUserProfile }) {
   const [posts, setPosts] = useState<any[]>()
 
   const getBookPosts = useCallback(async () => {
+    const requestData = {
+      bookId: book.id,
+      noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+      sort: Sort.Popular,
+    }
+
     try {
-      const _posts = await api.bookNotes.get({
-        bookId: book.id,
-        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
-        sort: Sort.Popular,
-      })
+      const _posts = await api.bookNotes.get(requestData)
 
       setPosts(_posts)
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
-  }, [book.id])
+  }, [book.id, currentUserProfile])
 
   useEffect(() => {
     getBookPosts()

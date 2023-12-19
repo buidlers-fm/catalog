@@ -5,6 +5,7 @@ import { Menu } from "@headlessui/react"
 import { FaBookmark, FaRegBookmark } from "react-icons/fa"
 import toast from "react-hot-toast"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import UserBookShelf from "enums/UserBookShelf"
 
 const SHELVES = Object.values(UserBookShelf)
@@ -42,24 +43,22 @@ export default function UserBookShelfMenu({ book, currentUserShelf, onChange }) 
     if (isCurrentShelf(shelf)) return
 
     // optimistic update
+    const originalSelectedShelf = selectedShelf
+    setSelectedShelf(shelf)
+
+    const requestData = {
+      book,
+      shelf,
+    }
+
     try {
-      const originalSelectedShelf = selectedShelf
-      setSelectedShelf(shelf)
+      await api.userBookShelves.set(requestData)
 
-      try {
-        await api.userBookShelves.set({
-          book,
-          shelf,
-        })
-
-        if (onChange) await onChange(shelf)
-      } catch (error: any) {
-        setSelectedShelf(originalSelectedShelf)
-        throw error
-      }
+      if (onChange) await onChange(shelf)
     } catch (error: any) {
-      console.error(error)
+      setSelectedShelf(originalSelectedShelf)
       toast.error("Hmm, something went wrong.")
+      reportToSentry(error, requestData)
     }
   }
 

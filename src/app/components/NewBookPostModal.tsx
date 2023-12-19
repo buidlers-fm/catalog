@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import allValidations from "lib/constants/validations"
 import { isValidHttpUrl } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
@@ -86,7 +87,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
       await handleClose()
       reset()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
       setErrorMessage(error.message)
     }

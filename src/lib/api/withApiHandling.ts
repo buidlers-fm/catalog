@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import prisma from "lib/prisma"
+import { reportToSentry } from "lib/sentry"
 import UserRole from "enums/UserRole"
 import type { NextRequest } from "next/server"
 
@@ -24,6 +25,9 @@ const defaults = {
 
 export function withApiHandling(requestHandler, options: Options = defaults) {
   return async (req: NextRequest, { params: routeParams }) => {
+    let currentUserProfile
+    let reqJson = {}
+
     try {
       const { requireSession, requireUserProfile, requireJsonBody, requireAdmin } = {
         ...defaults,
@@ -41,7 +45,6 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
       const { session } = humps.camelizeKeys(data)
       if (!session && requireSession) throw new Error("No session found")
 
-      let currentUserProfile
       if (session) {
         currentUserProfile = await prisma.userProfile.findFirst({
           where: { userId: session.user.id },
@@ -59,7 +62,6 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
         }
       }
 
-      let reqJson = {}
       if (requireJsonBody) {
         reqJson = humps.camelizeKeys(await req.json())
       }
@@ -69,7 +71,14 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
 
       return res
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, {
+        request: req,
+        options,
+        routeParams,
+        reqJson,
+        currentUserProfile,
+      })
+
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
   }

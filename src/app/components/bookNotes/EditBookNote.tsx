@@ -2,6 +2,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { TbTrash } from "react-icons/tb"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import FormTextarea from "app/components/forms/FormTextarea"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import validations from "lib/constants/validations"
@@ -37,7 +38,7 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
 
       await onEditSuccess()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, { bookNoteId: id, text })
       toast.error("Hmm, something went wrong.", { id: toastId })
       setTextErrorMsg(error.message)
     }
@@ -57,7 +58,7 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
 
       await onDeleteSuccess()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, { bookNoteId: id })
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 

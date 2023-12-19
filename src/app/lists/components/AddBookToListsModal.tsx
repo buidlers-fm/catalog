@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import { FaCheck, FaPlus } from "react-icons/fa6"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import { useUser } from "lib/contexts/UserContext"
 import { getNewListLink } from "lib/helpers/general"
 import type List from "types/List"
@@ -58,7 +59,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
 
       await onClose()
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 

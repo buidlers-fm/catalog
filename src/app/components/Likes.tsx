@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import type Like from "types/Like"
 
 export default function Likes({
@@ -74,7 +75,12 @@ export default function Likes({
         }
       }
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, {
+        currentUserLike,
+        likedObject,
+        likedObjectType,
+      })
+
       toast.error("Hmm, something went wrong.")
     }
   }

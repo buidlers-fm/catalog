@@ -1,5 +1,6 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
+import { reportToSentry } from "lib/sentry"
 import { fetchJson, isSameLanguage } from "lib/helpers/general"
 import type Book from "types/Book"
 
@@ -37,7 +38,11 @@ const OpenLibrary = {
       try {
         bestEdition = await fetchJson(bestEditionUrl)
       } catch (error: any) {
-        console.error(error)
+        reportToSentry(error, {
+          workId,
+          bestEditionId,
+          work,
+        })
       }
     }
 

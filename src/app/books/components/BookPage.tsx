@@ -8,6 +8,7 @@ import { BsJournalText } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
+import { reportToSentry } from "lib/sentry"
 import { getBookNotesLink, getBookPostsLink, getBookListsLink } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
@@ -75,32 +76,42 @@ export default function BookPage({
   const getBookNotes = useCallback(async () => {
     if (!book.id) router.refresh()
 
+    const requestData = {
+      bookId: book.id,
+      noteTypes: [BookNoteType.JournalEntry],
+      sort: Sort.Popular,
+    }
+
     try {
-      const _notes = await api.bookNotes.get({
-        bookId: book.id,
-        noteTypes: [BookNoteType.JournalEntry],
-        sort: Sort.Popular,
-      })
+      const _notes = await api.bookNotes.get(requestData)
       setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
-  }, [book.id, router])
+  }, [book.id, router, currentUserProfile])
 
   const getBookPosts = useCallback(async () => {
     if (!book.id) router.refresh()
 
+    const requestData = {
+      bookId: book.id,
+      noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+      sort: Sort.Popular,
+    }
+
     try {
-      const _posts = await api.bookNotes.get({
-        bookId: book.id,
-        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
-        sort: Sort.Popular,
-      })
+      const _posts = await api.bookNotes.get(requestData)
       setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
-  }, [book.id, router])
+  }, [book.id, router, currentUserProfile])
 
   useEffect(() => {
     if (book.id) getBookNotes()
@@ -163,11 +174,13 @@ export default function BookPage({
   const getBookReads = async () => {
     if (!book.id) router.refresh()
 
+    const requestData = {
+      bookId: book.id,
+      forCurrentUser: true,
+    }
+
     try {
-      const _bookReads = await api.bookReads.get({
-        bookId: book.id,
-        forCurrentUser: true,
-      })
+      const _bookReads = await api.bookReads.get(requestData)
 
       const _lastUnfinishedBookRead = findLastUnfinishedBookRead(_bookReads)
 
@@ -177,23 +190,29 @@ export default function BookPage({
 
       return _bookReads
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
   }
 
   const getCurrentUserShelf = async () => {
     if (!book.id) router.refresh()
 
+    const requestData = {
+      bookId: book.id,
+    }
+
     try {
-      const _currentUserShelf = (
-        await api.userBookShelves.get({
-          bookId: book.id,
-        })
-      )?.shelf
+      const _currentUserShelf = (await api.userBookShelves.get(requestData))?.shelf
 
       setCurrentUserShelf(_currentUserShelf)
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
   }
 

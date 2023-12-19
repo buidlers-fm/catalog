@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
 import toast from "react-hot-toast"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import { getUserProfileLink } from "lib/helpers/general"
 import { BASE_URLS_BY_ENV } from "lib/constants/urls"
 import CopyableText from "app/components/CopyableText"
@@ -43,9 +44,9 @@ export default function AdminInvitesPage() {
 
       await getAllInvites()
     } catch (error: any) {
-      console.error(error)
+      reportToSentry(error)
       setErrorMessage(error.message)
-      toast.error("Hmm, something weng wrong.", { id: toastId })
+      toast.error("Hmm, something went wrong.", { id: toastId })
     }
   }
 

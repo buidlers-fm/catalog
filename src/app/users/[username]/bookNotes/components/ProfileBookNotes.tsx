@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import { getUserBookNotesLink } from "lib/helpers/general"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import BookNoteType from "enums/BookNoteType"
@@ -22,17 +23,22 @@ export default function BookNotes({ userProfile, currentUserProfile }: any) {
   }, [userProfile.bookNotes])
 
   async function getBookNotes() {
+    const requestData = {
+      userProfileId: userProfile.id,
+      limit: BOOK_NOTES_LIMIT,
+      requireText: true,
+      noteTypes: [BookNoteType.JournalEntry],
+    }
+
     try {
-      const _notes = await api.bookNotes.get({
-        userProfileId: userProfile.id,
-        limit: BOOK_NOTES_LIMIT,
-        requireText: true,
-        noteTypes: [BookNoteType.JournalEntry],
-      })
+      const _notes = await api.bookNotes.get(requestData)
 
       setNotes(_notes)
     } catch (error: any) {
-      console.log(error)
+      reportToSentry(error, {
+        ...requestData,
+        currentUserProfile,
+      })
     }
   }
 
