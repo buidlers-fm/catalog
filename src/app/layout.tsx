@@ -20,28 +20,15 @@ const fontsClassNames = fonts.map((font) => font.variable).join(" ")
 
 export const metadata: Metadata = {
   title: "catalog",
-  description: "for book people.",
-  // openGraph: {
-  //   title: "catalog",
-  //   description: "for book people.",
-  //   url: "",
-  //   siteName: "catalog",
-  //   images: [
-  //     {
-  //       url: "https://nextjs.org/og.png",
-  //       width: 800,
-  //       height: 600,
-  //     },
-  //     {
-  //       url: "https://nextjs.org/og-alt.png",
-  //       width: 1800,
-  //       height: 1600,
-  //       alt: "My custom alt",
-  //     },
-  //   ],
-  //   locale: "en_US",
-  //   type: "website",
-  // },
+  description: "a space for book people.",
+  openGraph: {
+    title: "catalog",
+    description: "a space for book people.",
+    url: "https://catalog.fyi",
+    siteName: "catalog",
+    locale: "en_US",
+    type: "website",
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -58,12 +45,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </div>
               <Nav currentUserProfile={currentUserProfile} />
             </header>
-            <main className="mx-8 mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
+            <main className="mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
               {children}
             </main>
-            <footer className="mt-32 px-8 py-4 font-chivo-mono text-lg tracking-wider">
-              © buidlers.
-            </footer>
+            <footer className="mt-32 px-8 py-4 font-chivo-mono tracking-wider">© catalog.</footer>
           </div>
           <Toast />
         </UserProvider>
