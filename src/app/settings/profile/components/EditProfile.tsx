@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
@@ -47,6 +48,8 @@ const validations = {
 }
 
 export default function EditProfile({ userProfile, favoriteBooksList }) {
+  const router = useRouter()
+
   const {
     books,
     addBook,
@@ -117,8 +120,8 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
       const updatedProfile = await api.profiles.update(userProfile.userId, formData)
 
       const successMessage = (
-        <div className="flex flex-col xs:flex-row ml-2">
-          Changes saved!&nbsp;
+        <div className="flex flex-col xs:block ml-2">
+          Changes saved!&nbsp;&nbsp;
           <a href={getUserProfileLink(userProfile.username)} className="underline">
             View your profile.
           </a>
@@ -130,6 +133,8 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
       setAvatarValid(true)
       setAvatarUpdated(false)
       setAvatarUrl(updatedProfile.avatarUrl)
+
+      router.refresh()
     } catch (error: any) {
       reportToSentry(error, {
         ...requestData,
