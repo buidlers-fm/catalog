@@ -1,11 +1,12 @@
 "use client"
 
+import Link from "next/link"
 import dynamic from "next/dynamic"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import humps from "humps"
 import "react-modern-drawer/dist/index.css"
-import { BsSearch, BsXLg } from "react-icons/bs"
+import { BsSearch, BsXLg, BsEnvelopePaperHeartFill } from "react-icons/bs"
 import Search from "app/components/nav/Search"
 import UserNav from "app/components/nav/UserNav"
 import type Book from "types/Book"
@@ -68,6 +69,11 @@ function MobileNav({ currentUserProfile, onSelectBook }) {
       <button className="mt-1 px-2" onClick={() => setShowMobileSearch(true)}>
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
+      <button className="mt-1 ml-3 mr-2">
+        <Link href="/guide" target="_blank" className="">
+          <BsEnvelopePaperHeartFill className="text-[24px] text-gray-200" />
+        </Link>
+      </button>
       <UserNav currentUserProfile={currentUserProfile} />
       <Drawer
         open={showMobileSearch}
@@ -95,9 +101,19 @@ function MobileNav({ currentUserProfile, onSelectBook }) {
 function DesktopNav({ currentUserProfile, onSelectBook }) {
   return (
     <div className="flex">
-      <Search onSelect={onSelectBook} />
-      <div className="ml-12 mr-4 mt-2">
-        <UserNav currentUserProfile={currentUserProfile} />
+      <div className="mr-10">
+        <Search onSelect={onSelectBook} />
+      </div>
+
+      <div className="flex">
+        <button className="-mt-2 mr-2">
+          <Link href="/guide" target="_blank">
+            <BsEnvelopePaperHeartFill className="text-[22px] text-gray-200" />
+          </Link>
+        </button>
+        <div className="mr-4 mt-2">
+          <UserNav currentUserProfile={currentUserProfile} />
+        </div>
       </div>
     </div>
   )

@@ -40,10 +40,14 @@ const components: Components = {
 
 const plugins = [linkifyRegex(/(?:https?):\/\/\S+/g)]
 
-const CustomMarkdown = ({ markdown }) => (
-  <Markdown className="whitespace-pre-wrap" components={components} remarkPlugins={plugins}>
-    {markdown}
-  </Markdown>
-)
+const CustomMarkdown = ({ markdown, componentOverrides = {} }) => {
+  const finalComponents = { ...components, ...componentOverrides }
+
+  return (
+    <Markdown className="whitespace-pre-wrap" components={finalComponents} remarkPlugins={plugins}>
+      {markdown}
+    </Markdown>
+  )
+}
 
 export default CustomMarkdown
