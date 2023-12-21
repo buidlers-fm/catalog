@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { UserProfile as UserProfilePrisma } from "@prisma/client"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import ProfileCurrentStatus from "app/users/[username]/components/ProfileCurrentStatus"
@@ -9,8 +8,10 @@ import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
 import { getUserListsLink, getNewListLink, sortListsByPinSortOrder } from "lib/helpers/general"
-import { decorateLists, decorateWithFollowers } from "lib/server/decorators"
+import { decorateLists, decorateWithFollowers, decorateWithLikes } from "lib/server/decorators"
 import UserProfile from "lib/models/UserProfile"
+import InteractionObjectType from "enums/InteractionObjectType"
+import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
 export const dynamic = "force-dynamic"
@@ -19,7 +20,7 @@ export default async function UserProfilePage({ params }) {
   const { username } = params
   const currentUserProfile = await getCurrentUserProfile()
 
-  const prismaUserProfile: UserProfilePrisma | null = await prisma.userProfile.findFirst({
+  const userProfile = (await prisma.userProfile.findFirst({
     where: {
       username,
     },
@@ -48,12 +49,11 @@ export default async function UserProfilePage({ params }) {
         },
       },
     },
-  })
+  })) as UserProfileProps
 
-  if (!prismaUserProfile) notFound()
+  if (!userProfile) notFound()
 
-  const [decoratedUserProfile] = await decorateWithFollowers([prismaUserProfile])
-  const userProfile = UserProfile.build(decoratedUserProfile)
+  const [decoratedUserProfile] = await decorateWithFollowers([userProfile])
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
@@ -127,17 +127,23 @@ export default async function UserProfilePage({ params }) {
 
   lists = await decorateLists(lists, currentUserProfile)
 
+  userProfile.bookNotes = await decorateWithLikes(
+    userProfile.bookNotes!,
+    InteractionObjectType.BookNote,
+    currentUserProfile,
+  )
+
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
-  const { name } = userProfile
+  const { name } = UserProfile.build(decoratedUserProfile)
 
   return (
     <div className="mt-4 flex flex-col lg:flex-row">
       <div className="lg:w-64 mt-4 lg:mr-16 font-mulish">
         <ProfileCurrentStatus
-          userProfile={prismaUserProfile}
+          userProfile={userProfile}
           // @ts-ignore
-          userCurrentStatus={prismaUserProfile.currentStatuses[0]}
+          userCurrentStatus={userProfile.currentStatuses[0]}
           isUsersProfile={isUsersProfile}
         />
       </div>
@@ -164,7 +170,7 @@ export default async function UserProfilePage({ params }) {
           )}
         </div>
 
-        <ProfileBookNotes userProfile={prismaUserProfile} currentUserProfile={currentUserProfile} />
+        <ProfileBookNotes userProfile={userProfile} currentUserProfile={currentUserProfile} />
 
         <div className="mt-16 font-mulish">
           <div className="flex justify-between text-gray-300 text-sm">

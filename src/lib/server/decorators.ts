@@ -66,8 +66,6 @@ export const decorateWithLikes = async (
       }),
       {},
     )
-    console.log("book notes")
-    console.log(objectIdsToLikeCounts)
   } else {
     // fetch like count per object
     const likeCounts = await prisma.interaction.groupBy({
