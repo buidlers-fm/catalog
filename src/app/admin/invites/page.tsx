@@ -76,7 +76,6 @@ export default function AdminInvitesPage() {
                 <th className="bg-gray-800 p-2">invited at</th>
                 <th className="bg-gray-800 p-2">claimed at</th>
                 <th className="bg-gray-800 p-2 rounded-tr">claimed by</th>
-                <th className="bg-gray-800 p-2">link</th>
               </tr>
             </thead>
             <tbody>
@@ -98,13 +97,6 @@ export default function AdminInvitesPage() {
                       </Link>
                     ) : (
                       "---"
-                    )}
-                  </td>
-                  <td className="bg-black p-2 text-center">
-                    {invite.claimedAt ? (
-                      "---"
-                    ) : (
-                      <CopyableText text={getInviteUrl(invite.code)} iconOnly />
                     )}
                   </td>
                 </tr>
