@@ -29,24 +29,22 @@ export default function LandingPage() {
           className="w-full h-full opacity-30 absolute inset-0 object-cover object-center"
         />
       </div>
-      <div className="absolute top-96 text-white text-lg lg:text-2xl font-semibold font-mulish tracking-wide">
-        <div className="w-full xs:w-3/4 sm:w-2/3 md:w-1/2 px-16 md:pl-24 lg:px-24">
-          <div className="my-6">
-            out in the desert, where civilization seemed all but forgotten for hundreds of years...
+      <div className="absolute top-[540px] text-white text-lg lg:text-2xl font-semibold font-mulish tracking-wide">
+        <div className="px-16 md:pl-24">
+          <div className="mb-6 text-5xl font-bold leading-tight">
+            <div>catalog is a space</div>
+            <div>for book people.</div>
           </div>
-          <div className="my-6">we never thought we'd find a whole world in a place like this.</div>
-          <div className="my-6">look: what grew where it looked like nothing could grow.</div>
         </div>
       </div>
 
-      <div className="mt-24 mb-12 max-w-2xl mx-auto px-8 font-mulish text-lg font-semibold">
-        <div className="mb-6 text-4xl font-bold">catalog is a space for book people.</div>
+      <div className="mt-16 mb-12 max-w-2xl mx-auto px-8 font-mulish text-lg font-semibold">
         <p className="my-4">
           It's a little place we can call home in a fractured internet: a place where people still
           collect paper books and lend them to each other, a place where people read the
-          acknowledgments page and get their best recommendations from fellow humans.
+          acknowledgments page and care what goes into the making of a book, a place where people
+          get their best recommendations from fellow humans.
         </p>
-        <p className="my-4">It may not be much, but it's ours.</p>
         <p className="my-4">
           catalog is currently in closed alpha (as of winter 2023-2024).{" "}
           <a href="https://tally.so/r/mZ20aA" className="cat-underline">
