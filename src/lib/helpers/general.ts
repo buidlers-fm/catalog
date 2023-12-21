@@ -156,3 +156,9 @@ export const todayNoonUtc = () => {
   const dateString = new Date().toISOString().substring(0, 10)
   return dateStringToDateTime(dateString)
 }
+
+export const runInSequence = async (promises) => {
+  for (const promise of promises) {
+    await promise()
+  }
+}
