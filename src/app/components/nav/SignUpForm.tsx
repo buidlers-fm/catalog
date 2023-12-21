@@ -54,7 +54,8 @@ export default function SignUpForm({
         onSuccess(currentUserProfile)
       }
 
-      router.push(getUserProfileLink(username))
+      await router.push(getUserProfileLink(username))
+      router.refresh()
     } catch (error: any) {
       setErrorMessage(error.message)
     }

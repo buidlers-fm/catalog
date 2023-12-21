@@ -42,9 +42,12 @@
       }
     ],
     "import/no-extraneous-dependencies": "off",
+    "no-await-in-loop": "off",
     "no-else-return": "off",
+    "no-inner-declarations": "off",
     "no-nested-ternary": "off",
     "no-param-reassign": ["error", { "props": false }],
+    "no-restricted-syntax": "off",
     "no-underscore-dangle": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "react/button-has-type": "off",

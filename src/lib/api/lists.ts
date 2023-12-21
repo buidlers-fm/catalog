@@ -1,5 +1,10 @@
 import prisma from "lib/prisma"
-import { generateUniqueSlug } from "lib/helpers/general"
+import { reportToSentry } from "lib/sentry"
+import { generateUniqueSlug, runInSequence } from "lib/helpers/general"
+import { findOrCreateLike } from "lib/api/likes"
+import ListDesignation from "enums/ListDesignation"
+import InteractionObjectType from "enums/InteractionObjectType"
+import UserBookShelf from "enums/UserBookShelf"
 import type Book from "types/Book"
 
 const createList = async (params, userProfile) => {
@@ -232,6 +237,64 @@ const updateList = async (list, params, userProfile) => {
   await prisma.listItemAssignment.createMany({
     data: listItemAssignments,
   })
+
+  // if list is a favorite list, create a like and add books to user's `read` list and shelf
+  if (list.designation === ListDesignation.Favorite) {
+    try {
+      const createLikePromises = selectedBookRecords.map((book) =>
+        findOrCreateLike({
+          likedObjectType: InteractionObjectType.Book,
+          likedObjectId: book.id,
+          userProfile,
+        }),
+      )
+
+      await createLikePromises
+
+      const readList = await prisma.list.findFirst({
+        where: {
+          creatorId: userProfile.id,
+          designation: ListDesignation.Read,
+        },
+      })
+
+      const addBookPromises = orderedSelectedBookRecords.map(
+        (book) => () => addBook(book, readList),
+      )
+      await runInSequence(addBookPromises)
+
+      const existingShelfAssignments = await prisma.userBookShelfAssignment.findMany({
+        where: {
+          userProfileId: userProfile.id,
+          bookId: {
+            in: orderedSelectedBookRecords.map((book) => book.id),
+          },
+        },
+      })
+
+      const shelfAssignmentsToCreate = orderedSelectedBookRecords
+        .filter((book) => !existingShelfAssignments.find((sa) => sa.bookId === book.id))
+        .map((book) => ({
+          bookId: book.id,
+          userProfileId: userProfile.id,
+          shelf: UserBookShelf.Read,
+        }))
+
+      const shelfAssignmentPromises = shelfAssignmentsToCreate.map((shelfAssignment) =>
+        prisma.userBookShelfAssignment.create({
+          data: shelfAssignment,
+        }),
+      )
+
+      await Promise.all(shelfAssignmentPromises)
+    } catch (error: any) {
+      reportToSentry(error, {
+        list,
+        params,
+        userProfile,
+      })
+    }
+  }
 
   return updatedList
 }

@@ -7,6 +7,12 @@ import { Menu } from "@headlessui/react"
 import { BsXLg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { useUser } from "lib/contexts/UserContext"
+import {
+  getUserProfileLink,
+  getUserShelvesLink,
+  getUserListsLink,
+  getUserFollowingLink,
+} from "lib/helpers/general"
 import SignInForm from "app/components/nav/SignInForm"
 import SignUpForm from "app/components/nav/SignUpForm"
 import "react-modern-drawer/dist/index.css"
@@ -40,6 +46,15 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
     setShowAuth(false)
   }
 
+  const { username } = currentUserProfile || {}
+
+  const userLinks = [
+    { name: "profile", path: getUserProfileLink(username) },
+    { name: "shelves", path: getUserShelvesLink(username) },
+    { name: "lists", path: getUserListsLink(username) },
+    { name: "friends", path: getUserFollowingLink(username) },
+  ]
+
   return (
     <div>
       {currentUserProfile ? (
@@ -63,19 +78,29 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
           <div className="relative">
             <Menu.Items className="absolute top-2 w-[108px] bg-gray-900 rounded">
               <Menu.Item>
-                <Link href={`/users/${currentUserProfile.username}`}>
+                <Link href="/">
                   <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-3 pb-2 text-left rounded-tl rounded-tr">
-                    Profile
+                    home
                   </button>
                 </Link>
               </Menu.Item>
+              {userLinks.map(({ name, path }) => (
+                <Menu.Item key={name}>
+                  <Link href={path}>
+                    <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-2 text-left">
+                      {name}
+                    </button>
+                  </Link>
+                </Menu.Item>
+              ))}
+              <hr className="mt-2 w-3/4 mx-auto border-gray-700" />
               <Menu.Item>
                 <div className="">
                   <button
                     onClick={onClickSignOut}
                     className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-3 text-left rounded-bl rounded-br"
                   >
-                    Sign out
+                    sign out
                   </button>
                 </div>
               </Menu.Item>

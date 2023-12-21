@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
@@ -9,7 +8,12 @@ import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
-import { getBookNotesLink, getBookPostsLink, getBookListsLink } from "lib/helpers/general"
+import {
+  getBookLink,
+  getBookNotesLink,
+  getBookPostsLink,
+  getBookListsLink,
+} from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
@@ -50,8 +54,6 @@ export default function BookPage({
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
-  const router = useRouter()
-
   const [notes, setNotes] = useState<any[]>()
   const [posts, setPosts] = useState<any[]>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
@@ -73,52 +75,82 @@ export default function BookPage({
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
-  const getBookNotes = useCallback(async () => {
-    if (!book.id) router.refresh()
-
-    const requestData = {
-      bookId: book.id,
-      noteTypes: [BookNoteType.JournalEntry],
-      sort: Sort.Popular,
-    }
-
+  const getBook = useCallback(async () => {
     try {
-      const _notes = await api.bookNotes.get(requestData)
-      setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
+      const _book = await api.books.get(book.openLibraryWorkId)
+      window.history.replaceState(null, "", getBookLink(_book.slug))
+      return _book
     } catch (error: any) {
       reportToSentry(error, {
-        ...requestData,
+        openLibraryWorkId: book.openLibraryWorkId,
         currentUserProfile,
       })
     }
-  }, [book.id, router, currentUserProfile])
+  }, [book.openLibraryWorkId, currentUserProfile])
 
-  const getBookPosts = useCallback(async () => {
-    if (!book.id) router.refresh()
+  const getBookNotes = useCallback(
+    async (dbBook?) => {
+      let bookId = book.id || dbBook?.id
+      if (!bookId) bookId = (await getBook()).id
 
-    const requestData = {
-      bookId: book.id,
-      noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
-      sort: Sort.Popular,
-    }
+      const requestData = {
+        bookId,
+        noteTypes: [BookNoteType.JournalEntry],
+        requireText: true,
+        sort: Sort.Popular,
+      }
 
-    try {
-      const _posts = await api.bookNotes.get(requestData)
-      setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
-    } catch (error: any) {
-      reportToSentry(error, {
-        ...requestData,
-        currentUserProfile,
-      })
-    }
-  }, [book.id, router, currentUserProfile])
+      try {
+        const _notes = await api.bookNotes.get(requestData)
+        setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
+      } catch (error: any) {
+        reportToSentry(error, {
+          ...requestData,
+          currentUserProfile,
+        })
+      }
+    },
+    [book.id, getBook, currentUserProfile],
+  )
+
+  const getBookPosts = useCallback(
+    async (dbBook?) => {
+      let bookId = book.id || dbBook?.id
+      if (!bookId) bookId = (await getBook()).id
+
+      const requestData = {
+        bookId,
+        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        sort: Sort.Popular,
+      }
+
+      try {
+        const _posts = await api.bookNotes.get(requestData)
+        setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
+      } catch (error: any) {
+        reportToSentry(error, {
+          ...requestData,
+          currentUserProfile,
+        })
+      }
+    },
+    [book.id, getBook, currentUserProfile],
+  )
 
   useEffect(() => {
-    if (book.id) getBookNotes()
+    if (book.id) {
+      getBookNotes()
+    } else {
+      setNotes([])
+    }
   }, [book.id, getBookNotes])
 
   useEffect(() => {
-    if (book.id) getBookPosts()
+    if (book.id) {
+      getBookPosts()
+    } else {
+      setPosts([])
+    }
   }, [book.id, getBookPosts])
 
   useEffect(() => {
@@ -155,11 +187,12 @@ export default function BookPage({
     setShowLikeAddNoteTooltip(true)
   }
 
-  const updateLikes = async () => {
-    if (!book.id) return
+  const updateLikes = async (dbBook) => {
+    let bookId = book.id || dbBook?.id
+    if (!bookId) bookId = (await getBook()).id
 
     const { likeCount: _likeCount, currentUserLike: _currentUserLike } = await api.likes.get({
-      likedObjectId: book.id,
+      likedObjectId: bookId!,
       likedObjectType: InteractionObjectType.Book,
       compact: true,
     })
@@ -171,11 +204,12 @@ export default function BookPage({
     setCurrentUserLike(_currentUserLike)
   }
 
-  const getBookReads = async () => {
-    if (!book.id) router.refresh()
+  const getBookReads = async (dbBook?) => {
+    let bookId = book.id || dbBook?.id
+    if (!bookId) bookId = (await getBook()).id
 
     const requestData = {
-      bookId: book.id,
+      bookId,
       forCurrentUser: true,
     }
 
@@ -197,11 +231,12 @@ export default function BookPage({
     }
   }
 
-  const getCurrentUserShelf = async () => {
-    if (!book.id) router.refresh()
+  const getCurrentUserShelf = async (dbBook?) => {
+    let bookId = book.id || dbBook?.id
+    if (!bookId) bookId = (await getBook()).id
 
     const requestData = {
-      bookId: book.id,
+      bookId,
     }
 
     try {
@@ -240,8 +275,15 @@ export default function BookPage({
     }
   }
 
-  const refetchBookData = async () =>
-    Promise.all([updateLikes(), getBookNotes(), getBookReads(), getCurrentUserShelf()])
+  const refetchBookData = async () => {
+    const dbBook = await getBook()
+    Promise.all([
+      updateLikes(dbBook),
+      getBookNotes(dbBook),
+      getBookReads(dbBook),
+      getCurrentUserShelf(dbBook),
+    ])
+  }
 
   const description = book.description || DEFAULT_DESCRIPTION
 

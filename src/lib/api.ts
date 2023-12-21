@@ -13,6 +13,15 @@ const api = {
       }),
   },
   books: {
+    get: (openLibraryWorkId: string) => {
+      const params = {
+        openLibraryWorkId,
+      }
+
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/books?${queryString}`
+      return fetchJson(url)
+    },
     search: (searchStr) => {
       const params = {
         query: searchStr,

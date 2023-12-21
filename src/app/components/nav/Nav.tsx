@@ -47,11 +47,21 @@ export default function Nav({ currentUserProfile }) {
 
 function MobileNav({ currentUserProfile, onSelectBook }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [showMobileSearch, setShowMobileSearch] = useState(false)
 
   useEffect(() => {
     setShowMobileSearch(false)
-  }, [pathname])
+  }, [pathname, searchParams])
+
+  function handleSelectBook(book: Book) {
+    const onSelectBookResults = onSelectBook(book)
+    const { shouldReset } = onSelectBookResults
+
+    if (shouldReset) setShowMobileSearch(false)
+
+    return onSelectBookResults
+  }
 
   return (
     <div className="flex">
@@ -68,7 +78,7 @@ function MobileNav({ currentUserProfile, onSelectBook }) {
         <div className="p-8">
           <div className="flex mb-4">
             <div className="grow">
-              <Search isMobileNav onSelect={onSelectBook} />
+              <Search isMobileNav onSelect={handleSelectBook} />
             </div>
             <button className="ml-8" onClick={() => setShowMobileSearch(false)}>
               <BsXLg className="text-xl text-gray-200" />
