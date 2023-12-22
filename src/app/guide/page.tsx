@@ -1,5 +1,5 @@
-import fs from "fs"
 import CustomMarkdown from "app/components/CustomMarkdown"
+import guideText from "../../../docs/tester_guide.md"
 
 const componentOverrides = {
   h1: ({ node, children, ...props }) => (
@@ -15,8 +15,6 @@ const componentOverrides = {
 }
 
 export default function GuidePage() {
-  const guideText = fs.readFileSync("docs/tester_guide.md", "utf-8")
-
   return (
     <div className="max-w-3xl mx-auto px-8">
       <CustomMarkdown markdown={guideText} componentOverrides={componentOverrides} />
