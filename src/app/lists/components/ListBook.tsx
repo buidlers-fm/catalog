@@ -37,11 +37,11 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
 
   return (
     <div key={book.id} className="flex flex-col items-center justify-center">
-      <Link href={getBookLink(book.slug)}>
+      <Link href={getBookLink(book.slug)} className="grow flex items-center">
         <button
           className={`${
             isFavorite ? favoriteBookWidths : defaultWidths
-          } h-auto my-8 mx-auto sm:my-4 grow`}
+          } h-auto my-8 mx-auto sm:my-4`}
           disabled={isMobile}
         >
           <div>
