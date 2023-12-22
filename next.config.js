@@ -15,6 +15,15 @@ const nextConfig = {
       },
     ],
   },
+
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.md$/,
+      use: "raw-loader",
+    })
+
+    return config
+  },
 }
 
 // Injected content via Sentry wizard below
