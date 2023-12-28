@@ -18,6 +18,7 @@ export default function EditProfileCurrentStatus({
   const [text, setText] = useState<string>(userCurrentStatus?.text)
   const [textErrorMsg, setTextErrorMsg] = useState<string>()
   const [isBusy, setIsBusy] = useState<boolean>(false)
+  const [showBookSearch, setShowBookSearch] = useState<boolean>(false)
 
   const {
     text: { maxLength: textMaxLength },
@@ -104,14 +105,28 @@ export default function EditProfileCurrentStatus({
               </button>
             </div>
           ) : (
-            <CoverPlaceholder />
+            showBookSearch && <CoverPlaceholder />
           )}
         </div>
-        {!selectedBook && (
-          <div className="my-4">
-            <Search isNav={false} onSelect={onBookSelect} fullWidth />
-          </div>
-        )}
+        {!selectedBook &&
+          (showBookSearch ? (
+            <div className="my-4">
+              <Search isNav={false} onSelect={onBookSelect} fullWidth />
+              <button
+                className="mt-2 cat-btn-link text-sm text-gray-300"
+                onClick={() => setShowBookSearch(false)}
+              >
+                go back to text only
+              </button>
+            </div>
+          ) : (
+            <button
+              className="cat-btn-link text-sm text-gray-300"
+              onClick={() => setShowBookSearch(true)}
+            >
+              include a book
+            </button>
+          ))}
       </div>
       <div className="grow">
         <FormTextarea

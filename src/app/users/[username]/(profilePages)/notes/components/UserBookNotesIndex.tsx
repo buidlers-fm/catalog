@@ -3,13 +3,16 @@
 import { useState, useEffect } from "react"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
+import UserProfile from "lib/models/UserProfile"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 
-export default function UserBookNotesIndex({ userProfile, currentUserProfile }) {
+export default function UserBookNotesIndex({ userProfile: _userProfile, currentUserProfile }) {
   const [notes, setNotes] = useState<any[]>()
+
+  const userProfile = UserProfile.build(_userProfile)
 
   useEffect(() => {
     const _notes = (userProfile.bookNotes || []).filter(
@@ -40,6 +43,13 @@ export default function UserBookNotesIndex({ userProfile, currentUserProfile }) 
 
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
+  let emptyStateText
+  if (isUsersProfile) {
+    emptyStateText = "You haven't written any notes yet. To write a note, visit a book's page."
+  } else {
+    emptyStateText = `${userProfile.name} hasn't written any notes yet.`
+  }
+
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="mt-8">
@@ -57,12 +67,7 @@ export default function UserBookNotesIndex({ userProfile, currentUserProfile }) 
               ))}
             </div>
           ) : (
-            <EmptyState
-              text={`${
-                isUsersProfile ? "You haven't" : `${userProfile.username} hasn't`
-              } written any notes
-              yet.`}
-            />
+            <EmptyState text={emptyStateText} />
           )
         ) : (
           <LoadingSection />

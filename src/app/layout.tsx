@@ -33,6 +33,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const currentUserProfile = await getCurrentUserProfile()
+  const isSignedIn = !!currentUserProfile
 
   return (
     <html lang="en">
@@ -41,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="flex flex-col h-screen">
             <header className="px-8 py-8 flex justify-between">
               <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
-                <Link href="/">catalog</Link>
+                <Link href={isSignedIn ? "/home" : "/"}>catalog</Link>
               </div>
               <Nav currentUserProfile={currentUserProfile} />
             </header>

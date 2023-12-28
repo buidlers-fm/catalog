@@ -180,7 +180,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
 
   return (
     <>
-      <div className="my-8 max-w-3xl mx-auto font-mulish">
+      <div className="my-8 mx-8 sm:mx-16 ml:max-w-3xl ml:mx-auto font-mulish">
         <div className="my-8 cat-page-title">{isEdit ? "edit" : "new"} list</div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="my-8">

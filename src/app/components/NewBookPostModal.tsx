@@ -100,7 +100,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
       <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
       <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
         <Dialog.Panel className="relative rounded max-h-[90vh] overflow-y-auto max-w-xs xs:max-w-md sm:max-w-xl md:max-w-none bg-gray-900 px-16 py-8">
-          <button onClick={handleClose} className="absolute top-[24px] right-[16px]">
+          <button onClick={handleClose} className="absolute top-[24px] right-[24px]">
             <BsXLg className="text-xl" />
           </button>
 

@@ -2,7 +2,6 @@
 
 import { useRouter, usePathname } from "next/navigation"
 import { useState } from "react"
-import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
 
@@ -31,7 +30,7 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
 
       onSuccess(currentUserProfile)
       if (pathname === "/") {
-        router.push(getUserProfileLink(currentUserProfile.username))
+        router.push("/home")
       } else {
         window.location.reload()
       }

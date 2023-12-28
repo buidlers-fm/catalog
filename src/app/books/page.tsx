@@ -3,6 +3,7 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { reportToSentry } from "lib/sentry"
 import { getBookLink } from "lib/helpers/general"
 import { decorateLists } from "lib/server/decorators"
 import BookPage from "app/books/components/BookPage"
@@ -28,11 +29,8 @@ export default async function BookPageByQuery({ searchParams }) {
   try {
     openLibraryBook = await OpenLibrary.getFullBook(openLibraryWorkId, openLibraryBestEditionId)
   } catch (error: any) {
-    if (error.message === "notfound") {
-      notFound()
-    } else {
-      throw error
-    }
+    reportToSentry(error, { openLibraryWorkId, openLibraryBestEditionId })
+    notFound()
   }
 
   const userProfile = await getCurrentUserProfile()

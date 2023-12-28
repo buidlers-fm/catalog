@@ -179,7 +179,7 @@ export default function Search({
         <Combobox value={undefined} onChange={handleSelect}>
           {({ open }) => (
             <>
-              {isNav && <BsSearch className="absolute top-[15px] left-4 text-gray-200" />}
+              {isNav && <BsSearch className="absolute top-[14px] left-4 text-gray-200" />}
               <Combobox.Input
                 onChange={debouncedSearchHandler}
                 displayValue={() => selectedBook?.title || ""}
@@ -188,7 +188,7 @@ export default function Search({
                 }
                 className={`${fullWidth ? "w-full" : "w-full xs:w-96"} ${
                   isNav ? "px-11" : "px-4"
-                } pt-3 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-mulish`}
+                } pt-2.5 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-mulish`}
               />
               {(open || selectedBook) && (
                 <Combobox.Options
