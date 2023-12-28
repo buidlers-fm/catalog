@@ -75,7 +75,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
             <div className="grow mb-8 text-xl font-bold">add "{book.title}" to lists</div>
           </Dialog.Title>
 
-          <button onClick={handleClose} className="absolute top-[24px] right-[16px]">
+          <button onClick={handleClose} className="absolute top-[24px] right-[24px]">
             <BsXLg className="text-xl" />
           </button>
 
