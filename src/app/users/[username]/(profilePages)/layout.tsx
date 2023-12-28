@@ -61,7 +61,7 @@ export default async function UserProfileLayout({ params, children }) {
   const { name, bio, location, website, avatarUrl } = userProfile
 
   return (
-    <div className="mt-4 xs:w-[400px] sm:w-[600px] lg:w-[960px] mx-auto">
+    <div className="mt-4 xs:w-[400px] sm:w-[600px] lg:w-[960px] mx-8 xs:mx-auto">
       <div className="sm:flex font-mulish">
         {avatarUrl ? (
           <div className="shrink-0 sm:mr-3 w-24 h-24 overflow-hidden rounded-full">
