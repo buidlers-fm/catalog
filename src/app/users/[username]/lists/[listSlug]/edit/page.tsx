@@ -22,7 +22,7 @@ export default async function UserListPage({ params }) {
   if (!userProfile) notFound()
 
   const isUsersList = currentUserProfile.id === userProfile!.id
-  if (!isUsersList) throw new Error("You can only edit your own lists.")
+  if (!isUsersList) notFound()
 
   const _list = (await prisma.list.findFirst({
     where: {
