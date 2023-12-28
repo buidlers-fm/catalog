@@ -15,13 +15,14 @@ export default function CurrentStatus({
   const userProfile = UserProfile.build(_userProfile)
   const { name } = userProfile
   const { text, book } = userCurrentStatus || {}
+  const tooltipAnchorId = book?.id ? `current-status-book-${book.id}` : undefined
 
   return userCurrentStatus ? (
     <div className={`flex flex-row ${isProfilePage && "lg:flex-col"}`}>
       {book && (
         <>
           <div
-            id="current-status-book"
+            id={tooltipAnchorId}
             className={`shrink-0 w-[72px] xs:w-[96px] ml-4 mr-6 my-4 ${
               isProfilePage && "lg:w-2/3 lg:mx-auto lg:mt-6"
             }`}
@@ -45,7 +46,7 @@ export default function CurrentStatus({
               </button>
             </Link>
           </div>
-          <BookTooltip book={book} anchorSelect="#current-status-book" />
+          <BookTooltip book={book} anchorSelect={`#${tooltipAnchorId}`} />
         </>
       )}
       {text && (
