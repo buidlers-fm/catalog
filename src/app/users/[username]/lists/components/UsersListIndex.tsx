@@ -1,9 +1,12 @@
 "use client"
 
+import UserProfile from "lib/models/UserProfile"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
 
-export default function UserListsIndex({ lists, userProfile }) {
+export default function UserListsIndex({ lists, userProfile: _userProfile }) {
+  const userProfile = UserProfile.build(_userProfile)
+
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="mt-8">
@@ -14,7 +17,7 @@ export default function UserListsIndex({ lists, userProfile }) {
             ))}
           </div>
         ) : (
-          <EmptyState text={`${userProfile.username} doesn't have any lists yet.`} />
+          <EmptyState text={`${userProfile.name} doesn't have any lists yet.`} />
         )}
       </div>
     </div>

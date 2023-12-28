@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
+import { FaRegQuestionCircle } from "react-icons/fa"
 import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
@@ -392,9 +393,14 @@ export default function BookPage({
               )}
               {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
               <h2 className="my-2 text-xl">by {book.authorName}</h2>
-              <div className="my-8 md:w-11/12">
+              <div className="mt-8 mb-4 md:w-11/12">
                 <CustomMarkdown markdown={description} />
               </div>
+              {book.description && (
+                <div className="px-8 flex justify-end text-sm text-gray-300">
+                  — from OpenLibrary
+                </div>
+              )}
               <div className="my-8">
                 {book.openLibraryWorkId && (
                   <div className="my-2">
@@ -449,12 +455,19 @@ export default function BookPage({
 
           <div className="mt-16 font-mulish">
             <div className="flex justify-between text-gray-300 text-sm">
-              <div className="cat-eyebrow">top links</div>
+              <div className="flex">
+                <div className="cat-eyebrow">top links</div>
+                <FaRegQuestionCircle id="links-info" className="mt-0.5 ml-1.5 text-sm" />
+                <Tooltip anchorSelect="#links-info" className="text-sm max-w-fit" place="bottom">
+                  Reviews, interviews, essays, podcasts, TikToks, events, memes (etc!) related to
+                  this book
+                </Tooltip>
+              </div>
               <div className="flex -mt-1">
                 {isSignedIn && (
                   <button
                     onClick={() => setShowNewBookPostModal(true)}
-                    className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0"
+                    className="cat-btn cat-btn-sm cat-btn-gray mx-2"
                   >
                     + add a link
                   </button>

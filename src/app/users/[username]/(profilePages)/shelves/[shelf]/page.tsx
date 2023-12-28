@@ -67,10 +67,15 @@ export default async function UserShelfPage({ params }) {
 
   const isUsersProfile = userProfile.id === currentUserProfile?.id
 
+  let emptyStateText = "No books in this shelf."
+  if (isUsersProfile) {
+    emptyStateText = `${emptyStateText} To add a book, visit the book's page.`
+  }
+
   return (
     <div className="mt-4 xs:mx-8 lg:mx-16 font-mulish">
       {books.length === 0 ? (
-        <EmptyState text="No books in this shelf." small />
+        <EmptyState text={emptyStateText} small />
       ) : (
         <>
           {isUsersProfile && shelf === UserBookShelf.Read && (

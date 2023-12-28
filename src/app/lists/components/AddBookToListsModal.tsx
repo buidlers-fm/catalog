@@ -19,7 +19,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
   const [selectedLists, setSelectedLists] = useState<List[]>([])
   const [isBusy, setIsBusy] = useState<boolean>(false)
 
-  const listsStr = `${selectedLists.length} ${selectedLists.length === 1 ? "list" : "lists"}`
+  const listsStr = `add to ${selectedLists.length} ${selectedLists.length === 1 ? "list" : "lists"}`
 
   const toggleSelected = (list) => {
     if (isSelected(list)) {
@@ -111,10 +111,10 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={isBusy}
+              disabled={isBusy || selectedLists.length === 0}
               className="cat-btn cat-btn-sm cat-btn-gold ml-4"
             >
-              add to {listsStr}
+              {selectedLists.length === 0 ? "add" : listsStr}
             </button>
           </div>
         </Dialog.Panel>
