@@ -8,8 +8,16 @@ import { reportToSentry } from "lib/sentry"
 import { getUserProfileLink } from "lib/helpers/general"
 import { BASE_URLS_BY_ENV } from "lib/constants/urls"
 import CopyableText from "app/components/CopyableText"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "catalog • admin • invites",
+  openGraph: {
+    title: "catalog • admin • invites",
+  },
+}
 
 const env = process.env.NEXT_PUBLIC_CATALOG_ENV!
 const INVITE_LINK_BASE_URL = `${BASE_URLS_BY_ENV[env]}/sign-up?invite_code=`

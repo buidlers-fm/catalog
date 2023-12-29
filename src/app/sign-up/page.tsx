@@ -2,6 +2,16 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import SignUpForm from "app/components/nav/SignUpForm"
 import FeatureFlag from "enums/FeatureFlag"
+import type { Metadata } from "next"
+
+export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "catalog • sign up",
+  openGraph: {
+    title: "catalog • sign up",
+  },
+}
 
 export default async function SignUpPage({ searchParams }) {
   const { inviteCode } = humps.camelizeKeys(searchParams)

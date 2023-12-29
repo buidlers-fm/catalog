@@ -2,10 +2,19 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
+import { getMetadata } from "lib/server/metadata"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "book.lists",
+    params,
+  })
+}
 
 export default async function BookListsIndexPage({ params }) {
   const { bookSlug } = params

@@ -2,12 +2,21 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithFollowers } from "lib/server/decorators"
+import { getMetadata } from "lib/server/metadata"
 import UserProfileCard from "app/components/userProfiles/UserProfileCard"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import type { UserProfileProps as UserProfile } from "lib/models/UserProfile"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "profile.followers",
+    params,
+  })
+}
 
 export default async function UserFollowersPage({ params }) {
   const { username } = params
