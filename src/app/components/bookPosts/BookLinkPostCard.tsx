@@ -10,6 +10,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { getBookLink, getDomainFromUrl } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
+import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookLinkPost from "app/components/bookPosts/EditBookLinkPost"
 import Likes from "app/components/Likes"
@@ -43,19 +44,22 @@ export default function BookLinkPostCard({
     <div className="px-2 py-4 border-b-[1px] border-b-gray-800 last:border-none">
       <div className="flex">
         {withCover && (
-          <div className="w-16 mr-6 shrink-0">
-            <Link href={getBookLink(book.slug)}>
-              {book.coverImageUrl ? (
-                <img
-                  src={book.coverImageUrl}
-                  alt="cover"
-                  className="w-full mx-auto shadow-md rounded-xs"
-                />
-              ) : (
-                <CoverPlaceholder size="sm" />
-              )}
-            </Link>
-          </div>
+          <>
+            <div id={`book-link-${id}`} className="w-16 mr-6 shrink-0">
+              <Link href={getBookLink(book.slug)}>
+                {book.coverImageUrl ? (
+                  <img
+                    src={book.coverImageUrl}
+                    alt="cover"
+                    className="w-full mx-auto shadow-md rounded-xs"
+                  />
+                ) : (
+                  <CoverPlaceholder size="sm" />
+                )}
+              </Link>
+            </div>
+            <BookTooltip book={book} anchorSelect={`#book-link-${id}`} />
+          </>
         )}
         <div className="grow">
           {isEditing ? (

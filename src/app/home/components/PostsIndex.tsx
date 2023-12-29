@@ -46,7 +46,7 @@ export default function PostsIndex({ posts: _posts, currentUserProfile }) {
               key={post.id}
               post={post}
               currentUserProfile={currentUserProfile}
-              withCover={false}
+              withCover
               onEditSuccess={getBookPosts}
               onDeleteSuccess={getBookPosts}
             />
