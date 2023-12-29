@@ -10,6 +10,7 @@ import { getBookLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import ExpandableText from "app/components/ExpandableText"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
+import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookNote from "app/components/bookNotes/EditBookNote"
 import Likes from "app/components/Likes"
@@ -61,19 +62,22 @@ export default function BookNoteCard({
     <div className="px-2 py-4 border-b-[1px] border-b-gray-800 last:border-none">
       <div className="flex">
         {withCover && (
-          <div className="w-16 mr-6 shrink-0">
-            <Link href={getBookLink(book.slug)}>
-              {book.coverImageUrl ? (
-                <img
-                  src={book.coverImageUrl}
-                  alt="cover"
-                  className="w-full mx-auto shadow-md rounded-xs"
-                />
-              ) : (
-                <CoverPlaceholder size="sm" />
-              )}
-            </Link>
-          </div>
+          <>
+            <div id={`book-note-${id}`} className="w-16 mr-6 shrink-0">
+              <Link href={getBookLink(book.slug)}>
+                {book.coverImageUrl ? (
+                  <img
+                    src={book.coverImageUrl}
+                    alt="cover"
+                    className="w-full mx-auto shadow-md rounded-xs"
+                  />
+                ) : (
+                  <CoverPlaceholder size="sm" />
+                )}
+              </Link>
+            </div>
+            <BookTooltip book={book} anchorSelect={`#book-note-${id}`} />
+          </>
         )}
         <div className="grow">
           <div className="flex flex-col xs:flex-row">
