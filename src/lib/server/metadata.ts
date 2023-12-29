@@ -1,6 +1,8 @@
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
+import { getCurrentUserProfile } from "lib/server/auth"
 import UserProfile from "lib/models/UserProfile"
+import UserRole from "enums/UserRole"
 import type { Metadata } from "next"
 
 const METADATA_CONFIG = {
@@ -42,6 +44,9 @@ const METADATA_CONFIG = {
   },
   "book.posts": {
     title: (title, authorName) => `posts • ${title} by ${authorName} • catalog`,
+  },
+  "admin.invites": {
+    title: () => "admin • invites • catalog",
   },
 }
 
@@ -108,6 +113,17 @@ async function getMetadata({ key, params }): Promise<Metadata> {
       if (key === "book") {
         pageDescription = book.description || undefined
       }
+    } else if (key.match(/admin/)) {
+      const currentUserProfile = await getCurrentUserProfile({ withRoles: true })
+
+      if (!currentUserProfile) return {}
+
+      const roles = currentUserProfile.roleAssignments.map((roleAssignment) => roleAssignment.role)
+      const isAdmin = roles.includes(UserRole.Admin)
+
+      if (!isAdmin) return {}
+
+      pageTitle = config.title()
     }
 
     return {
