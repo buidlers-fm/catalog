@@ -4,12 +4,21 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { getMetadata } from "lib/server/metadata"
 import UserList from "app/users/[username]/lists/[listSlug]/components/UserList"
 import { decorateLists } from "lib/server/decorators"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
 
 dayjs.extend(relativeTime)
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "profile.list",
+    params,
+  })
+}
 
 export default async function UserListPage({ params, searchParams }) {
   const { username, listSlug } = params

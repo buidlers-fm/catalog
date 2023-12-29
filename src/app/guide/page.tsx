@@ -1,5 +1,15 @@
 import CustomMarkdown from "app/components/CustomMarkdown"
 import guideText from "../../../docs/tester_guide.md"
+import type { Metadata } from "next"
+
+export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "catalog • guide",
+  openGraph: {
+    title: "catalog • guide",
+  },
+}
 
 const componentOverrides = {
   h1: ({ node, children, ...props }) => (

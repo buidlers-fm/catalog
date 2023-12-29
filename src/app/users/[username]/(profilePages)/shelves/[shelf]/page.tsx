@@ -2,12 +2,21 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
+import { getMetadata } from "lib/server/metadata"
 import ListBook from "app/lists/components/ListBook"
 import EmptyState from "app/components/EmptyState"
 import UserBookShelf from "enums/UserBookShelf"
 import type { UserProfileProps as UserProfile } from "lib/models/UserProfile"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "profile.shelves.shelf",
+    params,
+  })
+}
 
 const shelfToUserBookShelf = {
   "to-read": UserBookShelf.ToRead,

@@ -3,8 +3,18 @@ import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "recent lists • catalog",
+  description: "Recent lists from around catalog.",
+  openGraph: {
+    title: "recent lists • catalog",
+    description: "Recent lists from around catalog.",
+  },
+}
 
 const LISTS_LIMIT = 50
 

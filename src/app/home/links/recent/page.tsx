@@ -4,8 +4,18 @@ import { decorateWithLikes } from "lib/server/decorators"
 import PostsIndex from "app/home/components/PostsIndex"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookNoteType from "enums/BookNoteType"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "recent links • catalog",
+  description: "Recent links from around catalog.",
+  openGraph: {
+    title: "recent links • catalog",
+    description: "Recent links from around catalog.",
+  },
+}
 
 const POSTS_LIMIT = 50
 

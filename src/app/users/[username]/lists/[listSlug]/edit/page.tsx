@@ -2,10 +2,19 @@ import { redirect, notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
+import { getMetadata } from "lib/server/metadata"
 import EditList from "app/users/[username]/lists/new/components/EditList"
 import type List from "types/List"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "profile.list.edit",
+    params,
+  })
+}
 
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params

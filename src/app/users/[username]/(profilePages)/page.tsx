@@ -9,12 +9,21 @@ import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
 import { getUserListsLink, getNewListLink, sortListsByPinSortOrder } from "lib/helpers/general"
 import { decorateLists, decorateWithFollowers, decorateWithLikes } from "lib/server/decorators"
+import { getMetadata } from "lib/server/metadata"
 import UserProfile from "lib/models/UserProfile"
 import InteractionObjectType from "enums/InteractionObjectType"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "profile",
+    params,
+  })
+}
 
 export default async function UserProfilePage({ params }) {
   const { username } = params

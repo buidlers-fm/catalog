@@ -4,11 +4,20 @@ import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithLikes, decorateLists } from "lib/server/decorators"
+import { getMetadata } from "lib/server/metadata"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
 import InteractionObjectType from "enums/InteractionObjectType"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  return getMetadata({
+    key: "book",
+    params,
+  })
+}
 
 export default async function BookPageBySlug({ params }: any) {
   const { bookSlug } = params

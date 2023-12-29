@@ -8,8 +8,44 @@ import { getBookLink } from "lib/helpers/general"
 import { decorateLists } from "lib/server/decorators"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ searchParams }): Promise<Metadata> {
+  const { openLibraryWorkId, openLibraryEditionId: openLibraryBestEditionId } =
+    humps.camelizeKeys(searchParams)
+
+  if (!openLibraryWorkId) return {}
+
+  const existingBook = await prisma.book.findFirst({
+    where: {
+      openLibraryWorkId,
+    },
+  })
+
+  if (existingBook) return {}
+
+  let openLibraryBook: any = {}
+  try {
+    openLibraryBook = await OpenLibrary.getFullBook(openLibraryWorkId, openLibraryBestEditionId)
+  } catch (error: any) {
+    reportToSentry(error, { openLibraryWorkId, openLibraryBestEditionId })
+    return {}
+  }
+
+  const pageTitle = `${openLibraryBook.title} by ${openLibraryBook.authorName} • catalog`
+  const pageDescription = openLibraryBook.description || `catalog is a space for book people.`
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+    },
+  }
+}
 
 export default async function BookPageByQuery({ searchParams }) {
   const { openLibraryWorkId, openLibraryEditionId: openLibraryBestEditionId } =

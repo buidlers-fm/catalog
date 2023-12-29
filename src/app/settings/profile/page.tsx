@@ -4,8 +4,16 @@ import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
 import EditProfile from "app/settings/profile/components/EditProfile"
 import type List from "types/List"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "edit profile • catalog",
+  openGraph: {
+    title: "edit profile • catalog",
+  },
+}
 
 export default async function SettingsProfilePage() {
   const userProfile = await getCurrentUserProfile()
