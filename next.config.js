@@ -29,6 +29,16 @@ const nextConfig = {
     return {
       beforeFiles: [
         {
+          source: "/news",
+          has: [
+            {
+              type: "host",
+              value: "news.catalog.fyi",
+            },
+          ],
+          destination: "https://catalog.fyi/news",
+        },
+        {
           source: "/:path*",
           has: [
             {
@@ -36,7 +46,7 @@ const nextConfig = {
               value: "news.catalog.fyi",
             },
           ],
-          destination: "/news/:path*",
+          destination: "https://catalog.fyi/news/:path*",
         },
       ],
     }
