@@ -254,3 +254,19 @@ model FeatureFlag {
   @@unique([name, scope])
   @@map("feature_flags")
 }
+
+model TagAssignment {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tag              String
+  taggedObjectType String    @map("tagged_object_type")
+  taggedObjectId   String    @map("tagged_object_id") @db.Uuid
+  scopeType        String?   @map("scope_type")
+  scopeId          String?   @map("scope_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([taggedObjectId, taggedObjectType, tag, scopeType, scopeId])
+  @@index([taggedObjectId, scopeId])
+  @@index([scopeId, tag])
+  @@map("tag_assignments")
+}
