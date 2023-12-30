@@ -3,6 +3,7 @@ import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
+import TaggedObjectType from "enums/TaggedObjectType"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -21,9 +22,21 @@ const LISTS_LIMIT = 50
 export default async function Favorites2023ListsPage() {
   const currentUserProfile = await getCurrentUserProfile()
 
+  const tagAssignments = await prisma.tagAssignment.findMany({
+    where: {
+      tag: "2023",
+      scopeType: null,
+      taggedObjectType: TaggedObjectType.List,
+    },
+  })
+
+  const listIds = tagAssignments.map((tagAssignment) => tagAssignment.taggedObjectId)
+
   const _lists = await prisma.list.findMany({
     where: {
-      designation: "2023",
+      id: {
+        in: listIds,
+      },
     },
     include: {
       listItemAssignments: {
