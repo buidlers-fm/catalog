@@ -24,6 +24,23 @@ const nextConfig = {
 
     return config
   },
+
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "host",
+              value: "news.catalog.fyi",
+            },
+          ],
+          destination: "/news/:path*",
+        },
+      ],
+    }
+  },
 }
 
 // Injected content via Sentry wizard below

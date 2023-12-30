@@ -49,7 +49,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <main className="mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
               {children}
             </main>
-            <footer className="mt-32 px-8 py-4 font-chivo-mono tracking-wider">© catalog.</footer>
+            <footer className="mt-32 px-8 py-4 flex font-chivo-mono tracking-wider">
+              © catalog.
+              <div className="ml-12">
+                <Link href="/" className="cat-btn-link text-sm">
+                  home
+                </Link>
+              </div>
+              <div className="ml-6">
+                <Link href="/news" className="cat-btn-link text-sm">
+                  news
+                </Link>
+              </div>
+            </footer>
           </div>
           <Toast />
         </UserProvider>
