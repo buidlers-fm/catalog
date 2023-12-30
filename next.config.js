@@ -25,32 +25,30 @@ const nextConfig = {
     return config
   },
 
-  async rewrites() {
-    return {
-      beforeFiles: [
+  redirects: async () => [
+    {
+      source: "/",
+      has: [
         {
-          source: "/news",
-          has: [
-            {
-              type: "host",
-              value: "news.catalog.fyi",
-            },
-          ],
-          destination: "https://catalog.fyi/news",
-        },
-        {
-          source: "/:path*",
-          has: [
-            {
-              type: "host",
-              value: "news.catalog.fyi",
-            },
-          ],
-          destination: "https://catalog.fyi/news/:path*",
+          type: "host",
+          value: "news.catalog.fyi",
         },
       ],
-    }
-  },
+      destination: "https://catalog.fyi/news",
+      permanent: true,
+    },
+    {
+      source: "/:path*",
+      has: [
+        {
+          type: "host",
+          value: "news.catalog.fyi",
+        },
+      ],
+      destination: "https://catalog.fyi/news/:path*",
+      permanent: true,
+    },
+  ],
 }
 
 // Injected content via Sentry wizard below
