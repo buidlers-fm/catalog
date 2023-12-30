@@ -1,25 +1,6 @@
-"use client"
-
-import { useEffect } from "react"
+import GhostSubscribe from "app/components/GhostSubscribe"
 
 export default function LandingPage() {
-  useEffect(() => {
-    const script = document.createElement("script")
-
-    script.src = "https://cdn.jsdelivr.net/ghost/signup-form@~0.1/umd/signup-form.min.js"
-    script.async = true
-
-    script.dataset.buttonColor = "hsl(45, 100%, 55%)"
-    script.dataset.buttonTextColor = "hsl(45, 4%, 12%)"
-    script.dataset.site = "https://news.catalog.fyi/"
-    const el = document.getElementById("ghost-signup")
-    el?.appendChild(script)
-
-    return () => {
-      el?.removeChild(script)
-    }
-  }, [])
-
   return (
     <div className="min-h-screen pt-2 flex flex-col">
       <div className="relative w-full h-[768px]">
@@ -96,15 +77,7 @@ export default function LandingPage() {
       <div className="mt-24 my-4 mx-auto px-8 font-mulish text-lg">
         Subscribe to catalog news for the latest updates.
       </div>
-      <div
-        id="ghost-signup"
-        className="mx-auto"
-        style={{
-          minHeight: "58px",
-          maxWidth: "340px",
-          width: "100%",
-        }}
-      />
+      <GhostSubscribe />
     </div>
   )
 }

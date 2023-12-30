@@ -97,3 +97,31 @@
   @apply bg-gray-900 !important;
 }
 /* end filepond styles */
+
+.cat-news-post {
+  @apply text-lg;
+}
+
+.cat-news-post p {
+  @apply my-4;
+}
+
+.cat-news-post hr {
+  @apply my-12;
+}
+
+.cat-news-post figure {
+  @apply my-8;
+}
+
+.cat-news-post blockquote {
+  @apply my-8 pl-4 border-l-2 border-l-gold-500;
+}
+
+.cat-news-post ul {
+  @apply list-disc list-inside;
+}
+
+.cat-news-post li {
+  @apply my-4;
+}
