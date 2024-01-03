@@ -76,7 +76,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
             </div>
           </Menu.Button>
           <div className="relative">
-            <Menu.Items className="absolute top-2 w-[108px] bg-gray-900 rounded">
+            <Menu.Items className="absolute top-2 w-[108px] bg-gray-900 rounded z-10">
               <Menu.Item>
                 <Link href="/home">
                   <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-3 pb-2 text-left rounded-tl rounded-tr">
