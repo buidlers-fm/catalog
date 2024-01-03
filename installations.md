@@ -10,6 +10,6 @@ Make sure you have the following items:
     - follow the commands to log in with GitHub
     - follow the commands to link the catalog project
     - verify you have a `.vercel` directory in the project root
-  - run `vercel env pull` to populate you `.env.local` file with necessary environment variables
+  - run `vercel env pull` to populate your `.env.local` file with necessary environment variables
 
 You should be ready to run the app now with `yarn dev`.
