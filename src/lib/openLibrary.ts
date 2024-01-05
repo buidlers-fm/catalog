@@ -243,6 +243,8 @@ const OpenLibrary = {
       const authorName = result.authorName?.join(", ")
       const coverId = isTranslated && !!bestEditionCoverId ? bestEditionCoverId : workCoverId
       const coverImageUrl =
+        coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, OpenLibraryCoverSize.L)
+      const coverImageThumbnailUrl =
         coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, OpenLibraryCoverSize.M)
       const openLibraryWorkId = result.key.split("/works/").pop()
       const openLibraryBestEditionId = bestEdition
@@ -253,6 +255,8 @@ const OpenLibrary = {
         title,
         authorName,
         coverImageUrl,
+        coverImageThumbnailUrl,
+        openLibraryCoverImageUrl: coverImageUrl,
         editionsCount,
         firstPublishedYear,
         openLibraryWorkId,
