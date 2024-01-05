@@ -1,99 +1,165 @@
-"use client"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
+import { FaUserCircle } from "react-icons/fa"
+import { MdEdit, MdOutlineFileUpload } from "react-icons/md"
+import { TbTrash } from "react-icons/tb"
+import AvatarCropModal from "app/settings/profile/components/AvatarCropModal"
 
-import { useState, useEffect } from "react"
-import { FilePond, registerPlugin } from "react-filepond"
-import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size"
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation"
-import FilePondPluginImagePreview from "filepond-plugin-image-preview"
-import FilePondPluginImageCrop from "filepond-plugin-image-crop"
-import FilePondPluginImageResize from "filepond-plugin-image-resize"
-import FilePondPluginImageTransform from "filepond-plugin-image-transform"
-import "filepond/dist/filepond.min.css"
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+// const imageMimeType = /image\/(png|jpg|jpeg|gif)/i
 
-registerPlugin(
-  FilePondPluginFileValidateSize,
-  FilePondPluginFileValidateType,
-  FilePondPluginImageExifOrientation,
-  FilePondPluginImagePreview,
-  FilePondPluginImageCrop,
-  FilePondPluginImageResize,
-  FilePondPluginImageTransform,
-)
-
-export default function AvatarUpload({ initialFile, onFileChange, markFileValid }) {
-  const [files, setFiles] = useState<any[]>([])
+const AvatarUpload = ({ initialFile, onFileChange, markFileValid }) => {
+  const [file, setFile] = useState<File>()
+  const [fileDataURL, setFileDataURL] = useState<string>()
   const [errorMessage, setErrorMessage] = useState<string>()
+  const [fileType, setFileType] = useState<string>()
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [isCropModalOpen, setIsCropModalOpen] = useState<boolean>(false)
 
   useEffect(() => {
     if (initialFile) {
-      setFiles([initialFile])
+      setFileDataURL(initialFile)
     }
   }, [initialFile])
 
-  const handleFileChange = (_files) => {
+  useEffect(() => {
+    if (!file) return
+
+    let isCancel = false
+    const fileReader = new FileReader()
+
+    fileReader.onload = (event) => {
+      if (!event.target) return
+
+      const { result } = event.target
+
+      if (result && !isCancel) {
+        setFileDataURL(result.toString())
+      }
+    }
+
+    fileReader.readAsDataURL(file)
+
+    return () => {
+      isCancel = true
+
+      if (fileReader && fileReader.readyState === 1) {
+        fileReader.abort()
+      }
+    }
+  }, [file])
+
+  const handleUploadClick = () => {
+    inputRef.current?.click()
+  }
+
+  const clearInputRef = () => {
+    if (!inputRef.current?.value) return
+    inputRef.current.value = ""
+  }
+
+  const handleDeleteClick = () => {
+    setErrorMessage(undefined)
+    setFileType(undefined)
+    setFile(undefined)
+    setFileDataURL(undefined)
+    clearInputRef()
+    onFileChange(undefined)
+    markFileValid(true) // file has been removed
+  }
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setErrorMessage(undefined)
 
-    setFiles(_files)
-    const _file = _files[0]
+    if (!event.target.files) return
 
+    const _file = event.target.files[0]
+
+    setFileType(_file.type)
+    setFile(_file)
+    setIsCropModalOpen(true)
     if (!_file) {
       onFileChange(undefined)
       markFileValid(true) // file has been removed
     }
   }
 
-  const handleError = (error) => {
-    const { main, sub } = error
-    const errorDetail = sub ? ` - ${sub}` : ""
-    const _errorMessage = `${main}${errorDetail}`
-
-    setErrorMessage(_errorMessage)
-    markFileValid(false)
+  const handleFileCropped = (croppedFileBlob) => {
+    const croppedFile = new File([croppedFileBlob], file!.name, { type: file!.type })
+    setFile(croppedFile)
+    const transformedFileItemObj = {
+      file: croppedFile,
+      fileType: croppedFile.type,
+      fileExtension: croppedFile.name.split(".").pop(),
+    }
+    onFileChange(transformedFileItemObj)
+    setIsCropModalOpen(false)
   }
 
-  return (
-    <div>
-      <div className="h-48 w-48">
-        <FilePond
-          name="avatar"
-          files={files}
-          onupdatefiles={handleFileChange}
-          onerror={handleError}
-          imagePreviewHeight={192}
-          imageCropAspectRatio="1:1"
-          imageResizeTargetWidth={512}
-          imageResizeTargetHeight={512}
-          acceptedFileTypes={["image/*"]}
-          maxFileSize="4MB"
-          labelIdle="Drag & drop, paste, or click to select"
-          stylePanelLayout="compact circle"
-          styleLoadIndicatorPosition="center"
-          styleProgressIndicatorPosition="center"
-          styleButtonRemoveItemPosition="right bottom"
-          imageTransformImageFilter={(file) => !file.type.match(/gif/)}
-          onpreparefile={(fileItem, output) => {
-            // not sure if this is needed but if `files` has not yet
-            // been set to `[initialFile]`, it's definitely too early
-            // to run this function
-            if (initialFile && files.length === 0) return
+  const avatar = (children) => (
+    <div className="relative">
+      {fileDataURL ? (
+        <img src={fileDataURL} alt="preview" className="h-48 w-48 rounded-full" />
+      ) : (
+        <div className="flex items-center justify-center h-48 w-48 border solid border-gold-100 rounded-full">
+          <FaUserCircle className="h-12 w-12 text-gold-100 rounded-full" />
+        </div>
+      )}
+      {children}
+    </div>
+  )
 
-            const transformedFile = new File([output], output.name, { type: output.type })
-            const transformedFileItemObj = {
-              file: transformedFile,
-              fileType: output.type,
-              fileExtension: output.name.split(".").pop(),
-            }
-            setFiles([transformedFileItemObj])
-            onFileChange(transformedFileItemObj)
-          }}
+  const actionIconButtonClasses = "bg-white cursor-pointer text-black rounded-full w-8 h-8"
+
+  const actionIconButtons = (
+    <>
+      <button
+        type="button"
+        className="absolute cursor-default bottom-4 left-4"
+        onClick={handleUploadClick}
+      >
+        {fileDataURL ? (
+          <MdEdit className={actionIconButtonClasses} />
+        ) : (
+          <MdOutlineFileUpload className={actionIconButtonClasses} />
+        )}
+      </button>
+      {fileDataURL && (
+        <button
+          type="button"
+          className="absolute cursor-default bottom-4 right-4"
+          onClick={handleDeleteClick}
+        >
+          <TbTrash className={actionIconButtonClasses} />
+        </button>
+      )}
+    </>
+  )
+
+  return (
+    <div className="w-full xs:w-96">
+      <AvatarCropModal
+        avatarImageUrl={fileDataURL}
+        imageType={fileType}
+        isOpen={isCropModalOpen}
+        onModalClose={() => setIsCropModalOpen(false)}
+        onSaveHandler={handleFileCropped}
+      />
+      <div className="flex flex-col items-center">
+        <input
+          type="file"
+          accept=".png, .jpg, .jpeg, .gif"
+          ref={inputRef}
+          onChange={handleFileChange}
+          className="hidden"
         />
+
+        {avatar(actionIconButtons)}
       </div>
       <div className="mt-6 text-sm text-gray-200">
-        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
+        max 4 MiB. for GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
       </div>
       {errorMessage && <div className="my-4 text-red-500">{errorMessage}</div>}
     </div>
   )
 }
+
+export default AvatarUpload
