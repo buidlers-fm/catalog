@@ -9,7 +9,9 @@ export default interface Book {
   subtitle?: string
   authorName: string
   description?: string
-  coverImageUrl: string
+  coverImageUrl?: string
+  coverImageThumbnailUrl?: string
+  openLibraryCoverImageUrl?: string
   editionsCount?: number
   firstPublishedYear?: number | string
   openLibraryWorkId: string

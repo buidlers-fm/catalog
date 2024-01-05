@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { reportToSentry } from "lib/sentry"
 import { fetchJson, isSameLanguage } from "lib/helpers/general"
+import CoverSize from "enums/CoverSize"
 import type Book from "types/Book"
 
 dayjs.extend(customParseFormat)
@@ -19,7 +20,7 @@ enum CoverUrlType {
   CoverId = "id",
 }
 
-enum CoverSize {
+enum OpenLibraryCoverSize {
   S = "S",
   M = "M",
   L = "L",
@@ -91,7 +92,7 @@ const OpenLibrary = {
     }
 
     const getCoverUrl = (coverId: string) =>
-      OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.L)
+      OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, OpenLibraryCoverSize.L)
 
     let coverImageUrl
 
@@ -156,8 +157,30 @@ const OpenLibrary = {
 
   getOlWorkPageUrl: (workId: string) => `${BASE_URL}/works/${workId}`,
 
-  getCoverUrl: (coverUrlType: CoverUrlType, id: string | number, size: CoverSize) =>
+  getCoverUrl: (coverUrlType: CoverUrlType, id: string | number, size: OpenLibraryCoverSize) =>
     `${COVERS_BASE_URL}/${coverUrlType}/${id}-${size}.jpg`,
+
+  getCoverUrlsBySize: (imageUrl: string) => {
+    const mPattern = /-M(\.\w+)$/ // filename ends in "-M", followed by file extension
+    const lPattern = /-L(\.\w+)$/ // filename ends in "-L", followed by file extension
+    let fileExtension
+
+    if (imageUrl.match(mPattern)) {
+      fileExtension = imageUrl.match(mPattern)![1]
+    } else if (imageUrl.match(lPattern)) {
+      fileExtension = imageUrl.match(lPattern)![1]
+    } else {
+      throw new Error("Image URL must include either -M or -L")
+    }
+
+    const imageUrlM = imageUrl.replace(lPattern, `-M${fileExtension}`)
+    const imageUrlL = imageUrl.replace(mPattern, `-L${fileExtension}`)
+
+    return {
+      [CoverSize.Md]: imageUrlM,
+      [CoverSize.Lg]: imageUrlL,
+    }
+  },
 
   sortedEditionsByPubDate: (editions) =>
     [...editions].sort((editionA, editionB) => {
@@ -220,7 +243,7 @@ const OpenLibrary = {
       const authorName = result.authorName?.join(", ")
       const coverId = isTranslated && !!bestEditionCoverId ? bestEditionCoverId : workCoverId
       const coverImageUrl =
-        coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, CoverSize.M)
+        coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, OpenLibraryCoverSize.M)
       const openLibraryWorkId = result.key.split("/works/").pop()
       const openLibraryBestEditionId = bestEdition
         ? bestEdition.key.split("/books/").pop()
