@@ -162,3 +162,15 @@ export const runInSequence = async (promises) => {
     await promise()
   }
 }
+
+export async function fetchImageAsBlob(url) {
+  const response = await fetch(url)
+  const blob = await response.blob()
+
+  const mimeType = blob.type
+
+  return {
+    blob,
+    mimeType,
+  }
+}

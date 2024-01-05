@@ -71,7 +71,7 @@ export default async function BookPageBySlug({ params }: any) {
         authorName: openLibraryBook.authorName || undefined,
         subtitle: openLibraryBook.subtitle || undefined,
         description: openLibraryBook.description || undefined,
-        coverImageUrl: openLibraryBook.coverImageUrl || undefined,
+        openLibraryCoverImageUrl: openLibraryBook.coverImageUrl || undefined,
         editionsCount: openLibraryBook.editionsCount || undefined,
         firstPublishedYear: openLibraryBook.firstPublishedYear || undefined,
         isTranslated: openLibraryBook.isTranslated,
@@ -80,7 +80,7 @@ export default async function BookPageBySlug({ params }: any) {
     })
   }
 
-  let book = { ...dbBook, ...openLibraryBook }
+  let book = { ...openLibraryBook, ...dbBook }
 
   let userLists: any[] = []
 

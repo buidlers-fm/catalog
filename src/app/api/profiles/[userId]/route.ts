@@ -1,20 +1,10 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
-import { v4 as uuidv4 } from "uuid"
-import { StorageClient } from "@supabase/storage-js"
+import { uploadAvatar, deleteAvatar } from "lib/server/supabaseStorage"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { createList, updateList } from "lib/api/lists"
 import type { NextRequest } from "next/server"
-
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const storageUrl = `${SUPABASE_URL}/storage/v1`
-const storageBucketPath = `${storageUrl}/object/public/assets`
-const storageClient = new StorageClient(storageUrl, {
-  apikey: SUPABASE_SERVICE_ROLE_KEY,
-  Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-})
 
 export const GET = withApiHandling(
   async (req: NextRequest, { params }) => {
@@ -76,28 +66,17 @@ export const PATCH = withApiHandling(
     }
 
     if ((avatarBlob || options.avatarDeleted) && existingProfile.avatarUrl) {
-      const filePath = existingProfile.avatarUrl.split("/assets/").pop()
-
-      const { error: avatarDeleteError } = await storageClient.from("assets").remove([filePath!])
-
-      if (avatarDeleteError) throw new Error(`Error uploading avatar: ${avatarDeleteError.message}`)
+      await deleteAvatar(existingProfile.avatarUrl)
 
       profileToUpdate.avatarUrl = null
     }
 
     if (avatarBlob) {
       const { avatarMimeType, avatarExtension } = options
-      const avatarUuid = uuidv4()
-      const fileDir = "user_profiles/avatars"
-      const filePath = `${fileDir}/${avatarUuid}.${avatarExtension}`
 
-      const { error: avatarUploadError } = await storageClient
-        .from("assets")
-        .upload(filePath, avatarBlob, { contentType: avatarMimeType })
+      const uploadedAvatarUrl = await uploadAvatar(avatarBlob, { avatarMimeType, avatarExtension })
 
-      if (avatarUploadError) throw new Error(`Error uploading avatar: ${avatarUploadError.message}`)
-
-      profileToUpdate.avatarUrl = `${storageBucketPath}/${filePath}`
+      profileToUpdate.avatarUrl = uploadedAvatarUrl
     }
 
     // prepare user profile record
