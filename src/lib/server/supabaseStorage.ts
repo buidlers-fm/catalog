@@ -38,15 +38,22 @@ async function uploadCoverImage(coverImageBlob, options) {
   const fileDir = `books/covers/${bookId}/${size}`
   const filename = `${bookSlug}-${size}.${extension}`
   const filePath = `${fileDir}/${filename}`
+  const imageUrl = `${storageBucketPath}/${filePath}`
 
   const { error: coverImageUploadError } = await storageClient
     .from("assets")
     .upload(filePath, coverImageBlob, { contentType: mimeType })
 
-  if (coverImageUploadError)
-    throw new Error(`Error uploading cover image: ${coverImageUploadError.message}`)
+  if (coverImageUploadError) {
+    if (coverImageUploadError.message.match(/The resource already exists/)) {
+      console.log(coverImageUploadError.message)
+      return imageUrl
+    } else {
+      throw new Error(`Error uploading cover image: ${coverImageUploadError.message}`)
+    }
+  }
 
-  return `${storageBucketPath}/${filePath}`
+  return imageUrl
 }
 
 export { storageBucketPath, uploadAvatar, deleteAvatar, uploadCoverImage }

@@ -19,6 +19,8 @@ async function findOrCreateBook(_book: Book) {
     title,
     authorName,
     coverImageUrl,
+    coverImageThumbnailUrl,
+    openLibraryCoverImageUrl,
     openLibraryWorkId,
     editionsCount,
     firstPublishedYear,
@@ -34,6 +36,8 @@ async function findOrCreateBook(_book: Book) {
       title,
       authorName,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear: Number(firstPublishedYear),
@@ -42,7 +46,7 @@ async function findOrCreateBook(_book: Book) {
     },
   })
 
-  // fetch covers and upload to supabase storage
+  // fetch covers and upload to supabase storage, then update cover image urls on book
   if (coverImageUrl) {
     const baseOptions = {
       bookId: createdBook.id,

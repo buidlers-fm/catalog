@@ -216,9 +216,9 @@ export default function Search({
                                 active && "bg-gray-700"
                               } px-2 py-3 cursor-pointer border-b border-b-gray-700 last:border-none`}
                             >
-                              {book.coverImageUrl ? (
+                              {book.coverImageThumbnailUrl ? (
                                 <img
-                                  src={book.coverImageUrl}
+                                  src={book.coverImageThumbnailUrl}
                                   className="w-16 h-auto shrink-0 rounded-sm"
                                   alt={`${book.title} cover`}
                                 />
