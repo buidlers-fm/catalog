@@ -4,7 +4,8 @@ import { MdEdit, MdOutlineFileUpload } from "react-icons/md"
 import { TbTrash } from "react-icons/tb"
 import AvatarCropModal from "app/settings/profile/components/AvatarCropModal"
 
-// const imageMimeType = /image\/(png|jpg|jpeg|gif)/i
+const IMAGE_MIME_TYPE = ["image/png", "image/jpg", "image/jpeg", "image/gif"]
+const MAX_FILE_SIZE = 4 * 1000 * 1000
 
 const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
   const [croppedFileUrl, setCroppedFileUrl] = useState<string | undefined>(initialFileUrl)
@@ -18,12 +19,34 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     inputRef.current?.click()
   }
 
+  const validateFile = (file: File): boolean => {
+    if (!file) return false
+
+    let invalid = false
+
+    if (file.size > MAX_FILE_SIZE) {
+      // size too large
+      setErrorMessage("Please upload a file less than 4MB.")
+      clearUploadedFileReferences()
+      invalid = true
+    } else if (!IMAGE_MIME_TYPE.includes(file.type)) {
+      // not the correct type
+      setErrorMessage("Please upload only a PNG, JPG, or GIF file.")
+      clearUploadedFileReferences()
+      invalid = true
+    }
+
+    return invalid
+  }
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setErrorMessage(undefined)
 
     if (!event.target.files) return
 
     const targetFile = event.target.files[0]
+
+    if (validateFile(targetFile)) return
 
     setUploadedFileType(targetFile!.type)
     setUploadedFile(targetFile)
@@ -126,7 +149,7 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
       <div className="flex flex-col items-center">
         <input
           type="file"
-          accept=".png, .jpg, .jpeg, .gif"
+          accept={IMAGE_MIME_TYPE.join(",")}
           ref={inputRef}
           onChange={handleFileChange}
           className="hidden"
