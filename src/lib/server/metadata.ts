@@ -1,5 +1,6 @@
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
+import * as ghost from "lib/ghost"
 import { getCurrentUserProfile } from "lib/server/auth"
 import UserProfile from "lib/models/UserProfile"
 import UserRole from "enums/UserRole"
@@ -48,10 +49,13 @@ const METADATA_CONFIG = {
   "admin.invites": {
     title: () => "admin • invites • catalog",
   },
+  "news.post": {
+    title: (title) => `${title} • news • catalog`,
+  },
 }
 
 async function getMetadata({ key, params }): Promise<Metadata> {
-  const { username, bookSlug, listSlug, shelf } = params
+  const { username, bookSlug, listSlug, shelf, postSlug } = params
 
   const config = METADATA_CONFIG[key]
 
@@ -126,6 +130,12 @@ async function getMetadata({ key, params }): Promise<Metadata> {
       if (!isAdmin) return {}
 
       pageTitle = config.title()
+    } else if (key === "news.post" && postSlug) {
+      const post = await ghost.getPost(postSlug)
+
+      if (!post) return {}
+
+      pageTitle = config.title(post.title)
     }
 
     return {

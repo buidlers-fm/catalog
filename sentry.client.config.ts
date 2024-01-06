@@ -13,6 +13,12 @@ if (env !== "development") {
     release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     normalizeDepth: 5,
 
+    ignoreErrors: [
+      "ResizeObserver loop completed with undelivered notifications.",
+      "Failed to fetch",
+      "network error",
+    ],
+
     // Adjust this value in production, or use tracesSampler for greater control
     tracesSampleRate: 1,
 

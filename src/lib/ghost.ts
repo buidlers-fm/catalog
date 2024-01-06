@@ -15,11 +15,19 @@ async function getAllPosts() {
 }
 
 async function getPost(slug: string) {
-  const post = await api.posts.read(
-    { slug },
-    { include: "authors", formats: ["html", "plaintext"] },
-  )
-  return post
+  try {
+    const post = await api.posts.read(
+      { slug },
+      { include: "authors", formats: ["html", "plaintext"] },
+    )
+    return post
+  } catch (error: any) {
+    const ERRORS_TO_IGNORE = [/ValidationError/, /NotFoundError/]
+
+    if (ERRORS_TO_IGNORE.some((e) => error.message.match(e))) {
+      return null
+    }
+  }
 }
 
 export { getAllPosts, getPost }
