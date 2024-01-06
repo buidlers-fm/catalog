@@ -1,4 +1,4 @@
-// check DOTENV_PATH
+// check DOTENV_PATH, BOOKS_LIMIT, and SLEEP_MS
 // for other env, create e.g. `.env.scripts.staging`
 // npx ts-node -P tsconfig.scripts.json scripts/backfillBookCoverImages.ts
 
@@ -11,6 +11,14 @@ dotenv.config({ path: DOTENV_PATH })
 import prisma from "../src/lib/prisma"
 // eslint-disable-next-line
 import { uploadCoverImage } from "../src/lib/server/supabaseStorage"
+
+const BOOKS_LIMIT = 100
+const SLEEP_MS = 500
+
+function sleep(ms) {
+  // eslint-disable-next-line
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 function getCoverUrlsBySize(imageUrl: string) {
   const mPattern = /-M(\.\w+)$/ // filename ends in "-M", followed by file extension
@@ -58,13 +66,16 @@ async function main() {
       },
       coverImageThumbnailUrl: null,
     },
+    take: BOOKS_LIMIT,
   })
 
   console.log(`found ${allBooks.length} books with cover images.`)
   console.log(allBooks.map((b) => b.slug))
 
   // for each book, fetch cover images, upload to supabase, and update book record
-  const promises = allBooks.map(async (book) => {
+  for (const book of allBooks) {
+    await sleep(SLEEP_MS)
+
     const { coverImageUrl, slug, id } = book
 
     const { md: olThumbnailUrl, lg: olLargeUrl } = getCoverUrlsBySize(coverImageUrl!) as any
@@ -126,9 +137,7 @@ async function main() {
     } catch (error: any) {
       failures.push({ slug, error, errorMsg: error.message })
     }
-  })
-
-  await Promise.all(promises)
+  }
 
   console.log(`${successCount} books updated.`)
   console.log("failures:")
