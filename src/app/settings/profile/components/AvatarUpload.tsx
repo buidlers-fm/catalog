@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { MdEdit, MdOutlineFileUpload } from "react-icons/md"
 import { TbTrash } from "react-icons/tb"
@@ -6,64 +6,16 @@ import AvatarCropModal from "app/settings/profile/components/AvatarCropModal"
 
 // const imageMimeType = /image\/(png|jpg|jpeg|gif)/i
 
-const AvatarUpload = ({ initialFile, onFileChange, markFileValid }) => {
-  const [file, setFile] = useState<File>()
-  const [fileDataURL, setFileDataURL] = useState<string>()
-  const [errorMessage, setErrorMessage] = useState<string>()
-  const [fileType, setFileType] = useState<string>()
-  const inputRef = useRef<HTMLInputElement | null>(null)
+const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
+  const [croppedFileUrl, setCroppedFileUrl] = useState<string | undefined>(initialFileUrl)
+  const [uploadedFile, setUploadedFile] = useState<Blob>()
+  const [uploadedFileType, setUploadedFileType] = useState<string>()
   const [isCropModalOpen, setIsCropModalOpen] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (initialFile) {
-      setFileDataURL(initialFile)
-    }
-  }, [initialFile])
-
-  useEffect(() => {
-    if (!file) return
-
-    let isCancel = false
-    const fileReader = new FileReader()
-
-    fileReader.onload = (event) => {
-      if (!event.target) return
-
-      const { result } = event.target
-
-      if (result && !isCancel) {
-        setFileDataURL(result.toString())
-      }
-    }
-
-    fileReader.readAsDataURL(file)
-
-    return () => {
-      isCancel = true
-
-      if (fileReader && fileReader.readyState === 1) {
-        fileReader.abort()
-      }
-    }
-  }, [file])
+  const [errorMessage, setErrorMessage] = useState<string>()
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   const handleUploadClick = () => {
     inputRef.current?.click()
-  }
-
-  const clearInputRef = () => {
-    if (!inputRef.current?.value) return
-    inputRef.current.value = ""
-  }
-
-  const handleDeleteClick = () => {
-    setErrorMessage(undefined)
-    setFileType(undefined)
-    setFile(undefined)
-    setFileDataURL(undefined)
-    clearInputRef()
-    onFileChange(undefined)
-    markFileValid(true) // file has been removed
   }
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -71,33 +23,56 @@ const AvatarUpload = ({ initialFile, onFileChange, markFileValid }) => {
 
     if (!event.target.files) return
 
-    const _file = event.target.files[0]
+    const targetFile = event.target.files[0]
 
-    setFileType(_file.type)
-    setFile(_file)
-    setIsCropModalOpen(true)
-    if (!_file) {
+    setUploadedFileType(targetFile!.type)
+    setUploadedFile(targetFile)
+
+    if (targetFile) {
+      setIsCropModalOpen(true)
+    } else {
       onFileChange(undefined)
       markFileValid(true) // file has been removed
     }
   }
 
+  // When the avatar is deleted or the crop modal is dismissed, we need to remove the references to
+  // the uploaded file. Otherwise, if the user tries to upload the same file, nothing will happen.
+  const clearUploadedFileReferences = () => {
+    if (!inputRef.current?.value) return
+    inputRef.current.value = ""
+    setUploadedFileType(undefined)
+    setUploadedFile(undefined)
+  }
+
+  const handleDeleteClick = () => {
+    setErrorMessage(undefined)
+    clearUploadedFileReferences()
+    setCroppedFileUrl(undefined)
+    onFileChange(undefined)
+    markFileValid(true) // file has been removed
+  }
+
   const handleFileCropped = (croppedFileBlob) => {
-    const croppedFile = new File([croppedFileBlob], file!.name, { type: file!.type })
-    setFile(croppedFile)
+    const newCroppedFile = new File([croppedFileBlob], uploadedFile!.name, {
+      type: uploadedFile!.type,
+    })
     const transformedFileItemObj = {
-      file: croppedFile,
-      fileType: croppedFile.type,
-      fileExtension: croppedFile.name.split(".").pop(),
+      file: newCroppedFile,
+      uploadedFileType: newCroppedFile.type,
+      fileExtension: newCroppedFile.name.split(".").pop(),
     }
+
+    clearUploadedFileReferences()
+    setCroppedFileUrl(URL.createObjectURL(croppedFileBlob))
     onFileChange(transformedFileItemObj)
     setIsCropModalOpen(false)
   }
 
   const avatar = (children) => (
     <div className="relative">
-      {fileDataURL ? (
-        <img src={fileDataURL} alt="preview" className="h-48 w-48 rounded-full" />
+      {croppedFileUrl ? (
+        <img src={croppedFileUrl} alt="preview" className="h-48 w-48 rounded-full" />
       ) : (
         <div className="flex items-center justify-center h-48 w-48 border solid border-gold-100 rounded-full">
           <FaUserCircle className="h-12 w-12 text-gold-100 rounded-full" />
@@ -116,13 +91,13 @@ const AvatarUpload = ({ initialFile, onFileChange, markFileValid }) => {
         className="absolute cursor-default bottom-4 left-4"
         onClick={handleUploadClick}
       >
-        {fileDataURL ? (
+        {croppedFileUrl ? (
           <MdEdit className={actionIconButtonClasses} />
         ) : (
           <MdOutlineFileUpload className={actionIconButtonClasses} />
         )}
       </button>
-      {fileDataURL && (
+      {croppedFileUrl && (
         <button
           type="button"
           className="absolute cursor-default bottom-4 right-4"
@@ -136,13 +111,18 @@ const AvatarUpload = ({ initialFile, onFileChange, markFileValid }) => {
 
   return (
     <div className="w-full xs:w-96">
-      <AvatarCropModal
-        avatarImageUrl={fileDataURL}
-        imageType={fileType}
-        isOpen={isCropModalOpen}
-        onModalClose={() => setIsCropModalOpen(false)}
-        onSaveHandler={handleFileCropped}
-      />
+      {uploadedFile && (
+        <AvatarCropModal
+          avatarImageUrl={URL.createObjectURL(uploadedFile)}
+          imageType={uploadedFileType}
+          isOpen={isCropModalOpen}
+          onModalClose={() => {
+            clearUploadedFileReferences()
+            setIsCropModalOpen(false)
+          }}
+          onSaveHandler={handleFileCropped}
+        />
+      )}
       <div className="flex flex-col items-center">
         <input
           type="file"
@@ -155,7 +135,7 @@ const AvatarUpload = ({ initialFile, onFileChange, markFileValid }) => {
         {avatar(actionIconButtons)}
       </div>
       <div className="mt-6 text-sm text-gray-200">
-        max 4 MiB. for GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
+        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
       </div>
       {errorMessage && <div className="my-4 text-red-500">{errorMessage}</div>}
     </div>

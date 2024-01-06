@@ -39,14 +39,14 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
     const canvas = document.createElement("canvas")
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
-    canvas.width = croppedArea.width
-    canvas.height = croppedArea.height
+    const finalWidth = Math.min(croppedArea.width, MAX_WIDTH_AND_HEIGHT)
+    const finalHeight = Math.min(croppedArea.height, MAX_WIDTH_AND_HEIGHT)
+
+    canvas.width = finalWidth
+    canvas.height = finalHeight
     const ctx = canvas.getContext("2d")
 
     if (!ctx) return null
-
-    canvas.width = croppedArea.width
-    canvas.height = croppedArea.height
 
     ctx.drawImage(
       image,
@@ -56,12 +56,10 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
       croppedArea.height * scaleY,
       0,
       0,
-      Math.max(croppedArea.width, MAX_WIDTH_AND_HEIGHT),
-      Math.max(croppedArea.height, MAX_WIDTH_AND_HEIGHT),
+      finalWidth,
+      finalHeight,
     )
 
-    // const croppedImageData = canvas.toDataURL(imageType);
-    // return croppedImageData
     return new Promise((resolve) => {
       canvas.toBlob((file) => resolve(file), imageType)
     })
