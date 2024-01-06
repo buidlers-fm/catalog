@@ -62,6 +62,7 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
     let pageTitle
     let pageDescription
+    let imageUrl
 
     if (username) {
       const _userProfile = await prisma.userProfile.findFirst({
@@ -112,6 +113,7 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
       if (key === "book") {
         pageDescription = book.description || undefined
+        imageUrl = book.coverImageThumbnailUrl || undefined
       }
     } else if (key.match(/admin/)) {
       const currentUserProfile = await getCurrentUserProfile({ withRoles: true })
@@ -132,6 +134,11 @@ async function getMetadata({ key, params }): Promise<Metadata> {
       openGraph: {
         title: pageTitle,
         description: pageDescription,
+        images: [
+          {
+            url: imageUrl,
+          },
+        ],
       },
     }
   } catch (error: any) {

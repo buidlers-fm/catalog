@@ -13,6 +13,7 @@ const BooksQuickSearch = {
     const results = await prisma.$queryRaw`
       SELECT id, slug, title, author_name, cover_image_url, editions_count,
         first_published_year, open_library_work_id, is_translated, original_title,
+        cover_image_thumbnail_url, open_library_cover_image_url,
         similarity(title || ' ' || author_name || ' ' || original_title, ${searchString}) as trigram,
         ts_rank(title_author_search, websearch_to_tsquery('english', ${searchString})) as ts_rank
       FROM books 

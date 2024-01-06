@@ -9,18 +9,6 @@ import BookTooltip from "app/components/books/BookTooltip"
 
 const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 
-const convertImageUrlToLarge = (imageUrl) => {
-  const pattern = /-M(\.\w+)$/ // filename ends in "-M", followed by file extension
-  const match = imageUrl.match(pattern)
-
-  if (!match) return imageUrl
-
-  const fileExtension = match[1]
-  const largeImageUrl = imageUrl.replace(pattern, `-L${fileExtension}`)
-
-  return largeImageUrl
-}
-
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
 const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
@@ -51,7 +39,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
             {book.coverImageUrl ? (
               <img
                 ref={imgRef}
-                src={convertImageUrlToLarge(book.coverImageUrl) as any}
+                src={book.coverImageUrl}
                 id={`book-${book.id}`}
                 className={`w-full ${imgLoaded ? "block" : "hidden"} rounded-sm`}
                 alt={`${book.title} cover`}
