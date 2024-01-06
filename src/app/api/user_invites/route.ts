@@ -13,11 +13,18 @@ export const GET = withApiHandling(
       },
       include: {
         inviter: true,
-        claimedByUser: true,
+        claims: {
+          include: {
+            claimedByUser: true,
+          },
+        },
       },
     })
 
-    const allClaimedByUserIds = _allInvites.map((invite) => invite.claimedByUserId).filter(Boolean)
+    const allClaimedByUserIds = _allInvites
+      .map((invite) => invite.claims)
+      .flat()
+      .map((claim) => claim.claimedByUserId)
 
     const allUserProfiles = await prisma.userProfile.findMany({
       where: {
@@ -38,9 +45,9 @@ export const GET = withApiHandling(
 
     const allInvites = _allInvites.map((invite) => ({
       ...invite,
-      claimedByUserProfile: invite.claimedByUserId
-        ? userIdsToUserProfiles[invite.claimedByUserId]
-        : undefined,
+      claimedByUserProfiles: invite.claims.map(
+        (claim) => userIdsToUserProfiles[claim.claimedByUserId],
+      ),
     }))
 
     const resBody = humps.decamelizeKeys(allInvites)
@@ -52,13 +59,18 @@ export const GET = withApiHandling(
 
 export const POST = withApiHandling(
   async (_req: NextRequest, { params }) => {
-    const { currentUserProfile } = params
+    const { reqJson, currentUserProfile } = params
+
+    const { singleUse } = reqJson
 
     const code = cryptoRandomString({ length: 12 })
+
+    const _30_DAYS_MS = 1000 * 60 * 60 * 24 * 30
 
     const createdInvite = await prisma.userInvite.create({
       data: {
         code,
+        expiresAt: singleUse ? undefined : new Date(Date.now() + _30_DAYS_MS),
         inviter: {
           connect: {
             id: currentUserProfile.id,
@@ -71,5 +83,5 @@ export const POST = withApiHandling(
 
     return NextResponse.json(resBody, { status: 200 })
   },
-  { requireJsonBody: false, requireAdmin: true },
+  { requireAdmin: true },
 )

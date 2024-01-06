@@ -37,14 +37,22 @@ export const POST = withApiHandling(
         where: {
           code: inviteCode,
         },
+        include: {
+          claims: true,
+        },
       })
 
       if (!matchingInvite) {
         return NextResponse.json({ error: "Invite code is invalid." }, { status: 400 })
       }
 
-      if (matchingInvite.claimedAt) {
+      // a non-expiring invite can only be claimed once
+      if (!matchingInvite.expiresAt && matchingInvite.claims.length > 0) {
         return NextResponse.json({ error: "Invite has already been claimed." }, { status: 400 })
+      }
+
+      if (matchingInvite.expiresAt && matchingInvite.expiresAt < new Date()) {
+        return NextResponse.json({ error: "Invite has expired." }, { status: 400 })
       }
     }
 
@@ -145,14 +153,11 @@ export const POST = withApiHandling(
 
     console.log(createUserRes)
 
-    if (invitesFeatureFlag?.enabled) {
-      // claim invite
-      await prisma.userInvite.update({
-        where: {
-          id: matchingInvite.id,
-        },
+    // create invite claim
+    if (invitesFeatureFlag?.enabled && matchingInvite) {
+      await prisma.userInviteClaim.create({
         data: {
-          claimedAt: new Date(),
+          inviteId: matchingInvite.id,
           claimedByUserId: createUserRes.id,
         },
       })

@@ -31,14 +31,21 @@ export default async function SignUpPage({ searchParams }) {
       where: {
         code: inviteCode,
       },
+      include: {
+        claims: true,
+      },
     })
 
     if (!invite) {
       return <ErrorPage errorMessage="Invalid invite code." />
     }
 
-    if (invite.claimedAt) {
+    if (!invite.expiresAt && invite.claims.length > 0) {
       return <ErrorPage errorMessage="This invite has already been claimed." />
+    }
+
+    if (invite.expiresAt && invite.expiresAt < new Date()) {
+      return <ErrorPage errorMessage="This invite has expired." />
     }
   }
 

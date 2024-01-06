@@ -90,9 +90,10 @@ const api = {
   },
   invites: {
     get: () => fetchJson(`/api/user_invites`),
-    create: () =>
+    create: (requestData) =>
       fetchJson(`/api/user_invites`, {
         method: "POST",
+        body: prepReqBody(requestData),
       }),
   },
   likes: {

@@ -32,11 +32,15 @@ export default function AdminInvites() {
     getAllInvites()
   }, [getAllInvites])
 
-  async function createInvite() {
+  async function createInvite(singleUse: boolean) {
+    const requestData = {
+      singleUse,
+    }
+
     const toastId = toast.loading("Creating invite...")
 
     try {
-      const _createdInvite = await api.invites.create()
+      const _createdInvite = await api.invites.create(requestData)
 
       setCreatedInvite(_createdInvite)
 
@@ -52,13 +56,17 @@ export default function AdminInvites() {
 
   return (
     <div className="my-8 max-w-md mx-auto font-mulish">
-      <button onClick={createInvite} className="cat-btn cat-btn-sm cat-btn-gold">
-        create an invite
+      <div className="mb-2">create an invite</div>
+      <button onClick={() => createInvite(true)} className="mr-4 cat-btn cat-btn-sm cat-btn-gold">
+        single
+      </button>
+      <button onClick={() => createInvite(false)} className="cat-btn cat-btn-sm cat-btn-gold">
+        multi (30-day)
       </button>
       <div className="my-2">
         {createdInvite && (
           <div>
-            <div>Invite created!</div>
+            <div>{createdInvite.expiresAt ? "30-day" : "single-use"} invite created!</div>
             <CopyableText
               displayText={createdInvite.code}
               text={getInviteUrl(createdInvite.code)}
@@ -74,7 +82,7 @@ export default function AdminInvites() {
               <tr>
                 <th className="bg-gray-800 p-2 rounded-tl">inviter</th>
                 <th className="bg-gray-800 p-2">invited at</th>
-                <th className="bg-gray-800 p-2">claimed at</th>
+                <th className="bg-gray-800 p-2">type</th>
                 <th className="bg-gray-800 p-2 rounded-tr">claimed by</th>
               </tr>
             </thead>
@@ -84,20 +92,25 @@ export default function AdminInvites() {
                   <td className="bg-black p-2">{invite.inviter.username}</td>
                   <td className="bg-black p-2">{new Date(invite.createdAt).toLocaleString()}</td>
                   <td className="bg-black p-2">
-                    {invite.claimedAt ? new Date(invite.claimedAt).toLocaleString() : "---"}
+                    {invite.expiresAt
+                      ? `30-day${new Date(invite.expiresAt) < new Date() ? " (expired)" : ""}`
+                      : "single"}
                   </td>
                   <td className="bg-black p-2">
-                    {invite.claimedByUserProfile?.username ? (
-                      <Link
-                        href={getUserProfileLink(invite.claimedByUserProfile.username)}
-                        className="cat-btn-link"
-                        target="_blank"
-                      >
-                        {invite.claimedByUserProfile.username}
-                      </Link>
-                    ) : (
-                      "---"
-                    )}
+                    {invite.claimedByUserProfiles.length > 0
+                      ? invite.claimedByUserProfiles.map((userProfile, index) => (
+                          <div key={userProfile.id}>
+                            <Link
+                              href={getUserProfileLink(userProfile.username)}
+                              className="cat-btn-link"
+                              target="_blank"
+                            >
+                              {userProfile.username}
+                            </Link>
+                            {index < invite.claimedByUserProfiles.length - 1 && ", "}
+                          </div>
+                        ))
+                      : "---"}
                   </td>
                 </tr>
               ))}
