@@ -34,12 +34,13 @@ model UserProfile {
 }
 
 model User {
-  id            String       @id @db.Uuid
-  email         String       @unique
-  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime?    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id            String           @id @db.Uuid
+  email         String           @unique
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?        @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile       UserProfile?
   inviteClaimed UserInvite?
+  inviteClaim   UserInviteClaim?
 
   @@map("users")
 }
@@ -229,20 +230,36 @@ model UserRole {
 }
 
 model UserInvite {
-  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inviterId       String      @map("inviter_id") @db.Uuid
-  code            String      @map("code")
-  claimedByUserId String?     @map("claimed_by_user_id") @db.Uuid
-  claimedAt       DateTime?   @map("claimed_at") @db.Timestamptz(6)
-  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  inviter         UserProfile @relation(fields: [inviterId], references: [id])
-  claimedByUser   User?       @relation(fields: [claimedByUserId], references: [id])
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inviterId       String            @map("inviter_id") @db.Uuid
+  code            String            @map("code")
+  expiresAt       DateTime?         @map("expires_at") @db.Timestamptz(6)
+  claimedByUserId String?           @map("claimed_by_user_id") @db.Uuid
+  claimedAt       DateTime?         @map("claimed_at") @db.Timestamptz(6)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime?         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  inviter         UserProfile       @relation(fields: [inviterId], references: [id])
+  claimedByUser   User?             @relation(fields: [claimedByUserId], references: [id])
+  claims          UserInviteClaim[]
 
   @@unique([code])
   @@unique([claimedByUserId])
   @@index([inviterId])
   @@map("user_invites")
+}
+
+model UserInviteClaim {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inviteId        String     @map("invite_id") @db.Uuid
+  claimedByUserId String     @map("claimed_by_user_id") @db.Uuid
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  invite          UserInvite @relation(fields: [inviteId], references: [id])
+  claimedByUser   User       @relation(fields: [claimedByUserId], references: [id])
+
+  @@unique([claimedByUserId])
+  @@index([inviteId])
+  @@map("user_invite_claims")
 }
 
 model FeatureFlag {
