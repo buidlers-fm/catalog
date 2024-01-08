@@ -16,10 +16,6 @@ export default function HomeTabs() {
       href: "/home",
     },
     {
-      name: "2023",
-      href: "/home/lists/favorites-2023",
-    },
-    {
       name: "recent lists",
       href: "/home/lists/recent",
     },
@@ -41,12 +37,12 @@ export default function HomeTabs() {
     <div className="font-mulish">
       <div className="sm:hidden max-w-xs mx-auto border border-gray-700 px-8 rounded-sm">
         <nav className="-mb-px" aria-label="Tabs">
-          <div className="flex space-x-8 justify-center">
+          <div className="flex space-x-4 justify-center">
             {tabs.slice(0, 3).map((tab) => (
               <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
             ))}
           </div>
-          <div className="flex space-x-8 justify-center">
+          <div className="flex space-x-4 justify-center">
             {tabs.slice(3).map((tab) => (
               <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
             ))}
