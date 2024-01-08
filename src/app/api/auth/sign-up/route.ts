@@ -3,6 +3,9 @@ import humps from "humps"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
+import { reportToSentry } from "lib/sentry"
+import * as ghost from "lib/ghost"
+import { isProduction } from "lib/helpers/general"
 import FeatureFlag from "enums/FeatureFlag"
 import type { NextRequest } from "next/server"
 
@@ -18,7 +21,7 @@ const PASSWORD_MIN_LENGTH = 8
 export const POST = withApiHandling(
   async (req: NextRequest, { params }) => {
     const { reqJson } = params
-    const { email, username, password, inviteCode } = reqJson
+    const { email, username, password, inviteCode, subscribe } = reqJson
 
     let matchingInvite
     const invitesFeatureFlag = await prisma.featureFlag.findFirst({
@@ -118,7 +121,7 @@ export const POST = withApiHandling(
     }
 
     // create supabase-auth user
-    const { data, error } = await supabase.auth.admin.createUser({
+    const { data, error: supabaseAuthError } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -127,8 +130,8 @@ export const POST = withApiHandling(
       },
     })
 
-    if (error) {
-      throw error
+    if (supabaseAuthError) {
+      throw supabaseAuthError
     }
 
     console.log(data)
@@ -184,6 +187,19 @@ export const POST = withApiHandling(
         ownerId: createUserRes.profile!.id,
       })),
     })
+
+    // subscribe to newsletter
+    if (subscribe && isProduction()) {
+      try {
+        await ghost.subscribe(email)
+        console.log(`signup: Subscribed ${email} to Ghost.`)
+      } catch (error: any) {
+        reportToSentry(error, {
+          method: "ghost.subscribe",
+          email,
+        })
+      }
+    }
 
     const resData = {
       email,
