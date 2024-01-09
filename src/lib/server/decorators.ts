@@ -51,10 +51,11 @@ export const decorateLists = async (lists, currentUserProfile?) => {
 }
 
 export const decorateWithLikes = async (
-  objects: any[],
+  _objects: any[],
   objectType: InteractionObjectType,
   currentUserProfile?: UserProfileProps,
 ) => {
+  let objects = _objects
   let objectIdsToLikeCounts
 
   if (objectType === InteractionObjectType.BookNote) {
@@ -66,6 +67,30 @@ export const decorateWithLikes = async (
       }),
       {},
     )
+
+    // decorate book note objects with whether creator liked the book
+
+    // all book note creators' likes of all the books (set might contain some irrelevant likes)
+    const allCreatorBookLikes = await prisma.interaction.findMany({
+      where: {
+        objectId: {
+          in: objects.map((obj) => obj.bookId),
+        },
+        objectType: InteractionObjectType.Book,
+        interactionType: InteractionType.Like,
+        agentId: {
+          in: objects.map((obj) => obj.creatorId),
+        },
+        agentType: InteractionAgentType.User,
+      },
+    })
+
+    objects = objects.map((obj) => ({
+      ...obj,
+      creatorLikedBook: allCreatorBookLikes.some(
+        (like) => like.objectId === obj.bookId && like.agentId === obj.creatorId,
+      ),
+    }))
   } else {
     // fetch like count per object
     const likeCounts = await prisma.interaction.groupBy({
