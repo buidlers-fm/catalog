@@ -32,7 +32,6 @@
     "dotenv": "^16.3.1",
     "eslint": "^8.2.0",
     "eslint-config-next": "13.4.13",
-    "filepond": "^4.30.4",
     "filepond-plugin-file-validate-size": "^2.2.8",
     "filepond-plugin-file-validate-type": "^1.2.8",
     "filepond-plugin-image-crop": "^2.0.6",
