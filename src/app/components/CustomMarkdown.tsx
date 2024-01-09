@@ -44,7 +44,11 @@ const CustomMarkdown = ({ markdown, componentOverrides = {} }) => {
   const finalComponents = { ...components, ...componentOverrides }
 
   return (
-    <Markdown className="whitespace-pre-wrap" components={finalComponents} remarkPlugins={plugins}>
+    <Markdown
+      className="whitespace-pre-wrap break-words"
+      components={finalComponents}
+      remarkPlugins={plugins}
+    >
       {markdown}
     </Markdown>
   )
