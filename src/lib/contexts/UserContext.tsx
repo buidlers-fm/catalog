@@ -113,13 +113,14 @@ export function UserProvider({ children }) {
 
   const signUp = useCallback(
     async (email: string, username: string, password: string, options: any = {}) => {
-      const { inviteCode } = options
+      const { inviteCode, subscribe } = options
 
       const requestData = {
         email,
         username,
         password,
         inviteCode,
+        subscribe,
       }
 
       await api.auth.signUp(requestData)

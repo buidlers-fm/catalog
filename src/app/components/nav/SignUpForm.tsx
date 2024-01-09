@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast"
 import { getUserProfileLink } from "lib/helpers/general"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
+import FormCheckbox from "app/components/forms/FormCheckbox"
 
 export default function SignUpForm({
   toggleAuth,
@@ -22,6 +23,7 @@ export default function SignUpForm({
   const [email, setEmail] = useState<string>("")
   const [username, setUsername] = useState<string>("")
   const [password, setPassword] = useState<string>("")
+  const [isSubscribeChecked, setIsSubscribeChecked] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
 
@@ -46,7 +48,10 @@ export default function SignUpForm({
 
       validateInput()
 
-      const { currentUserProfile } = await signUp(email, username, password, { inviteCode })
+      const { currentUserProfile } = await signUp(email, username, password, {
+        inviteCode,
+        subscribe: isSubscribeChecked,
+      })
 
       toast.success("Signed up! Navigating to your profile...")
 
@@ -90,6 +95,14 @@ export default function SignUpForm({
         onChange={(e) => setPassword(e.target.value)}
         value={password}
         accentColor="teal"
+      />
+      <FormCheckbox
+        name="subscribe"
+        isChecked={isSubscribeChecked}
+        onChange={setIsSubscribeChecked}
+        labelText="Subscribe me to catalog news. (Sent out every 1-2 months or so.)"
+        textColor="text-teal-500"
+        focusColor="focus:ring-teal-500"
       />
       <button className="cat-btn cat-btn-teal my-4" onClick={handleSubmit} disabled={isSubmitting}>
         Sign up

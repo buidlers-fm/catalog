@@ -44,6 +44,8 @@ Make suggestions for things you'd like to see in catalog, or for how you'd want 
 
 Add links to books you're reading or thinking about (via "add a link" on the book's page), as you run into them in your day-to-day, whether they're reviews, interviews, podcasts, TikToks, events, or something else. This will help build a rich context around each book of related media and conversation to explore.
 
+Whenever you're mentioning a book in a digital conversation, consider sharing the catalog.fyi book link instead of the Amazon link! For more of our thoughts on the topic of book links and their implications, you can read our newsletter post on it [here](https://catalog.fyi/news/catalog-news-003-the-book-link).
+
 (Eventually, when we've enabled this) Help us improve our books by adding and fixing book details and covers on books you care about. Particularly once we've worked out a way to sync our book data and edits back to OpenLibrary, your contributions here could affect _millions_ of people around the world.
 
 love,

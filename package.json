@@ -21,6 +21,7 @@
     "@supabase/storage-js": "^2.5.4",
     "@supabase/supabase-js": "^2.32.0",
     "@tailwindcss/forms": "^0.5.7",
+    "@tryghost/admin-api": "^1.13.11",
     "@tryghost/content-api": "^1.11.20",
     "@types/node": "20.4.2",
     "@types/react": "18.2.15",

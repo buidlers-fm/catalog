@@ -1,6 +1,7 @@
 import "app/globals.css"
 import Link from "next/link"
 import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
+import { FaDiscord } from "react-icons/fa"
 import { UserProvider } from "lib/contexts/UserContext"
 import { getCurrentUserProfile } from "lib/server/auth"
 import Nav from "app/components/nav/Nav"
@@ -51,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </main>
             <footer className="mt-32 px-8 py-4 flex font-chivo-mono tracking-wider">
               © catalog.
-              <div className="ml-12">
+              <div className="ml-10">
                 <Link href="/" className="cat-btn-link text-sm">
                   home
                 </Link>
@@ -59,6 +60,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="ml-6">
                 <Link href="/news" className="cat-btn-link text-sm">
                   news
+                </Link>
+              </div>
+              <div className="ml-6">
+                <Link href="https://discord.gg/BWTSEkDT9W">
+                  <FaDiscord className="mt-0.5 text-2xl" />
                 </Link>
               </div>
             </footer>
