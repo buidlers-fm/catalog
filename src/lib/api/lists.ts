@@ -1,6 +1,7 @@
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import { generateUniqueSlug, runInSequence } from "lib/helpers/general"
+import { findOrCreateBook } from "lib/api/books"
 import { findOrCreateLike } from "lib/api/likes"
 import ListDesignation from "enums/ListDesignation"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -34,6 +35,8 @@ const createList = async (params, userProfile) => {
       title,
       authorName,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear,
@@ -46,6 +49,8 @@ const createList = async (params, userProfile) => {
       title,
       authorName,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear: Number(firstPublishedYear),
@@ -145,6 +150,8 @@ const updateList = async (list, params, userProfile) => {
       title,
       authorName,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear,
@@ -157,6 +164,8 @@ const updateList = async (list, params, userProfile) => {
       title,
       authorName,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear: Number(firstPublishedYear),
@@ -313,6 +322,8 @@ const addBook = async (book, list) => {
       subtitle,
       description,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear,
@@ -327,6 +338,8 @@ const addBook = async (book, list) => {
       subtitle,
       description,
       coverImageUrl,
+      coverImageThumbnailUrl,
+      openLibraryCoverImageUrl,
       openLibraryWorkId,
       editionsCount,
       firstPublishedYear: Number(firstPublishedYear),
@@ -334,9 +347,7 @@ const addBook = async (book, list) => {
       originalTitle,
     }
 
-    persistedBook = await prisma.book.create({
-      data: bookData,
-    })
+    persistedBook = await findOrCreateBook(bookData)
   }
 
   const existingListItemAssignments = await prisma.listItemAssignment.findMany({

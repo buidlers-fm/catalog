@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/books/process_cover_images",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

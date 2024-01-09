@@ -90,7 +90,10 @@ async function findOrCreateBook(_book: Book) {
         },
       })
     } catch (error) {
-      reportToSentry(error, { coverImageUrl })
+      reportToSentry(error, {
+        bookId: createdBook.id,
+        coverImageUrl,
+      })
     }
   }
 
