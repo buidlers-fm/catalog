@@ -94,14 +94,16 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
 
   const avatar = (children) => (
     <div className="relative">
+      <div className="h-48 w-48 rounded-full overflow-hidden">
       {croppedFileUrl ? (
-        <img src={croppedFileUrl} alt="preview" className="h-48 w-48 rounded-full" />
+          <img src={croppedFileUrl} alt="preview" className="object-cover h-full w-full" />
       ) : (
         <div className="flex items-center justify-center h-48 w-48 border solid border-gold-100 rounded-full">
           <FaUserCircle className="h-12 w-12 text-gold-100 rounded-full" />
         </div>
       )}
       {children}
+      </div>
     </div>
   )
 
