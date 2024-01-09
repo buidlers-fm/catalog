@@ -3,9 +3,11 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Tooltip } from "react-tooltip"
+import { FaHeart } from "react-icons/fa"
 import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import UserProfile from "lib/models/UserProfile"
 import { getBookLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import ExpandableText from "app/components/ExpandableText"
@@ -32,7 +34,19 @@ export default function BookNoteCard({
 }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
 
-  const { id, creator, readingStatus, text, createdAt, book, likeCount, currentUserLike } = note
+  const {
+    id,
+    creator: _creator,
+    readingStatus,
+    text,
+    createdAt,
+    book,
+    likeCount,
+    currentUserLike,
+    creatorLikedBook,
+  } = note
+
+  const creator = UserProfile.build(_creator)
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
@@ -80,7 +94,7 @@ export default function BookNoteCard({
           </>
         )}
         <div className="grow">
-          <div className="flex flex-col xs:flex-row">
+          <div className="flex flex-col xs:flex-row relative">
             <NameWithAvatar userProfile={creator} />
 
             <div className="xs:my-2 xs:ml-2 text-gray-500 text-sm font-mulish">
@@ -94,9 +108,26 @@ export default function BookNoteCard({
               <span id={`created-at-${id}`} className="mr-2">
                 {createdAtFromNow}
               </span>
+              {creatorLikedBook && (
+                <>
+                  <span className="mr-2">
+                    <FaHeart
+                      id={`book-note-creator-like-${id}`}
+                      className="inline-block text-red-300 text-sm"
+                    />
+                  </span>
+
+                  <Tooltip
+                    anchorSelect={`#book-note-creator-like-${id}`}
+                    className="max-w-[240px] font-mulish"
+                  >
+                    <div className="text-center">{creator.name} loved this book</div>
+                  </Tooltip>
+                </>
+              )}
               {isCreatedByCurrentUser && !isEditing && (
-                <button onClick={() => setIsEditing(true)}>
-                  <MdEdit className="-mt-2 text-lg text-gray-300" />
+                <button onClick={() => setIsEditing(true)} className="absolute t-1 r-0">
+                  <MdEdit className="text-lg text-gray-300" />
                 </button>
               )}
             </div>

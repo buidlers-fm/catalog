@@ -18,7 +18,7 @@ export default async function UserShelvesLayout({ params, children }) {
 
   return (
     <div className="">
-      <div className="w-fit mx-auto">
+      <div className="sm:w-fit sm:mx-auto">
         <UserShelvesTabs userProfile={userProfile} />
       </div>
       {children}

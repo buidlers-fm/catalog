@@ -4,7 +4,14 @@ import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 
 export default async function FriendsCurrentStatuses({ currentUserProfile }) {
+  const twoWeeksAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 14)
+
   const followingQueryOptions = {
+    where: {
+      createdAt: {
+        gte: twoWeeksAgo,
+      },
+    },
     include: {
       currentStatuses: {
         orderBy: {
@@ -33,7 +40,7 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
 
   return (
     <div className="mt-4 max-w-lg mx-auto font-mulish">
-      <div className="cat-eyebrow">friends' current statuses</div>
+      <div className="cat-eyebrow">friends' recent statuses</div>
       <hr className="my-1 h-[1px] border-none bg-gray-300" />
       <div>
         {following ? (
@@ -49,7 +56,7 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
                 ))}
               </div>
             ) : (
-              <EmptyState text="None of your friends have a current status right now." small />
+              <EmptyState text="None of your friends has set a current status recently." small />
             )
           ) : (
             <EmptyState text="You're not following anyone yet." small />

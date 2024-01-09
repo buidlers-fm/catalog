@@ -16,4 +16,5 @@ export default interface BookNote {
   book: Book
   likeCount?: number
   currentUserLike?: Like // in-memory only
+  creatorLikedBook?: boolean // in-memory only
 }

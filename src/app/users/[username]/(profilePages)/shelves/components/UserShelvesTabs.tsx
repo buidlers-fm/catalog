@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useSelectedLayoutSegment } from "next/navigation"
+import { useRouter, useSelectedLayoutSegment } from "next/navigation"
 import { getUserShelvesLink } from "lib/helpers/general"
 
 function classNames(...classes) {
@@ -10,6 +10,7 @@ function classNames(...classes) {
 
 export default function UserShelvesTabs({ userProfile }) {
   const selectedLayoutSegment = useSelectedLayoutSegment()
+  const router = useRouter()
 
   const { username } = userProfile
   const tabs = [
@@ -44,23 +45,34 @@ export default function UserShelvesTabs({ userProfile }) {
     return tab.layoutPath === selectedLayoutSegment
   }
 
+  function getCurrentTab() {
+    return tabs.find((tab) => isCurrentTab(tab)) || tabs[0]
+  }
+
+  function handleTabChange(e) {
+    const tab = tabs.find((t) => t.layoutPath === e.target.value)
+    router.push(tab!.href)
+  }
+
   return (
     <div className="font-mulish">
-      <div className="sm:hidden">
-        <div className="border-b border-gray-700 px-8 rounded-sm">
-          <nav className="-mb-px" aria-label="Tabs">
-            <div className="flex space-x-8 justify-center">
-              {tabs.slice(0, 3).map((tab) => (
-                <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
-              ))}
-            </div>
-            <div className="flex space-x-8 justify-center">
-              {tabs.slice(3).map((tab) => (
-                <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
-              ))}
-            </div>
-          </nav>
-        </div>
+      <div className="sm:hidden w-full">
+        <label htmlFor="userShelvesTabs" className="sr-only">
+          Select a tab
+        </label>
+        <select
+          id="userShelvesTabs"
+          name="userShelvesTabs"
+          className="block w-full bg-gray-800 text-white rounded-md border-gray-300 py-2 pl-3 pr-10 focus:border-gold-500 focus:outline-none focus:ring-gold-500"
+          defaultValue={getCurrentTab()!.layoutPath}
+          onChange={handleTabChange}
+        >
+          {tabs.map((tab) => (
+            <option key={tab.name} value={tab.layoutPath}>
+              {tab.name}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="hidden sm:block">
         <div className="border-b border-gray-700 px-8 rounded-sm">

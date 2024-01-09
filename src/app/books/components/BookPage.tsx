@@ -375,8 +375,8 @@ export default function BookPage({
                     onClick={() => setShowBookNoteModal(true)}
                     className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                   >
-                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> write a
-                    note
+                    <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> add note
+                    or log
                   </button>
                 </div>
               )}
