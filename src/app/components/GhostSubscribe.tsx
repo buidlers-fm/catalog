@@ -11,7 +11,7 @@ export default function GhostSubscribe() {
 
     script.dataset.buttonColor = "hsl(45, 100%, 55%)"
     script.dataset.buttonTextColor = "hsl(45, 4%, 12%)"
-    script.dataset.site = "https://news.catalog.fyi/"
+    script.dataset.site = "https://buidlers.ghost.io/"
     const el = document.getElementById("ghost-signup")
     el?.appendChild(script)
 
