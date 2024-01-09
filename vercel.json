@@ -6,7 +6,7 @@
     }
   ],
   "functions": {
-    "app/api/**/route.ts": {
+    "src/app/api/**": {
       "maxDuration": 300
     }
   }
