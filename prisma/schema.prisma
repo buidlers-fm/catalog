@@ -289,3 +289,16 @@ model TagAssignment {
   @@index([scopeId, tag])
   @@map("tag_assignments")
 }
+
+model Waitlister {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  email      String
+  data       Json
+  subscribed Boolean   @default(false)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([email])
+  @@map("waitlisters")
+}
