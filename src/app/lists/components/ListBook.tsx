@@ -23,9 +23,15 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
 
+  const LinkOrDiv = isMobile ? "div" : Link
+
   return (
     <div key={book.id} className="flex flex-col items-center justify-center">
-      <Link href={getBookLink(book.slug)} className="grow flex items-center">
+      <LinkOrDiv
+        // @ts-ignore this is a weird case, just let it be
+        href={isMobile ? undefined : getBookLink(book.slug)}
+        className="grow flex items-center"
+      >
         <button
           className={`${
             isFavorite ? favoriteBookWidths : defaultWidths
@@ -50,7 +56,7 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
             )}
           </div>
         </button>
-      </Link>
+      </LinkOrDiv>
       <BookTooltip book={book} anchorSelect={`#book-${book.id}`} />
       {isRanked && (
         <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
