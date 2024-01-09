@@ -52,7 +52,13 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     setUploadedFile(targetFile)
 
     if (targetFile) {
-      setIsCropModalOpen(true)
+      if (targetFile.type === 'image/gif') {
+        clearUploadedFileReferences()
+        setCroppedFileUrl(URL.createObjectURL(targetFile))
+        onFileChange(createTransformedFileItemObj(targetFile))
+      } else {
+        setIsCropModalOpen(true)
+      }
     } else {
       onFileChange(undefined)
       markFileValid(true) // file has been removed
@@ -76,15 +82,17 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     markFileValid(true) // file has been removed
   }
 
+  const createTransformedFileItemObj = (file) => ({
+    file,
+    uploadedFileType: file.type,
+    fileExtension: file.name.split(".").pop(),
+  })
+
   const handleFileCropped = (croppedFileBlob) => {
     const newCroppedFile = new File([croppedFileBlob], uploadedFile!.name, {
       type: uploadedFile!.type,
     })
-    const transformedFileItemObj = {
-      file: newCroppedFile,
-      uploadedFileType: newCroppedFile.type,
-      fileExtension: newCroppedFile.name.split(".").pop(),
-    }
+    const transformedFileItemObj = createTransformedFileItemObj(newCroppedFile)
 
     clearUploadedFileReferences()
     setCroppedFileUrl(URL.createObjectURL(croppedFileBlob))
@@ -95,14 +103,14 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
   const avatar = (children) => (
     <div className="relative">
       <div className="h-48 w-48 rounded-full overflow-hidden">
-      {croppedFileUrl ? (
+        {croppedFileUrl ? (
           <img src={croppedFileUrl} alt="preview" className="object-cover h-full w-full" />
-      ) : (
-        <div className="flex items-center justify-center h-48 w-48 border solid border-gold-100 rounded-full">
-          <FaUserCircle className="h-12 w-12 text-gold-100 rounded-full" />
-        </div>
-      )}
-      {children}
+        ) : (
+          <div className="flex items-center justify-center h-48 w-48 border solid border-gold-100 rounded-full">
+            <FaUserCircle className="h-12 w-12 text-gold-100 rounded-full" />
+          </div>
+        )}
+        {children}
       </div>
     </div>
   )
