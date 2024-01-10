@@ -1,3 +1,5 @@
+"use client"
+
 import { ChangeEvent, useRef, useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { MdEdit, MdOutlineFileUpload } from "react-icons/md"
@@ -19,24 +21,24 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     inputRef.current?.click()
   }
 
-  const validateFile = (file: File): boolean => {
+  const isValidFile = (file: File): boolean => {
     if (!file) return false
 
-    let invalid = false
+    let isValid = true
 
     if (file.size > MAX_FILE_SIZE) {
       // size too large
       setErrorMessage("Please upload a file less than 4MB.")
       clearUploadedFileReferences()
-      invalid = true
+      isValid = false
     } else if (!IMAGE_MIME_TYPE.includes(file.type)) {
       // not the correct type
       setErrorMessage("Please upload only a PNG, JPG, or GIF file.")
       clearUploadedFileReferences()
-      invalid = true
+      isValid = false
     }
 
-    return invalid
+    return isValid
   }
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +48,7 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
 
     const targetFile = event.target.files[0]
 
-    if (validateFile(targetFile)) return
+    if (!isValidFile(targetFile)) return
 
     setUploadedFileType(targetFile!.type)
     setUploadedFile(targetFile)

@@ -1,3 +1,5 @@
+"use client"
+
 import { Dialog } from "@headlessui/react"
 import { useCallback, useState } from "react"
 import Cropper from "react-easy-crop"
@@ -81,7 +83,7 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
           <Dialog.Title>
             <div className="mb-8 text-center text-xl font-bold">avatar crop and resize</div>
           </Dialog.Title>
-          <Dialog.Description>zoom, rotate, crop, and resize your avatar.</Dialog.Description>
+          <Dialog.Description>scroll to zoom, drag to move photo</Dialog.Description>
 
           <div className="relative my-4 grow">
             <Cropper
