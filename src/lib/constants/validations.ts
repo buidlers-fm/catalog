@@ -12,6 +12,23 @@ const validations = {
       maxLength: 100,
     },
   },
+  comment: {
+    list: {
+      text: {
+        maxLength: 300,
+      },
+    },
+    note: {
+      text: {
+        maxLength: 300,
+      },
+    },
+    post: {
+      text: {
+        maxLength: 10_000,
+      },
+    },
+  },
   list: {
     bookNote: {
       maxLength: 300,

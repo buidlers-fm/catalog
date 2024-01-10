@@ -147,6 +147,60 @@ export const decorateWithLikes = async (
   }))
 }
 
+export const decorateComments = async (comments) => {
+  const commenterIds = comments.map((comment) => comment.commenterId)
+
+  const allCommenters = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: commenterIds,
+      },
+    },
+  })
+
+  const commenterIdsToCommenters = allCommenters.reduce(
+    (result, commenter) => ({
+      ...result,
+      [commenter.id]: commenter,
+    }),
+    {},
+  )
+
+  return comments.map((comment) => ({
+    ...comment,
+    commenter: commenterIdsToCommenters[comment.commenterId],
+  }))
+}
+
+export const decorateWithComments = async (objects, objectType) => {
+  const allComments = await prisma.comment.findMany({
+    where: {
+      parentId: {
+        in: objects.map((obj) => obj.id),
+      },
+      parentType: objectType,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  })
+
+  const decoratedComments = await decorateComments(allComments)
+
+  const objectIdsToComments = decoratedComments.reduce(
+    (result, comment) => ({
+      ...result,
+      [comment.parentId]: [...(result[comment.parentId] || []), comment],
+    }),
+    {},
+  )
+
+  return objects.map((obj) => ({
+    ...obj,
+    comments: objectIdsToComments[obj.id] || [],
+  }))
+}
+
 export const decorateWithFollowers = async (userProfiles) => {
   const allFollows = await prisma.interaction.findMany({
     where: {
