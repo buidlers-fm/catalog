@@ -82,7 +82,7 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     markFileValid(true) // file has been removed
   }
 
-  const createTransformedFileItemObj = (file) => ({
+  const createTransformedFileItemObj = (file: Blob) => ({
     file,
     uploadedFileType: file.type,
     fileExtension: file.name.split(".").pop(),
@@ -100,7 +100,7 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     setIsCropModalOpen(false)
   }
 
-  const avatar = (children) => (
+  const avatar = (children: JSX.Element) => (
     <div className="relative">
       <div className="h-48 w-48 rounded-full overflow-hidden">
         {croppedFileUrl ? (

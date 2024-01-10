@@ -21,11 +21,14 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
     y: 0,
   })
 
-  const onCropComplete = useCallback((_newCroppedArea, newCroppedAreaPixels) => {
-    setCroppedArea(newCroppedAreaPixels)
-  }, [])
+  const onCropComplete = useCallback(
+    (_newCroppedArea: CroppedArea, newCroppedAreaPixels: CroppedArea) => {
+      setCroppedArea(newCroppedAreaPixels)
+    },
+    [],
+  )
 
-  const createImage = (url) =>
+  const createImage = (url: string) =>
     new Promise((resolve, reject) => {
       const image = new Image()
       image.addEventListener("load", () => resolve(image))
