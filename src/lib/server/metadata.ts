@@ -52,10 +52,13 @@ const METADATA_CONFIG = {
   "news.post": {
     title: (title) => `${title} • news • catalog`,
   },
+  post: {
+    title: (title) => `${title} • catalog`,
+  },
 }
 
 async function getMetadata({ key, params }): Promise<Metadata> {
-  const { username, bookSlug, listSlug, shelf, postSlug } = params
+  const { username, bookSlug, listSlug, shelf, postId, postSlug } = params
 
   const config = METADATA_CONFIG[key]
 
@@ -130,6 +133,16 @@ async function getMetadata({ key, params }): Promise<Metadata> {
       if (!isAdmin) return {}
 
       pageTitle = config.title()
+    } else if (key === "post" && postId) {
+      const post = await prisma.bookNote.findFirst({
+        where: {
+          id: postId,
+        },
+      })
+
+      if (!post) return {}
+
+      pageTitle = config.title(post.title)
     } else if (key === "news.post" && postSlug) {
       const post = await ghost.getPost(postSlug)
 

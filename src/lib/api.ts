@@ -73,6 +73,24 @@ const api = {
       return fetchJson(url)
     },
   },
+  comments: {
+    get: (params: {
+      parentType?: string
+      parentId?: string
+      commenterId?: string
+      commenterType?: string
+      limit?: number
+    }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/comments?${queryString}`
+      return fetchJson(url)
+    },
+    create: (requestData) =>
+      fetchJson(`/api/comments`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+  },
   follows: {
     create: (userProfileId) =>
       fetchJson(`/api/follows`, {

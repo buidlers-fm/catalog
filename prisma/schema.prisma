@@ -302,3 +302,19 @@ model Waitlister {
   @@index([email])
   @@map("waitlisters")
 }
+
+model Comment {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parentId      String    @map("parent_id") @db.Uuid
+  parentType    String    @map("parent_type")
+  commenterId   String    @map("commenter_id") @db.Uuid
+  commenterType String    @map("commenter_type")
+  text          String
+  level         Int       @default(0)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([parentId, parentType])
+  @@index([commenterId, commenterType])
+  @@map("comments")
+}

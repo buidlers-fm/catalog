@@ -86,20 +86,26 @@ export default function Likes({
   }
 
   return (
-    <div className="flex">
+    <div className="-mt-0.5">
       {interactive ? (
         <button id={buttonId} onClick={toggleLike} className="inline-block mr-1.5">
           {currentUserLike ? (
-            <FaHeart className="text-red-300 text-sm" />
+            <FaHeart className="inline-block mr-1.5 text-red-300 text-sm" />
           ) : (
-            <FaRegHeart className="text-gray-500 text-sm" />
+            <FaRegHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
+          )}
+
+          {(likeCount || likeCount === 0) && (
+            <span className="inline-block text-sm text-gray-300">{likeCount}</span>
           )}
         </button>
       ) : (
-        <FaHeart className="inline-block mt-1 mr-1.5 text-gray-500 text-sm" />
-      )}
-      {(likeCount || likeCount === 0) && (
-        <span className="inline-block mt-0.5 text-sm text-gray-300">{likeCount}</span>
+        <>
+          <FaHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
+          {(likeCount || likeCount === 0) && (
+            <span className="inline-block text-sm text-gray-300">{likeCount}</span>
+          )}
+        </>
       )}
     </div>
   )

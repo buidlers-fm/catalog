@@ -3,11 +3,12 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Tooltip } from "react-tooltip"
+import { FaRegComment } from "react-icons/fa"
 import { TbExternalLink } from "react-icons/tb"
 import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { getBookLink, getDomainFromUrl } from "lib/helpers/general"
+import { getBookLink, getPostLink, getDomainFromUrl } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
@@ -28,7 +29,8 @@ export default function BookLinkPostCard({
   onDeleteSuccess,
 }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const { id, creator, title, linkUrl, createdAt, book, likeCount, currentUserLike } = post
+  const { id, creator, title, linkUrl, createdAt, book, likeCount, currentUserLike, comments } =
+    post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
@@ -103,7 +105,7 @@ export default function BookLinkPostCard({
           <Tooltip anchorSelect={`#created-at-${id}`} className="max-w-[240px] font-mulish">
             <div className="text-center">{createdAtFormatted}</div>
           </Tooltip>
-          <div className="my-3">
+          <div className="my-3 flex">
             <Likes
               interactive={!!currentUserProfile}
               likedObject={post}
@@ -111,6 +113,12 @@ export default function BookLinkPostCard({
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />
+            <div className="-mt-0.5 ml-4">
+              <Link href={getPostLink(id)} className="">
+                <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
+                {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
