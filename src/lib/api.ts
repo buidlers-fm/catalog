@@ -90,6 +90,15 @@ const api = {
         method: "POST",
         body: prepReqBody(requestData),
       }),
+    update: (commentId, requestData) =>
+      fetchJson(`/api/comments/${commentId}`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
+    delete: (commentId) =>
+      fetchJson(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      }),
   },
   follows: {
     create: (userProfileId) =>

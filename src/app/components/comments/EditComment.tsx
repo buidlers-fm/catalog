@@ -11,16 +11,16 @@ import type Comment from "types/Comment"
 
 export default function EditComment({
   comment,
-  parent,
+  parentId,
   parentType,
   onEditSuccess,
   onDeleteSuccess,
   onCancel,
 }: {
   comment?: Comment
-  parent: any
+  parentId: any
   parentType: CommentParentType
-  onEditSuccess: () => void
+  onEditSuccess: (comment: Comment) => void
   onDeleteSuccess: () => void
   onCancel?: () => void
 }) {
@@ -43,19 +43,22 @@ export default function EditComment({
     const requestData = {
       text,
       parentType,
-      parentId: parent.id,
+      parentId,
     }
 
     try {
-      await api.comments.create(requestData)
+      let savedComment
+      if (comment) {
+        savedComment = await api.comments.update(id, requestData)
+      } else {
+        savedComment = await api.comments.create(requestData)
 
-      toast.success(`Comment saved!`, { id: toastId })
-
-      if (!comment) {
         setText("")
       }
 
-      await onEditSuccess()
+      toast.success(`Comment saved!`, { id: toastId })
+
+      await onEditSuccess(savedComment)
     } catch (error: any) {
       reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
@@ -71,7 +74,7 @@ export default function EditComment({
     const toastId = toast.loading("Deleting...")
 
     try {
-      await api.bookNotes.delete(id)
+      await api.comments.delete(id)
 
       toast.success(`Comment deleted!`, { id: toastId })
 
@@ -132,7 +135,7 @@ export default function EditComment({
       </div>
       {showDeleteConfirmation && (
         <ConfirmationModal
-          title="Delete this note?"
+          title="Delete this comment?"
           onConfirm={handleDelete}
           onClose={() => setShowDeleteConfirmation(false)}
           isOpen={showDeleteConfirmation}
