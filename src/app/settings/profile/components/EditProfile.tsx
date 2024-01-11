@@ -158,7 +158,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
         <div className="ml:flex justify-center">
           <div className="my-8 grow">
             <AvatarUpload
-              initialFile={avatarUrl}
+              initialFileUrl={avatarUrl}
               onFileChange={onAvatarChange}
               markFileValid={setAvatarValid}
             />

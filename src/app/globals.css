@@ -80,24 +80,6 @@
   @apply border-b border-b-gray-200;
 }
 
-/* filepond styles */
-.filepond--root {
-  @apply cursor-pointer font-mulish !important;
-}
-
-.filepond--drop-label {
-  @apply text-white !important;
-}
-
-.filepond--drop-label label {
-  @apply cursor-pointer !important;
-}
-
-.filepond--panel-root {
-  @apply bg-gray-900 !important;
-}
-/* end filepond styles */
-
 .cat-news-post {
   @apply text-lg;
 }

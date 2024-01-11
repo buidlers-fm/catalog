@@ -1,99 +1,157 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { FilePond, registerPlugin } from "react-filepond"
-import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size"
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation"
-import FilePondPluginImagePreview from "filepond-plugin-image-preview"
-import FilePondPluginImageCrop from "filepond-plugin-image-crop"
-import FilePondPluginImageResize from "filepond-plugin-image-resize"
-import FilePondPluginImageTransform from "filepond-plugin-image-transform"
-import "filepond/dist/filepond.min.css"
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+import { ChangeEvent, useState } from "react"
+import { FaUserCircle } from "react-icons/fa"
+import { MdEdit, MdOutlineFileUpload } from "react-icons/md"
+import { TbTrash } from "react-icons/tb"
+import AvatarCropModal from "app/settings/profile/components/AvatarCropModal"
 
-registerPlugin(
-  FilePondPluginFileValidateSize,
-  FilePondPluginFileValidateType,
-  FilePondPluginImageExifOrientation,
-  FilePondPluginImagePreview,
-  FilePondPluginImageCrop,
-  FilePondPluginImageResize,
-  FilePondPluginImageTransform,
-)
+const IMAGE_MIME_TYPE = ["image/png", "image/jpg", "image/jpeg", "image/gif"]
+const MAX_FILE_SIZE = 4 * 1000 * 1000
 
-export default function AvatarUpload({ initialFile, onFileChange, markFileValid }) {
-  const [files, setFiles] = useState<any[]>([])
+const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
+  const [croppedFileUrl, setCroppedFileUrl] = useState<string | undefined>(initialFileUrl)
+  const [uploadedFile, setUploadedFile] = useState<Blob>()
+  const [uploadedFileType, setUploadedFileType] = useState<string>()
+  const [showCropModal, setShowCropModal] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
 
-  useEffect(() => {
-    if (initialFile) {
-      setFiles([initialFile])
-    }
-  }, [initialFile])
+  const isValidFile = (file: File): boolean => {
+    if (!file) return false
 
-  const handleFileChange = (_files) => {
+    let isValid = true
+
+    if (file.size > MAX_FILE_SIZE) {
+      // size too large
+      setErrorMessage("Please upload a file less than 4MB.")
+      isValid = false
+    } else if (!IMAGE_MIME_TYPE.includes(file.type)) {
+      // not the correct type
+      setErrorMessage("Please upload only a PNG, JPG, or GIF file.")
+      isValid = false
+    }
+
+    return isValid
+  }
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setErrorMessage(undefined)
 
-    setFiles(_files)
-    const _file = _files[0]
+    if (!event.target.files) return
 
-    if (!_file) {
+    const targetFile = event.target.files[0]
+
+    if (!isValidFile(targetFile)) return
+
+    setUploadedFileType(targetFile!.type)
+    setUploadedFile(targetFile)
+
+    if (targetFile) {
+      if (targetFile.type === "image/gif") {
+        setCroppedFileUrl(URL.createObjectURL(targetFile))
+        onFileChange(createTransformedFileItemObj(targetFile))
+      } else {
+        setShowCropModal(true)
+      }
+    } else {
       onFileChange(undefined)
       markFileValid(true) // file has been removed
     }
   }
 
-  const handleError = (error) => {
-    const { main, sub } = error
-    const errorDetail = sub ? ` - ${sub}` : ""
-    const _errorMessage = `${main}${errorDetail}`
-
-    setErrorMessage(_errorMessage)
-    markFileValid(false)
+  const handleDeleteClick = () => {
+    setErrorMessage(undefined)
+    setCroppedFileUrl(undefined)
+    onFileChange(undefined)
+    markFileValid(true) // file has been removed
   }
 
-  return (
-    <div>
-      <div className="h-48 w-48">
-        <FilePond
-          name="avatar"
-          files={files}
-          onupdatefiles={handleFileChange}
-          onerror={handleError}
-          imagePreviewHeight={192}
-          imageCropAspectRatio="1:1"
-          imageResizeTargetWidth={512}
-          imageResizeTargetHeight={512}
-          acceptedFileTypes={["image/*"]}
-          maxFileSize="4MB"
-          labelIdle="Drag & drop, paste, or click to select"
-          stylePanelLayout="compact circle"
-          styleLoadIndicatorPosition="center"
-          styleProgressIndicatorPosition="center"
-          styleButtonRemoveItemPosition="right bottom"
-          imageTransformImageFilter={(file) => !file.type.match(/gif/)}
-          onpreparefile={(fileItem, output) => {
-            // not sure if this is needed but if `files` has not yet
-            // been set to `[initialFile]`, it's definitely too early
-            // to run this function
-            if (initialFile && files.length === 0) return
+  const createTransformedFileItemObj = (file: Blob) => ({
+    file,
+    uploadedFileType: file.type,
+    fileExtension: file.name.split(".").pop(),
+  })
 
-            const transformedFile = new File([output], output.name, { type: output.type })
-            const transformedFileItemObj = {
-              file: transformedFile,
-              fileType: output.type,
-              fileExtension: output.name.split(".").pop(),
-            }
-            setFiles([transformedFileItemObj])
-            onFileChange(transformedFileItemObj)
-          }}
-        />
+  const handleFileCropped = (croppedFileBlob: Blob) => {
+    const newCroppedFile = new File([croppedFileBlob], uploadedFile!.name, {
+      type: uploadedFile!.type,
+    })
+    const transformedFileItemObj = createTransformedFileItemObj(newCroppedFile)
+
+    setCroppedFileUrl(URL.createObjectURL(croppedFileBlob))
+    onFileChange(transformedFileItemObj)
+    setShowCropModal(false)
+  }
+
+  const avatar = (children: JSX.Element) => (
+    <div className="relative">
+      <div className="h-48 w-48 rounded-full overflow-hidden">
+        {croppedFileUrl ? (
+          <img src={croppedFileUrl} alt="preview" className="object-cover h-full w-full" />
+        ) : (
+          <div className="flex items-center justify-center h-48 w-48 border solid border-gold-100 rounded-full">
+            <FaUserCircle className="h-12 w-12 text-gold-100 rounded-full" />
+          </div>
+        )}
+        {children}
       </div>
+    </div>
+  )
+
+  const actionIconButtonClasses = "bg-white cursor-pointer text-black rounded-full w-8 h-8"
+
+  const actionIconButtons = (
+    <>
+      <label htmlFor="fileUpload">
+        <div className="absolute cursor-default bottom-4 left-4">
+          {croppedFileUrl ? (
+            <MdEdit className={actionIconButtonClasses} />
+          ) : (
+            <MdOutlineFileUpload className={actionIconButtonClasses} />
+          )}
+        </div>
+      </label>
+
+      {croppedFileUrl && (
+        <button
+          type="button"
+          className="absolute cursor-default bottom-4 right-4"
+          onClick={handleDeleteClick}
+        >
+          <TbTrash className={actionIconButtonClasses} />
+        </button>
+      )}
+    </>
+  )
+
+  return (
+    <div className="w-full xs:w-96">
+      {uploadedFile && (
+        <AvatarCropModal
+          avatarImageUrl={URL.createObjectURL(uploadedFile)}
+          imageType={uploadedFileType}
+          isOpen={showCropModal}
+          onModalClose={() => setShowCropModal(false)}
+          onSaveHandler={handleFileCropped}
+        />
+      )}
+      <div className="flex flex-col items-center">
+        <input
+            id="fileUpload"
+            type="file"
+            value=""
+            accept={IMAGE_MIME_TYPE.join(",")}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {avatar(actionIconButtons)}
+        </div>
       <div className="mt-6 text-sm text-gray-200">
-        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
+        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, as it will get auto-cropped.
       </div>
       {errorMessage && <div className="my-4 text-red-500">{errorMessage}</div>}
     </div>
   )
 }
+
+export default AvatarUpload
