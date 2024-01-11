@@ -18,13 +18,39 @@ export const GET = withApiHandling(
     let successCount = 0
     const failures: any[] = []
 
-    const totalBooksToProcess = await prisma.book.count({
-      where: {
-        coverImageUrl: {
-          not: null,
+    // where cover image is present but thumbnail isn't, OR
+    // either image is an openlibrary image
+    const whereConditions = {
+      OR: [
+        {
+          AND: [
+            {
+              coverImageUrl: {
+                not: null,
+              },
+            },
+            {
+              coverImageThumbnailUrl: {
+                equals: null,
+              },
+            },
+          ],
         },
-        coverImageThumbnailUrl: null,
-      },
+        {
+          coverImageUrl: {
+            contains: "openlibrary",
+          },
+        },
+        {
+          coverImageThumbnailUrl: {
+            contains: "openlibrary",
+          },
+        },
+      ],
+    }
+
+    const totalBooksToProcess = await prisma.book.count({
+      where: whereConditions,
     })
 
     if (totalBooksToProcess > BOOKS_LIMIT) {
@@ -35,12 +61,7 @@ export const GET = withApiHandling(
 
     // fetch a batch of books with covers that haven't been processed
     const allBooks = await prisma.book.findMany({
-      where: {
-        coverImageUrl: {
-          not: null,
-        },
-        coverImageThumbnailUrl: null,
-      },
+      where: whereConditions,
       orderBy: {
         createdAt: "asc",
       },
