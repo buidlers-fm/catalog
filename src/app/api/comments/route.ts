@@ -9,7 +9,9 @@ import type Comment from "types/Comment"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(
-  async (_req: NextRequest) => {
+  async (_req: NextRequest, { params }) => {
+    const { currentUserProfile } = params
+
     const queryParams = _req.nextUrl.searchParams
     const parentType = (queryParams.get("parent_type") as CommentParentType) || undefined
     const parentId = queryParams.get("parent_id") || undefined
@@ -30,7 +32,7 @@ export const GET = withApiHandling(
       take: limit,
     })
 
-    comments = await decorateComments(comments)
+    comments = await decorateComments(comments, currentUserProfile)
 
     const resBody = humps.decamelizeKeys(comments)
 

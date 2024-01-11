@@ -311,6 +311,7 @@ model Comment {
   commenterType String    @map("commenter_type")
   text          String
   level         Int       @default(0)
+  likeCount     Int       @default(0) @map("like_count")
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 

@@ -3,6 +3,43 @@ import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
 
+enum UpdateLikeCountMode {
+  Increment,
+  Decrement,
+}
+
+const typesWithLikeCounts = [InteractionObjectType.BookNote, InteractionObjectType.Comment]
+
+async function getUpdateLikeCountParams(mode, params: any = {}) {
+  const { likedObjectType, likedObjectId } = params
+
+  if (!likedObjectType || !likedObjectId) {
+    throw new Error("likedObjectType and likedObjectId are required")
+  }
+
+  const currentLikeCount = await prisma.interaction.count({
+    where: {
+      objectId: likedObjectId,
+      objectType: likedObjectType,
+      interactionType: InteractionType.Like,
+    },
+  })
+
+  const newLikeCount =
+    mode === UpdateLikeCountMode.Increment ? currentLikeCount + 1 : currentLikeCount - 1
+
+  const updateLikeCountParams = {
+    where: {
+      id: likedObjectId,
+    },
+    data: {
+      likeCount: newLikeCount,
+    },
+  }
+
+  return updateLikeCountParams
+}
+
 export async function findOrCreateLike({ likedObjectType, likedObjectId, userProfile }) {
   const existingLike = await prisma.interaction.findFirst({
     where: {
@@ -28,24 +65,22 @@ export async function findOrCreateLike({ likedObjectType, likedObjectId, userPro
     },
   })
 
-  if (likedObjectType === InteractionObjectType.BookNote) {
-    const currentLikeCount = await prisma.interaction.count({
-      where: {
-        objectId: likedObjectId,
-        interactionType: InteractionType.Like,
-      },
+  // update objects that keep their own like counts
+  if (typesWithLikeCounts.includes(likedObjectType)) {
+    const updateLikeCountParams = await getUpdateLikeCountParams(UpdateLikeCountMode.Increment, {
+      likedObjectType,
+      likedObjectId,
     })
 
-    const updateBookNoteLikeCount = prisma.bookNote.update({
-      where: {
-        id: likedObjectId,
-      },
-      data: {
-        likeCount: currentLikeCount + 1,
-      },
-    })
+    let updateLikeCountPromise
 
-    ;[createdLike] = await prisma.$transaction([createLikePromise, updateBookNoteLikeCount])
+    if (likedObjectType === InteractionObjectType.BookNote) {
+      updateLikeCountPromise = prisma.bookNote.update(updateLikeCountParams)
+    } else if (likedObjectType === InteractionObjectType.Comment) {
+      updateLikeCountPromise = prisma.comment.update(updateLikeCountParams)
+    }
+
+    ;[createdLike] = await prisma.$transaction([createLikePromise, updateLikeCountPromise])
   } else {
     createdLike = await createLikePromise
   }
@@ -60,24 +95,22 @@ export async function deleteLike(like) {
     },
   })
 
-  if (like.objectType === InteractionObjectType.BookNote) {
-    const currentLikeCount = await prisma.interaction.count({
-      where: {
-        objectId: like.objectId,
-        interactionType: InteractionType.Like,
-      },
+  // update objects that keep their own like counts
+  if (typesWithLikeCounts.includes(like.objectType)) {
+    const updateLikeCountParams = await getUpdateLikeCountParams(UpdateLikeCountMode.Decrement, {
+      likedObjectType: like.objectType,
+      likedObjectId: like.objectId,
     })
 
-    const updateBookNoteLikeCount = prisma.bookNote.update({
-      where: {
-        id: like.objectId,
-      },
-      data: {
-        likeCount: currentLikeCount - 1,
-      },
-    })
+    let updateLikeCountPromise
 
-    await prisma.$transaction([deleteLikePromise, updateBookNoteLikeCount])
+    if (like.objectType === InteractionObjectType.BookNote) {
+      updateLikeCountPromise = prisma.bookNote.update(updateLikeCountParams)
+    } else if (like.objectType === InteractionObjectType.Comment) {
+      updateLikeCountPromise = prisma.comment.update(updateLikeCountParams)
+    }
+
+    await prisma.$transaction([deleteLikePromise, updateLikeCountPromise])
   } else {
     await deleteLikePromise
   }
@@ -96,24 +129,22 @@ export async function deleteLikeByParams({ likedObjectType, likedObjectId, userP
     },
   })
 
-  if (likedObjectType === InteractionObjectType.BookNote) {
-    const currentLikeCount = await prisma.interaction.count({
-      where: {
-        objectId: likedObjectId,
-        interactionType: InteractionType.Like,
-      },
+  // update objects that keep their own like counts
+  if (typesWithLikeCounts.includes(likedObjectType)) {
+    const updateLikeCountParams = await getUpdateLikeCountParams(UpdateLikeCountMode.Decrement, {
+      likedObjectType,
+      likedObjectId,
     })
 
-    const updateBookNoteLikeCount = prisma.bookNote.update({
-      where: {
-        id: likedObjectId,
-      },
-      data: {
-        likeCount: currentLikeCount - 1,
-      },
-    })
+    let updateLikeCountPromise
 
-    await prisma.$transaction([deleteLikePromise, updateBookNoteLikeCount])
+    if (likedObjectType === InteractionObjectType.BookNote) {
+      updateLikeCountPromise = prisma.bookNote.update(updateLikeCountParams)
+    } else if (likedObjectType === InteractionObjectType.Comment) {
+      updateLikeCountPromise = prisma.comment.update(updateLikeCountParams)
+    }
+
+    await prisma.$transaction([deleteLikePromise, updateLikeCountPromise])
   } else {
     await deleteLikePromise
   }

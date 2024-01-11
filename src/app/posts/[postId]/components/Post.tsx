@@ -42,7 +42,7 @@ export default function Post({ post, currentUserProfile }) {
           <div className="mt-8 font-mulish">
             <div className="-mb-2">reply</div>
             <EditComment
-              parent={post}
+              parentId={post.id}
               parentType={CommentParentType.BookNote}
               onEditSuccess={getComments}
               onDeleteSuccess={getComments}
@@ -55,7 +55,12 @@ export default function Post({ post, currentUserProfile }) {
       {comments.length > 0 ? (
         <div className="mt-8">
           {comments.map((comment) => (
-            <CommentCard key={comment.id} comment={comment} />
+            <CommentCard
+              key={comment.id}
+              comment={comment}
+              currentUserProfile={currentUserProfile}
+              onDelete={getComments}
+            />
           ))}
         </div>
       ) : (
