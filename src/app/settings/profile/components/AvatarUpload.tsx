@@ -103,14 +103,6 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
   const actionIconButtons = (
     <>
       <label htmlFor="fileUpload">
-        <input
-          id="fileUpload"
-          type="file"
-          value=""
-          accept={IMAGE_MIME_TYPE.join(",")}
-          onChange={handleFileChange}
-          className="hidden"
-        />
         <div className="absolute cursor-default bottom-4 left-4">
           {croppedFileUrl ? (
             <MdEdit className={actionIconButtonClasses} />
@@ -143,7 +135,17 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
           onSaveHandler={handleFileCropped}
         />
       )}
-      <div className="flex flex-col items-center">{avatar(actionIconButtons)}</div>
+      <div className="flex flex-col items-center">
+        <input
+            id="fileUpload"
+            type="file"
+            value=""
+            accept={IMAGE_MIME_TYPE.join(",")}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {avatar(actionIconButtons)}
+        </div>
       <div className="mt-6 text-sm text-gray-200">
         Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
       </div>
