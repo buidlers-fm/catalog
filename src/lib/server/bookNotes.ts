@@ -95,7 +95,7 @@ async function getBookNotes(params: {
     currentUserProfile,
   )
 
-  bookNotes = await decorateWithComments(bookNotes, CommentParentType.BookNote)
+  bookNotes = await decorateWithComments(bookNotes, CommentParentType.BookNote, currentUserProfile)
 
   return bookNotes
 }

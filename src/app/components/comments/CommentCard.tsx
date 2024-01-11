@@ -6,11 +6,22 @@ import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import EditComment from "app/components/comments/EditComment"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import ExpandableText from "app/components/ExpandableText"
+import Likes from "app/components/Likes"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 const TEXT_TRUNCATE_LENGTH = 500
 
 export default function CommentCard({ comment, currentUserProfile, onDelete }) {
-  const { id, commenter, text: _text, parentId, parentType, createdAt } = comment
+  const {
+    id,
+    commenter,
+    text: _text,
+    parentId,
+    parentType,
+    createdAt,
+    likeCount,
+    currentUserLike,
+  } = comment
 
   const [text, setText] = useState<string>(_text)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -68,6 +79,16 @@ export default function CommentCard({ comment, currentUserProfile, onDelete }) {
           <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
         </div>
       )}
+
+      <div className="my-3 flex">
+        <Likes
+          interactive={!!currentUserProfile}
+          likedObject={comment}
+          likedObjectType={InteractionObjectType.Comment}
+          likeCount={likeCount}
+          currentUserLike={currentUserLike}
+        />
+      </div>
     </div>
   )
 }

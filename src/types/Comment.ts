@@ -1,3 +1,5 @@
+import type Like from "types/Like"
+
 export default interface Comment {
   id?: string
   text: string
@@ -10,4 +12,6 @@ export default interface Comment {
   updatedAt?: string | Date
   commenter?: any
   parent?: any
+  likeCount?: number
+  currentUserLike?: Like // in-memory only
 }
