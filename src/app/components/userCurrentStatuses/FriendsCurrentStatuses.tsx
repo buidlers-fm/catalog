@@ -7,13 +7,13 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
   const twoWeeksAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 14)
 
   const followingQueryOptions = {
-    where: {
-      createdAt: {
-        gte: twoWeeksAgo,
-      },
-    },
     include: {
       currentStatuses: {
+        where: {
+          createdAt: {
+            gte: twoWeeksAgo,
+          },
+        },
         orderBy: {
           createdAt: "desc",
         },

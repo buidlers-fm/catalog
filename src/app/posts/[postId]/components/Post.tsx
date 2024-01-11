@@ -38,18 +38,19 @@ export default function Post({ post, currentUserProfile }) {
       />
 
       {currentUserProfile && (
-        <div className="mt-8 font-mulish">
-          <div className="-mb-2">reply</div>
-          <EditComment
-            parent={post}
-            parentType={CommentParentType.BookNote}
-            onEditSuccess={getComments}
-            onDeleteSuccess={getComments}
-          />
-        </div>
+        <>
+          <div className="mt-8 font-mulish">
+            <div className="-mb-2">reply</div>
+            <EditComment
+              parent={post}
+              parentType={CommentParentType.BookNote}
+              onEditSuccess={getComments}
+              onDeleteSuccess={getComments}
+            />
+          </div>
+          <hr className="my-12 h-[1px] border-none bg-gray-800" />
+        </>
       )}
-
-      <hr className="my-12 h-[1px] border-none bg-gray-800" />
 
       {comments.length > 0 ? (
         <div className="mt-8">
