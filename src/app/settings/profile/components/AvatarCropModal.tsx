@@ -79,7 +79,7 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
     <Dialog open={isOpen} onClose={onModalClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
       <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
-        <Dialog.Panel className="relative rounded max-h-[90dvh] min-h-[80dvh] xs:min-h-[70dvh] sm:min-h-[60dvh] overflow-y-auto max-w-xs xs:max-w-md sm:max-w-xl md:max-w-none bg-gray-900 px-16 py-8 flex flex-col">
+        <Dialog.Panel className="relative rounded max-h-[90dvh] min-h-[80dvh] xs:min-h-[70dvh] sm:min-h-[60dvh] overflow-y-auto max-w-xs xs:max-w-md sm:max-w-xl md:max-w-none bg-gray-900 px-8 sm:px-16 py-8 flex flex-col">
           <Dialog.Title>
             <div className="mb-8 text-center text-xl font-bold">avatar crop and resize</div>
           </Dialog.Title>
