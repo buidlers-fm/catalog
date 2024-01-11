@@ -98,17 +98,20 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
     </div>
   )
 
-  const actionIconButtonClasses = "bg-white cursor-pointer text-black rounded-full w-8 h-8"
+  const actionIconContainerClasses =
+    "w-8 h-8 bg-gray-800 text-white rounded-full cursor-pointer flex justify-center items-center"
 
   const actionIconButtons = (
     <>
       <label htmlFor="fileUpload">
         <div className="absolute cursor-default bottom-4 left-4">
-          {croppedFileUrl ? (
-            <MdEdit className={actionIconButtonClasses} />
-          ) : (
-            <MdOutlineFileUpload className={actionIconButtonClasses} />
-          )}
+          <div className={actionIconContainerClasses}>
+            {croppedFileUrl ? (
+              <MdEdit className="text-lg" />
+            ) : (
+              <MdOutlineFileUpload className="text-lg" />
+            )}
+          </div>
         </div>
       </label>
 
@@ -118,7 +121,9 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
           className="absolute cursor-default bottom-4 right-4"
           onClick={handleDeleteClick}
         >
-          <TbTrash className={actionIconButtonClasses} />
+          <div className={actionIconContainerClasses}>
+            <TbTrash className="text-xl" />
+          </div>
         </button>
       )}
     </>
@@ -137,15 +142,15 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
       )}
       <div className="flex flex-col items-center">
         <input
-            id="fileUpload"
-            type="file"
-            value=""
-            accept={IMAGE_MIME_TYPE.join(",")}
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          {avatar(actionIconButtons)}
-        </div>
+          id="fileUpload"
+          type="file"
+          value="" // this allows you to select the same file that you selected previously
+          accept={IMAGE_MIME_TYPE.join(",")}
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        {avatar(actionIconButtons)}
+      </div>
       <div className="mt-6 text-sm text-gray-200">
         Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, as it will get auto-cropped.
       </div>
