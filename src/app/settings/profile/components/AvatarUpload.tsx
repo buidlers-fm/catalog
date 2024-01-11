@@ -147,7 +147,7 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
           {avatar(actionIconButtons)}
         </div>
       <div className="mt-6 text-sm text-gray-200">
-        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, else it will look stretched.
+        Max 4 MB. For GIFs, a 1:1 aspect ratio is recommended, as it will get auto-cropped.
       </div>
       {errorMessage && <div className="my-4 text-red-500">{errorMessage}</div>}
     </div>
