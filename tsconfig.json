@@ -20,7 +20,8 @@
       }
     ],
     "baseUrl": "src",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "types": ["jest", "@quramy/jest-prisma"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
