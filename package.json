@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "NODE_ENV=test jest",
     "postinstall": "prisma generate",
     "db:migrate:dev": "prisma migrate dev"
   },
@@ -58,6 +58,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@quramy/jest-prisma": "^1.7.3",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@types/jest": "^29.5.11",

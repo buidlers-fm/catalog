@@ -820,6 +820,20 @@
   resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-5.2.0.tgz#e5dff48eb324c8137393933292d44ea5c3bc2ce7"
   integrity sha512-dT7FOLUCdZmq+AunLqB1Iz+ZH/IIS1Fz2THmKZQ6aFONrQD/BQ5ecJ7g2wGS2OgyUFf4OaLam6/bxmgdOBDqig==
 
+"@quramy/jest-prisma-core@^1.7.0":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@quramy/jest-prisma-core/-/jest-prisma-core-1.7.3.tgz#be71ee3745ce5e44d86486a2dcd7fc48d10896dd"
+  integrity sha512-x/V/OqnUdmXUrv0mQa18ixJ61jYFTvNGrpzhVxr1FriAUQL2p2srMj15iLe8DmkxHqnlwBJHcM2rSx8HM3wiEA==
+  dependencies:
+    chalk "^4.0.0"
+
+"@quramy/jest-prisma@^1.7.3":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@quramy/jest-prisma/-/jest-prisma-1.7.3.tgz#2dc2b4e3f265fa889d8839134c7a33f07110d0cb"
+  integrity sha512-f0phAXcml0bzjiswHfwdA7teZparTjv8EXprtSJjnhf0bpMIXE1qGRD1dl43EkfpPWy5RjXthtQDvbCi3Mb6xg==
+  dependencies:
+    "@quramy/jest-prisma-core" "^1.7.0"
+
 "@rollup/plugin-commonjs@24.0.0":
   version "24.0.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-24.0.0.tgz#fb7cf4a6029f07ec42b25daa535c75b05a43f75c"

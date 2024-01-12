@@ -13,7 +13,7 @@ const createJestConfig = nextJest({
 
 const config: Config = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "@quramy/jest-prisma/environment",
 
   // The glob patterns Jest uses to detect test files
   testMatch: ["**/tests/**/*.test.[jt]s?(x)"],
@@ -23,6 +23,12 @@ const config: Config = {
     "^lib/(.*)": "<rootDir>/src/lib/$1",
     "crypto-random-string": "<rootDir>/tests/__mocks__/crypto-random-string.ts",
   },
+
+  // A path to a module which exports an async function that is triggered once before all test suites
+  globalSetup: "./jest.setup.ts",
+
+  // A list of paths to modules that run some code to configure or set up the testing framework before each test
+  setupFilesAfterEnv: ["./jest.setupAfterEnv.ts"],
 
   // All imported modules in your tests should be mocked automatically
   // automock: false,
@@ -70,9 +76,6 @@ const config: Config = {
 
   // Force coverage collection from ignored files using an array of glob patterns
   // forceCoverageMatch: [],
-
-  // A path to a module which exports an async function that is triggered once before all test suites
-  // globalSetup: undefined,
 
   // A path to a module which exports an async function that is triggered once after all test suites
   // globalTeardown: undefined,
@@ -143,9 +146,6 @@ const config: Config = {
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
   // setupFiles: [],
-
-  // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  // setupFilesAfterEnv: [],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
