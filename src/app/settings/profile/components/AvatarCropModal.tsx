@@ -111,6 +111,7 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
               type="button"
               className="cat-btn cat-btn-sm cat-btn-gold"
               onClick={handleSaveCrop}
+              ref={(element) => element?.focus?.()} // set focus here
             >
               Crop
             </button>
