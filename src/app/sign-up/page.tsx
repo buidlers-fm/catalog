@@ -1,5 +1,6 @@
 import humps from "humps"
 import prisma from "lib/prisma"
+import { getCurrentUserProfile } from "lib/server/auth"
 import SignUpForm from "app/components/nav/SignUpForm"
 import FeatureFlag from "enums/FeatureFlag"
 import type { Metadata } from "next"
@@ -14,6 +15,12 @@ export const metadata: Metadata = {
 }
 
 export default async function SignUpPage({ searchParams }) {
+  const currentUserProfile = await getCurrentUserProfile()
+
+  if (currentUserProfile) {
+    return <ErrorPage errorMessage="You're already signed in!" />
+  }
+
   const { inviteCode } = humps.camelizeKeys(searchParams)
 
   const invitesFeatureFlag = await prisma.featureFlag.findFirst({

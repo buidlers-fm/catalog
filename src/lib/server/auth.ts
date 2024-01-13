@@ -40,6 +40,7 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
       },
       include: {
         roleAssignments: withRoles,
+        config: true,
       },
     })
   }

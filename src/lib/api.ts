@@ -205,6 +205,13 @@ const api = {
         body: prepReqBody(requestData),
       }),
   },
+  userConfigs: {
+    update: (requestData) =>
+      fetchJson(`/api/user_configs`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
+  },
   userCurrentStatuses: {
     create: (requestData) =>
       fetchJson(`/api/user_current_statuses`, {

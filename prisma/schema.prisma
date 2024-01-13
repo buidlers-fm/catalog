@@ -29,6 +29,7 @@ model UserProfile {
   bookShelfAssignments UserBookShelfAssignment[]
   roleAssignments      UserRole[]
   invitesCreated       UserInvite[]
+  config               UserConfig?
 
   @@map("user_profiles")
 }
@@ -318,4 +319,16 @@ model Comment {
   @@index([parentId, parentType])
   @@index([commenterId, commenterType])
   @@map("comments")
+}
+
+model UserConfig {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userProfileId       String      @map("user_profile_id") @db.Uuid
+  hasNewAnnouncements Boolean     @default(false) @map("has_new_announcements")
+  createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  userProfile         UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userProfileId])
+  @@map("user_configs")
 }

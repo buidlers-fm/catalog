@@ -156,6 +156,14 @@ export const POST = withApiHandling(
 
     console.log(createUserRes)
 
+    // create user config
+    await prisma.userConfig.create({
+      data: {
+        userProfileId: createUserRes.profile!.id,
+        hasNewAnnouncements: true,
+      },
+    })
+
     // create invite claim
     if (invitesFeatureFlag?.enabled && matchingInvite) {
       await prisma.userInviteClaim.create({
