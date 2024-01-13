@@ -192,6 +192,14 @@ const api = {
         method: "PATCH",
         body: formData,
       }),
+    search: (searchStr) => {
+      const params = {
+        query: searchStr,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/profiles/search?${queryString}`
+      return fetchJson(url)
+    },
   },
   userBookShelves: {
     get: (params: { bookId?: string }) => {
