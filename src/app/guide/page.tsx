@@ -18,10 +18,31 @@ const componentOverrides = {
     </h1>
   ),
   p: ({ node, children, ...props }) => (
-    <h1 className="text-lg" {...props}>
+    <p className="text-lg" {...props}>
       {children}
-    </h1>
+    </p>
   ),
+  li: ({ node, children: _children, ...props }) => {
+    let children = _children
+
+    // if second child is a <p> element (aka. if original list had whitespace lines
+    // between items), strip the <p> but not the spacing between items
+    if (_children && _children[1] && _children[1].props?.node?.tagName === "p") {
+      ;({ children } = _children[1].props)
+
+      return (
+        <li {...props} className="text-lg">
+          {children}
+        </li>
+      )
+    }
+
+    return (
+      <li {...props} className="-my-3 text-lg">
+        {children}
+      </li>
+    )
+  },
 }
 
 export default function GuidePage() {

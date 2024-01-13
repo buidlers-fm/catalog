@@ -4,6 +4,22 @@ As I'm sure you're well aware, you've entered an app in its alpha/beta phase of 
 
 There are a few things that are good for you to know about the app, and its current and future state.
 
+# getting started
+
+1. Fill out whatever you want to on your profile, like name/bio, favorite books, and current status.
+
+2. You can find some people to follow if you want to, by going to the [homepage](https://catalog.fyi/home) and browsing some of the recent activity in the sections there.
+
+3. Add a few books to your shelves (e.g. currently reading, up next) by going to the book's page and clicking "shelves".
+
+4. Create a list or two if you want to. People have been making lists like "favorites of 2023," "to read in 2024," or lists of books around specific topics that they want to share or remember.
+
+5. Explore other people's stuff, continue to keep track of your books and recs as you read, and try out some of the other features that are there now, and more that will be releasing soon. If you love it and want to get your friends in too, you can point them to the [waitlist signup](https://tally.so/r/mZ20aA).
+
+You can find a bit more context about the app in our blog archive, specifically my post [a space for book people](https://catalog.fyi/news/catalog-news-004-a-space-for-book-people).
+
+If you have any questions or run into any issues, let us know. We have a [Discord server](https://discord.gg/Htj7gWYCkC) for feedback, or you can email staff@catalog.fyi .
+
 # book search and book details
 
 For our book search, and for all the book details you see, including titles, author names, descriptions, and covers, we use [OpenLibrary](https://openlibrary.org/) as our data source. We choose to work with them because of a deep alignment of values, because we believe that book _metadata_ (the aforementioned details) should be free and open. That means we forgo paying for the kind of proprietary book data that powers some other book apps. That data is often supplied by huge companies who employ lots of people whose job it is to clean and fix book data; meanwhile, OpenLibrary relies on a small fleet of volunteer librarians who are just passionate about books.
