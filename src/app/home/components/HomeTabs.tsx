@@ -16,16 +16,16 @@ export default function HomeTabs() {
       href: "/home",
     },
     {
+      name: "notifs",
+      href: "/home/notifs",
+    },
+    {
       name: "recent lists",
       href: "/home/lists/recent",
     },
     {
       name: "recent notes",
       href: "/home/notes/recent",
-    },
-    {
-      name: "recent links",
-      href: "/home/links/recent",
     },
   ]
 

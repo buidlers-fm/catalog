@@ -176,3 +176,8 @@ export async function fetchImageAsBlob(url) {
     mimeType,
   }
 }
+
+export function idsToObjects(objects) {
+  // assumes object has an id field
+  return objects.reduce((result, object) => ({ ...result, [object.id]: object }), {})
+}

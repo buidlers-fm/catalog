@@ -31,6 +31,7 @@ model UserProfile {
   roleAssignments      UserRole[]
   invitesCreated       UserInvite[]
   config               UserConfig?
+  notifications        Notification[]
 
   @@index([nameSearch], type: Gin)
   @@map("user_profiles")
@@ -333,4 +334,26 @@ model UserConfig {
 
   @@unique([userProfileId])
   @@map("user_configs")
+}
+
+model Notification {
+  id                    String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  agentId               String      @map("agent_id") @db.Uuid
+  agentType             String      @map("agent_type")
+  type                  String      @map("type")
+  objectId              String      @map("object_id") @db.Uuid
+  objectType            String      @map("object_type")
+  sourceId              String?     @map("source_id") @db.Uuid
+  sourceType            String?     @map("source_type")
+  notifiedUserProfileId String      @map("notified_user_profile_id") @db.Uuid
+  read                  Boolean     @default(false)
+  createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  notifiedUser          UserProfile @relation(fields: [notifiedUserProfileId], references: [id], onDelete: Cascade)
+
+  @@index([agentId, agentType])
+  @@index([objectId, objectType])
+  @@index([sourceId, sourceType])
+  @@index([notifiedUserProfileId])
+  @@map("notifications")
 }
