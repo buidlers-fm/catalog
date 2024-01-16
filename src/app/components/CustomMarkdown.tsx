@@ -52,12 +52,12 @@ const components: Components = {
 
 const plugins = [linkifyRegex(/(?:https?):\/\/\S+/g)]
 
-const CustomMarkdown = ({ markdown, componentOverrides = {} }) => {
+const CustomMarkdown = ({ markdown, componentOverrides = {}, moreClasses = "" }) => {
   const finalComponents = { ...components, ...componentOverrides }
 
   return (
     <Markdown
-      className="whitespace-pre-wrap break-words"
+      className={`whitespace-pre-wrap break-words ${moreClasses}`}
       components={finalComponents}
       remarkPlugins={plugins}
     >

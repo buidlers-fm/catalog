@@ -1,8 +1,9 @@
 import prisma from "lib/prisma"
-import { getListLink } from "lib/helpers/general"
+import { getListLink, idsToObjects } from "lib/helpers/general"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
+import NotificationObjectType from "enums/NotificationObjectType"
 import type Like from "types/Like"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
@@ -280,4 +281,96 @@ export const decorateWithFollowing = async (userProfiles, options: any = {}) => 
       .map((follow) => allFollowingById[follow.objectId])
       .filter((followedUserProfile) => !!followedUserProfile) as UserProfileProps[],
   }))
+}
+
+export const decorateNotifs = async (notifs) => {
+  const agentIds = notifs.map((notif) => notif.agentId)
+  const notifiedUserProfileIds = notifs.map((notif) => notif.notifiedUserProfileId)
+
+  const allAgents = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: agentIds,
+      },
+    },
+  })
+
+  const allCommentIds = notifs
+    .filter(
+      (n) =>
+        n.objectType === NotificationObjectType.Comment ||
+        n.sourceType === NotificationObjectType.Comment,
+    )
+    .map((n) => n.objectId)
+
+  const allComments = await prisma.comment.findMany({
+    where: {
+      id: {
+        in: allCommentIds,
+      },
+    },
+  })
+
+  const allBookNoteIds = notifs
+    .filter((n) => n.objectType === NotificationObjectType.BookNote)
+    .map((n) => n.objectId)
+
+  const allBookNotes = await prisma.bookNote.findMany({
+    where: {
+      id: {
+        in: allBookNoteIds,
+      },
+    },
+  })
+
+  const allListIds = notifs
+    .filter((n) => n.objectType === NotificationObjectType.List)
+    .map((n) => n.objectId)
+
+  const allLists = await prisma.list.findMany({
+    where: {
+      id: {
+        in: allListIds,
+      },
+    },
+  })
+
+  const allNotifiedUserProfiles = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: notifiedUserProfileIds,
+      },
+    },
+  })
+
+  const agentIdsToAgents = idsToObjects(allAgents)
+  const notifiedUserProfileIdsToNotifiedUserProfiles = idsToObjects(allNotifiedUserProfiles)
+  const commentIdsToComments = idsToObjects(allComments)
+  const bookNoteIdsToBookNotes = idsToObjects(allBookNotes)
+  const listIdsToLists = idsToObjects(allLists)
+
+  return notifs.map((notif) => {
+    let object
+    let source
+
+    if (notif.objectType === NotificationObjectType.BookNote) {
+      object = bookNoteIdsToBookNotes[notif.objectId]
+    } else if (notif.objectType === NotificationObjectType.Comment) {
+      object = commentIdsToComments[notif.objectId]
+    } else if (notif.objectType === NotificationObjectType.List) {
+      object = listIdsToLists[notif.objectId]
+    }
+
+    if (notif.sourceType === NotificationObjectType.Comment) {
+      source = commentIdsToComments[notif.sourceId]
+    }
+
+    return {
+      ...notif,
+      agent: agentIdsToAgents[notif.agentId],
+      object,
+      source,
+      notifiedUser: notifiedUserProfileIdsToNotifiedUserProfiles[notif.notifiedUserProfileId],
+    }
+  })
 }

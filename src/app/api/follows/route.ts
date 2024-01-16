@@ -2,9 +2,14 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
+import { reportToSentry } from "lib/sentry"
 import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
+import NotificationType from "enums/NotificationType"
+import NotificationAgentType from "enums/NotificationAgentType"
+import NotificationObjectType from "enums/NotificationObjectType"
+import NotificationSourceType from "enums/NotificationSourceType"
 import type { NextRequest } from "next/server"
 
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
@@ -37,6 +42,25 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     follow = await prisma.interaction.create({
       data: followParams,
     })
+
+    const notificationData = {
+      agentId: currentUserProfile.id,
+      agentType: NotificationAgentType.User,
+      type: NotificationType.Follow,
+      objectId: userProfileId,
+      objectType: NotificationObjectType.User,
+      sourceId: follow.id,
+      sourceType: NotificationSourceType.Interaction,
+      notifiedUserProfileId: userProfileId,
+    }
+
+    try {
+      await prisma.notification.create({
+        data: notificationData,
+      })
+    } catch (error: any) {
+      reportToSentry(error, notificationData)
+    }
   }
 
   const resBody = humps.decamelizeKeys(follow)

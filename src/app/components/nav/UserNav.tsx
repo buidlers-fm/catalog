@@ -49,6 +49,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
   const { username } = currentUserProfile || {}
 
   const userLinks = [
+    { name: "notifs", path: "/home/notifs" },
     { name: "profile", path: getUserProfileLink(username) },
     { name: "shelves", path: getUserShelvesLink(username) },
     { name: "lists", path: getUserListsLink(username) },
