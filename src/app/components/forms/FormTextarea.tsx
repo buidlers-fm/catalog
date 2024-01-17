@@ -1,3 +1,6 @@
+"use client"
+
+import AtMentions from "app/components/AtMentions"
 import FormattingReferenceTooltip from "app/components/FormattingReferenceTooltip"
 
 type Props = {
@@ -9,6 +12,7 @@ type Props = {
   showFormattingReferenceTooltip?: boolean
   errorMessage?: string
   fullWidth?: boolean
+  atMentionsEnabled?: boolean
   [moreProps: string]: any
 }
 
@@ -24,6 +28,7 @@ export default function FormTextarea({
   moreClasses,
   bgColor = "bg-gray-900",
   fullWidth = true,
+  atMentionsEnabled = true,
   ...moreProps
 }: Props) {
   const showRemainingChars = remainingChars || remainingChars === 0
@@ -47,13 +52,23 @@ export default function FormTextarea({
         </div>
       )}
       <div className={`${fullWidth ? "w-full" : "w-full xs:w-96"}`}>
-        <textarea
-          name={name}
-          rows={rows}
-          {...formProps}
-          {...moreProps}
-          className={`w-full px-3 pt-3 pb-2 ${bgColor} rounded border-none focus:outline-gold-500 ${moreClasses}`}
-        />
+        {atMentionsEnabled ? (
+          <AtMentions
+            name={name}
+            bgColor={bgColor}
+            rows={rows}
+            formProps={formProps}
+            moreProps={moreProps}
+          />
+        ) : (
+          <textarea
+            name={name}
+            rows={rows}
+            {...formProps}
+            {...moreProps}
+            className={`w-full px-3 pt-3 pb-2 ${bgColor} rounded border-none focus:outline-gold-500 ${moreClasses}`}
+          />
+        )}
         {textFormattingAndRemainingChars}
         {errorMessage && <div className="my-2 text-red-500">{errorMessage}</div>}
       </div>

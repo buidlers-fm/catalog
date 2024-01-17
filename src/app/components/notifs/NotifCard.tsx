@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import {
@@ -13,12 +11,13 @@ import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import NotificationType from "enums/NotificationType"
 import NotificationObjectType from "enums/NotificationObjectType"
+import NotificationSourceType from "enums/NotificationSourceType"
 import BookNoteType from "enums/BookNoteType"
 
 const TEXT_TRUNCATE_LENGTH = 60
 
 export default function NotifCard({ notif, currentUserProfile }) {
-  const { id, type, agent: _agent, objectType, object, createdAt } = notif
+  const { id, type, agent: _agent, objectType, object, sourceType, createdAt } = notif
 
   const agent = UserProfile.build(_agent)
 
@@ -45,6 +44,7 @@ export default function NotifCard({ notif, currentUserProfile }) {
         <>
           <AgentLink agent={agent} /> liked your{" "}
           <ObjectText
+            agent={agent}
             object={object}
             objectType={objectType}
             currentUserProfile={currentUserProfile}
@@ -57,6 +57,21 @@ export default function NotifCard({ notif, currentUserProfile }) {
         <>
           <AgentLink agent={agent} /> commented on your{" "}
           <ObjectText
+            agent={agent}
+            object={object}
+            objectType={objectType}
+            currentUserProfile={currentUserProfile}
+          />
+          .
+        </>
+      )}
+
+      {type === NotificationType.Mention && (
+        <>
+          <AgentLink agent={agent} /> mentioned you in{" "}
+          {sourceType === NotificationSourceType.Comment ? "their comment on the" : "their"}{" "}
+          <ObjectText
+            agent={agent}
             object={object}
             objectType={objectType}
             currentUserProfile={currentUserProfile}
@@ -75,7 +90,7 @@ export default function NotifCard({ notif, currentUserProfile }) {
 
 function AgentLink({ agent }) {
   return (
-    <Link href={getUserProfileLink(agent.username)} className="cat-btn-link-no-case text-white">
+    <Link href={getUserProfileLink(agent.username)} className="cat-link text-white">
       {agent.name}
     </Link>
   )
@@ -86,10 +101,14 @@ const componentOverrides = {
   p: ({ children }) => children,
 }
 
-function ObjectText({ object, objectType: _objectType, currentUserProfile }) {
+function ObjectText({ agent, object, objectType: _objectType, currentUserProfile }) {
   let objectType = _objectType
   if (objectType === NotificationObjectType.BookNote) {
     objectType = object.noteType === BookNoteType.JournalEntry ? "note" : "post"
+  }
+
+  if (objectType === NotificationObjectType.UserCurrentStatus) {
+    return "current status"
   }
 
   const _text = object.title || object.text
@@ -105,13 +124,15 @@ function ObjectText({ object, objectType: _objectType, currentUserProfile }) {
     object.creatorId === currentUserProfile.id
   ) {
     objectLink = getListLink(currentUserProfile, object.slug)
+  } else if (objectType === NotificationObjectType.List && object.creatorId === agent.id) {
+    objectLink = getListLink(agent, object.slug)
   }
 
   if (objectLink) {
     return (
       <>
         {objectType}{" "}
-        <Link href={objectLink} className="cat-btn-link-no-case text-white">
+        <Link href={objectLink} className="cat-link text-white">
           {text}
         </Link>
       </>

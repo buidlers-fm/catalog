@@ -3,6 +3,10 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { findOrCreateBook } from "lib/api/books"
+import { getAllAtMentions } from "lib/helpers/general"
+import { createNotifsFromMentions } from "lib/server/notifs"
+import NotificationObjectType from "enums/NotificationObjectType"
+import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
 export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
@@ -49,6 +53,17 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     deleteExistingUserCurrentStatuses,
     createUserCurrentStatus,
   ])
+
+  const atMentions = getAllAtMentions(text)
+
+  const mentions: Mention[] = atMentions.map((atMention) => ({
+    agentId: userProfile.id,
+    objectId: createdUserCurrentStatus.id,
+    objectType: NotificationObjectType.UserCurrentStatus,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
 
   const responseData = {
     ...createdUserCurrentStatus,

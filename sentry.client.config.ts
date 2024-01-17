@@ -17,6 +17,7 @@ if (env !== "development") {
       "ResizeObserver loop completed with undelivered notifications.",
       "Failed to fetch",
       "network error",
+      "Warning: Mention: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
     ],
 
     // Adjust this value in production, or use tracesSampler for greater control

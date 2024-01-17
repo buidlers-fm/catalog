@@ -6,6 +6,7 @@ import NotificationType from "enums/NotificationType"
 import NotificationAgentType from "enums/NotificationAgentType"
 import NotificationObjectType from "enums/NotificationObjectType"
 import NotificationSourceType from "enums/NotificationSourceType"
+import type Mention from "types/Mention"
 
 async function createNotifFromSource(source) {
   const { id: sourceId, agentId, objectId, objectType, notificationType, sourceType } = source
@@ -114,6 +115,31 @@ async function createNotifFromComment(comment) {
   })
 }
 
+async function createNotifsFromMentions(mentions: Mention[]) {
+  const notifsData = mentions.map((mention) => {
+    const { agentId, objectId, objectType, sourceId, sourceType, mentionedUserProfileId } = mention
+
+    return {
+      agentId,
+      agentType: NotificationAgentType.User,
+      type: NotificationType.Mention,
+      objectId,
+      objectType,
+      sourceId,
+      sourceType,
+      notifiedUserProfileId: mentionedUserProfileId,
+    }
+  })
+
+  try {
+    await prisma.notification.createMany({
+      data: notifsData,
+    })
+  } catch (error: any) {
+    reportToSentry(error, notifsData)
+  }
+}
+
 async function markAsRead(notifs) {
   const notifIds = notifs.map((notif) => notif.id)
 
@@ -140,4 +166,10 @@ async function markAllAsRead(notifiedUserProfileId) {
   })
 }
 
-export { createNotifFromLike, createNotifFromComment, markAsRead, markAllAsRead }
+export {
+  createNotifFromLike,
+  createNotifFromComment,
+  createNotifsFromMentions,
+  markAsRead,
+  markAllAsRead,
+}

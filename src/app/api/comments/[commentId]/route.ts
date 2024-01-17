@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
 import prisma from "lib/prisma"
+import { createNotifsFromMentions } from "lib/server/notifs"
+import { getAllAtMentions } from "lib/helpers/general"
 import { withApiHandling } from "lib/api/withApiHandling"
+import NotificationType from "enums/NotificationType"
+import NotificationObjectType from "enums/NotificationObjectType"
+import NotificationSourceType from "enums/NotificationSourceType"
+import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
@@ -24,7 +30,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
 
   const { text } = reqJson
 
-  const updatedcomment = await prisma.comment.update({
+  const updatedComment = await prisma.comment.update({
     where: {
       id: commentId,
     },
@@ -33,7 +39,42 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     },
   })
 
-  const resBody = humps.decamelizeKeys(updatedcomment)
+  // create notifications
+  const { parentId, parentType } = comment
+
+  const atMentions = getAllAtMentions(text)
+
+  const existingNotifs = await prisma.notification.findMany({
+    where: {
+      agentId: userProfile.id,
+      objectId: parentId,
+      objectType: parentType,
+      sourceId: commentId,
+      sourceType: NotificationSourceType.Comment,
+      type: NotificationType.Mention,
+      notifiedUserProfileId: {
+        in: atMentions.map((atMention) => atMention!.id),
+      },
+    },
+  })
+
+  const newAtMentions = atMentions.filter(
+    (atMention) => !existingNotifs.find((n) => n.notifiedUserProfileId === atMention!.id),
+  )
+
+  const mentions: Mention[] = newAtMentions.map((atMention) => ({
+    agentId: userProfile.id,
+    objectId: parentId,
+    objectType: parentType as NotificationObjectType,
+    sourceId: commentId,
+    sourceType: NotificationSourceType.Comment,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
+
+  // return response
+  const resBody = humps.decamelizeKeys(updatedComment)
 
   return NextResponse.json(resBody, { status: 200 })
 })

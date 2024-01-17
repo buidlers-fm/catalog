@@ -53,6 +53,10 @@ const validations = {
 export default function EditList({ list, firstBook, currentUserProfile, isEdit = false }: Props) {
   const router = useRouter()
   const { books, addBook, removeBook, reorderBooks } = useEditBookList(list)
+  const [description, setDescription] = useState<string | null | undefined>(
+    list?.description || undefined,
+  )
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>()
   const [bookIdsToNotes, setBookIdsToNotes] = useState<any>({})
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -104,10 +108,17 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   const submit = async (listData: ListMetadata) => {
     setIsSubmitting(true)
     setErrorMessage(undefined)
+    setDescriptionErrorMessage(undefined)
+
+    if (description && description.length > MAX_LENGTHS.description) {
+      setDescriptionErrorMessage(validations.description.maxLength.message)
+      setIsSubmitting(false)
+      return
+    }
 
     const toastId = toast.loading("Saving your changes...")
 
-    const { title, description, ranked } = listData
+    const { title, ranked } = listData
 
     // don't use openLibraryWorkIds as keys because they don't
     // decamelize/camelize properly
@@ -198,10 +209,11 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               labelText="description"
               name="description"
               type="text"
-              formProps={register("description", validations.description)}
               remainingChars={MAX_LENGTHS.description - (descriptionValue?.length || 0)}
-              errorMessage={errors.description?.message}
+              errorMessage={descriptionErrorMessage}
               fullWidth={false}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
             <div className="my-12">
               <FormToggle
