@@ -72,8 +72,20 @@ module.exports = {
       },
       fontFamily: {
         "chivo-mono": ["var(--font-chivo-mono)"],
-        newsreader: ["var(--font-newsreader)"],
-        mulish: ["var(--font-mulish)"],
+        newsreader: [
+          "var(--font-newsreader)",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Noto Color Emoji",
+          "Segoe UI Symbol",
+        ],
+        mulish: [
+          "var(--font-mulish)",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Noto Color Emoji",
+          "Segoe UI Symbol",
+        ],
       },
       boxShadow: {
         black: `2px 2px 0px 0px hsl(0, 0, 0)`,

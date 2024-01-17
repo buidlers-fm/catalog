@@ -185,7 +185,6 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   }
 
   const titleValue = watch("title")
-  const descriptionValue = watch("description")
   const isRanked = watch("ranked")
   const readyToSubmit = titleValue?.length > 0 && books.length > 0
 
@@ -209,7 +208,8 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               labelText="description"
               name="description"
               type="text"
-              remainingChars={MAX_LENGTHS.description - (descriptionValue?.length || 0)}
+              rows={5}
+              remainingChars={MAX_LENGTHS.description - (description?.length || 0)}
               errorMessage={descriptionErrorMessage}
               fullWidth={false}
               value={description}

@@ -139,7 +139,7 @@ function EditNote({ note, onCancel, onDone }) {
       <FormTextarea
         name="text"
         type="text"
-        rows={2}
+        rows={3}
         remainingChars={maxLength - (text?.length || 0)}
         errorMessage={textErrorMsg}
         fullWidth
@@ -151,7 +151,12 @@ function EditNote({ note, onCancel, onDone }) {
         <button className="mr-2 cat-btn cat-btn-sm cat-btn-white-outline" onClick={onCancel}>
           cancel
         </button>
-        <button className="cat-btn cat-btn-sm cat-btn-teal" onClick={handleDone}>
+        <button
+          type="button"
+          className="cat-btn cat-btn-sm cat-btn-teal"
+          onClick={handleDone}
+          disabled={!text || text?.length > maxLength}
+        >
           done
         </button>
       </div>

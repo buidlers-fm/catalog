@@ -70,7 +70,7 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
       <FormTextarea
         name="text"
         type="text"
-        rows={3}
+        rows={5}
         remainingChars={bookNoteValidations.text.maxLength - (text?.length || 0)}
         errorMessage={textErrorMsg}
         fullWidth
@@ -93,7 +93,11 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
         >
           Cancel
         </button>
-        <button disabled={isBusy} className="cat-btn cat-btn-sm cat-btn-gold" onClick={submit}>
+        <button
+          disabled={isBusy || (!!text && text.length > bookNoteValidations.text.maxLength)}
+          className="cat-btn cat-btn-sm cat-btn-gold"
+          onClick={submit}
+        >
           Save
         </button>
       </div>

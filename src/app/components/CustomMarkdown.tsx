@@ -17,7 +17,7 @@ const components: Components = {
   a: ({ node, href, children, ...props }) => {
     if (isValidUuid(href)) {
       return (
-        <a {...props} href={getUserProfileLink(href!)} className="cat-link">
+        <a {...props} href={getUserProfileLink(href!)} className="text-gold-500">
           {children}
         </a>
       )

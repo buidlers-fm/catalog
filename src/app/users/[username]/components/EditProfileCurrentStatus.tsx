@@ -132,7 +132,7 @@ export default function EditProfileCurrentStatus({
         <FormTextarea
           name="text"
           type="text"
-          rows={3}
+          rows={5}
           remainingChars={textMaxLength - (text?.length || 0)}
           errorMessage={textErrorMsg}
           fullWidth
@@ -148,7 +148,11 @@ export default function EditProfileCurrentStatus({
           >
             cancel
           </button>
-          <button disabled={isBusy} className="cat-btn cat-btn-sm cat-btn-gold" onClick={submit}>
+          <button
+            disabled={isBusy || (!!text && text.length > textMaxLength)}
+            className="cat-btn cat-btn-sm cat-btn-gold"
+            onClick={submit}
+          >
             save
           </button>
         </div>
