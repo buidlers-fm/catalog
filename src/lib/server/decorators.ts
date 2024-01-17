@@ -4,6 +4,7 @@ import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import NotificationObjectType from "enums/NotificationObjectType"
+import CommentParentType from "enums/CommentParentType"
 import type Like from "types/Like"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
@@ -39,7 +40,7 @@ export const decorateLists = async (lists, currentUserProfile?) => {
     return result
   }, {})
 
-  const _lists = lists.map((list: any) => ({
+  let _lists = lists.map((list: any) => ({
     ...list,
     books: list.listItemAssignments
       .map((lia) => (lia.listedObjectType === "book" ? bookIdsToBooks[lia.listedObjectId] : null))
@@ -48,7 +49,10 @@ export const decorateLists = async (lists, currentUserProfile?) => {
     owner: listIdsToOwners[list.id],
   }))
 
-  return decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
+  _lists = await decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
+  _lists = await decorateWithComments(_lists, CommentParentType.List, currentUserProfile)
+
+  return _lists
 }
 
 export const decorateWithLikes = async (

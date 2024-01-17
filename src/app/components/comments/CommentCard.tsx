@@ -46,24 +46,26 @@ export default function CommentCard({ comment, currentUserProfile, onDelete }) {
 
   return (
     <div className="my-4 px-4 py-1 border-l-2 border-l-gray-500 font-mulish">
-      <div className="flex flex-col xs:flex-row">
+      <div className="flex flex-wrap">
         <NameWithAvatar userProfile={commenter} />
 
-        <div className="xs:ml-2 xs:mt-2 text-sm text-gray-500">
-          <span id={timestampTooltipAnchorId}>{createdAtFromNow}</span>
+        <div className="flex">
+          <div className="ml-2 mt-2 text-sm text-gray-500">
+            <span id={timestampTooltipAnchorId}>{createdAtFromNow}</span>
+          </div>
+
+          {timestampTooltip}
+
+          {isOwnComment && !isEditing && (
+            <button
+              type="button"
+              className="ml-1.5 text-lg text-gray-300"
+              onClick={() => setIsEditing(true)}
+            >
+              <MdEdit className="" />
+            </button>
+          )}
         </div>
-
-        {timestampTooltip}
-
-        {isOwnComment && !isEditing && (
-          <button
-            type="button"
-            className="ml-1.5 text-lg text-gray-300"
-            onClick={() => setIsEditing(true)}
-          >
-            <MdEdit className="" />
-          </button>
-        )}
       </div>
       {isEditing ? (
         <EditComment

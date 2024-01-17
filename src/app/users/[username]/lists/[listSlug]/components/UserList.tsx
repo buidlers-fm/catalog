@@ -2,19 +2,26 @@
 
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Tooltip } from "react-tooltip"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { FaRegComment } from "react-icons/fa"
+import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
 import GridCardViewToggle from "app/lists/components/GridCardViewToggle"
 import ListBook from "app/lists/components/ListBook"
 import ListBookCard from "app/lists/components/ListBookCard"
 import Likes from "app/components/Likes"
+import CustomMarkdown from "app/components/CustomMarkdown"
+import EditComment from "app/components/comments/EditComment"
+import CommentCard from "app/components/comments/CommentCard"
+import EmptyState from "app/components/EmptyState"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import InteractionObjectType from "enums/InteractionObjectType"
-import CustomMarkdown from "app/components/CustomMarkdown"
+import CommentParentType from "enums/CommentParentType"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
@@ -41,8 +48,10 @@ export default function UserList({
   const pathname = usePathname()
 
   const [activeView, setActiveView] = useState<ViewType>(view)
+  const [comments, setComments] = useState<any[]>(list.comments || [])
 
   const {
+    id: listId,
     title,
     slug: listSlug,
     description,
@@ -66,13 +75,28 @@ export default function UserList({
     return obj
   }, {})
 
+  const getComments = useCallback(async () => {
+    const requestData = {
+      parentType: CommentParentType.List,
+      parentId: listId,
+    }
+
+    try {
+      const _comments = await api.comments.get(requestData)
+
+      setComments(_comments)
+    } catch (error: any) {
+      reportToSentry(error, requestData)
+    }
+  }, [listId])
+
   function handleViewChange(_view: ViewType) {
     router.push(`${pathname}?view=${_view}`, { scroll: false })
     setActiveView(_view)
   }
 
   return (
-    <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-auto">
+    <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto">
       <div className="sm:flex sm:items-start">
         <div className="text-4xl font-semibold mb-1 sm:mr-6">{title}</div>
         {isUsersList && (
@@ -97,7 +121,7 @@ export default function UserList({
       <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{updatedAtFormatted}</div>
       </Tooltip>
-      <div className="my-1">
+      <div className="my-1 flex">
         <Likes
           interactive={!!currentUserProfile}
           likedObject={list}
@@ -105,6 +129,13 @@ export default function UserList({
           likeCount={likeCount}
           currentUserLike={currentUserLike}
         />
+
+        <div className="-mt-0.5 ml-4">
+          <Link href="#comments" className="">
+            <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
+            {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+          </Link>
+        </div>
       </div>
       <div className="sm:my-4">
         <CustomMarkdown markdown={description} />
@@ -136,6 +167,42 @@ export default function UserList({
             rank={index + 1}
           />
         ))
+      )}
+
+      {(currentUserProfile || comments.length > 0) && (
+        <div id="comments" className="mt-24">
+          <hr className="my-12 h-[1px] border-none bg-gray-800" />
+
+          {currentUserProfile && (
+            <>
+              <div className="mt-8 font-mulish">
+                <div className="-mb-2">reply</div>
+                <EditComment
+                  parentId={listId}
+                  parentType={CommentParentType.List}
+                  onEditSuccess={getComments}
+                  onDeleteSuccess={getComments}
+                />
+              </div>
+              <hr className="my-12 h-[1px] border-none bg-gray-800" />
+            </>
+          )}
+
+          {comments.length > 0 ? (
+            <div className="mt-8">
+              {comments.map((comment) => (
+                <CommentCard
+                  key={comment.id}
+                  comment={comment}
+                  currentUserProfile={currentUserProfile}
+                  onDelete={getComments}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState text="No comments yet." />
+          )}
+        </div>
       )}
     </div>
   )
