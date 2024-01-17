@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { GiOpenBook } from "react-icons/gi"
+import { FaComment } from "react-icons/fa"
 import { truncateString } from "lib/helpers/general"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import Likes from "app/components/Likes"
@@ -35,13 +36,19 @@ export default function ListCard({ list, withByline = false, separators = true, 
               <div className="mb-2 sm:mb-0 sm:ml-2 mr-3 text-gray-500 text-sm font-normal">
                 {totalBookCount} books
               </div>
-              <div className="">
+              <div className="flex">
                 <Likes
                   interactive={false}
                   likedObject={list}
                   likedObjectType={InteractionObjectType.List}
                   likeCount={likeCount}
                 />
+                <div className="-mt-0.5 ml-4">
+                  <FaComment className="inline-block mr-1.5 text-gray-500 text-md" />
+                  {list.comments && (
+                    <span className="text-sm text-gray-300">{list.comments.length}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
