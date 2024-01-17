@@ -6,7 +6,7 @@ import { idsToObjects } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 
-const LIMIT = 5
+const LIMIT = 4
 
 const bgColorToValue = {
   "bg-gray-700": "hsl(45, 8%, 37%)",
@@ -22,20 +22,27 @@ export default function AtMentions({ bgColor, formProps, moreProps, name, rows }
   const mentionsInputStyles = {
     control: {
       boxSizing: "border-box",
+      width: "100%",
       maxWidth: "100%",
       backgroundColor: bgColorToValue[bgColor],
       height,
+      overflowY: "auto",
       paddingLeft: "0.75rem",
       paddingRight: "0.75rem",
       paddingTop: "0.75rem",
       paddingBottom: "0.5rem",
+      marginBottom: "0.25rem",
     },
     input: {
       boxSizing: "border-box",
+      backgroundColor: bgColorToValue[bgColor],
+      width: "100%",
       maxWidth: "100%",
+      overflowY: "auto",
+      height,
       borderRadius: "0.25rem",
       border: "none",
-      // TODO: focus outline
+      marginBottom: "0.25rem",
     },
     suggestions: {
       list: {

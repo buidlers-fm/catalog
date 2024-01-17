@@ -284,7 +284,7 @@ export default function BookNoteModal({
               {readingStatus && (
                 <div className="">
                   <form onSubmit={handleSubmit(submit)}>
-                    <div className="my-4">
+                    <div className="my-4 max-w-[384px]">
                       <FormTextarea
                         labelText={readingStatusToCopy[readingStatus].textPrompt}
                         name="text"
@@ -375,7 +375,9 @@ export default function BookNoteModal({
                         <button
                           type="submit"
                           className="mt-4 cat-btn cat-btn-sm cat-btn-gold"
-                          disabled={isBusy}
+                          disabled={
+                            isBusy || (!!text && text.length > bookNoteValidations.text.maxLength)
+                          }
                         >
                           save
                         </button>
