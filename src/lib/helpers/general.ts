@@ -1,6 +1,7 @@
 import humps from "humps"
 import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
+import { validate as isValidUuid } from "uuid"
 import prisma from "lib/prisma"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
@@ -17,8 +18,15 @@ export const fetchJson = async (url: string | URL, options: any = {}) => {
   return humps.camelizeKeys(resBody)
 }
 
-export const truncateString = (str: string | undefined, maxChars: number) => {
-  if (!str) return ""
+export const truncateString = (_str: string | undefined, maxChars: number) => {
+  if (!_str) return ""
+
+  // matches "[@foo](bar)"
+  const regex = /\[@([^\]]+)\]\((.*?)\)/g
+
+  // replace all mentions with just the name
+  const str = _str.replace(regex, (match, p1) => `@${p1}`)
+
   if (str.length <= maxChars) return str
 
   const lastSpaceIndex = str.lastIndexOf(" ", maxChars)
@@ -182,4 +190,31 @@ export async function fetchImageAsBlob(url) {
 export function idsToObjects(objects) {
   // assumes object has an id field
   return objects.reduce((result, object) => ({ ...result, [object.id]: object }), {})
+}
+
+export function getAllAtMentions(text) {
+  // matches "[@foo](bar)"
+  const regex = /\[@([^\]]+)\]\((.*?)\)/g
+
+  const _matches: any[] = Array.from(text.matchAll(regex))
+
+  let matches = _matches
+    .map((match) => {
+      const username = match[1] as string
+      const potentialUuid = match[2] as string
+
+      if (isValidUuid(potentialUuid)) {
+        return { username, id: potentialUuid }
+      } else {
+        return null
+      }
+    })
+    .filter(Boolean)
+
+  // de-dupe by id
+  matches = matches.filter(
+    (match, index) => matches.findIndex((m) => m!.id === match!.id) === index,
+  )
+
+  return matches
 }

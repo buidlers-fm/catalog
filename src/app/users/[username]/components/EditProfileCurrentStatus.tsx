@@ -128,7 +128,7 @@ export default function EditProfileCurrentStatus({
             </button>
           ))}
       </div>
-      <div className="grow">
+      <div className="grow lg:w-[256px]">
         <FormTextarea
           name="text"
           type="text"

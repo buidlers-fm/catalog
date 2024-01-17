@@ -85,6 +85,8 @@ export default function BookNoteModal({
   existingBookRead?: BookRead
 }) {
   const [readingStatus, setReadingStatus] = useState<BookNoteReadingStatus>()
+  const [text, setText] = useState<string>("")
+  const [textErrorMessage, setTextErrorMessage] = useState<string>()
   const [like, setLike] = useState<boolean>(_like)
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>(_existingBookRead)
   const [isEditingDates, setIsEditingDates] = useState<boolean>(false)
@@ -109,7 +111,6 @@ export default function BookNoteModal({
   } = useForm<BookNoteFormData>()
 
   const startDateValue = watch("startDate")
-  const textValue = watch("text")
 
   const validations = {
     endDate: {
@@ -179,11 +180,18 @@ export default function BookNoteModal({
 
   const submit = async (formData: BookNoteFormData) => {
     setErrorMessage(undefined)
+    setTextErrorMessage(undefined)
     setIsBusy(true)
+
+    if (text && text.length > bookNoteValidations.text.maxLength) {
+      setTextErrorMessage(validations.text.maxLength.message)
+      setIsBusy(false)
+      return
+    }
 
     const toastId = toast.loading("Saving your note...")
 
-    const { text, startDate: startDateStr, endDate: endDateStr } = formData
+    const { startDate: startDateStr, endDate: endDateStr } = formData
     const startDate = startDateStr ? dateStringToDateTime(startDateStr) : undefined
     const endDate = endDateStr ? dateStringToDateTime(endDateStr) : undefined
 
@@ -281,15 +289,14 @@ export default function BookNoteModal({
                         labelText={readingStatusToCopy[readingStatus].textPrompt}
                         name="text"
                         type="text"
-                        formProps={register("text", validations.text)}
                         rows={5}
-                        remainingChars={
-                          bookNoteValidations.text.maxLength - (textValue?.length || 0)
-                        }
-                        errorMessage={errors.text?.message}
+                        remainingChars={bookNoteValidations.text.maxLength - (text?.length || 0)}
+                        errorMessage={textErrorMessage}
                         fullWidth
                         bgColor="bg-gray-800"
                         moreClasses="mt-1"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
                       />
                       <div className="">
                         <button

@@ -3,10 +3,13 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { decorateComments } from "lib/server/decorators"
-import { createNotifFromComment } from "lib/server/notifs"
+import { createNotifFromComment, createNotifsFromMentions } from "lib/server/notifs"
+import { getAllAtMentions } from "lib/helpers/general"
 import CommenterType from "enums/CommenterType"
 import CommentParentType from "enums/CommentParentType"
+import NotificationSourceType from "enums/NotificationSourceType"
 import type Comment from "types/Comment"
+import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(
@@ -74,12 +77,27 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     level,
   }
 
+  // create notifs
   const newComment = await prisma.comment.create({
     data,
   })
 
   await createNotifFromComment(newComment)
 
+  const atMentions = getAllAtMentions(text)
+
+  const mentions: Mention[] = atMentions.map((atMention) => ({
+    agentId: currentUserProfile.id,
+    objectId: parentId,
+    objectType: parentType,
+    sourceId: newComment.id,
+    sourceType: NotificationSourceType.Comment,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
+
+  // return response
   const resBody = humps.decamelizeKeys(newComment)
 
   return NextResponse.json(resBody, { status: 200 })

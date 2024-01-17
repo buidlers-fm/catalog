@@ -3,7 +3,12 @@ import { FaUserCircle } from "react-icons/fa"
 import UserProfile from "lib/models/UserProfile"
 import { getUserProfileLink } from "lib/helpers/general"
 
-export default function NameWithAvatar({ userProfile, large = false, bothNames = false }) {
+export default function NameWithAvatar({
+  userProfile,
+  large = false,
+  bothNames = false,
+  inline = false,
+}) {
   const { username, displayName, avatarUrl, name } = UserProfile.build(userProfile)
 
   return (
@@ -22,8 +27,17 @@ export default function NameWithAvatar({ userProfile, large = false, bothNames =
           {bothNames ? (
             displayName ? (
               <div className={`${large ? "ml-3" : "-mt-1 text-sm"}`}>
-                <div>{displayName}</div>
-                <div className="text-gray-300 text-sm">@{username}</div>
+                {inline ? (
+                  <div className="mt-1 flex">
+                    <div>{displayName}</div>
+                    <div className="ml-2 text-gray-300 text-sm">@{username}</div>
+                  </div>
+                ) : (
+                  <>
+                    <div>{displayName}</div>
+                    <div className="text-gray-300 text-sm">@{username}</div>
+                  </>
+                )}
               </div>
             ) : (
               <div className={`${large ? "mt-3 ml-3" : "text-sm"}`}>

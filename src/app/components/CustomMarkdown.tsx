@@ -1,6 +1,7 @@
 import Markdown, { Components } from "react-markdown"
+import { validate as isValidUuid } from "uuid"
 import linkifyRegex from "remark-linkify-regex"
-import { isValidHttpUrl } from "lib/helpers/general"
+import { isValidHttpUrl, getUserProfileLink } from "lib/helpers/general"
 
 const components: Components = {
   h1: ({ node, children, ...props }) => (
@@ -13,14 +14,23 @@ const components: Components = {
       {children}
     </h2>
   ),
-  a: ({ node, href, children, ...props }) =>
-    isValidHttpUrl(href) ? (
-      <a {...props} href={href} className="cat-link" target="_blank" rel="noopener noreferrer">
-        {children}
-      </a>
-    ) : (
-      href
-    ),
+  a: ({ node, href, children, ...props }) => {
+    if (isValidUuid(href)) {
+      return (
+        <a {...props} href={getUserProfileLink(href!)} className="cat-link">
+          {children}
+        </a>
+      )
+    } else if (isValidHttpUrl(href)) {
+      return (
+        <a {...props} href={href} className="cat-link" target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      )
+    } else {
+      return href
+    }
+  },
   ol: ({ node, children, ...props }) => (
     <ol {...props} className="ml-4 -my-3 last:-mb-10 list-decimal">
       {children}

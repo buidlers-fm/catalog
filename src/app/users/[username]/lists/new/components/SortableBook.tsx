@@ -118,7 +118,7 @@ export default function SortableBook({
 }
 
 function EditNote({ note, onCancel, onDone }) {
-  const [text, setText] = useState<string>(note)
+  const [text, setText] = useState<string>(note || "")
   const [textErrorMsg, setTextErrorMsg] = useState<string>()
 
   const { maxLength } = validations.list.bookNote

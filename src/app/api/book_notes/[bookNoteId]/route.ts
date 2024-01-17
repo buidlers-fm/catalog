@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server"
 import humps from "humps"
 import prisma from "lib/prisma"
+import { getAllAtMentions } from "lib/helpers/general"
+import { createNotifsFromMentions } from "lib/server/notifs"
 import { withApiHandling } from "lib/api/withApiHandling"
+import NotificationType from "enums/NotificationType"
+import NotificationObjectType from "enums/NotificationObjectType"
+import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
@@ -33,6 +38,34 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       text,
     },
   })
+
+  // create notifications
+  const atMentions = getAllAtMentions(text)
+
+  const existingNotifs = await prisma.notification.findMany({
+    where: {
+      agentId: userProfile.id,
+      objectId: updatedBookNote.id,
+      objectType: NotificationObjectType.BookNote,
+      type: NotificationType.Mention,
+      notifiedUserProfileId: {
+        in: atMentions.map((atMention) => atMention!.id),
+      },
+    },
+  })
+
+  const newAtMentions = atMentions.filter(
+    (atMention) => !existingNotifs.find((n) => n.notifiedUserProfileId === atMention!.id),
+  )
+
+  const mentions: Mention[] = newAtMentions.map((atMention) => ({
+    agentId: userProfile.id,
+    objectId: updatedBookNote.id,
+    objectType: NotificationObjectType.BookNote,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
 
   const resBody = humps.decamelizeKeys(updatedBookNote)
 

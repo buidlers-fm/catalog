@@ -1,12 +1,16 @@
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
-import { generateUniqueSlug, runInSequence } from "lib/helpers/general"
+import { generateUniqueSlug, runInSequence, getAllAtMentions } from "lib/helpers/general"
 import { findOrCreateBook } from "lib/api/books"
 import { findOrCreateLike } from "lib/api/likes"
+import { createNotifsFromMentions } from "lib/server/notifs"
 import ListDesignation from "enums/ListDesignation"
 import InteractionObjectType from "enums/InteractionObjectType"
 import UserBookShelf from "enums/UserBookShelf"
+import NotificationType from "enums/NotificationType"
+import NotificationObjectType from "enums/NotificationObjectType"
 import type Book from "types/Book"
+import type Mention from "types/Mention"
 
 const createList = async (params, userProfile) => {
   const {
@@ -121,6 +125,19 @@ const createList = async (params, userProfile) => {
       },
     },
   })
+
+  const allTexts = [listDescription || "", ...Object.values(bookIdsToNotes)]
+
+  const atMentions = getAllAtMentions(allTexts.join(" "))
+
+  const mentions: Mention[] = atMentions.map((atMention) => ({
+    agentId: userProfile.id,
+    objectId: createdList.id,
+    objectType: NotificationObjectType.List,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
 
   return createdList
 }
@@ -304,6 +321,35 @@ const updateList = async (list, params, userProfile) => {
       })
     }
   }
+
+  const allTexts = [listDescription || "", ...Object.values(bookIdsToNotes)]
+
+  const atMentions = getAllAtMentions(allTexts.join(" "))
+
+  const existingNotifs = await prisma.notification.findMany({
+    where: {
+      agentId: userProfile.id,
+      objectId: updatedList.id,
+      objectType: NotificationObjectType.List,
+      type: NotificationType.Mention,
+      notifiedUserProfileId: {
+        in: atMentions.map((atMention) => atMention!.id),
+      },
+    },
+  })
+
+  const newAtMentions = atMentions.filter(
+    (atMention) => !existingNotifs.find((n) => n.notifiedUserProfileId === atMention!.id),
+  )
+
+  const mentions: Mention[] = newAtMentions.map((atMention) => ({
+    agentId: userProfile.id,
+    objectId: updatedList.id,
+    objectType: NotificationObjectType.List,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
 
   return updatedList
 }

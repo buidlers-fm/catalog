@@ -206,6 +206,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
                 remainingChars={MAX_LENGTHS.bio - (bioValue?.length || 0)}
                 errorMessage={errors.bio?.message}
                 fullWidth={false}
+                atMentionsEnabled={false}
               />
             </div>
           </div>

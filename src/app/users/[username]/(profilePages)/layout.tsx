@@ -1,6 +1,7 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { redirect, notFound } from "next/navigation"
 import { UserProfile as UserProfilePrisma } from "@prisma/client"
+import { validate as isValidUuid } from "uuid"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { PiMapPinFill } from "react-icons/pi"
@@ -9,15 +10,29 @@ import { getCurrentUserProfile } from "lib/server/auth"
 import FollowButton from "app/components/userProfiles/FollowButton"
 import UserProfileTabs from "app/users/[username]/components/UserProfileTabs"
 import CustomMarkdown from "app/components/CustomMarkdown"
-import { getDomainFromUrl } from "lib/helpers/general"
+import { getUserProfileLink, getDomainFromUrl } from "lib/helpers/general"
 import { decorateWithFollowers } from "lib/server/decorators"
 import UserProfile from "lib/models/UserProfile"
 
 export const dynamic = "force-dynamic"
 
 export default async function UserProfileLayout({ params, children }) {
-  const { username } = params
+  const { username: usernameOrUuid } = params
   const currentUserProfile = await getCurrentUserProfile()
+
+  if (isValidUuid(usernameOrUuid)) {
+    const userProfile = await prisma.userProfile.findFirst({
+      where: {
+        id: usernameOrUuid,
+      },
+    })
+
+    if (!userProfile) notFound()
+
+    return redirect(getUserProfileLink(userProfile.username))
+  }
+
+  const username = usernameOrUuid
 
   const prismaUserProfile: UserProfilePrisma | null = await prisma.userProfile.findFirst({
     where: {

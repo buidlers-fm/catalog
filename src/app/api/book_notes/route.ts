@@ -7,12 +7,16 @@ import { getBookNotes } from "lib/server/bookNotes"
 import { findOrCreateBook } from "lib/api/books"
 import { setUserBookShelf } from "lib/api/userBookShelves"
 import { findOrCreateLike, deleteLikeByParams } from "lib/api/likes"
+import { getAllAtMentions } from "lib/helpers/general"
+import { createNotifsFromMentions } from "lib/server/notifs"
 import BookNoteType from "enums/BookNoteType"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import BookReadStatus from "enums/BookReadStatus"
 import UserBookShelf from "enums/UserBookShelf"
 import InteractionObjectType from "enums/InteractionObjectType"
+import NotificationObjectType from "enums/NotificationObjectType"
 import Sort from "enums/Sort"
+import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(
@@ -209,6 +213,17 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       await deleteLikeByParams(likeParams)
     }
   }
+
+  const atMentions = getAllAtMentions(text)
+
+  const mentions: Mention[] = atMentions.map((atMention) => ({
+    agentId: userProfile.id,
+    objectId: createdBookNote.id,
+    objectType: NotificationObjectType.BookNote,
+    mentionedUserProfileId: atMention!.id,
+  }))
+
+  await createNotifsFromMentions(mentions)
 
   const resBody = humps.decamelizeKeys(createdBookNote)
 
