@@ -72,6 +72,10 @@
   @apply border-b border-b-gray-200 lowercase;
 }
 
+.cat-btn-link-no-case {
+  @apply border-b border-b-gray-200;
+}
+
 .cat-btn-text {
   @apply text-gray-100 font-mulish lowercase;
 }

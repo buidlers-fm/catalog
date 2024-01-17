@@ -3,6 +3,7 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { decorateComments } from "lib/server/decorators"
+import { createNotifFromComment } from "lib/server/notifs"
 import CommenterType from "enums/CommenterType"
 import CommentParentType from "enums/CommentParentType"
 import type Comment from "types/Comment"
@@ -76,6 +77,8 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const newComment = await prisma.comment.create({
     data,
   })
+
+  await createNotifFromComment(newComment)
 
   const resBody = humps.decamelizeKeys(newComment)
 
