@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import CustomMarkdown from "app/components/CustomMarkdown"
-import { getUserProfileLink, getListLink, truncateString } from "lib/helpers/general"
+import { getUserProfileLink, getListLink, getPostLink, truncateString } from "lib/helpers/general"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import NotificationType from "enums/NotificationType"
@@ -46,7 +46,20 @@ export default function NotifCard({ notif, currentUserProfile }) {
           .
         </>
       )}
-      <span id={timestampTooltipAnchorId} className="xs:ml-2 xs:mt-2 text-sm text-gray-500">
+
+      {type === NotificationType.Comment && (
+        <>
+          <AgentLink agent={agent} /> commented on your{" "}
+          <ObjectText
+            object={object}
+            objectType={objectType}
+            currentUserProfile={currentUserProfile}
+          />
+          .
+        </>
+      )}
+
+      <span id={timestampTooltipAnchorId} className="ml-2 text-sm text-gray-500">
         {createdAtFromNow}
       </span>
       {timestampTooltip}
@@ -56,7 +69,7 @@ export default function NotifCard({ notif, currentUserProfile }) {
 
 function AgentLink({ agent }) {
   return (
-    <Link href={getUserProfileLink(agent.username)} className="cat-btn-link text-white">
+    <Link href={getUserProfileLink(agent.username)} className="cat-btn-link-no-case text-white">
       {agent.name}
     </Link>
   )
@@ -82,8 +95,17 @@ function ObjectText({ object, objectType: _objectType, currentUserProfile }) {
         {objectType}{" "}
         <Link
           href={getListLink(currentUserProfile, object.slug)}
-          className="cat-btn-link text-white"
+          className="cat-btn-link-no-case text-white"
         >
+          {text}
+        </Link>
+      </>
+    )
+  } else if (objectType === "post") {
+    return (
+      <>
+        {objectType}{" "}
+        <Link href={getPostLink(object.id)} className="cat-btn-link-no-case text-white">
           {text}
         </Link>
       </>

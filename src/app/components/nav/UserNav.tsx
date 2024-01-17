@@ -7,6 +7,7 @@ import { Menu } from "@headlessui/react"
 import { BsXLg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { useUser } from "lib/contexts/UserContext"
+import { useNotifications } from "lib/contexts/NotificationsContext"
 import {
   getUserProfileLink,
   getUserShelvesLink,
@@ -21,6 +22,7 @@ const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
 export default function UserNav({ currentUserProfile: _initialCurrentUserProfile }) {
   const { signOut } = useUser()
+  const { hasUnread: hasUnreadNotifs } = useNotifications()
 
   const [currentUserProfile, setCurrentUserProfile] = useState(_initialCurrentUserProfile)
   const [showAuth, setShowAuth] = useState<boolean>(false)
@@ -89,7 +91,16 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                 <Menu.Item key={name}>
                   <Link href={path}>
                     <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-2 text-left">
-                      {name}
+                      {name === "notifs" ? (
+                        <div className="relative">
+                          <span>notifs</span>
+                          {hasUnreadNotifs && (
+                            <span className="w-1.5 h-1.5 absolute top-2.5 right-6 rounded-full bg-gold-200" />
+                          )}
+                        </div>
+                      ) : (
+                        name
+                      )}
                     </button>
                   </Link>
                 </Menu.Item>

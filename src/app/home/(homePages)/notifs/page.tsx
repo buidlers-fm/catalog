@@ -1,8 +1,7 @@
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateNotifs } from "lib/server/decorators"
-import NotifCard from "app/components/notifs/NotifCard"
-import EmptyState from "app/components/EmptyState"
+import NotifsIndex from "app/home/components/NotifsIndex"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -34,15 +33,5 @@ export default async function NotifsPage() {
 
   notifs = await decorateNotifs(notifs)
 
-  return (
-    <div className="max-w-xl mx-auto font-mulish">
-      {notifs.length > 0 ? (
-        notifs.map((notif) => (
-          <NotifCard key={notif.id} notif={notif} currentUserProfile={currentUserProfile} />
-        ))
-      ) : (
-        <EmptyState text="You don't have any notifications." />
-      )}
-    </div>
-  )
+  return <NotifsIndex notifs={notifs} currentUserProfile={currentUserProfile} />
 }

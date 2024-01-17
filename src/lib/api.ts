@@ -165,6 +165,20 @@ const api = {
         body: prepReqBody(requestData),
       }),
   },
+  notifs: {
+    getUnread: () => {
+      const params = {
+        read: false,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/notifs?${queryString}`
+      return fetchJson(url)
+    },
+    markAllAsRead: () =>
+      fetchJson(`/api/notifs/mark_all_as_read`, {
+        method: "PATCH",
+      }),
+  },
   pins: {
     create: (requestData) =>
       fetchJson(`/api/pins`, {

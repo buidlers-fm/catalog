@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useNotifications } from "lib/contexts/NotificationsContext"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -9,6 +10,7 @@ function classNames(...classes) {
 
 export default function HomeTabs() {
   const pathname = usePathname()
+  const { hasUnread: hasUnreadNotifs } = useNotifications()
 
   const tabs = [
     {
@@ -39,12 +41,22 @@ export default function HomeTabs() {
         <nav className="-mb-px" aria-label="Tabs">
           <div className="flex space-x-4 justify-center">
             {tabs.slice(0, 3).map((tab) => (
-              <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
+              <TabLink
+                key={tab.name}
+                tab={tab}
+                isCurrentTab={isCurrentTab(tab)}
+                hasUnreadNotifs={hasUnreadNotifs}
+              />
             ))}
           </div>
           <div className="flex space-x-4 justify-center">
             {tabs.slice(3).map((tab) => (
-              <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
+              <TabLink
+                key={tab.name}
+                tab={tab}
+                isCurrentTab={isCurrentTab(tab)}
+                hasUnreadNotifs={hasUnreadNotifs}
+              />
             ))}
           </div>
         </nav>
@@ -52,7 +64,12 @@ export default function HomeTabs() {
       <div className="hidden sm:block border border-gray-700 px-8 rounded-sm">
         <nav className="-mb-px flex justify-center space-x-8" aria-label="Tabs">
           {tabs.map((tab) => (
-            <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
+            <TabLink
+              key={tab.name}
+              tab={tab}
+              isCurrentTab={isCurrentTab(tab)}
+              hasUnreadNotifs={hasUnreadNotifs}
+            />
           ))}
         </nav>
       </div>
@@ -60,7 +77,7 @@ export default function HomeTabs() {
   )
 }
 
-function TabLink({ tab, isCurrentTab }) {
+function TabLink({ tab, isCurrentTab, hasUnreadNotifs }) {
   return (
     <Link
       key={tab.name}
@@ -72,7 +89,16 @@ function TabLink({ tab, isCurrentTab }) {
       aria-current={isCurrentTab ? "page" : undefined}
       scroll={false}
     >
-      {tab.name}
+      {tab.name === "notifs" ? (
+        <div className="relative">
+          <span>notifs</span>
+          {hasUnreadNotifs && (
+            <span className="w-1.5 h-1.5 absolute top-[7px] -right-2.5 rounded-full bg-gold-200" />
+          )}
+        </div>
+      ) : (
+        tab.name
+      )}
     </Link>
   )
 }
