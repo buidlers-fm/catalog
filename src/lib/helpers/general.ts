@@ -70,6 +70,8 @@ export const getBookPostsLink = (slug: string) => `/books/${slug}/posts`
 
 export const getPostLink = (postId: string) => `/posts/${postId}`
 
+export const getNoteLink = (noteId: string) => `/notes/${noteId}`
+
 export const getUserFollowersLink = (username: string) => `/users/${username}/followers`
 
 export const getUserFollowingLink = (username: string) => `/users/${username}/following`

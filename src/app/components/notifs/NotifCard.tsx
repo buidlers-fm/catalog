@@ -2,7 +2,13 @@
 
 import Link from "next/link"
 import CustomMarkdown from "app/components/CustomMarkdown"
-import { getUserProfileLink, getListLink, getPostLink, truncateString } from "lib/helpers/general"
+import {
+  getUserProfileLink,
+  getListLink,
+  getPostLink,
+  getNoteLink,
+  truncateString,
+} from "lib/helpers/general"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import NotificationType from "enums/NotificationType"
@@ -89,23 +95,23 @@ function ObjectText({ object, objectType: _objectType, currentUserProfile }) {
   const _text = object.title || object.text
   const text = truncateString(_text, TEXT_TRUNCATE_LENGTH)
 
-  if (objectType === NotificationObjectType.List && object.creatorId === currentUserProfile.id) {
+  let objectLink
+  if (objectType === "post") {
+    objectLink = getPostLink(object.id)
+  } else if (objectType === "note") {
+    objectLink = getNoteLink(object.id)
+  } else if (
+    objectType === NotificationObjectType.List &&
+    object.creatorId === currentUserProfile.id
+  ) {
+    objectLink = getListLink(currentUserProfile, object.slug)
+  }
+
+  if (objectLink) {
     return (
       <>
         {objectType}{" "}
-        <Link
-          href={getListLink(currentUserProfile, object.slug)}
-          className="cat-btn-link-no-case text-white"
-        >
-          {text}
-        </Link>
-      </>
-    )
-  } else if (objectType === "post") {
-    return (
-      <>
-        {objectType}{" "}
-        <Link href={getPostLink(object.id)} className="cat-btn-link-no-case text-white">
+        <Link href={objectLink} className="cat-btn-link-no-case text-white">
           {text}
         </Link>
       </>

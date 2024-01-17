@@ -8,10 +8,16 @@ import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
 import { getUserListsLink, getNewListLink, sortListsByPinSortOrder } from "lib/helpers/general"
-import { decorateLists, decorateWithFollowers, decorateWithLikes } from "lib/server/decorators"
+import {
+  decorateLists,
+  decorateWithFollowers,
+  decorateWithLikes,
+  decorateWithComments,
+} from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import UserProfile from "lib/models/UserProfile"
 import InteractionObjectType from "enums/InteractionObjectType"
+import CommentParentType from "enums/CommentParentType"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 import type { Metadata } from "next"
@@ -136,9 +142,15 @@ export default async function UserProfilePage({ params }) {
 
   lists = await decorateLists(lists, currentUserProfile)
 
-  userProfile.bookNotes = await decorateWithLikes(
+  const _bookNotes = await decorateWithLikes(
     userProfile.bookNotes!,
     InteractionObjectType.BookNote,
+    currentUserProfile,
+  )
+
+  userProfile.bookNotes = await decorateWithComments(
+    _bookNotes,
+    CommentParentType.BookNote,
     currentUserProfile,
   )
 

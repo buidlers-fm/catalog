@@ -4,21 +4,21 @@ import { useRouter } from "next/navigation"
 import { useState, useCallback } from "react"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
-import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
+import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import EditComment from "app/components/comments/EditComment"
 import EmptyState from "app/components/EmptyState"
 import CommentCard from "app/components/comments/CommentCard"
 import CommentParentType from "enums/CommentParentType"
 
-export default function Post({ post, currentUserProfile }) {
+export default function Note({ note, currentUserProfile }) {
   const router = useRouter()
 
-  const [comments, setComments] = useState<any[]>(post.comments || [])
+  const [comments, setComments] = useState<any[]>(note.comments || [])
 
   const getComments = useCallback(async () => {
     const requestData = {
       parentType: CommentParentType.BookNote,
-      parentId: post.id,
+      parentId: note.id,
     }
 
     try {
@@ -28,7 +28,7 @@ export default function Post({ post, currentUserProfile }) {
     } catch (error: any) {
       reportToSentry(error, requestData)
     }
-  }, [post.id])
+  }, [note.id])
 
   async function handleEditSuccess() {
     router.refresh()
@@ -40,10 +40,9 @@ export default function Post({ post, currentUserProfile }) {
 
   return (
     <div className="my-8 mx-8 ml:max-w-3xl ml:mx-auto">
-      <BookLinkPostCard
-        post={post}
+      <BookNoteCard
+        note={note}
         currentUserProfile={currentUserProfile}
-        withCover
         onEditSuccess={handleEditSuccess}
         onDeleteSuccess={handleDeleteSuccess}
       />
@@ -53,7 +52,7 @@ export default function Post({ post, currentUserProfile }) {
           <div className="mt-8 font-mulish">
             <div className="-mb-2">reply</div>
             <EditComment
-              parentId={post.id}
+              parentId={note.id}
               parentType={CommentParentType.BookNote}
               onEditSuccess={getComments}
               onDeleteSuccess={getComments}
