@@ -2,6 +2,7 @@ import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import * as ghost from "lib/ghost"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { truncateString } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
 import UserRole from "enums/UserRole"
 import type { Metadata } from "next"
@@ -53,12 +54,16 @@ const METADATA_CONFIG = {
     title: (title) => `${title} • news • catalog`,
   },
   post: {
-    title: (title) => `${title} • catalog`,
+    title: (title, creatorName) => `${title} • a post by ${creatorName} • catalog`,
+  },
+  note: {
+    title: (creatorName, bookTitle, noteText) =>
+      `${noteText ? `${noteText} • ` : ""}a note by ${creatorName} on ${bookTitle} • catalog`,
   },
 }
 
 async function getMetadata({ key, params }): Promise<Metadata> {
-  const { username, bookSlug, listSlug, shelf, postId, postSlug } = params
+  const { username, bookSlug, listSlug, shelf, postId, noteId, postSlug } = params
 
   const config = METADATA_CONFIG[key]
 
@@ -138,11 +143,37 @@ async function getMetadata({ key, params }): Promise<Metadata> {
         where: {
           id: postId,
         },
+        include: {
+          creator: true,
+        },
       })
 
       if (!post) return {}
 
-      pageTitle = config.title(post.title)
+      const creator = UserProfile.build(post.creator)
+
+      pageTitle = config.title(post.title, creator.name)
+    } else if (key === "note" && noteId) {
+      const note = await prisma.bookNote.findFirst({
+        where: {
+          id: noteId,
+        },
+        include: {
+          creator: true,
+          book: true,
+        },
+      })
+
+      if (!note) return {}
+
+      const creator = UserProfile.build(note.creator)
+
+      if (note.text) {
+        const truncatedText = truncateString(note.text, 60)
+        pageTitle = config.title(creator.name, note.book.title, truncatedText)
+      } else {
+        pageTitle = config.title(creator.name, note.book.title)
+      }
     } else if (key === "news.post" && postSlug) {
       const post = await ghost.getPost(postSlug)
 

@@ -3,12 +3,12 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Tooltip } from "react-tooltip"
-import { FaHeart } from "react-icons/fa"
+import { FaHeart, FaRegComment } from "react-icons/fa"
 import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import UserProfile from "lib/models/UserProfile"
-import { getBookLink } from "lib/helpers/general"
+import { getBookLink, getNoteLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import ExpandableText from "app/components/ExpandableText"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
@@ -44,6 +44,7 @@ export default function BookNoteCard({
     likeCount,
     currentUserLike,
     creatorLikedBook,
+    comments,
   } = note
 
   const creator = UserProfile.build(_creator)
@@ -147,7 +148,7 @@ export default function BookNoteCard({
               <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
             </div>
           )}
-          <div className="my-3">
+          <div className="my-3 flex">
             <Likes
               interactive={!!currentUserProfile}
               likedObject={note}
@@ -155,6 +156,12 @@ export default function BookNoteCard({
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />
+            <div className="-mt-0.5 ml-4">
+              <Link href={getNoteLink(id)} className="">
+                <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
+                {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
