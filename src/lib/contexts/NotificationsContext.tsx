@@ -2,6 +2,7 @@
 
 import { createContext, useState, useEffect, useCallback, useMemo, useContext } from "react"
 import api from "lib/api"
+import { useUser } from "lib/contexts/UserContext"
 
 type NotificationsProviderValue = {
   hasUnread: boolean
@@ -12,6 +13,7 @@ type NotificationsProviderValue = {
 export const NotificationsContext = createContext<NotificationsProviderValue | undefined>(undefined)
 
 export const NotificationsProvider = ({ children }) => {
+  const { currentUser } = useUser()
   const [hasUnread, setHasUnread] = useState(false)
 
   const fetchNotifs = useCallback(async () => {
@@ -20,8 +22,9 @@ export const NotificationsProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
+    if (!currentUser) return
     fetchNotifs()
-  }, [fetchNotifs])
+  }, [fetchNotifs, currentUser])
 
   const markAllAsRead = useCallback(async () => {
     await api.notifs.markAllAsRead()
