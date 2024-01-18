@@ -1,7 +1,9 @@
-import { decorateWithFollowing } from "lib/server/decorators"
+import { decorateWithFollowing, decorateWithLikes } from "lib/server/decorators"
+import { idsToObjects } from "lib/helpers/general"
 import UserCurrentStatusCard from "app/components/userCurrentStatuses/UserCurrentStatusCard"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 export default async function FriendsCurrentStatuses({ currentUserProfile }) {
   const twoWeeksAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 14)
@@ -37,6 +39,21 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
         new Date(b.currentStatuses[0].createdAt).valueOf() -
         new Date(a.currentStatuses[0].createdAt).valueOf(),
     )
+
+  // decorate current statuses with likes
+  const decoratedCurrentStatuses = await decorateWithLikes(
+    followingWithCurrentStatuses.map(
+      (followedUserProfile) => followedUserProfile.currentStatuses[0],
+    ),
+    InteractionObjectType.UserCurrentStatus,
+    currentUserProfile,
+  )
+
+  const followingWithCurrentStatusesMap = idsToObjects(followingWithCurrentStatuses)
+
+  decoratedCurrentStatuses.forEach((currentStatus) => {
+    followingWithCurrentStatusesMap[currentStatus.userProfileId].currentStatuses = [currentStatus]
+  })
 
   return (
     <div className="mt-4 max-w-lg mx-auto font-mulish">

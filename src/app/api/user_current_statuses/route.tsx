@@ -5,6 +5,7 @@ import { withApiHandling } from "lib/api/withApiHandling"
 import { findOrCreateBook } from "lib/api/books"
 import { getAllAtMentions } from "lib/helpers/general"
 import { createNotifsFromMentions } from "lib/server/notifs"
+import { reportToSentry } from "lib/sentry"
 import NotificationObjectType from "enums/NotificationObjectType"
 import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
@@ -31,6 +32,14 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     }
   }
 
+  const existingUserCurrentStatusIds = (
+    await prisma.userCurrentStatus.findMany({
+      where: {
+        userProfileId: userProfile.id,
+      },
+    })
+  ).map((userCurrentStatus) => userCurrentStatus.id)
+
   const deleteExistingUserCurrentStatuses = prisma.userCurrentStatus.deleteMany({
     where: {
       userProfileId: userProfile.id,
@@ -53,6 +62,22 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     deleteExistingUserCurrentStatuses,
     createUserCurrentStatus,
   ])
+
+  try {
+    await prisma.interaction.deleteMany({
+      where: {
+        objectId: {
+          in: existingUserCurrentStatusIds,
+        },
+        objectType: NotificationObjectType.UserCurrentStatus,
+      },
+    })
+  } catch (error: any) {
+    reportToSentry(error, {
+      existingUserCurrentStatusIds,
+      method: "delete_likes_for_current_statuses",
+    })
+  }
 
   const atMentions = getAllAtMentions(text)
 
@@ -79,11 +104,35 @@ export const DELETE = withApiHandling(
   async (_req: NextRequest, { params }) => {
     const { currentUserProfile: userProfile } = params
 
+    const existingUserCurrentStatusIds = (
+      await prisma.userCurrentStatus.findMany({
+        where: {
+          userProfileId: userProfile.id,
+        },
+      })
+    ).map((userCurrentStatus) => userCurrentStatus.id)
+
     await prisma.userCurrentStatus.deleteMany({
       where: {
         userProfileId: userProfile.id,
       },
     })
+
+    try {
+      await prisma.interaction.deleteMany({
+        where: {
+          objectId: {
+            in: existingUserCurrentStatusIds,
+          },
+          objectType: NotificationObjectType.UserCurrentStatus,
+        },
+      })
+    } catch (error: any) {
+      reportToSentry(error, {
+        existingUserCurrentStatusIds,
+        method: "delete_likes_for_current_statuses",
+      })
+    }
 
     return NextResponse.json({}, { status: 200 })
   },
