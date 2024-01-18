@@ -1,87 +1,24 @@
 "use client"
 
-import { ChangeEvent, useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { MdEdit, MdOutlineFileUpload } from "react-icons/md"
 import { TbTrash } from "react-icons/tb"
-import AvatarCropModal from "app/settings/profile/components/AvatarCropModal"
-
-const IMAGE_MIME_TYPE = ["image/png", "image/jpg", "image/jpeg", "image/gif"]
-const MAX_FILE_SIZE = 4 * 1000 * 1000
+import ImageCropModal from "app/components/images/ImageCropModal"
+import useImageUpload from "app/components/images/useImageUpload"
+import { IMAGE_MIME_TYPE } from "app/components/images/helpers"
 
 const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
-  const [croppedFileUrl, setCroppedFileUrl] = useState<string | undefined>(initialFileUrl)
-  const [uploadedFile, setUploadedFile] = useState<Blob>()
-  const [uploadedFileType, setUploadedFileType] = useState<string>()
-  const [showCropModal, setShowCropModal] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
-
-  const isValidFile = (file: File): boolean => {
-    if (!file) return false
-
-    let isValid = true
-
-    if (file.size > MAX_FILE_SIZE) {
-      // size too large
-      setErrorMessage("Please upload a file less than 4MB.")
-      isValid = false
-    } else if (!IMAGE_MIME_TYPE.includes(file.type)) {
-      // not the correct type
-      setErrorMessage("Please upload only a PNG, JPG, or GIF file.")
-      isValid = false
-    }
-
-    return isValid
-  }
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setErrorMessage(undefined)
-
-    if (!event.target.files) return
-
-    const targetFile = event.target.files[0]
-
-    if (!isValidFile(targetFile)) return
-
-    setUploadedFileType(targetFile!.type)
-    setUploadedFile(targetFile)
-
-    if (targetFile) {
-      if (targetFile.type === "image/gif") {
-        setCroppedFileUrl(URL.createObjectURL(targetFile))
-        onFileChange(createTransformedFileItemObj(targetFile))
-      } else {
-        setShowCropModal(true)
-      }
-    } else {
-      onFileChange(undefined)
-      markFileValid(true) // file has been removed
-    }
-  }
-
-  const handleDeleteClick = () => {
-    setErrorMessage(undefined)
-    setCroppedFileUrl(undefined)
-    onFileChange(undefined)
-    markFileValid(true) // file has been removed
-  }
-
-  const createTransformedFileItemObj = (file: Blob) => ({
-    file,
-    uploadedFileType: file.type,
-    fileExtension: file.name.split(".").pop(),
-  })
-
-  const handleFileCropped = (croppedFileBlob: Blob) => {
-    const newCroppedFile = new File([croppedFileBlob], uploadedFile!.name, {
-      type: uploadedFile!.type,
-    })
-    const transformedFileItemObj = createTransformedFileItemObj(newCroppedFile)
-
-    setCroppedFileUrl(URL.createObjectURL(croppedFileBlob))
-    onFileChange(transformedFileItemObj)
-    setShowCropModal(false)
-  }
+  const {
+    croppedFileUrl,
+    uploadedFile,
+    uploadedFileType,
+    showCropModal,
+    errorMessage,
+    handleDeleteClick,
+    handleFileChange,
+    handleFileCropped,
+    setShowCropModal,
+  } = useImageUpload({ initialFileUrl, onFileChange, markFileValid, isCroppable: true })
 
   const avatar = (children: JSX.Element) => (
     <div className="relative">
@@ -131,9 +68,9 @@ const AvatarUpload = ({ initialFileUrl, onFileChange, markFileValid }) => {
 
   return (
     <div className="w-full xs:w-96">
-      {uploadedFile && (
-        <AvatarCropModal
-          avatarImageUrl={URL.createObjectURL(uploadedFile)}
+      {uploadedFile && showCropModal && (
+        <ImageCropModal
+          imageUrl={URL.createObjectURL(uploadedFile)}
           imageType={uploadedFileType}
           isOpen={showCropModal}
           onModalClose={() => setShowCropModal(false)}

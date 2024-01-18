@@ -13,7 +13,7 @@ interface CroppedArea {
   y: number
 }
 
-const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSaveHandler }) => {
+const ImageCropModal = ({ isOpen, imageUrl, imageType, onModalClose, onSaveHandler }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedArea, setCroppedArea] = useState<CroppedArea>({
@@ -40,7 +40,7 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
     })
 
   const getCroppedImg = useCallback(async () => {
-    const image = (await createImage(avatarImageUrl)) as HTMLImageElement
+    const image = (await createImage(imageUrl)) as HTMLImageElement
     const canvas = document.createElement("canvas")
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
@@ -68,7 +68,7 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
     return new Promise((resolve) => {
       canvas.toBlob((file) => resolve(file), imageType)
     })
-  }, [croppedArea, avatarImageUrl, imageType])
+  }, [croppedArea, imageUrl, imageType])
 
   const handleSaveCrop = useCallback(async () => {
     onSaveHandler(await getCroppedImg())
@@ -87,7 +87,7 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
 
           <div className="relative my-4 grow">
             <Cropper
-              image={avatarImageUrl}
+              image={imageUrl}
               crop={crop}
               zoom={zoom}
               aspect={1}
@@ -122,4 +122,4 @@ const AvatarCropModal = ({ isOpen, avatarImageUrl, imageType, onModalClose, onSa
   )
 }
 
-export default AvatarCropModal
+export default ImageCropModal
