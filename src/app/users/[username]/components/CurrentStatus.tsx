@@ -3,9 +3,12 @@ import { isMobile } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
+import { useUser } from "lib/contexts/UserContext"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
 import CustomMarkdown from "app/components/CustomMarkdown"
+import Likes from "app/components/Likes"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 export default function CurrentStatus({
   userProfile: _userProfile,
@@ -13,9 +16,11 @@ export default function CurrentStatus({
   isUsersProfile = false,
   isProfilePage = true,
 }) {
+  const { currentUserProfile } = useUser()
+
   const userProfile = UserProfile.build(_userProfile)
   const { name } = userProfile
-  const { text, book, createdAt } = userCurrentStatus || {}
+  const { text, book, createdAt, currentUserLike } = userCurrentStatus || {}
 
   const bookTooltipAnchorId =
     userCurrentStatus && book ? `current-status-book-${userCurrentStatus.id}` : undefined
@@ -77,12 +82,19 @@ export default function CurrentStatus({
 
       {isProfilePage && (
         <>
-          <div className="mt-2 text-sm text-gray-500">
+          <div className="-mt-1 mb-2 text-sm text-gray-500">
             posted <span id={timestampTooltipAnchorId}>{createdAtFromNow}</span>
           </div>
           {timestampTooltip}
         </>
       )}
+
+      <Likes
+        interactive={!!currentUserProfile}
+        likedObject={userCurrentStatus}
+        likedObjectType={InteractionObjectType.UserCurrentStatus}
+        currentUserLike={currentUserLike}
+      />
     </div>
   ) : (
     <div className="py-8 px-4 flex items-center justify-center font-newsreader italic text-gray-300">

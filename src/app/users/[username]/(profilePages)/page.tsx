@@ -148,6 +148,12 @@ export default async function UserProfilePage({ params }) {
     currentUserProfile,
   )
 
+  userProfile.currentStatuses = await decorateWithLikes(
+    userProfile.currentStatuses || [],
+    InteractionObjectType.UserCurrentStatus,
+    currentUserProfile,
+  )
+
   userProfile.bookNotes = await decorateWithComments(
     _bookNotes,
     CommentParentType.BookNote,

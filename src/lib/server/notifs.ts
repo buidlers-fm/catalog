@@ -50,6 +50,7 @@ async function createNotifFromSource(source) {
       reportToSentry(new Error(`${objectType} not found, can't create notif`), {
         source,
       })
+      return
     }
   } else if (objectType === InteractionObjectType.Comment) {
     const comment = await prisma.comment.findFirst({
@@ -64,28 +65,55 @@ async function createNotifFromSource(source) {
       reportToSentry(new Error("Comment not found, can't create notif"), {
         source,
       })
+      return
+    }
+  } else if (objectType === InteractionObjectType.UserCurrentStatus) {
+    const userCurrentStatus = await prisma.userCurrentStatus.findFirst({
+      where: {
+        id: objectId,
+      },
+    })
+
+    if (userCurrentStatus) {
+      notifiedUserProfileId = userCurrentStatus.userProfileId
+    } else {
+      reportToSentry(new Error("User current status not found, can't create notif"), {
+        source,
+      })
+      return
     }
   }
 
-  if (notifiedUserProfileId) {
-    const notifData = {
-      agentId,
-      agentType: NotificationAgentType.User,
-      type: notificationType,
-      objectId,
-      objectType,
-      sourceId,
-      sourceType,
-      notifiedUserProfileId,
-    }
+  if (!notifiedUserProfileId) {
+    reportToSentry(new Error("Notified user profile id not found, can't create notif"), {
+      source,
+    })
+    return
+  }
 
-    try {
-      await prisma.notification.create({
-        data: notifData,
-      })
-    } catch (error: any) {
-      reportToSentry(error, notifData)
-    }
+  const notifData = {
+    agentId,
+    agentType: NotificationAgentType.User,
+    type: notificationType,
+    objectId,
+    objectType,
+    sourceId,
+    sourceType,
+    notifiedUserProfileId,
+  }
+
+  const existingNotif = await prisma.notification.findFirst({
+    where: notifData,
+  })
+
+  if (existingNotif) return
+
+  try {
+    await prisma.notification.create({
+      data: notifData,
+    })
+  } catch (error: any) {
+    reportToSentry(error, notifData)
   }
 }
 
