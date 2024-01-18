@@ -51,7 +51,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile: userProfile } = params
   const { bookNote, bookRead, book, like } = reqJson
 
-  const { text, readingStatus } = bookNote
+  const { text, readingStatus, hasSpoilers } = bookNote
 
   const bookNoteValidations = validations.bookNote
 
@@ -166,6 +166,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     data: {
       noteType: BookNoteType.JournalEntry,
       text,
+      hasSpoilers,
       readingStatus,
       creator: {
         connect: {

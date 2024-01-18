@@ -1,19 +1,23 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { TbTrash } from "react-icons/tb"
+import { useForm } from "react-hook-form"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import FormTextarea from "app/components/forms/FormTextarea"
+import FormToggle from "app/components/forms/FormToggle"
 import ConfirmationModal from "app/components/ConfirmationModal"
 import validations from "lib/constants/validations"
 
 export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess, onCancel }) {
-  const { id, text: _initialText } = bookNote
+  const { id, hasSpoilers, text: _initialText } = bookNote
 
   const [text, setText] = useState<string>(_initialText)
   const [textErrorMsg, setTextErrorMsg] = useState<string>()
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
+
+  const { control } = useForm<{ hasSpoilers: boolean }>()
 
   const bookNoteValidations = validations.bookNote
 
@@ -77,6 +81,13 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
         bgColor="bg-gray-800"
         value={text}
         onChange={(e) => setText(e.target.value)}
+      />
+      <FormToggle
+        label="Spoilers"
+        descriptionText="Notes with spoilers will be masked by default."
+        name="hasSpoilers"
+        control={control}
+        defaultValue={hasSpoilers}
       />
       <div className="flex justify-end">
         <button

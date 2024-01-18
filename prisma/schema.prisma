@@ -148,6 +148,7 @@ model BookNote {
   creator       UserProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   book          Book        @relation(fields: [bookId], references: [id])
   bookRead      BookRead?   @relation(fields: [bookReadId], references: [id], onDelete: Cascade)
+  hasSpoilers   Boolean     @default(false) @map("has_spoilers")
 
   @@index([creatorId])
   @@index([bookId])

@@ -13,6 +13,7 @@ import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormTextarea from "app/components/forms/FormTextarea"
+import FormToggle from "app/components/forms/FormToggle"
 import allValidations from "lib/constants/validations"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import { dateStringToDateTime } from "lib/helpers/general"
@@ -98,6 +99,7 @@ export default function BookNoteModal({
     text: string
     startDate: string
     endDate: string
+    hasSpoilers: boolean
   }
 
   const bookNoteValidations = allValidations.bookNote
@@ -107,11 +109,13 @@ export default function BookNoteModal({
     setValue,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
     reset,
   } = useForm<BookNoteFormData>()
 
   const startDateValue = watch("startDate")
+  const hasSpoilers = watch("hasSpoilers")
 
   const validations = {
     endDate: {
@@ -191,7 +195,7 @@ export default function BookNoteModal({
 
     const toastId = toast.loading("Saving your note...")
 
-    const { startDate: startDateStr, endDate: endDateStr } = formData
+    const { startDate: startDateStr, endDate: endDateStr, hasSpoilers: _hasSpoilers } = formData
     const startDate = startDateStr ? dateStringToDateTime(startDateStr) : undefined
     const endDate = endDateStr ? dateStringToDateTime(endDateStr) : undefined
 
@@ -199,6 +203,7 @@ export default function BookNoteModal({
       bookNote: {
         text,
         readingStatus,
+        hasSpoilers: _hasSpoilers,
         noteType: BookNoteType.JournalEntry,
       },
       bookRead: {
@@ -296,6 +301,13 @@ export default function BookNoteModal({
                         moreClasses="mt-1"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
+                      />
+                      <FormToggle
+                        label="Spoilers"
+                        descriptionText="Notes with spoilers will be masked by default."
+                        name="hasSpoilers"
+                        control={control}
+                        defaultValue={hasSpoilers}
                       />
                       <div
                         className={
