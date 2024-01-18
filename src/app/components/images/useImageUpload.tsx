@@ -19,11 +19,15 @@ const useImageUpload = ({ initialFileUrl, onFileChange, markFileValid, isCroppab
 
     if (file.size > MAX_FILE_SIZE) {
       // size too large
-      setErrorMessage("Please upload a file less than 4MB.")
+      const maxFileSizeMegaBytes = MAX_FILE_SIZE / 1000 / 1000
+      setErrorMessage(`Please upload a file less than ${maxFileSizeMegaBytes}MB.`)
       isValid = false
     } else if (!IMAGE_MIME_TYPE.includes(file.type)) {
       // not the correct type
-      setErrorMessage("Please upload only a PNG, JPG, or GIF file.")
+      const mimeTypes = new Intl.ListFormat("en", { style: "long", type: "disjunction" }).format(
+        IMAGE_MIME_TYPE,
+      )
+      setErrorMessage(`Please upload files of these types only: ${mimeTypes}`)
       isValid = false
     }
 
