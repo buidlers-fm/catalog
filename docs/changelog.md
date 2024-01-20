@@ -2,14 +2,16 @@ last updated: january 20, 2024.
 
 ---
 
-# major ongoing initiatives for jan-feb 2024
+# big things for jan-feb 2024
 
-- Comment on all the things (including on other comments, in some cases).
-- In-app notifications for likes, comments, etc.
-- Instead of just link posts, book posts can have text and become full discussion threads.
-- Allow catalog users to edit book details and covers, and add new books.
+key: 🛠️ in progress | ✅ done | ⌛️ upcoming
+
+- ✅ In-app notifications for likes, comments, etc.
+- 🛠️ Comment on all the things (including on other comments, in some cases).
+- ⌛️ Instead of just link posts, book posts can have text and become full discussion threads.
+- ⌛️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
-- Allow users to set privacy/visibility levels on notes, shelves, and status.
+- ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
 
 ---
 
