@@ -18,7 +18,6 @@ const bookPostValidations = allValidations.bookPost
 
 export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
   const [isBusy, setIsBusy] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
 
   type BookPostFormData = {
     title: string
@@ -65,7 +64,6 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
   }
 
   const submit = async (formData: BookPostFormData) => {
-    setErrorMessage(undefined)
     setIsBusy(true)
 
     const toastId = toast.loading("Saving your post...")
@@ -89,7 +87,6 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
     } catch (error: any) {
       reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
-      setErrorMessage(error.message)
     }
 
     setIsBusy(false)
@@ -122,7 +119,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
               <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
               <div className="">
                 <form onSubmit={handleSubmit(submit)}>
-                  <div className="my-4">
+                  <div className="my-4 w-full sm:w-96 max-w-[384px]">
                     <FormInput
                       labelText="title"
                       name="title"
@@ -162,9 +159,6 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
                       >
                         save
                       </button>
-                    </div>
-                    <div className="w-96">
-                      {errorMessage && <div className="mt-3 text-red-500">{errorMessage}</div>}
                     </div>
                   </div>
                 </form>

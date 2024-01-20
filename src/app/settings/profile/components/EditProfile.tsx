@@ -63,7 +63,6 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
   const [avatarUpdated, setAvatarUpdated] = useState<boolean>(false)
   const [avatarValid, setAvatarValid] = useState<boolean>(true)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
 
   const {
     register,
@@ -90,7 +89,6 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
     }
 
     setIsSubmitting(true)
-    setErrorMessage(undefined)
 
     const toastId = toast.loading("Saving your changes...")
 
@@ -144,7 +142,6 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
         currentUserProfile: userProfile,
       })
 
-      setErrorMessage(error.message)
       toast.error("Hmm, something went wrong.", { id: toastId })
     }
 
@@ -230,9 +227,6 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
           >
             Save
           </button>
-        </div>
-        <div className="w-96">
-          {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
         </div>
       </form>
     </div>

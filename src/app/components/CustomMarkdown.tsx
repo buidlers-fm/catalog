@@ -1,6 +1,8 @@
 import Markdown, { Components } from "react-markdown"
 import { validate as isValidUuid } from "uuid"
 import linkifyRegex from "remark-linkify-regex"
+import rehypeSlug from "rehype-slug"
+import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import { isValidHttpUrl, getUserProfileLink } from "lib/helpers/general"
 
 const components: Components = {
@@ -24,6 +26,12 @@ const components: Components = {
     } else if (isValidHttpUrl(href)) {
       return (
         <a {...props} href={href} className="cat-link" target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      )
+    } else if (href?.startsWith("#")) {
+      return (
+        <a {...props} href={href}>
           {children}
         </a>
       )
@@ -60,7 +68,16 @@ const components: Components = {
   },
 }
 
-const plugins = [linkifyRegex(/(?:https?):\/\/\S+/g)]
+const remarkPlugins = [linkifyRegex(/(?:https?):\/\/\S+/g)]
+const rehypePlugins = [
+  rehypeSlug,
+  [
+    rehypeAutolinkHeadings,
+    {
+      behavior: "wrap",
+    },
+  ],
+]
 
 const CustomMarkdown = ({ markdown, componentOverrides = {}, moreClasses = "" }) => {
   const finalComponents = { ...components, ...componentOverrides }
@@ -69,7 +86,9 @@ const CustomMarkdown = ({ markdown, componentOverrides = {}, moreClasses = "" })
     <Markdown
       className={`whitespace-pre-wrap break-words ${moreClasses}`}
       components={finalComponents}
-      remarkPlugins={plugins}
+      remarkPlugins={remarkPlugins}
+      // @ts-ignore
+      rehypePlugins={rehypePlugins}
     >
       {markdown}
     </Markdown>

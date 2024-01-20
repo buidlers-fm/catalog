@@ -20,6 +20,13 @@ You can find a bit more context about the app in our blog archive, specifically 
 
 If you have any questions or run into any issues, let us know. We have a [Discord server](https://discord.gg/Htj7gWYCkC) for feedback, or you can email staff@catalog.fyi .
 
+# tips
+
+**Shelves vs. lists:** You don't need to create lists like "currently reading" or "to read", as you can use shelves for that, which include: **to read**, **up next**, **currently reading**, **read**, and **abandoned**. Shelves are a little different from lists in that everyone has the same set of shelves, they show up differently on your profile, and eventually they can have different privacy settings from your lists (for example, if you want private reading-tracking but public curation). At the moment, you can shelve a book by going to the book's page and clicking "shelves" (the bookmark icon), but we will be adding more convenient ways to shelve a book from anywhere, as well as more convenient ways to move a book from one shelf to the next. (You may find you prefer to use lists for everything anyway, which is totally fine!)
+
+**Read dates and reading history:** If you add read dates to a book at any point (go to the book's page, click "add note or log"), they won't show up anywhere right now, but they'll be recorded and eventually we will be able to show them in a timeline of your reading history. So in the meantime, you can certainly create lists like "read in 2024" as many people have been doing, but just know that you can
+also use read dates instead of or in addition to lists, when it comes to tracking _when_ you read a book. To log a reread for a book that already has a finished date or that has been marked read, just add a new log with a new set of dates.
+
 # book search and book details
 
 For our book search, and for all the book details you see, including titles, author names, descriptions, and covers, we use [OpenLibrary](https://openlibrary.org/) as our data source. We choose to work with them because of a deep alignment of values, because we believe that book _metadata_ (the aforementioned details) should be free and open. That means we forgo paying for the kind of proprietary book data that powers some other book apps. That data is often supplied by huge companies who employ lots of people whose job it is to clean and fix book data; meanwhile, OpenLibrary relies on a small fleet of volunteer librarians who are just passionate about books.
@@ -30,9 +37,9 @@ But take heart: we will soon let you edit book details, and add/change cover ima
 
 In the meantime, one tangible thing you can do to help: when you search for a book and get duplicate results (multiple results that all seem more or less correct), try to choose the "best" record (often the one with the most editions, or that has a cover image or the most filled-out details) as the one you interact with. Sometimes it's really not clear which one is the "best" record, and that's okay! But our system is set up to "learn" which book results are the best based on which ones you interact with (i.e., add to your lists/shelves or write notes about, etc), so you can help us filter for the best results just by paying extra attention to this as you use catalog.
 
-# bugs and error messages
+# bugs and errors
 
-There will be bugs and errors. And we are intentionally not hiding the raw error messages if you run into them, as they will give us much more information on what went wrong. So don't be alarmed if you see a red error message that looks like a pile of gibberish! Just screenshot it and send it to us, via Discord, email, text message, or any way that you normally talk to us. In fact, you should be proud to discover a new bug, and we will certainly appreciate it.
+There will be bugs and errors. So don't be alarmed if you run into one! Just screenshot it and send it to us, via Discord, email, text message, or any way that you normally talk to us. In fact, you should be proud to discover a new bug, and we will certainly appreciate it.
 
 # privacy
 
