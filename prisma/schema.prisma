@@ -296,13 +296,16 @@ model TagAssignment {
 }
 
 model Waitlister {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String
-  email      String
-  data       Json
-  subscribed Boolean   @default(false)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                   String
+  email                  String
+  data                   Json
+  subscribed             Boolean   @default(false)
+  invitedAt              DateTime? @map("invited_at") @db.Timestamptz(6)
+  invitedByUserProfileId String?   @map("invited_by_user_profile_id") @db.Uuid
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // no need for user profile relation, because this use case is so small
 
   @@index([email])
   @@map("waitlisters")

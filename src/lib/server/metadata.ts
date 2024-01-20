@@ -50,6 +50,9 @@ const METADATA_CONFIG = {
   "admin.invites": {
     title: () => "admin • invites • catalog",
   },
+  "admin.waitlist": {
+    title: () => "admin • waitlist • catalog",
+  },
   "news.post": {
     title: (title) => `${title} • news • catalog`,
   },
