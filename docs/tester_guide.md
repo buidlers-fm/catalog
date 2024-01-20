@@ -1,6 +1,6 @@
 # 💌 hey stranger,
 
-As I'm sure you're well aware, you've entered an app in its alpha/beta phase of testing and development, which means the place is essentially one big construction zone. Watch your head!
+As I'm sure you're well aware, you've entered an app in its alpha/beta phase of testing and development, which means the place is essentially one big construction zone. (You can read the [changelog](https://catalog.fyi/changelog) for details.) Watch your head!
 
 There are a few things that are good for you to know about the app, and its current and future state.
 
