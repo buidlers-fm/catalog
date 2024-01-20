@@ -283,7 +283,7 @@ export default function BookNoteModal({
               {readingStatus && (
                 <div className="">
                   <form onSubmit={handleSubmit(submit)}>
-                    <div className="my-4 max-w-[384px]">
+                    <div className="my-4 w-full sm:w-96 max-w-[384px]">
                       <FormTextarea
                         labelText={readingStatusToCopy[readingStatus].textPrompt}
                         name="text"

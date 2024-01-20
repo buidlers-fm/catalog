@@ -119,7 +119,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
               <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
               <div className="">
                 <form onSubmit={handleSubmit(submit)}>
-                  <div className="my-4">
+                  <div className="my-4 w-full sm:w-96 max-w-[384px]">
                     <FormInput
                       labelText="title"
                       name="title"
