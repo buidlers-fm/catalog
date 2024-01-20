@@ -2,6 +2,7 @@ import "app/globals.css"
 import Link from "next/link"
 import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
 import { FaDiscord } from "react-icons/fa"
+import { BsEnvelopeFill } from "react-icons/bs"
 import { UserProvider } from "lib/contexts/UserContext"
 import { NotificationsProvider } from "lib/contexts/NotificationsContext"
 import { getCurrentUserProfile } from "lib/server/auth"
@@ -52,22 +53,28 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <main className="mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
                 {children}
               </main>
-              <footer className="mt-32 px-8 py-4 flex font-chivo-mono tracking-wider">
-                © catalog.
-                <div className="ml-10">
-                  <Link href="/" className="cat-btn-link text-sm">
-                    home
-                  </Link>
-                </div>
-                <div className="ml-6">
+              <footer className="mt-32 px-6 xs:px-8 py-4 flex font-chivo-mono tracking-wider">
+                ©&nbsp;
+                <Link href="/">catalog</Link>.
+                <div className="ml-4 xs:ml-6">
                   <Link href="/news" className="cat-btn-link text-sm">
                     news
                   </Link>
                 </div>
-                <div className="ml-6">
-                  <Link href="https://discord.gg/BWTSEkDT9W">
-                    <FaDiscord className="mt-0.5 text-2xl" />
+                <div className="ml-4 xs:ml-6">
+                  <Link href="/changelog" className="cat-btn-link text-sm">
+                    changelog
                   </Link>
+                </div>
+                <div className="ml-4 xs:ml-6">
+                  <a href="mailto:staff@catalog.fyi">
+                    <BsEnvelopeFill className="mt-[5px] text-lg" />
+                  </a>
+                </div>
+                <div className="ml-4 xs:ml-6">
+                  <a href="https://discord.gg/BWTSEkDT9W">
+                    <FaDiscord className="mt-0.5 text-2xl" />
+                  </a>
                 </div>
               </footer>
             </div>
