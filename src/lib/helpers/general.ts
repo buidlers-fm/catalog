@@ -3,6 +3,7 @@ import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
 import { validate as isValidUuid } from "uuid"
 import prisma from "lib/prisma"
+import { BASE_URLS_BY_ENV } from "lib/constants/urls"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const res = await fetch(url, options)
@@ -160,6 +161,11 @@ export const isPreview = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "preview"
 export const isStaging = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "staging"
 
 export const isProduction = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "production"
+
+export const getBaseUrl = () => {
+  const env = process.env.NEXT_PUBLIC_CATALOG_ENV!
+  return BASE_URLS_BY_ENV[env]
+}
 
 // make it noon UTC so that all users view it as the same date
 export const dateStringToDateTime = (dateStr) => new Date(`${dateStr}T12:00:00Z`)
