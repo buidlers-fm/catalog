@@ -37,7 +37,7 @@ But take heart: we will soon let you edit book details, and add/change cover ima
 
 In the meantime, one tangible thing you can do to help: when you search for a book and get duplicate results (multiple results that all seem more or less correct), try to choose the "best" record (often the one with the most editions, or that has a cover image or the most filled-out details) as the one you interact with. Sometimes it's really not clear which one is the "best" record, and that's okay! But our system is set up to "learn" which book results are the best based on which ones you interact with (i.e., add to your lists/shelves or write notes about, etc), so you can help us filter for the best results just by paying extra attention to this as you use catalog.
 
-# bugs and error messages
+# bugs and errors
 
 There will be bugs and errors. So don't be alarmed if you run into one! Just screenshot it and send it to us, via Discord, email, text message, or any way that you normally talk to us. In fact, you should be proud to discover a new bug, and we will certainly appreciate it.
 

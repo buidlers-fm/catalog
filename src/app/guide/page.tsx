@@ -45,10 +45,57 @@ const componentOverrides = {
   },
 }
 
+const sections = [
+  {
+    title: "getting started",
+    href: "#getting-started",
+  },
+  {
+    title: "tips",
+    href: "#tips",
+  },
+  {
+    title: "book search and book details",
+    href: "#book-search-and-book-details",
+  },
+  {
+    title: "bugs and errors",
+    href: "#bugs-and-errors",
+  },
+  {
+    title: "privacy",
+    href: "#privacy",
+  },
+  {
+    title: "invites",
+    href: "#invites",
+  },
+  {
+    title: "other features",
+    href: "#other-features",
+  },
+  {
+    title: "how to be a ⭐️ beta tester",
+    href: "#how-to-be-a--beta-tester",
+  },
+]
+
 export default function GuidePage() {
   return (
-    <div className="max-w-3xl mx-auto px-8">
-      <CustomMarkdown markdown={guideText} componentOverrides={componentOverrides} />
+    <div className="flex">
+      <div className="hidden lg:block sticky top-0 h-[400px] px-8 py-4 min-w-[240px] font-mulish">
+        {sections.map((section) => (
+          <div key={section.href} className="my-4">
+            <a href={section.href} className="cat-link">
+              {section.title}
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <div className="max-w-3xl mx-auto lg:ml-8 mr-auto px-8">
+        <CustomMarkdown markdown={guideText} componentOverrides={componentOverrides} />
+      </div>
     </div>
   )
 }
