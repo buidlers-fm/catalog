@@ -16,9 +16,17 @@ import {
 } from "lib/helpers/general"
 import SignInForm from "app/components/nav/SignInForm"
 import SignUpForm from "app/components/nav/SignUpForm"
+import ForgotPassword from "app/components/nav/ForgotPassword"
+import AuthForm from "enums/AuthForm"
 import "react-modern-drawer/dist/index.css"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
+
+const authFormTitles = {
+  [AuthForm.SignIn]: "sign in",
+  [AuthForm.SignUp]: "sign up",
+  [AuthForm.ForgotPassword]: "forgot password",
+}
 
 export default function UserNav({ currentUserProfile: _initialCurrentUserProfile }) {
   const { signOut } = useUser()
@@ -26,14 +34,14 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
 
   const [currentUserProfile, setCurrentUserProfile] = useState(_initialCurrentUserProfile)
   const [showAuth, setShowAuth] = useState<boolean>(false)
-  const [isSignIn, setIsSignIn] = useState<boolean>(true)
+  const [currentAuthForm, setCurrentAuthForm] = useState<AuthForm>(AuthForm.SignIn)
 
   useEffect(() => {
     setCurrentUserProfile(_initialCurrentUserProfile)
   }, [_initialCurrentUserProfile])
 
   function onClickSignIn() {
-    setIsSignIn(true)
+    setCurrentAuthForm(AuthForm.SignIn)
     setShowAuth(true)
   }
 
@@ -130,21 +138,29 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
             direction="right"
             style={{ backgroundColor: "hsl(26, 4%, 12%)", width: "320px" }}
           >
-            <div className="p-8">
+            <div className="p-8 font-mulish">
               <div className="flex">
                 <div className="grow">
-                  <h1 className="text-xl">{isSignIn ? "sign in" : "sign up"}</h1>
+                  <h1 className="text-xl">{authFormTitles[currentAuthForm]}</h1>
                 </div>
                 <button className="ml-8" onClick={() => setShowAuth(false)}>
                   <BsXLg className="text-xl text-gray-200" />
                 </button>
               </div>
               <div>
-                {isSignIn ? (
-                  <SignInForm onSuccess={handleAuthSuccess} toggleAuth={() => setIsSignIn(false)} />
-                ) : (
-                  <SignUpForm onSuccess={handleAuthSuccess} toggleAuth={() => setIsSignIn(true)} />
+                {currentAuthForm === AuthForm.SignIn && (
+                  <SignInForm
+                    onSuccess={handleAuthSuccess}
+                    toggleAuth={(value) => setCurrentAuthForm(value)}
+                  />
                 )}
+                {currentAuthForm === AuthForm.SignUp && (
+                  <SignUpForm
+                    onSuccess={handleAuthSuccess}
+                    toggleAuth={() => setCurrentAuthForm(AuthForm.SignIn)}
+                  />
+                )}
+                {currentAuthForm === AuthForm.ForgotPassword && <ForgotPassword />}
               </div>
             </div>
           </Drawer>

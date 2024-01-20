@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { useState } from "react"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
+import AuthForm from "enums/AuthForm"
 
 export default function SignInForm({ toggleAuth, onSuccess }) {
   const pathname = usePathname()
@@ -57,14 +58,26 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-      <button className="cat-btn cat-btn-gold my-4" onClick={handleSubmit} disabled={isSubmitting}>
+      <div className="-mt-4 mb-6 text-sm">
+        <button onClick={() => toggleAuth(AuthForm.ForgotPassword)} className="cat-link">
+          forgot password?
+        </button>
+      </div>
+      <button
+        className="cat-btn cat-btn-gold my-2"
+        onClick={handleSubmit}
+        disabled={isSubmitting || !email || !password}
+      >
         Sign in
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
       {/* disabling general sign up */}
       <div className="hidden">
         Don't have an account?{" "}
-        <button onClick={toggleAuth} className="cat-link text-none text-teal-500">
+        <button
+          onClick={() => toggleAuth(AuthForm.SignUp)}
+          className="cat-link text-none text-teal-500"
+        >
           Sign up
         </button>
         .

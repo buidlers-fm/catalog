@@ -4,6 +4,7 @@ import { createContext, useState, useCallback, useEffect, useMemo, useContext } 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
 import api from "lib/api"
+import { getBaseUrl } from "lib/helpers/general"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
 type User = {
@@ -18,6 +19,8 @@ type UserProviderValue = {
   signUp: (email: string, username: string, password: string, options?: any) => Promise<any>
   signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
+  sendPasswordResetEmail: (email: string) => Promise<void>
+  resetPassword: (password: string) => Promise<void>
   isFetching: boolean
 }
 
@@ -139,9 +142,53 @@ export function UserProvider({ children }) {
     setCurrentUserProfile(null)
   }, [supabase.auth])
 
+  const sendPasswordResetEmail = useCallback(
+    async (email: string) => {
+      const redirectUrl = `${getBaseUrl()}/api/auth/callback`
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      })
+
+      if (error) {
+        throw error
+      }
+    },
+    [supabase.auth],
+  )
+
+  const resetPassword = useCallback(
+    async (password: string) => {
+      const { error } = await supabase.auth.updateUser({ password })
+
+      if (error) {
+        throw error
+      }
+    },
+    [supabase.auth],
+  )
+
   const providerValue = useMemo(
-    () => ({ currentUser, currentUserProfile, signUp, signIn, signOut, isFetching }),
-    [currentUser, currentUserProfile, signUp, signIn, signOut, isFetching],
+    () => ({
+      currentUser,
+      currentUserProfile,
+      signUp,
+      signIn,
+      signOut,
+      sendPasswordResetEmail,
+      resetPassword,
+      isFetching,
+    }),
+    [
+      currentUser,
+      currentUserProfile,
+      signUp,
+      signIn,
+      signOut,
+      sendPasswordResetEmail,
+      resetPassword,
+      isFetching,
+    ],
   )
 
   return <UserContext.Provider value={providerValue}>{children}</UserContext.Provider>

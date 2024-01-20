@@ -13,12 +13,13 @@ export default function Toast() {
       }}
       toastOptions={{
         className: "!px-8 !bg-gray-900 !text-white",
-        duration: 4000,
         success: {
           icon: <BsCheckCircleFill className="text-green-500 text-lg" />,
+          duration: 4000,
         },
         error: {
           icon: <BsXCircleFill className="text-red-500 text-lg" />,
+          duration: 4000,
         },
       }}
     />
