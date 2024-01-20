@@ -59,7 +59,6 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>()
   const [bookIdsToNotes, setBookIdsToNotes] = useState<any>({})
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
   const {
@@ -107,7 +106,6 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
 
   const submit = async (listData: ListMetadata) => {
     setIsSubmitting(true)
-    setErrorMessage(undefined)
     setDescriptionErrorMessage(undefined)
 
     if (description && description.length > MAX_LENGTHS.description) {
@@ -159,8 +157,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
         router.refresh()
       }
     } catch (error: any) {
-      setErrorMessage(error.message)
-      toast.error("Oh no! There was an error.", { id: toastId })
+      toast.error("Hmm, something went wrong.", { id: toastId })
     }
 
     setIsSubmitting(false)
@@ -253,9 +250,6 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
                   delete list
                 </button>
               )}
-            </div>
-            <div className="w-96">
-              {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
             </div>
           </div>
         </form>

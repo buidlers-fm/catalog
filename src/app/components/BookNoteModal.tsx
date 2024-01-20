@@ -91,7 +91,6 @@ export default function BookNoteModal({
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>(_existingBookRead)
   const [isEditingDates, setIsEditingDates] = useState<boolean>(false)
   const [isBusy, setIsBusy] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
 
   type BookNoteFormData = {
     text: string
@@ -179,7 +178,6 @@ export default function BookNoteModal({
   }
 
   const submit = async (formData: BookNoteFormData) => {
-    setErrorMessage(undefined)
     setTextErrorMessage(undefined)
     setIsBusy(true)
 
@@ -221,7 +219,6 @@ export default function BookNoteModal({
     } catch (error: any) {
       reportToSentry(error, requestData)
       toast.error("Hmm, something went wrong.", { id: toastId })
-      setErrorMessage(error.message)
     }
 
     setIsBusy(false)
@@ -381,9 +378,6 @@ export default function BookNoteModal({
                         >
                           save
                         </button>
-                      </div>
-                      <div className="w-96">
-                        {errorMessage && <div className="mt-3 text-red-500">{errorMessage}</div>}
                       </div>
                     </div>
                   </form>
