@@ -5,8 +5,10 @@ import { Dialog } from "@headlessui/react"
 import { useForm } from "react-hook-form"
 import dayjs from "dayjs"
 import { toast } from "react-hot-toast"
+import { Tooltip } from "react-tooltip"
 import { BsXLg } from "react-icons/bs"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
+import { SlInfo } from "react-icons/sl"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
@@ -295,18 +297,25 @@ export default function BookNoteModal({
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                       />
-                      <div className="">
+                      <div
+                        className={
+                          isEditingDates || readingStatus === BookNoteReadingStatus.None
+                            ? "hidden"
+                            : ""
+                        }
+                      >
                         <button
                           type="button"
                           onClick={() => setIsEditingDates(true)}
-                          className={`mt-2 cat-btn-link text-sm ${
-                            isEditingDates || readingStatus === BookNoteReadingStatus.None
-                              ? "hidden"
-                              : ""
-                          }`}
+                          className="mt-2 cat-btn-link text-sm"
                         >
                           {readingStatusToCopy[readingStatus].editDatesCopy}
                         </button>
+                        <SlInfo id="edit-dates-info" className="inline-block ml-2 text-xs" />
+                        <Tooltip anchorSelect="#edit-dates-info" className="text-sm max-w-fit z-10">
+                          Your read dates won't show up anywhere yet, but will go into a timeline of
+                          your reading history that you'll be able to see in the future.
+                        </Tooltip>
                       </div>
                       <div className={isEditingDates ? "" : "hidden"}>
                         <div className="flex flex-col sm:flex-row">
