@@ -198,7 +198,9 @@ export function idsToObjects(objects) {
   return objects.reduce((result, object) => ({ ...result, [object.id]: object }), {})
 }
 
-export function getAllAtMentions(text) {
+export function getAllAtMentions(text: string) {
+  if (!text) return []
+
   // matches "[@foo](bar)"
   const regex = /\[@([^\]]+)\]\((.*?)\)/g
 
