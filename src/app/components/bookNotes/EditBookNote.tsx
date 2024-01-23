@@ -84,7 +84,6 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
       />
       <FormToggle
         label="Spoilers"
-        descriptionText="Notes with spoilers will be masked by default."
         name="hasSpoilers"
         control={control}
         defaultValue={hasSpoilers}

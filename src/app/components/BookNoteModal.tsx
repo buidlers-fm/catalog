@@ -304,7 +304,6 @@ export default function BookNoteModal({
                       />
                       <FormToggle
                         label="Spoilers"
-                        descriptionText="Notes with spoilers will be masked by default."
                         name="hasSpoilers"
                         control={control}
                         defaultValue={hasSpoilers}
