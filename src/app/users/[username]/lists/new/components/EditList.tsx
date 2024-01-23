@@ -212,7 +212,7 @@ export default function EditList({ list, firstBook, currentUserProfile, isEdit =
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <div className="my-12">
+            <div className="mt-8 max-w-sm">
               <FormToggle
                 label="ranked list?"
                 descriptionText="show position for each book."

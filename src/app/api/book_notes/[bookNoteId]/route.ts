@@ -27,7 +27,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
 
-  const { title, text } = reqJson
+  const { title, text, hasSpoilers } = reqJson
 
   const updatedBookNote = await prisma.bookNote.update({
     where: {
@@ -36,6 +36,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     data: {
       title,
       text,
+      hasSpoilers,
     },
   })
 

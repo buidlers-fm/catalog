@@ -3,7 +3,7 @@ import { Control, Controller } from "react-hook-form"
 
 type Props = {
   label: string
-  descriptionText: string
+  descriptionText?: string
   name: string
   control: Control<any>
   defaultValue: boolean
@@ -17,12 +17,12 @@ export default function FormToggle({
   defaultValue = false,
 }: Props) {
   return (
-    <div className="flex justify-between items-center w-full xs:w-96 my-4">
+    <div className="flex justify-between items-center w-full my-4">
       <label htmlFor={name} className="flex flex-col justify-between">
         <div className="mb-2">
           <span>{label}</span>
         </div>
-        {descriptionText && <span className="text-sm text-gray-200">{descriptionText}</span>}
+        {descriptionText && <span className="text-sm mr-4 text-gray-200">{descriptionText}</span>}
       </label>
       <Controller
         name={name}

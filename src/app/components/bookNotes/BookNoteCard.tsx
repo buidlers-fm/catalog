@@ -10,6 +10,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import UserProfile from "lib/models/UserProfile"
 import { getBookLink, getNoteLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
+import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
 import ExpandableText from "app/components/ExpandableText"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
@@ -45,6 +46,7 @@ export default function BookNoteCard({
     currentUserLike,
     creatorLikedBook,
     comments,
+    hasSpoilers,
   } = note
 
   const creator = UserProfile.build(_creator)
@@ -145,7 +147,11 @@ export default function BookNoteCard({
             />
           ) : (
             <div className="mt-1 mb-2 font-newsreader">
-              <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
+              {hasSpoilers ? (
+                <ExpandableSpoilerText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
+              ) : (
+                <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
+              )}
             </div>
           )}
           <div className="my-3 flex">
