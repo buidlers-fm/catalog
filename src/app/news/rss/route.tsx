@@ -2,7 +2,7 @@ import { withApiHandling } from "lib/api/withApiHandling"
 
 export const GET = withApiHandling(
   async () => {
-    const ghostRssUrl = "https://buidlers.ghost.io/rss"
+    const ghostRssUrl = "https://catalogfyi.ghost.io/rss"
     const ghostRes = await fetch(ghostRssUrl)
     const rss = await ghostRes.text()
 
