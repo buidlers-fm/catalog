@@ -1,11 +1,14 @@
+import CommentParentType from "enums/CommentParentType"
 import type Like from "types/Like"
 
 export default interface Comment {
   id?: string
   text: string
-  level: number
+  depth: number
   parentId: string
-  parentType: string
+  parentType: CommentParentType
+  rootObjectId: string
+  rootObjectType: CommentParentType
   commenterId: string
   commenterType: string
   createdAt?: string | Date

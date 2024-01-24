@@ -29,8 +29,18 @@ export default function BookLinkPostCard({
   onDeleteSuccess,
 }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const { id, creator, title, linkUrl, createdAt, book, likeCount, currentUserLike, comments } =
-    post
+  const {
+    id,
+    creator,
+    title,
+    linkUrl,
+    createdAt,
+    book,
+    likeCount,
+    currentUserLike,
+    comments,
+    commentCount,
+  } = post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
 
@@ -116,7 +126,9 @@ export default function BookLinkPostCard({
             <div className="-mt-0.5 ml-4">
               <Link href={getPostLink(id)} className="">
                 <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
-                {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+                {comments && (
+                  <span className="text-sm text-gray-300">{commentCount || comments.length}</span>
+                )}
               </Link>
             </div>
           </div>

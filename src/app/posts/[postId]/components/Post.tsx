@@ -7,7 +7,7 @@ import { reportToSentry } from "lib/sentry"
 import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
 import EditComment from "app/components/comments/EditComment"
 import EmptyState from "app/components/EmptyState"
-import CommentCard from "app/components/comments/CommentCard"
+import CommentSection from "app/components/comments/CommentSection"
 import CommentParentType from "enums/CommentParentType"
 
 export default function Post({ post, currentUserProfile }) {
@@ -57,6 +57,7 @@ export default function Post({ post, currentUserProfile }) {
               parentType={CommentParentType.BookNote}
               onEditSuccess={getComments}
               onDeleteSuccess={getComments}
+              showFormattingReferenceTooltip
             />
           </div>
           <hr className="my-12 h-[1px] border-none bg-gray-800" />
@@ -66,7 +67,7 @@ export default function Post({ post, currentUserProfile }) {
       {comments.length > 0 ? (
         <div className="mt-8">
           {comments.map((comment) => (
-            <CommentCard
+            <CommentSection
               key={comment.id}
               comment={comment}
               currentUserProfile={currentUserProfile}

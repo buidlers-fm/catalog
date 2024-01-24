@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MdEdit } from "react-icons/md"
+import { FaRegComment } from "react-icons/fa"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import EditComment from "app/components/comments/EditComment"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
@@ -11,7 +12,21 @@ import InteractionObjectType from "enums/InteractionObjectType"
 
 const TEXT_TRUNCATE_LENGTH = 500
 
-export default function CommentCard({ comment, currentUserProfile, onDelete }) {
+type Props = {
+  comment: any
+  currentUserProfile: any
+  onDelete: () => void
+  isReplying?: boolean
+  onClickReply?: () => void
+}
+
+export default function CommentCard({
+  comment,
+  currentUserProfile,
+  onDelete,
+  isReplying = false,
+  onClickReply,
+}: Props) {
   const {
     id,
     commenter,
@@ -21,6 +36,7 @@ export default function CommentCard({ comment, currentUserProfile, onDelete }) {
     createdAt,
     likeCount,
     currentUserLike,
+    depth,
   } = comment
 
   const [text, setText] = useState<string>(_text)
@@ -90,6 +106,18 @@ export default function CommentCard({ comment, currentUserProfile, onDelete }) {
           likeCount={likeCount}
           currentUserLike={currentUserLike}
         />
+
+        {!!currentUserProfile && !isReplying && depth < 2 && onClickReply && (
+          <>
+            <FaRegComment className="inline-block mt-1 mr-1.5 text-gray-500 text-md" />
+            <button
+              className="border-b border-b-gray-500 text-sm text-gray-500"
+              onClick={onClickReply}
+            >
+              reply
+            </button>
+          </>
+        )}
       </div>
     </div>
   )

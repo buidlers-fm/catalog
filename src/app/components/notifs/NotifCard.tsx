@@ -17,7 +17,17 @@ import BookNoteType from "enums/BookNoteType"
 const TEXT_TRUNCATE_LENGTH = 60
 
 export default function NotifCard({ notif, currentUserProfile }) {
-  const { id, type, agent: _agent, objectType, object, sourceType, createdAt } = notif
+  const {
+    id,
+    type,
+    agent: _agent,
+    objectType,
+    object,
+    sourceType,
+    rootObject,
+    rootObjectType,
+    createdAt,
+  } = notif
 
   const agent = UserProfile.build(_agent)
 
@@ -49,11 +59,23 @@ export default function NotifCard({ notif, currentUserProfile }) {
             objectType={objectType}
             currentUserProfile={currentUserProfile}
           />
+          {rootObject && (
+            <>
+              {" "}
+              on the{" "}
+              <ObjectText
+                agent={agent}
+                object={rootObject}
+                objectType={rootObjectType}
+                currentUserProfile={currentUserProfile}
+              />
+            </>
+          )}
           .
         </>
       )}
 
-      {type === NotificationType.Comment && (
+      {type === NotificationType.Comment && !rootObject && (
         <>
           <AgentLink agent={agent} /> commented on your{" "}
           <ObjectText
@@ -66,16 +88,38 @@ export default function NotifCard({ notif, currentUserProfile }) {
         </>
       )}
 
+      {type === NotificationType.Comment && rootObject && (
+        <>
+          <AgentLink agent={agent} /> replied to your comment on the{" "}
+          <ObjectText
+            agent={agent}
+            object={rootObject}
+            objectType={rootObjectType}
+            currentUserProfile={currentUserProfile}
+          />
+          .
+        </>
+      )}
+
       {type === NotificationType.Mention && (
         <>
           <AgentLink agent={agent} /> mentioned you in{" "}
           {sourceType === NotificationSourceType.Comment ? "their comment on the" : "their"}{" "}
-          <ObjectText
-            agent={agent}
-            object={object}
-            objectType={objectType}
-            currentUserProfile={currentUserProfile}
-          />
+          {rootObject ? (
+            <ObjectText
+              agent={agent}
+              object={rootObject}
+              objectType={rootObjectType}
+              currentUserProfile={currentUserProfile}
+            />
+          ) : (
+            <ObjectText
+              agent={agent}
+              object={object}
+              objectType={objectType}
+              currentUserProfile={currentUserProfile}
+            />
+          )}
           .
         </>
       )}
