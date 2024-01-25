@@ -74,6 +74,7 @@ const api = {
     },
   },
   comments: {
+    find: (commentId) => fetchJson(`/api/comments/${commentId}`),
     get: (params: {
       parentType?: string
       parentId?: string

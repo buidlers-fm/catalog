@@ -3,12 +3,37 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { createNotifsFromMentions } from "lib/server/notifs"
 import { getAllAtMentions } from "lib/helpers/general"
+import { decorateComments } from "lib/server/decorators"
 import { withApiHandling } from "lib/api/withApiHandling"
 import NotificationType from "enums/NotificationType"
 import NotificationObjectType from "enums/NotificationObjectType"
 import NotificationSourceType from "enums/NotificationSourceType"
 import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
+
+export const GET = withApiHandling(
+  async (_req: NextRequest, { params }) => {
+    const { routeParams, currentUserProfile } = params
+    const { commentId } = routeParams
+
+    let comment = await prisma.comment.findFirst({
+      where: {
+        id: commentId,
+      },
+    })
+
+    if (!comment) {
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 })
+    }
+
+    ;[comment] = await decorateComments([comment], currentUserProfile)
+
+    const resBody = humps.decamelizeKeys(comment)
+
+    return NextResponse.json(resBody, { status: 200 })
+  },
+  { requireJsonBody: false },
+)
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const { routeParams, reqJson, currentUserProfile: userProfile } = params

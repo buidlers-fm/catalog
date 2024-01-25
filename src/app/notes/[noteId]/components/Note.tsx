@@ -56,6 +56,7 @@ export default function Note({ note, currentUserProfile }) {
               parentType={CommentParentType.BookNote}
               onEditSuccess={getComments}
               onDeleteSuccess={getComments}
+              showFormattingReferenceTooltip
             />
           </div>
           <hr className="my-12 h-[1px] border-none bg-gray-800" />

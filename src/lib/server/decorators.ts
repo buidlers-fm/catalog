@@ -152,7 +152,21 @@ export const decorateWithLikes = async (
   }))
 }
 
-export const decorateComments = async (comments, currentUserProfile) => {
+function countComments(obj, depth = 0) {
+  if (!obj.comments) return 0
+
+  let count = obj.comments.length
+
+  if (depth < 2) {
+    obj.comments.forEach((c) => {
+      count += countComments(c, depth + 1)
+    })
+  }
+
+  return count
+}
+
+export const decorateComments = async (comments, currentUserProfile, depth = 0) => {
   const commenterIds = comments.map((comment) => comment.commenterId)
 
   const allCommenters = await prisma.userProfile.findMany({
@@ -177,13 +191,28 @@ export const decorateComments = async (comments, currentUserProfile) => {
     currentUserProfile,
   )
 
-  return commentsWithLikes.map((comment) => ({
+  let finalComments = commentsWithLikes
+  if (depth <= 2) {
+    finalComments = await decorateWithComments(
+      commentsWithLikes,
+      CommentParentType.Comment,
+      currentUserProfile,
+      depth,
+    )
+  }
+
+  return finalComments.map((comment) => ({
     ...comment,
     commenter: commenterIdsToCommenters[comment.commenterId],
   }))
 }
 
-export const decorateWithComments = async (objects, objectType, currentUserProfile) => {
+export const decorateWithComments = async (
+  objects,
+  objectType: CommentParentType | InteractionObjectType,
+  currentUserProfile,
+  depth = 0,
+) => {
   const allComments = await prisma.comment.findMany({
     where: {
       parentId: {
@@ -196,7 +225,7 @@ export const decorateWithComments = async (objects, objectType, currentUserProfi
     },
   })
 
-  const decoratedComments = await decorateComments(allComments, currentUserProfile)
+  const decoratedComments = await decorateComments(allComments, currentUserProfile, depth + 1)
 
   const objectIdsToComments = decoratedComments.reduce(
     (result, comment) => ({
@@ -206,10 +235,17 @@ export const decorateWithComments = async (objects, objectType, currentUserProfi
     {},
   )
 
-  return objects.map((obj) => ({
+  const objectsWithComments = objects.map((obj) => ({
     ...obj,
     comments: objectIdsToComments[obj.id] || [],
   }))
+
+  const objectsWithCommentCounts = objectsWithComments.map((obj) => ({
+    ...obj,
+    commentCount: countComments(obj),
+  }))
+
+  return objectsWithCommentCounts
 }
 
 export const decorateWithFollowers = async (userProfiles) => {
@@ -315,9 +351,15 @@ export const decorateNotifs = async (notifs) => {
     },
   })
 
-  const allBookNoteIds = notifs
+  const allBookNoteIdsFromNotifs = notifs
     .filter((n) => n.objectType === NotificationObjectType.BookNote)
     .map((n) => n.objectId)
+
+  const allBookNoteIdsFromComments = allComments
+    .filter((c) => c.rootObjectType === CommentParentType.BookNote)
+    .map((c) => c.rootObjectId)
+
+  const allBookNoteIds = [...allBookNoteIdsFromNotifs, ...allBookNoteIdsFromComments]
 
   const allBookNotes = await prisma.bookNote.findMany({
     where: {
@@ -327,9 +369,15 @@ export const decorateNotifs = async (notifs) => {
     },
   })
 
-  const allListIds = notifs
+  const allListIdsFromNotifs = notifs
     .filter((n) => n.objectType === NotificationObjectType.List)
     .map((n) => n.objectId)
+
+  const allListIdsFromComments = allComments
+    .filter((c) => c.rootObjectType === CommentParentType.List)
+    .map((c) => c.rootObjectId)
+
+  const allListIds = [...allListIdsFromNotifs, ...allListIdsFromComments]
 
   const allLists = await prisma.list.findMany({
     where: {
@@ -356,11 +404,20 @@ export const decorateNotifs = async (notifs) => {
   return notifs.map((notif) => {
     let object
     let source
+    let rootObject
+    let rootObjectType
 
     if (notif.objectType === NotificationObjectType.BookNote) {
       object = bookNoteIdsToBookNotes[notif.objectId]
     } else if (notif.objectType === NotificationObjectType.Comment) {
       object = commentIdsToComments[notif.objectId]
+      if (object.rootObjectType === CommentParentType.BookNote) {
+        rootObject = bookNoteIdsToBookNotes[object.rootObjectId]
+        rootObjectType = NotificationObjectType.BookNote
+      } else if (object.rootObjectType === CommentParentType.List) {
+        rootObject = listIdsToLists[object.rootObjectId]
+        rootObjectType = NotificationObjectType.List
+      }
     } else if (notif.objectType === NotificationObjectType.List) {
       object = listIdsToLists[notif.objectId]
     }
@@ -374,6 +431,8 @@ export const decorateNotifs = async (notifs) => {
       agent: agentIdsToAgents[notif.agentId],
       object,
       source,
+      rootObject,
+      rootObjectType,
       notifiedUser: notifiedUserProfileIdsToNotifiedUserProfiles[notif.notifiedUserProfileId],
     }
   })

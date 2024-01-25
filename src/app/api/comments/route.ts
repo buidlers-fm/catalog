@@ -53,7 +53,10 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     return NextResponse.json({ error: "Invalid parent type" }, { status: 400 })
   }
 
-  let level = 0
+  let depth = 0
+  let rootObjectId = parentId
+  let rootObjectType = parentType
+
   if (parentType === CommentParentType.Comment) {
     const parentComment = await prisma.comment.findFirst({
       where: {
@@ -65,7 +68,9 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       return NextResponse.json({ error: "Parent comment not found" }, { status: 400 })
     }
 
-    level = parentComment.level + 1
+    depth = parentComment.depth + 1
+    ;({ rootObjectId } = parentComment)
+    ;({ rootObjectType } = parentComment)
   }
 
   const data: Comment = {
@@ -74,7 +79,9 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     commenterType: CommenterType.UserProfile,
     parentType,
     parentId,
-    level,
+    rootObjectId,
+    rootObjectType,
+    depth,
   }
 
   // create notifs

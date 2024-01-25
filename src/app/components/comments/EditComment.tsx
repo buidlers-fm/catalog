@@ -16,13 +16,15 @@ export default function EditComment({
   onEditSuccess,
   onDeleteSuccess,
   onCancel,
+  showFormattingReferenceTooltip = false,
 }: {
   comment?: Comment
   parentId: any
   parentType: CommentParentType
   onEditSuccess: (comment: Comment) => void
-  onDeleteSuccess: () => void
+  onDeleteSuccess?: () => void
   onCancel?: () => void
+  showFormattingReferenceTooltip?: boolean
 }) {
   const id = comment?.id
   const _initialText = comment?.text || ""
@@ -78,7 +80,9 @@ export default function EditComment({
 
       toast.success(`Comment deleted!`, { id: toastId })
 
-      await onDeleteSuccess()
+      if (onDeleteSuccess) {
+        await onDeleteSuccess()
+      }
     } catch (error: any) {
       reportToSentry(error, { bookNoteId: id })
       toast.error("Hmm, something went wrong.", { id: toastId })
@@ -103,27 +107,28 @@ export default function EditComment({
         errorMessage={textErrorMsg}
         fullWidth
         bgColor="bg-gray-800"
+        showFormattingReferenceTooltip={showFormattingReferenceTooltip}
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
       <div className="flex justify-end">
         {comment && (
-          <>
-            <button
-              disabled={isBusy}
-              className="mr-2 cat-btn cat-btn-red-outline text-red-500"
-              onClick={() => setShowDeleteConfirmation(true)}
-            >
-              <TbTrash className="text-xl" />
-            </button>
-            <button
-              disabled={isBusy}
-              className="mr-2 cat-btn cat-btn-sm cat-btn-white-outline"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-          </>
+          <button
+            disabled={isBusy}
+            className="mr-2 cat-btn cat-btn-red-outline text-red-500"
+            onClick={() => setShowDeleteConfirmation(true)}
+          >
+            <TbTrash className="text-xl" />
+          </button>
+        )}
+        {(comment || parentType === CommentParentType.Comment) && (
+          <button
+            disabled={isBusy}
+            className="mr-2 cat-btn cat-btn-sm cat-btn-white-outline"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
         )}
         <button
           disabled={isBusy || text.length === 0 || text.length > commentValidations.text.maxLength}
