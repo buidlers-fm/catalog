@@ -19,7 +19,7 @@ export default function FormToggle({
   return (
     <div className="flex justify-between items-center w-full my-4">
       <label htmlFor={name} className="flex flex-col justify-between">
-        <div className="mb-2">
+        <div className="mb-2 font-mulish">
           <span>{label}</span>
         </div>
         {descriptionText && <span className="text-sm mr-4 text-gray-200">{descriptionText}</span>}

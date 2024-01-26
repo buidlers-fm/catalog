@@ -17,7 +17,7 @@ export default function Note({ note, currentUserProfile }) {
 
   const getComments = useCallback(async () => {
     const requestData = {
-      parentType: CommentParentType.BookNote,
+      parentType: CommentParentType.Note,
       parentId: note.id,
     }
 
@@ -53,7 +53,7 @@ export default function Note({ note, currentUserProfile }) {
             <div className="-mb-2">reply</div>
             <EditComment
               parentId={note.id}
-              parentType={CommentParentType.BookNote}
+              parentType={CommentParentType.Note}
               onEditSuccess={getComments}
               onDeleteSuccess={getComments}
               showFormattingReferenceTooltip

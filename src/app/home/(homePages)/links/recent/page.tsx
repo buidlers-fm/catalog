@@ -26,7 +26,7 @@ export default async function RecentPostsPage() {
   let posts = await prisma.bookNote.findMany({
     where: {
       noteType: {
-        in: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        in: [BookNoteType.Post],
       },
     },
     orderBy: {
@@ -41,7 +41,7 @@ export default async function RecentPostsPage() {
 
   posts = await decorateWithLikes(posts, InteractionObjectType.BookNote, currentUserProfile)
 
-  posts = await decorateWithComments(posts, CommentParentType.BookNote, currentUserProfile)
+  posts = await decorateWithComments(posts, CommentParentType.Post, currentUserProfile)
 
   return <PostsIndex posts={posts} currentUserProfile={currentUserProfile} />
 }

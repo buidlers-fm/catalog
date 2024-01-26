@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { useState, useCallback } from "react"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
-import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
+import BookPostCard from "app/components/bookPosts/BookPostCard"
 import EditComment from "app/components/comments/EditComment"
 import EmptyState from "app/components/EmptyState"
 import CommentSection from "app/components/comments/CommentSection"
@@ -17,7 +17,7 @@ export default function Post({ post, currentUserProfile }) {
 
   const getComments = useCallback(async () => {
     const requestData = {
-      parentType: CommentParentType.BookNote,
+      parentType: CommentParentType.Post,
       parentId: post.id,
     }
 
@@ -40,8 +40,9 @@ export default function Post({ post, currentUserProfile }) {
 
   return (
     <div className="my-8 mx-8 ml:max-w-3xl ml:mx-auto">
-      <BookLinkPostCard
+      <BookPostCard
         post={post}
+        showText
         currentUserProfile={currentUserProfile}
         withCover
         onEditSuccess={handleEditSuccess}
@@ -54,7 +55,7 @@ export default function Post({ post, currentUserProfile }) {
             <div className="-mb-2">reply</div>
             <EditComment
               parentId={post.id}
-              parentType={CommentParentType.BookNote}
+              parentType={CommentParentType.Post}
               onEditSuccess={getComments}
               onDeleteSuccess={getComments}
               showFormattingReferenceTooltip

@@ -1,5 +1,6 @@
 enum CommentParentType {
-  BookNote = "book_note",
+  Note = "note",
+  Post = "post",
   List = "list",
   Comment = "comment",
 }

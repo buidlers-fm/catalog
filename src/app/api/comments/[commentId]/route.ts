@@ -2,11 +2,10 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import prisma from "lib/prisma"
 import { createNotifsFromMentions } from "lib/server/notifs"
-import { getAllAtMentions } from "lib/helpers/general"
+import { getAllAtMentions, commentParentTypeToNotificationObjectType } from "lib/helpers/general"
 import { decorateComments } from "lib/server/decorators"
 import { withApiHandling } from "lib/api/withApiHandling"
 import NotificationType from "enums/NotificationType"
-import NotificationObjectType from "enums/NotificationObjectType"
 import NotificationSourceType from "enums/NotificationSourceType"
 import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
@@ -73,7 +72,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     where: {
       agentId: userProfile.id,
       objectId: parentId,
-      objectType: parentType,
+      objectType: commentParentTypeToNotificationObjectType(parentType),
       sourceId: commentId,
       sourceType: NotificationSourceType.Comment,
       type: NotificationType.Mention,
@@ -90,7 +89,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const mentions: Mention[] = newAtMentions.map((atMention) => ({
     agentId: userProfile.id,
     objectId: parentId,
-    objectType: parentType as NotificationObjectType,
+    objectType: commentParentTypeToNotificationObjectType(parentType),
     sourceId: commentId,
     sourceType: NotificationSourceType.Comment,
     mentionedUserProfileId: atMention!.id,

@@ -4,7 +4,6 @@ import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
-import { FaRegQuestionCircle } from "react-icons/fa"
 import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
@@ -22,7 +21,7 @@ import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import BookNoteModal from "app/components/BookNoteModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import NewBookPostModal from "app/components/NewBookPostModal"
-import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
+import BookPostCard from "app/components/bookPosts/BookPostCard"
 import ListCard from "app/components/lists/ListCard"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import EmptyState from "app/components/EmptyState"
@@ -121,7 +120,7 @@ export default function BookPage({
 
       const requestData = {
         bookId,
-        noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+        noteTypes: [BookNoteType.Post],
         sort: Sort.Popular,
       }
 
@@ -456,12 +455,7 @@ export default function BookPage({
           <div className="mt-16 font-mulish">
             <div className="flex justify-between text-gray-300 text-sm">
               <div className="flex">
-                <div className="cat-eyebrow">top links</div>
-                <FaRegQuestionCircle id="links-info" className="mt-0.5 ml-1.5 text-sm" />
-                <Tooltip anchorSelect="#links-info" className="text-sm max-w-fit" place="bottom">
-                  Reviews, interviews, essays, podcasts, TikToks, events, memes (etc!) related to
-                  this book
-                </Tooltip>
+                <div className="cat-eyebrow">top conversations</div>
               </div>
               <div className="flex -mt-1">
                 {isSignedIn && (
@@ -469,7 +463,7 @@ export default function BookPage({
                     onClick={() => setShowNewBookPostModal(true)}
                     className="cat-btn cat-btn-sm cat-btn-gray mx-2"
                   >
-                    + add a link
+                    + create a thread
                   </button>
                 )}
                 <Link
@@ -486,7 +480,7 @@ export default function BookPage({
                 posts.length > 0 ? (
                   <div>
                     {posts.map((post) => (
-                      <BookLinkPostCard
+                      <BookPostCard
                         key={post.id}
                         post={post}
                         withCover={false}

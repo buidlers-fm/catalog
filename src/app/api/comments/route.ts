@@ -4,7 +4,7 @@ import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { decorateComments } from "lib/server/decorators"
 import { createNotifFromComment, createNotifsFromMentions } from "lib/server/notifs"
-import { getAllAtMentions } from "lib/helpers/general"
+import { getAllAtMentions, commentParentTypeToNotificationObjectType } from "lib/helpers/general"
 import CommenterType from "enums/CommenterType"
 import CommentParentType from "enums/CommentParentType"
 import NotificationSourceType from "enums/NotificationSourceType"
@@ -96,7 +96,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   const mentions: Mention[] = atMentions.map((atMention) => ({
     agentId: currentUserProfile.id,
     objectId: parentId,
-    objectType: parentType,
+    objectType: commentParentTypeToNotificationObjectType(parentType),
     sourceId: newComment.id,
     sourceType: NotificationSourceType.Comment,
     mentionedUserProfileId: atMention!.id,

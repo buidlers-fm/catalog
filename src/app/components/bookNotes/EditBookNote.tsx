@@ -17,9 +17,11 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
 
-  const { control } = useForm<{ hasSpoilers: boolean }>()
+  const { control, watch } = useForm<{ hasSpoilers: boolean }>()
 
   const bookNoteValidations = validations.bookNote
+
+  const hasSpoilersValue = watch("hasSpoilers")
 
   const submit = async () => {
     setTextErrorMsg(undefined)
@@ -35,14 +37,19 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
 
     const toastId = toast.loading("Saving...")
 
+    const requestData = {
+      text,
+      hasSpoilers: hasSpoilersValue,
+    }
+
     try {
-      await api.bookNotes.update(id, { text })
+      await api.bookNotes.update(id, requestData)
 
       toast.success(`Note updated!`, { id: toastId })
 
       await onEditSuccess()
     } catch (error: any) {
-      reportToSentry(error, { bookNoteId: id, text })
+      reportToSentry(error, { bookNoteId: id, ...requestData })
       toast.error("Hmm, something went wrong.", { id: toastId })
       setTextErrorMsg(error.message)
     }

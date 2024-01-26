@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
 import api from "lib/api"
 import { getBookLink } from "lib/helpers/general"
-import BookLinkPostCard from "app/components/bookPosts/BookLinkPostCard"
+import BookPostCard from "app/components/bookPosts/BookPostCard"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
@@ -17,7 +17,7 @@ export default function BookPostsIndex({ book, currentUserProfile }) {
   const getBookPosts = useCallback(async () => {
     const requestData = {
       bookId: book.id,
-      noteTypes: [BookNoteType.LinkPost, BookNoteType.TextPost],
+      noteTypes: [BookNoteType.Post],
       sort: Sort.Popular,
     }
 
@@ -48,7 +48,7 @@ export default function BookPostsIndex({ book, currentUserProfile }) {
           posts.length > 0 ? (
             <div className="">
               {posts.map((post) => (
-                <BookLinkPostCard
+                <BookPostCard
                   key={post.id}
                   post={post}
                   currentUserProfile={currentUserProfile}
