@@ -247,6 +247,12 @@ const api = {
         method: "DELETE",
       }),
   },
+  waitlisters: {
+    markAsInvited: (waitlisterId) =>
+      fetchJson(`/api/waitlisters/${waitlisterId}/mark_as_invited`, {
+        method: "PATCH",
+      }),
+  },
 }
 
 export default api
