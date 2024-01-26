@@ -1,6 +1,7 @@
 import humps from "humps"
 import { fetchJson } from "lib/helpers/general"
 import Sort from "enums/Sort"
+import CommentParentType from "enums/CommentParentType"
 
 const prepReqBody = (data) => JSON.stringify(humps.decamelizeKeys(data))
 
@@ -76,7 +77,7 @@ const api = {
   comments: {
     find: (commentId) => fetchJson(`/api/comments/${commentId}`),
     get: (params: {
-      parentType?: string
+      parentType?: CommentParentType
       parentId?: string
       commenterId?: string
       commenterType?: string

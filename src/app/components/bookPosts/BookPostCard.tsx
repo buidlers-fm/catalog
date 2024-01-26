@@ -10,20 +10,25 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { getBookLink, getPostLink, getDomainFromUrl } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
+import allValidations from "lib/constants/validations"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
-import EditBookLinkPost from "app/components/bookPosts/EditBookLinkPost"
+import EditBookPost from "app/components/bookPosts/EditBookPost"
+import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
+import CustomMarkdown from "app/components/CustomMarkdown"
 import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 dayjs.extend(relativeTime)
 
 const { longAmericanDate: timestampFormat } = dateTimeFormats
+const bookPostValidations = allValidations.bookPost
 
 export default function BookLinkPostCard({
   post,
   withCover = true,
+  showText = false,
   currentUserProfile,
   onEditSuccess,
   onDeleteSuccess,
@@ -34,6 +39,8 @@ export default function BookLinkPostCard({
     creator,
     title,
     linkUrl,
+    text,
+    hasSpoilers,
     createdAt,
     book,
     likeCount,
@@ -75,13 +82,13 @@ export default function BookLinkPostCard({
         )}
         <div className="grow">
           {isEditing ? (
-            <EditBookLinkPost
+            <EditBookPost
               bookPost={post}
               onEditSuccess={handleEditSuccess}
               onDeleteSuccess={onDeleteSuccess}
               onCancel={() => setIsEditing(false)}
             />
-          ) : (
+          ) : linkUrl ? (
             <div>
               <TbExternalLink className="inline-block -mt-1 mr-1 text-lg text-gray-300" />
               <Link
@@ -95,6 +102,12 @@ export default function BookLinkPostCard({
               <span className="text-sm text-gray-300 font-mulish">
                 ({getDomainFromUrl(linkUrl)})
               </span>
+            </div>
+          ) : (
+            <div className="">
+              <Link href={getPostLink(id)} className="mr-2 text-lg font-newsreader">
+                {title}
+              </Link>
             </div>
           )}
           <div className="flex flex-col xs:flex-row">
@@ -115,6 +128,17 @@ export default function BookLinkPostCard({
           <Tooltip anchorSelect={`#created-at-${id}`} className="max-w-[240px] font-mulish">
             <div className="text-center">{createdAtFormatted}</div>
           </Tooltip>
+
+          {showText && !isEditing && (
+            <div className="mt-2">
+              {hasSpoilers ? (
+                <ExpandableSpoilerText text={text} maxChars={bookPostValidations.text.maxLength} />
+              ) : (
+                <CustomMarkdown markdown={text} />
+              )}
+            </div>
+          )}
+
           <div className="my-3 flex">
             <Likes
               interactive={!!currentUserProfile}

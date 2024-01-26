@@ -34,7 +34,7 @@ export default async function NotePage({ params }) {
 
   if (!note) notFound()
   ;[note] = await decorateWithLikes([note], InteractionObjectType.BookNote, currentUserProfile)
-  ;[note] = await decorateWithComments([note], CommentParentType.BookNote, currentUserProfile)
+  ;[note] = await decorateWithComments([note], CommentParentType.Note, currentUserProfile)
 
   return <Note note={note} currentUserProfile={currentUserProfile} />
 }

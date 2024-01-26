@@ -1,5 +1,6 @@
 import prisma from "lib/prisma"
 import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
+import BookNoteType from "enums/BookNoteType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
 import Sort from "enums/Sort"
@@ -95,7 +96,11 @@ async function getBookNotes(params: {
     currentUserProfile,
   )
 
-  bookNotes = await decorateWithComments(bookNotes, CommentParentType.BookNote, currentUserProfile)
+  const commentParentType = noteTypes.includes(BookNoteType.Post)
+    ? CommentParentType.Post
+    : CommentParentType.Note
+
+  bookNotes = await decorateWithComments(bookNotes, commentParentType, currentUserProfile)
 
   return bookNotes
 }

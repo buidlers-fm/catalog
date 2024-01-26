@@ -156,7 +156,7 @@ export default async function UserProfilePage({ params }) {
 
   userProfile.bookNotes = await decorateWithComments(
     _bookNotes,
-    CommentParentType.BookNote,
+    CommentParentType.Note,
     currentUserProfile,
   )
 

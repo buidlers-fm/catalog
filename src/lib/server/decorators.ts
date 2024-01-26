@@ -209,7 +209,7 @@ export const decorateComments = async (comments, currentUserProfile, depth = 0) 
 
 export const decorateWithComments = async (
   objects,
-  objectType: CommentParentType | InteractionObjectType,
+  objectType: CommentParentType,
   currentUserProfile,
   depth = 0,
 ) => {
@@ -356,7 +356,10 @@ export const decorateNotifs = async (notifs) => {
     .map((n) => n.objectId)
 
   const allBookNoteIdsFromComments = allComments
-    .filter((c) => c.rootObjectType === CommentParentType.BookNote)
+    .filter(
+      (c) =>
+        c.rootObjectType === CommentParentType.Note || c.rootObjectType === CommentParentType.Post,
+    )
     .map((c) => c.rootObjectId)
 
   const allBookNoteIds = [...allBookNoteIdsFromNotifs, ...allBookNoteIdsFromComments]
@@ -411,7 +414,10 @@ export const decorateNotifs = async (notifs) => {
       object = bookNoteIdsToBookNotes[notif.objectId]
     } else if (notif.objectType === NotificationObjectType.Comment) {
       object = commentIdsToComments[notif.objectId]
-      if (object.rootObjectType === CommentParentType.BookNote) {
+      if (
+        object.rootObjectType === CommentParentType.Note ||
+        object.rootObjectType === CommentParentType.Post
+      ) {
         rootObject = bookNoteIdsToBookNotes[object.rootObjectId]
         rootObjectType = NotificationObjectType.BookNote
       } else if (object.rootObjectType === CommentParentType.List) {

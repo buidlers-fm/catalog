@@ -4,6 +4,7 @@ import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
 import NotesIndex from "app/home/components/NotesIndex"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookNoteType from "enums/BookNoteType"
+import CommentParentType from "enums/CommentParentType"
 
 export const dynamic = "force-dynamic"
 
@@ -31,7 +32,7 @@ export default async function RecentNotesPage() {
   })
 
   notes = await decorateWithLikes(notes, InteractionObjectType.BookNote, currentUserProfile)
-  notes = await decorateWithComments(notes, InteractionObjectType.BookNote, currentUserProfile)
+  notes = await decorateWithComments(notes, CommentParentType.Note, currentUserProfile)
 
   return <NotesIndex notes={notes} currentUserProfile={currentUserProfile} />
 }

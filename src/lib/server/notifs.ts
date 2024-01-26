@@ -1,6 +1,7 @@
 import humps from "humps"
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
+import { commentParentTypeToNotificationObjectType } from "lib/helpers/general"
 import InteractionObjectType from "enums/InteractionObjectType"
 import NotificationType from "enums/NotificationType"
 import NotificationAgentType from "enums/NotificationAgentType"
@@ -137,7 +138,7 @@ async function createNotifFromComment(comment) {
     id: commentId,
     agentId: commenterId,
     objectId: parentId,
-    objectType: parentType,
+    objectType: commentParentTypeToNotificationObjectType(parentType),
     notificationType: NotificationType.Comment,
     sourceType: NotificationSourceType.Comment,
   })

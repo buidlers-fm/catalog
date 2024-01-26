@@ -1,5 +1,5 @@
 type Props = {
-  labelText?: string
+  labelText?: string | React.ReactNode
   name: string
   type: string
   descriptionText?: string

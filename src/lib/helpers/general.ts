@@ -4,6 +4,8 @@ import cryptoRandomString from "crypto-random-string"
 import { validate as isValidUuid } from "uuid"
 import prisma from "lib/prisma"
 import { BASE_URLS_BY_ENV } from "lib/constants/urls"
+import CommentParentType from "enums/CommentParentType"
+import NotificationObjectType from "enums/NotificationObjectType"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const res = await fetch(url, options)
@@ -225,4 +227,13 @@ export function getAllAtMentions(text: string) {
   )
 
   return matches
+}
+
+export function commentParentTypeToNotificationObjectType(parentType: string) {
+  const specialMappings = {
+    [CommentParentType.Note]: NotificationObjectType.BookNote,
+    [CommentParentType.Post]: NotificationObjectType.BookNote,
+  }
+
+  return specialMappings[parentType] || parentType
 }

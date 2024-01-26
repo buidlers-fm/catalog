@@ -5,7 +5,7 @@ import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import FormTextarea from "app/components/forms/FormTextarea"
 import ConfirmationModal from "app/components/ConfirmationModal"
-import validations from "lib/constants/validations"
+import allValidations from "lib/constants/validations"
 import CommentParentType from "enums/CommentParentType"
 import type Comment from "types/Comment"
 
@@ -34,7 +34,7 @@ export default function EditComment({
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
 
-  const commentValidations = validations.comment.post
+  const validations = allValidations.comment[parentType] || allValidations.comment.post
 
   const submit = async () => {
     setTextErrorMsg(undefined)
@@ -103,7 +103,7 @@ export default function EditComment({
         name="text"
         type="text"
         rows={3}
-        remainingChars={commentValidations.text.maxLength - (text?.length || 0)}
+        remainingChars={validations.text.maxLength - (text?.length || 0)}
         errorMessage={textErrorMsg}
         fullWidth
         bgColor="bg-gray-800"
@@ -131,7 +131,7 @@ export default function EditComment({
           </button>
         )}
         <button
-          disabled={isBusy || text.length === 0 || text.length > commentValidations.text.maxLength}
+          disabled={isBusy || text.length === 0 || text.length > validations.text.maxLength}
           className="cat-btn cat-btn-sm cat-btn-gold"
           onClick={submit}
         >
