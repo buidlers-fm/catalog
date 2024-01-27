@@ -6,4 +6,13 @@ enum UserBookShelf {
   Abandoned = "abandoned",
 }
 
+const shelfToCopy = {
+  [UserBookShelf.ToRead]: "to read",
+  [UserBookShelf.UpNext]: "up next",
+  [UserBookShelf.CurrentlyReading]: "currently reading",
+  [UserBookShelf.Read]: "read",
+  [UserBookShelf.Abandoned]: "abandoned",
+}
+
 export default UserBookShelf
+export { shelfToCopy }

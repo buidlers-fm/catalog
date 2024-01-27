@@ -237,3 +237,18 @@ export function commentParentTypeToNotificationObjectType(parentType: string) {
 
   return specialMappings[parentType] || parentType
 }
+
+export function joinStringsWithAnd(strings) {
+  const { length } = strings
+
+  switch (length) {
+    case 0:
+      return ""
+    case 1:
+      return strings[0]
+    case 2:
+      return strings.join(" and ")
+    default:
+      return `${strings.slice(0, length - 1).join(", ")}, and ${strings[length - 1]}`
+  }
+}

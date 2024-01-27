@@ -3,7 +3,7 @@ import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateWithLikes, decorateLists } from "lib/server/decorators"
+import { decorateBook, decorateWithLikes, decorateLists } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
@@ -129,6 +129,7 @@ export default async function BookPageBySlug({ params }: any) {
 
   const bookLists = await decorateLists(_bookLists, userProfile)
 
+  book = await decorateBook(book, userProfile)
   book = (await decorateWithLikes([book], InteractionObjectType.Book, userProfile))[0]
 
   return (

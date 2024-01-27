@@ -2,12 +2,7 @@
 
 import { PrismaClient } from "@prisma/client"
 
-const isDevelopment = () => process.env.NEXT_PUBLIC_CATALOG_ENV === "development"
-
-const prismaClientSingleton = () =>
-  new PrismaClient({
-    log: isDevelopment() ? ["query"] : [],
-  })
+const prismaClientSingleton = () => new PrismaClient()
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
 
