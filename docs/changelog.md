@@ -1,14 +1,12 @@
-last updated: january 20, 2024.
-
----
+last updated: january 26, 2024.
 
 # big things for jan-feb 2024
 
 key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
 - ✅ In-app notifications for likes, comments, etc.
-- 🛠️ Comment on all the things (including on other comments, in some cases).
-- ⌛️ Instead of just link posts, book posts can have text and become full discussion threads.
+- ✅ Comment on all the things (including on other comments, in some cases).
+- ✅ Instead of just link posts, book posts can have text and become full discussion threads.
 - ⌛️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
@@ -18,6 +16,21 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## january 22-28, 2024
+
+Main things:
+
+- Comments on comments
+- Book posts can have text as well as a link URL, and thus become full discussion threads
+- Spoilers toggle in book notes and posts - thanks [@brianmcgue](https://catalog.fyi/users/brianmcgue) for working on this!
+- Added feedback form in the app
+
+Small fixes/improvements:
+
+- Waitlist dashboard for admins
+- Show who liked something
+- Show shelf counts, obsessed (top 4) counts, and friends' activity on book page
 
 ## january 15-21, 2024
 
