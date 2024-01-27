@@ -30,7 +30,7 @@ import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookReadStatus from "enums/BookReadStatus"
-import UserBookShelf from "enums/UserBookShelf"
+import UserBookShelf, { shelfToCopy } from "enums/UserBookShelf"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
@@ -285,6 +285,9 @@ export default function BookPage({
     ])
   }
 
+  const { totalShelfCounts, shelvesToFriendsProfiles } = book
+  const totalShelfCount = Object.values(totalShelfCounts as number[]).reduce((a, b) => a + b, 0)
+
   const description = book.description || DEFAULT_DESCRIPTION
 
   return (
@@ -360,6 +363,27 @@ export default function BookPage({
                   </button>
                 </Tooltip>
               </div>
+
+              {totalShelfCount > 0 && (
+                <div className="font-mulish text-sm text-gray-200">
+                  <div id="shelf-count" className="w-fit">
+                    on {totalShelfCount} {totalShelfCount === 1 ? "shelf" : "shelves"}
+                  </div>
+                  <Tooltip anchorSelect="#shelf-count" className="font-mulish">
+                    {Object.entries(shelfToCopy).map(([shelfKey, shelfCopy]) => {
+                      const count = totalShelfCounts[shelfKey]
+                      if (!count) return null // including 0
+
+                      return (
+                        <div key={shelfKey}>
+                          {count as string} {shelfCopy}
+                        </div>
+                      )
+                    })}
+                  </Tooltip>
+                </div>
+              )}
+
               {isSignedIn && (
                 <div className="mt-4 mb-8 font-mulish">
                   <button

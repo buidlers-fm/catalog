@@ -8,6 +8,61 @@ import CommentParentType from "enums/CommentParentType"
 import type Like from "types/Like"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
+export const decorateBook = async (book, currentUserProfile?) => {
+  const allShelfAssignments = await prisma.userBookShelfAssignment.findMany({
+    where: {
+      bookId: book.id,
+    },
+    include: {
+      userProfile: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const totalShelfCounts = allShelfAssignments.reduce(
+    (result, assignment) => ({
+      ...result,
+      [assignment.shelf]: (result[assignment.shelf] || 0) + 1,
+    }),
+    {},
+  )
+
+  let shelvesToFriendsProfiles = {}
+  if (currentUserProfile) {
+    const allCurrentUserFollows = await prisma.interaction.findMany({
+      where: {
+        objectId: currentUserProfile.id,
+        objectType: InteractionObjectType.User,
+        interactionType: InteractionType.Follow,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    })
+
+    const allFollowedIds = new Set(allCurrentUserFollows.map((follow) => follow.agentId))
+
+    const friendsShelfAssignments = allShelfAssignments.filter((assignment) =>
+      allFollowedIds.has(assignment.userProfile.id),
+    )
+
+    shelvesToFriendsProfiles = friendsShelfAssignments.reduce(
+      (result, assignment) => ({
+        [assignment.shelf]: [...(result[assignment.shelf] || []), assignment.userProfile],
+      }),
+      {},
+    )
+  }
+
+  return {
+    ...book,
+    totalShelfCounts,
+    shelvesToFriendsProfiles,
+  }
+}
+
 export const decorateLists = async (lists, currentUserProfile?) => {
   const allBookIds = lists
     .map((list) =>

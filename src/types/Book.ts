@@ -24,4 +24,6 @@ export default interface Book {
   userShelfAssignments?: UserBookShelfAssignment[]
   likeCount?: number // in-memory only
   currentUserLike?: Like // in-memory only
+  totalShelfCounts?: any // in-memory only
+  shelvesToFriendsProfiles?: any // in-memory only
 }

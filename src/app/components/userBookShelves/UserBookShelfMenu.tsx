@@ -6,27 +6,9 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa"
 import toast from "react-hot-toast"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
-import UserBookShelf from "enums/UserBookShelf"
+import UserBookShelf, { shelfToCopy } from "enums/UserBookShelf"
 
 const SHELVES = Object.values(UserBookShelf)
-
-const shelfToCopy = {
-  [UserBookShelf.ToRead]: {
-    buttonCopy: "to read",
-  },
-  [UserBookShelf.UpNext]: {
-    buttonCopy: "up next",
-  },
-  [UserBookShelf.CurrentlyReading]: {
-    buttonCopy: "currently reading",
-  },
-  [UserBookShelf.Read]: {
-    buttonCopy: "read",
-  },
-  [UserBookShelf.Abandoned]: {
-    buttonCopy: "abandoned",
-  },
-}
 
 export default function UserBookShelfMenu({ book, currentUserShelf, onChange }) {
   const [selectedShelf, setSelectedShelf] = useState<UserBookShelf>(currentUserShelf)
@@ -68,7 +50,7 @@ export default function UserBookShelfMenu({ book, currentUserShelf, onChange }) 
         {selectedShelf ? (
           <div className="mt-[1px] flex items-center">
             <FaBookmark className="text-gold-500 text-sm" />
-            <div className="ml-1.5">{shelfToCopy[selectedShelf].buttonCopy}</div>
+            <div className="ml-1.5">{shelfToCopy[selectedShelf]}</div>
           </div>
         ) : (
           <div className="mt-[1px] flex items-center text-gray-300">
@@ -88,7 +70,7 @@ export default function UserBookShelfMenu({ book, currentUserShelf, onChange }) 
                   isCurrentShelf(shelf) ? "text-gold-500" : "text-white"
                 } text-left text-sm font-mulish first:rounded-tl first:rounded-tr last:rounded-bl last:rounded-br`}
               >
-                {shelfToCopy[shelf].buttonCopy}
+                {shelfToCopy[shelf]}
               </button>
             </Menu.Item>
           ))}
