@@ -6,6 +6,7 @@ import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaHeart, FaBookmark } from "react-icons/fa"
 import { FaPlus } from "react-icons/fa6"
+import { SlInfo } from "react-icons/sl"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
@@ -287,12 +288,21 @@ export default function BookPage({
     ])
   }
 
-  const { totalShelfCounts, shelvesToFriendsProfiles, likedByFriendsProfiles } = book
+  const {
+    totalShelfCounts,
+    totalFavoritedCount,
+    shelvesToFriendsProfiles,
+    likedByFriendsProfiles,
+    favoritedByFriendsProfiles,
+  } = book
+
   const totalShelfCount = Object.values(totalShelfCounts as number[]).reduce((a, b) => a + b, 0)
+
   const showFriendsSection =
-    isSignedIn &&
-    ((shelvesToFriendsProfiles && Object.keys(shelvesToFriendsProfiles).length > 0) ||
-      (likedByFriendsProfiles && likedByFriendsProfiles.length > 0))
+    (isSignedIn &&
+      ((shelvesToFriendsProfiles && Object.keys(shelvesToFriendsProfiles).length > 0) ||
+        (likedByFriendsProfiles && likedByFriendsProfiles.length > 0))) ||
+    (favoritedByFriendsProfiles && favoritedByFriendsProfiles.length > 0)
 
   const description = book.description || DEFAULT_DESCRIPTION
 
@@ -316,7 +326,7 @@ export default function BookPage({
               ) : (
                 <CoverPlaceholder size="lg" />
               )}
-              <div className="flex mt-2 mb-4">
+              <div className="flex mt-2 mb-2">
                 <div id="book-likes" className="mx-2 w-fit">
                   <Likes
                     interactive={isSignedIn}
@@ -370,25 +380,46 @@ export default function BookPage({
                 </Tooltip>
               </div>
 
-              {totalShelfCount > 0 && (
-                <div className="font-mulish text-sm text-gray-200">
-                  <div id="shelf-count" className="w-fit">
-                    on {totalShelfCount} {totalShelfCount === 1 ? "shelf" : "shelves"}
-                  </div>
-                  <Tooltip anchorSelect="#shelf-count" className="font-mulish">
-                    {Object.entries(shelfToCopy).map(([shelfKey, shelfCopy]) => {
-                      const count = totalShelfCounts[shelfKey]
-                      if (!count) return null // including 0
+              <div className="flex px-2 font-mulish text-sm text-gray-200">
+                {totalShelfCount > 0 && (
+                  <div>
+                    <div id="shelf-count" className="w-fit">
+                      on {totalShelfCount} {totalShelfCount === 1 ? "shelf" : "shelves"}
+                    </div>
+                    <Tooltip anchorSelect="#shelf-count" className="font-mulish">
+                      {Object.entries(shelfToCopy).map(([shelfKey, shelfCopy]) => {
+                        const count = totalShelfCounts[shelfKey]
+                        if (!count) return null // including 0
 
-                      return (
-                        <div key={shelfKey}>
-                          {count as string} {shelfCopy}
-                        </div>
-                      )
-                    })}
-                  </Tooltip>
-                </div>
-              )}
+                        return (
+                          <div key={shelfKey}>
+                            {count as string} {shelfCopy}
+                          </div>
+                        )
+                      })}
+                    </Tooltip>
+                  </div>
+                )}
+
+                {totalShelfCount > 0 && !!totalFavoritedCount && totalFavoritedCount > 0 && (
+                  <span className="mx-2">•</span>
+                )}
+
+                {!!totalFavoritedCount && totalFavoritedCount > 0 && (
+                  <div>
+                    <div className="flex w-fit">
+                      {totalFavoritedCount} obsessed
+                      <SlInfo
+                        id="obsessed-info-icon"
+                        className="inline-block mt-1 ml-1.5 text-xs text-gray-300"
+                      />
+                    </div>
+                    <Tooltip anchorSelect="#obsessed-info-icon" className="font-mulish">
+                      Number of users who have this book in their top 4.
+                    </Tooltip>
+                  </div>
+                )}
+              </div>
 
               {isSignedIn && (
                 <div className="mt-4 mb-8 font-mulish">
@@ -461,6 +492,20 @@ export default function BookPage({
               <div className="cat-eyebrow">friends</div>
               <hr className="my-1 h-[1px] border-none bg-gray-300" />
               <div className="py-4 font-newsreader">
+                {favoritedByFriendsProfiles && favoritedByFriendsProfiles.length > 0 && (
+                  <div className="mb-2">
+                    <FaHeart className="inline-block -mt-0.5 mr-0.5 text-red-300 text-sm" />
+                    <FaHeart className="inline-block -mt-0.5 mr-1.5 text-red-300 text-sm" />
+                    {joinStringsWithAnd(
+                      favoritedByFriendsProfiles.map(
+                        (profile) => profile.displayName || profile.username,
+                      ),
+                    )}{" "}
+                    {favoritedByFriendsProfiles.length > 1 ? "have" : "has"} this book in their top
+                    4.
+                  </div>
+                )}
+
                 {likedByFriendsProfiles && likedByFriendsProfiles.length > 0 && (
                   <div className="mb-2">
                     <FaHeart className="inline-block -mt-0.5 mr-1.5 text-red-300 text-sm" />

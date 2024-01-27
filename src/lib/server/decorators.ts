@@ -1,5 +1,7 @@
 import prisma from "lib/prisma"
 import { getListLink, idsToObjects } from "lib/helpers/general"
+import ListedObjectType from "enums/ListedObjectType"
+import ListDesignation from "enums/ListDesignation"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -9,6 +11,7 @@ import type Like from "types/Like"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
 export const decorateBook = async (book, currentUserProfile?) => {
+  // get shelf counts
   const allShelfAssignments = await prisma.userBookShelfAssignment.findMany({
     where: {
       bookId: book.id,
@@ -29,8 +32,29 @@ export const decorateBook = async (book, currentUserProfile?) => {
     {},
   )
 
+  // get favorited count
+  const favoritedAssignments = await prisma.listItemAssignment.findMany({
+    where: {
+      listedObjectId: book.id,
+      listedObjectType: ListedObjectType.Book,
+      list: {
+        designation: ListDesignation.Favorite,
+      },
+    },
+    include: {
+      list: {
+        include: {
+          creator: true,
+        },
+      },
+    },
+  })
+
+  // get friends data
   let shelvesToFriendsProfiles = {}
   let likedByFriendsProfiles: any[] = []
+  let favoritedByFriendsProfiles: any[] = []
+
   if (currentUserProfile) {
     const allCurrentUserFollows = await prisma.interaction.findMany({
       where: {
@@ -86,13 +110,17 @@ export const decorateBook = async (book, currentUserProfile?) => {
 
       return aIndex - bIndex
     })
+
+    favoritedByFriendsProfiles = favoritedAssignments.map((assignment) => assignment.list.creator)
   }
 
   return {
     ...book,
     totalShelfCounts,
+    totalFavoritedCount: favoritedAssignments.length,
     shelvesToFriendsProfiles,
     likedByFriendsProfiles,
+    favoritedByFriendsProfiles,
   }
 }
 

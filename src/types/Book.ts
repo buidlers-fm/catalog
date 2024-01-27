@@ -25,6 +25,8 @@ export default interface Book {
   likeCount?: number // in-memory only
   currentUserLike?: Like // in-memory only
   totalShelfCounts?: any // in-memory only
+  totalFavoritedCount?: number // in-memory only
   shelvesToFriendsProfiles?: any // in-memory only
   likedByFriendsProfiles?: any[] // in-memory only
+  favoritedByFriendsProfiles?: any[] // in-memory only
 }
