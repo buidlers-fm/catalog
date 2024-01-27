@@ -61,20 +61,9 @@ export const decorateWithLikes = async (
   currentUserProfile?: UserProfileProps,
 ) => {
   let objects = _objects
-  let objectIdsToLikeCounts
 
+  // decorate book note objects with whether creator liked the book
   if (objectType === InteractionObjectType.BookNote) {
-    // book notes already have likeCount, so use it
-    objectIdsToLikeCounts = objects.reduce(
-      (result, obj) => ({
-        ...result,
-        [obj.id]: obj.likeCount,
-      }),
-      {},
-    )
-
-    // decorate book note objects with whether creator liked the book
-
     // all book note creators' likes of all the books (set might contain some irrelevant likes)
     const allCreatorBookLikes = await prisma.interaction.findMany({
       where: {
@@ -96,25 +85,46 @@ export const decorateWithLikes = async (
         (like) => like.objectId === obj.bookId && like.agentId === obj.creatorId,
       ),
     }))
-  } else {
-    // fetch like count per object
-    const likeCounts = await prisma.interaction.groupBy({
-      by: ["objectId"],
-      where: {
-        objectId: {
-          in: objects.map((obj) => obj.id),
-        },
-        objectType,
-        interactionType: InteractionType.Like,
-      },
-      _count: true,
-    })
-
-    objectIdsToLikeCounts = likeCounts.reduce(
-      (result, likeCount) => ({ ...result, [likeCount.objectId]: likeCount._count }),
-      {},
-    )
   }
+
+  // fetch likes for these objects
+  const allLikes = await prisma.interaction.findMany({
+    where: {
+      objectId: {
+        in: objects.map((obj) => obj.id),
+      },
+      objectType,
+      interactionType: InteractionType.Like,
+      agentType: InteractionAgentType.User,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const allUserProfiles = await prisma.userProfile.findMany({
+    where: {
+      id: {
+        in: allLikes.map((like) => like.agentId),
+      },
+    },
+  })
+
+  const allUserNamesById = allUserProfiles.reduce(
+    (result, userProfile) => ({
+      ...result,
+      [userProfile.id]: userProfile.displayName || userProfile.username,
+    }),
+    {},
+  )
+
+  const objectIdsToLikerNames = allLikes.reduce(
+    (result, like) => ({
+      ...result,
+      [like.objectId]: [...(result[like.objectId] || []), allUserNamesById[like.agentId]],
+    }),
+    {},
+  )
 
   // fetch current user's likes for these objects
   let currentUserLikes: Like[] = []
@@ -147,7 +157,8 @@ export const decorateWithLikes = async (
 
   return objects.map((obj) => ({
     ...obj,
-    likeCount: objectIdsToLikeCounts[obj.id] || 0,
+    likeCount: objectIdsToLikerNames[obj.id]?.length || 0,
+    likedByNames: objectIdsToLikerNames[obj.id] || [],
     currentUserLike: objectIdsToCurrentUserLikes[obj.id],
   }))
 }
