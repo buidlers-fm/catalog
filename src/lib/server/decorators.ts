@@ -111,7 +111,9 @@ export const decorateBook = async (book, currentUserProfile?) => {
       return aIndex - bIndex
     })
 
-    favoritedByFriendsProfiles = favoritedAssignments.map((assignment) => assignment.list.creator)
+    favoritedByFriendsProfiles = favoritedAssignments
+      .filter((assignment) => allFollowedIds.has(assignment.list.creatorId))
+      .map((assignment) => assignment.list.creator)
   }
 
   return {
