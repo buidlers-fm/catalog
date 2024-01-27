@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
+import { Tooltip } from "react-tooltip"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import type Like from "types/Like"
@@ -14,7 +15,7 @@ export default function Likes({
   likedObjectType,
   likeCount: _likeCount,
   onChange,
-  buttonId,
+  buttonId: _buttonId,
 }: {
   interactive: boolean
   currentUserLike?: Like
@@ -26,6 +27,12 @@ export default function Likes({
 }) {
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(_currentUserLike)
   const [likeCount, setLikeCount] = useState<number | undefined>(_likeCount)
+
+  const likedByNames = likedObject.likedByNames || []
+  const likedByNamesToShow = likedByNames.slice(0, 5)
+  const likedByNamesRemaining = likedByNames.length - likedByNamesToShow.length
+
+  const buttonId = _buttonId || `like-button-${likedObjectType}-${likedObject.id}`
 
   useEffect(() => {
     setCurrentUserLike(_currentUserLike)
@@ -88,17 +95,31 @@ export default function Likes({
   return (
     <div className="-mt-0.5">
       {interactive ? (
-        <button id={buttonId} onClick={toggleLike} className="inline-block mr-1.5">
-          {currentUserLike ? (
-            <FaHeart className="inline-block mr-1.5 text-red-300 text-sm" />
-          ) : (
-            <FaRegHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
-          )}
+        <>
+          <button id={buttonId} onClick={toggleLike} className="inline-block mr-1.5">
+            {currentUserLike ? (
+              <FaHeart className="inline-block mr-1.5 text-red-300 text-sm" />
+            ) : (
+              <FaRegHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
+            )}
 
-          {(likeCount || likeCount === 0) && (
-            <span className="inline-block text-sm text-gray-300">{likeCount}</span>
+            {(likeCount || likeCount === 0) && (
+              <span className="inline-block text-sm text-gray-300">{likeCount}</span>
+            )}
+          </button>
+          {likedByNames && likedByNames.length > 0 && (
+            <Tooltip anchorSelect={`#${buttonId}`} className="text-sm font-mulish">
+              {likedByNamesToShow.map((name) => (
+                <div key={name}>{name}</div>
+              ))}
+              {likedByNamesRemaining > 0 && (
+                <div>
+                  & {likedByNamesRemaining} other{likedByNamesRemaining > 1 ? "s" : ""}
+                </div>
+              )}
+            </Tooltip>
           )}
-        </button>
+        </>
       ) : (
         <>
           <FaHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
