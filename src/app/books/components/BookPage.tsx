@@ -13,6 +13,7 @@ import {
   getBookNotesLink,
   getBookPostsLink,
   getBookListsLink,
+  joinStringsWithAnd,
 } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
@@ -449,6 +450,28 @@ export default function BookPage({
               </div>
             </div>
           </div>
+
+          {shelvesToFriendsProfiles && Object.keys(shelvesToFriendsProfiles).length > 0 && (
+            <div className="mt-8 mb-16 font-mulish">
+              <div className="cat-eyebrow">friends</div>
+              <hr className="my-1 h-[1px] border-none bg-gray-300" />
+              <div className="font-newsreader">
+                {Object.entries(shelvesToFriendsProfiles).map(([shelfKey, friendsProfiles]) => {
+                  if (!friendsProfiles || (friendsProfiles as any[]).length === 0) return null
+
+                  const names = (friendsProfiles as any[]).map(
+                    (profile) => profile.displayName || profile.username,
+                  )
+                  return (
+                    <div key={shelfKey} className="my-4">
+                      {joinStringsWithAnd(names)} shelved this book as{" "}
+                      <span className="font-bold">{shelfToCopy[shelfKey]}</span>.
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           {notes && notes.length > 0 && (
             <div className="mt-8 font-mulish">
