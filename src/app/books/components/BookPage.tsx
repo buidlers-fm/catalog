@@ -288,15 +288,13 @@ export default function BookPage({
     ])
   }
 
-  const {
-    totalShelfCounts,
-    totalFavoritedCount,
-    shelvesToFriendsProfiles,
-    likedByFriendsProfiles,
-    favoritedByFriendsProfiles,
-  } = book
+  const totalShelfCounts = book.totalShelfCounts || {}
+  const totalFavoritedCount = book.totalFavoritedCount || 0
+  const shelvesToFriendsProfiles = book.shelvesToFriendsProfiles || {}
+  const likedByFriendsProfiles = book.likedByFriendsProfiles || []
+  const favoritedByFriendsProfiles = book.favoritedByFriendsProfiles || []
 
-  const totalShelfCount = Object.values(totalShelfCounts as number[]).reduce((a, b) => a + b, 0)
+  const totalShelfCount = (Object.values(totalShelfCounts) as number[]).reduce((a, b) => a + b, 0)
 
   const showFriendsSection =
     (isSignedIn &&
