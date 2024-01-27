@@ -8,6 +8,17 @@ datasource db {
   directUrl = env("DATABASE_URL_DIRECT")
 }
 
+model FeedbackSubmission {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  text          String    @map("text")
+  userProfileId String    @map("user_profile_id") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userProfileId])
+  @@map("feedback_submissions")
+}
+
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model UserProfile {
   id                   String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
