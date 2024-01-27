@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
+import { FaHeart, FaBookmark } from "react-icons/fa"
 import { FaPlus } from "react-icons/fa6"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
@@ -286,8 +287,12 @@ export default function BookPage({
     ])
   }
 
-  const { totalShelfCounts, shelvesToFriendsProfiles } = book
+  const { totalShelfCounts, shelvesToFriendsProfiles, likedByFriendsProfiles } = book
   const totalShelfCount = Object.values(totalShelfCounts as number[]).reduce((a, b) => a + b, 0)
+  const showFriendsSection =
+    isSignedIn &&
+    ((shelvesToFriendsProfiles && Object.keys(shelvesToFriendsProfiles).length > 0) ||
+      (likedByFriendsProfiles && likedByFriendsProfiles.length > 0))
 
   const description = book.description || DEFAULT_DESCRIPTION
 
@@ -451,11 +456,23 @@ export default function BookPage({
             </div>
           </div>
 
-          {shelvesToFriendsProfiles && Object.keys(shelvesToFriendsProfiles).length > 0 && (
-            <div className="mt-8 mb-16 font-mulish">
+          {showFriendsSection && (
+            <div className="my-8 font-mulish">
               <div className="cat-eyebrow">friends</div>
               <hr className="my-1 h-[1px] border-none bg-gray-300" />
-              <div className="font-newsreader">
+              <div className="py-4 font-newsreader">
+                {likedByFriendsProfiles && likedByFriendsProfiles.length > 0 && (
+                  <div className="mb-2">
+                    <FaHeart className="inline-block -mt-0.5 mr-1.5 text-red-300 text-sm" />
+                    {joinStringsWithAnd(
+                      likedByFriendsProfiles.map(
+                        (profile) => profile.displayName || profile.username,
+                      ),
+                    )}{" "}
+                    loved this book.
+                  </div>
+                )}
+
                 {Object.entries(shelvesToFriendsProfiles).map(([shelfKey, friendsProfiles]) => {
                   if (!friendsProfiles || (friendsProfiles as any[]).length === 0) return null
 
@@ -463,7 +480,8 @@ export default function BookPage({
                     (profile) => profile.displayName || profile.username,
                   )
                   return (
-                    <div key={shelfKey} className="my-4">
+                    <div key={shelfKey} className="my-2">
+                      <FaBookmark className="inline-block -mt-0.5 mr-1.5 text-gold-500 text-sm" />
                       {joinStringsWithAnd(names)} shelved this book as{" "}
                       <span className="font-bold">{shelfToCopy[shelfKey]}</span>.
                     </div>

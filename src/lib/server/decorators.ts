@@ -30,6 +30,7 @@ export const decorateBook = async (book, currentUserProfile?) => {
   )
 
   let shelvesToFriendsProfiles = {}
+  let likedByFriendsProfiles: any[] = []
   if (currentUserProfile) {
     const allCurrentUserFollows = await prisma.interaction.findMany({
       where: {
@@ -54,12 +55,44 @@ export const decorateBook = async (book, currentUserProfile?) => {
       }),
       {},
     )
+
+    const friendsLikes = await prisma.interaction.findMany({
+      where: {
+        agentId: {
+          in: Array.from(allFollowedIds),
+        },
+        objectType: InteractionObjectType.Book,
+        objectId: book.id,
+        interactionType: InteractionType.Like,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    const likedByFriendsProfileIds = friendsLikes.map((like) => like.agentId)
+
+    likedByFriendsProfiles = await prisma.userProfile.findMany({
+      where: {
+        id: {
+          in: likedByFriendsProfileIds,
+        },
+      },
+    })
+
+    likedByFriendsProfiles.sort((a: any, b: any) => {
+      const aIndex = likedByFriendsProfileIds.indexOf(a.id)
+      const bIndex = likedByFriendsProfileIds.indexOf(b.id)
+
+      return aIndex - bIndex
+    })
   }
 
   return {
     ...book,
     totalShelfCounts,
     shelvesToFriendsProfiles,
+    likedByFriendsProfiles,
   }
 }
 
