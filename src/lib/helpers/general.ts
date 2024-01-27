@@ -10,7 +10,7 @@ import NotificationObjectType from "enums/NotificationObjectType"
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const res = await fetch(url, options)
 
-  if (res.status !== 200) {
+  if (res.status < 200 || res.status >= 300) {
     console.log(res)
     const resBody = await res.json()
     console.log(resBody)

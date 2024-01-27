@@ -18,7 +18,7 @@ There are a few things that are good for you to know about the app, and its curr
 
 You can find a bit more context about the app in our blog archive, specifically my post [a space for book people](https://catalog.fyi/news/catalog-news-004-a-space-for-book-people).
 
-If you have any questions or run into any issues, let us know. We have a [Discord server](https://discord.gg/Htj7gWYCkC) for feedback, or you can email staff@catalog.fyi .
+If you have any questions or run into any issues, let us know. We have a [Discord server](https://discord.gg/Htj7gWYCkC) for feedback, or you can email staff@catalog.fyi or use the "feedback" link in the user menu (top right).
 
 # tips
 
@@ -62,7 +62,7 @@ Most of the features you see in the app now are a mere barest-bones shadow of wh
 
 Mostly we just want you to have fun with catalog and tell us what you think. But if you want to go the extra mile, here are a few ways to be a superstar tester:
 
-Report any bugs, issues you run into, and general weird or unexpected things. You can reach us via [Discord](https://discord.gg/Htj7gWYCkC), email (staff@catalog.fyi), or any other way that you normally talk to us. There will also soon be a feedback button in the app that you can use as well.
+Report any bugs, issues you run into, and general weird or unexpected things. You can reach us via [Discord](https://discord.gg/Htj7gWYCkC), email (staff@catalog.fyi), or any other way that you normally talk to us. There is also a "feedback" link (from the user menu, top right) where you can submit your feedback.
 
 Make suggestions for things you'd like to see in catalog, or for how you'd want things to work differently. Your involvement at this early stage will have an outsize influence on how catalog evolves.
 

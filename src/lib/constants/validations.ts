@@ -29,6 +29,11 @@ const validations = {
       },
     },
   },
+  feedback: {
+    text: {
+      maxLength: 4000,
+    },
+  },
   list: {
     bookNote: {
       maxLength: 300,

@@ -102,6 +102,13 @@ const api = {
         method: "DELETE",
       }),
   },
+  feedbackSubmissions: {
+    create: (requestData) =>
+      fetchJson(`/api/feedback_submissions`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+  },
   follows: {
     create: (userProfileId) =>
       fetchJson(`/api/follows`, {
