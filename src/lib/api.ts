@@ -224,6 +224,17 @@ const api = {
       return fetchJson(url)
     },
   },
+  saves: {
+    create: (requestData) =>
+      fetchJson(`/api/saves`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+    delete: (saveId) =>
+      fetchJson(`/api/saves/${saveId}`, {
+        method: "DELETE",
+      }),
+  },
   userBookShelves: {
     get: (params: { bookId?: string }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
