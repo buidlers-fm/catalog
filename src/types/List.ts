@@ -19,4 +19,5 @@ export default interface List {
   ranked: boolean
   likeCount?: number // in-memory only
   currentUserLike?: any // in-memory only
+  saveId?: string // in-memory only
 }

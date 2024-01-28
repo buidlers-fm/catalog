@@ -57,7 +57,9 @@ export default async function Favorites2023ListsPage() {
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="mb-2 text-sm">"To read in 2024" lists from around catalog.</div>
       {lists.length > 0 ? (
-        lists.map((list) => <ListCard key={list.id} list={list} withByline />)
+        lists.map((list) => (
+          <ListCard key={list.id} list={list} currentUserProfile={currentUserProfile} withByline />
+        ))
       ) : (
         <EmptyState text={`No "to read in 2024" lists.`} />
       )}

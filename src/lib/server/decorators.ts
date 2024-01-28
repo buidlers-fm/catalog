@@ -51,6 +51,7 @@ export const decorateLists = async (lists, currentUserProfile?) => {
 
   _lists = await decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
   _lists = await decorateWithComments(_lists, CommentParentType.List, currentUserProfile)
+  if (currentUserProfile) _lists = await decorateWithSaves(_lists, CommentParentType.List, currentUserProfile)
 
   return _lists
 }
@@ -163,6 +164,37 @@ export const decorateWithLikes = async (
   }))
 }
 
+export const decorateWithSaves = async (
+  lists: any[],
+  objectType: CommentParentType,
+  currentUserProfile: UserProfileProps,
+) => {
+  const saves = await prisma.interaction.findMany({
+    where: {
+      agentId: currentUserProfile.id,
+      agentType: InteractionAgentType.User,
+      interactionType: InteractionType.Save,
+      objectId: {
+        in: lists.map((list) => list.id),
+      },
+      objectType,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const savesByListId = saves.reduce((result, save) => {
+    result[save.objectId] = save.id
+    return result
+  }, {})
+
+  return lists.map((list) => ({
+    ...list,
+    saveId: savesByListId[list.id],
+  }))
+}
+
 function countComments(obj, depth = 0) {
   if (!obj.comments) return 0
 
@@ -211,6 +243,13 @@ export const decorateComments = async (comments, currentUserProfile, depth = 0) 
       depth,
     )
   }
+
+  if (currentUserProfile)
+    finalComments = await decorateWithSaves(
+      finalComments,
+      CommentParentType.Comment,
+      currentUserProfile,
+    )
 
   return finalComments.map((comment) => ({
     ...comment,

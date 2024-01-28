@@ -62,6 +62,6 @@ export default async function UserListsIndexPage({ params }) {
   if (isUsersProfile) {
     return <ManageLists lists={lists} pins={pins} />
   } else {
-    return <UserListsIndex lists={lists} userProfile={userProfile} />
+    return <UserListsIndex lists={lists} userProfile={userProfile} currentUserProfile={currentUserProfile} />
   }
 }

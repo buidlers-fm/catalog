@@ -188,7 +188,13 @@ function ListRowPinned({ list, unpinList, currentUser, isBusy }) {
         </button>
       </div>
       <div className="sm:grow w-3/4">
-        <ListCard key={list.id} list={list} separators={false} compact />
+        <ListCard
+          key={list.id}
+          list={list}
+          separators={false}
+          currentUserProfile={currentUser?.currentUserProfile}
+          compact
+        />
       </div>
       <div className="ml-auto">
         <Link href={currentUser ? getEditListLink(currentUser, list.slug) : ""}>
@@ -209,7 +215,13 @@ function ListRowUnpinned({ list, pinList, currentUser, isBusy }) {
     <li className="flex flex-wrap items-center px-4 py-2 bg-black border border-gray-500 first:rounded-tl first:rounded-tr last:rounded-bl last:rounded-br">
       <div className="shrink-0 w-12" />
       <div className="sm:grow w-3/4">
-        <ListCard key={list.id} list={list} separators={false} compact />
+        <ListCard
+          key={list.id}
+          list={list}
+          separators={false}
+          currentUserProfile={currentUser?.currentUserProfile}
+          compact
+        />
       </div>
       <div className="ml-auto">
         <Link href={currentUser ? getEditListLink(currentUser, list.slug) : ""}>

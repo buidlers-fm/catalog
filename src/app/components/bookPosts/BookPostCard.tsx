@@ -16,10 +16,12 @@ import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookPost from "app/components/bookPosts/EditBookPost"
+import SaveBookmark from "app/components/saves/SaveBookmark"
 import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"
+import CommentParentType from "enums/CommentParentType"
 
 dayjs.extend(relativeTime)
 
@@ -48,6 +50,7 @@ export default function BookLinkPostCard({
     currentUserLike,
     comments,
     commentCount,
+    saveId,
   } = post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
@@ -166,6 +169,15 @@ export default function BookLinkPostCard({
                 )}
               </Link>
             </div>
+            {currentUserProfile && id && (
+              <div className="ml-4">
+                <SaveBookmark
+                  savedObjectType={CommentParentType.Post}
+                  savedObjectId={id}
+                  saveId={saveId}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
