@@ -148,7 +148,7 @@ export default function BookNoteCard({
           ) : (
             <div className="mt-1 mb-2 font-newsreader">
               {hasSpoilers ? (
-                <ExpandableSpoilerText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
+                <ExpandableSpoilerText text={text} maxChars={TEXT_TRUNCATE_LENGTH} type="note" />
               ) : (
                 <ExpandableText text={text} maxChars={TEXT_TRUNCATE_LENGTH} />
               )}

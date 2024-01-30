@@ -79,7 +79,7 @@ export default function AtMentions({ bgColor, formProps, moreProps, name, rows }
         focused && "bg-gray-700"
       } px-4 py-1 cursor-pointer border-b border-b-gray-700 last:border-none`}
     >
-      <NameWithAvatar userProfile={suggestion} bothNames inline />
+      <NameWithAvatar userProfile={suggestion} bothNames inline link={false} />
     </div>
   )
 

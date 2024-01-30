@@ -90,10 +90,11 @@ export default function EditBookNote({ bookNote, onEditSuccess, onDeleteSuccess,
         onChange={(e) => setText(e.target.value)}
       />
       <FormToggle
-        label="Spoilers"
+        label="spoilers"
         name="hasSpoilers"
         control={control}
         defaultValue={hasSpoilers}
+        compact
       />
       <div className="flex justify-end">
         <button

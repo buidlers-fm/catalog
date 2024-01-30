@@ -193,6 +193,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
                       name="hasSpoilers"
                       control={control}
                       defaultValue={hasSpoilers}
+                      compact
                     />
                     <div className="flex justify-end">
                       <button

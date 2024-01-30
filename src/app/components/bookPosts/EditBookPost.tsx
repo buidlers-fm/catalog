@@ -105,7 +105,6 @@ export default function EditBookLinkPost({ bookPost, onEditSuccess, onDeleteSucc
       />
 
       <FormTextarea
-        labelText="text"
         name="text"
         type="text"
         rows={3}
@@ -119,10 +118,11 @@ export default function EditBookLinkPost({ bookPost, onEditSuccess, onDeleteSucc
       />
 
       <FormToggle
-        label="Spoilers"
+        label="spoilers"
         name="hasSpoilers"
         control={control}
         defaultValue={hasSpoilers}
+        compact
       />
 
       <div className="flex justify-end">

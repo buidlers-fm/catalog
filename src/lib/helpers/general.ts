@@ -25,10 +25,16 @@ export const truncateString = (_str: string | undefined, maxChars: number) => {
   if (!_str) return ""
 
   // matches "[@foo](bar)"
-  const regex = /\[@([^\]]+)\]\((.*?)\)/g
+  const atMentionPattern = /\[@([^\]]+)\]\((.*?)\)/g
 
   // replace all mentions with just the name
-  const str = _str.replace(regex, (match, p1) => `@${p1}`)
+  let str = _str.replace(atMentionPattern, (match, p1) => `@${p1}`)
+
+  // matches "[foo](bar)"
+  const linkPattern = /\[([^\]]+)\]\((.*?)\)/g
+
+  // replace all links with just the text
+  str = str.replace(linkPattern, (match, p1) => p1)
 
   if (str.length <= maxChars) return str
 

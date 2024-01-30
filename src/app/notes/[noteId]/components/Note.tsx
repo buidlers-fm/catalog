@@ -47,22 +47,6 @@ export default function Note({ note, currentUserProfile }) {
         onDeleteSuccess={handleDeleteSuccess}
       />
 
-      {currentUserProfile && (
-        <>
-          <div className="mt-8 font-mulish">
-            <div className="-mb-2">reply</div>
-            <EditComment
-              parentId={note.id}
-              parentType={CommentParentType.Note}
-              onEditSuccess={getComments}
-              onDeleteSuccess={getComments}
-              showFormattingReferenceTooltip
-            />
-          </div>
-          <hr className="my-12 h-[1px] border-none bg-gray-800" />
-        </>
-      )}
-
       {comments.length > 0 ? (
         <div className="mt-8">
           {comments.map((comment) => (
@@ -76,6 +60,19 @@ export default function Note({ note, currentUserProfile }) {
         </div>
       ) : (
         <EmptyState text="No comments yet." />
+      )}
+
+      {currentUserProfile && (
+        <div className="mt-8 font-mulish">
+          <div className="-mb-2">reply</div>
+          <EditComment
+            parentId={note.id}
+            parentType={CommentParentType.Note}
+            onEditSuccess={getComments}
+            onDeleteSuccess={getComments}
+            showFormattingReferenceTooltip
+          />
+        </div>
       )}
     </div>
   )
