@@ -50,7 +50,7 @@ export default function NameWithAvatar({
   )
 
   return (
-    <div className="my-2">
+    <div className="my-2 font-mulish">
       {link ? <Link href={getUserProfileLink(username)}>{innerComponent}</Link> : innerComponent}
     </div>
   )
