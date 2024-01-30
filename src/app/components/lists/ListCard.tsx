@@ -28,28 +28,26 @@ export default function ListCard({ list, withByline = false, separators = true, 
           </div>
         </Link>
         <div className="mt-4 sm:mt-2 sm:mx-4 grow">
-          <div className="mt-[-8px] flex flex-col sm:flex-row items-baseline">
+          <div className="mt-[-8px]">
             <Link href={list.url}>
-              <div className="mb-2 sm:mb-0 font-bold">{truncateString(list.title, 64)}</div>
+              <div className="font-bold">{truncateString(list.title, 64)}</div>
             </Link>
-            <div className="flex">
-              <div className="mb-2 sm:mb-0 sm:ml-2 mr-3 text-gray-500 text-sm font-normal">
-                {totalBookCount} books
-              </div>
-              <div className="flex">
-                <Likes
-                  interactive={false}
-                  likedObject={list}
-                  likedObjectType={InteractionObjectType.List}
-                  likeCount={likeCount}
-                />
-                <div className="-mt-0.5 ml-4">
-                  <FaComment className="inline-block mr-1.5 text-gray-500 text-md" />
-                  {list.comments && (
-                    <span className="text-sm text-gray-300">{list.comments.length}</span>
-                  )}
-                </div>
-              </div>
+            <div className="inline-block mr-3 text-gray-500 text-sm font-normal">
+              {totalBookCount} {totalBookCount === 1 ? "book" : "books"}
+            </div>
+            <div className="inline-block">
+              <Likes
+                interactive={false}
+                likedObject={list}
+                likedObjectType={InteractionObjectType.List}
+                likeCount={likeCount}
+              />
+            </div>
+            <div className="inline-block -mt-0.5 ml-4">
+              <FaComment className="inline-block mr-1.5 text-gray-500 text-md" />
+              {list.comments && (
+                <span className="text-sm text-gray-300">{list.comments.length}</span>
+              )}
             </div>
           </div>
           {withByline && <NameWithAvatar userProfile={list.owner} />}
