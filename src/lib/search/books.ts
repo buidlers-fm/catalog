@@ -2,6 +2,28 @@ import uFuzzy from "@leeoniya/ufuzzy"
 import { looseStringEquals, stripPunctuation } from "lib/helpers/general"
 import type Book from "types/Book"
 
+function stripArticles(_str: string) {
+  let str = _str.toLowerCase().trim()
+
+  const articles = ["a ", "an ", "the "]
+
+  articles.forEach((article) => {
+    if (str.startsWith(article)) {
+      str = str.replace(article, "")
+    }
+  })
+
+  return str
+}
+
+function prepStringForSearch(_str: string) {
+  let str = _str.toLowerCase().trim()
+  str = stripPunctuation(str)
+  str = stripArticles(str)
+
+  return str
+}
+
 const search = {
   // remove all records that have (approx) the same title and author name
   // as an earlier record
@@ -72,7 +94,7 @@ const search = {
       (result) => `${stripPunctuation(result.title)} ${stripPunctuation(result.authorName)}`,
     )
 
-    const needle = stripPunctuation(searchString)
+    const needle = prepStringForSearch(searchString)
 
     const [matchingIndexes, , orderedIndexes] = uFuzzyClient.search(haystack, needle, 1)
 
