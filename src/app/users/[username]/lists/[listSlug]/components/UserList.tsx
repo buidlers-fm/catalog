@@ -121,7 +121,7 @@ export default function UserList({
       <Tooltip anchorSelect="#updated-at" className="max-w-[240px] font-mulish">
         <div className="text-center">{updatedAtFormatted}</div>
       </Tooltip>
-      <div className="my-1 flex">
+      <div className="flex items-center my-2">
         <Likes
           interactive={!!currentUserProfile}
           likedObject={list}
@@ -130,8 +130,8 @@ export default function UserList({
           currentUserLike={currentUserLike}
         />
 
-        <div className="-mt-0.5 ml-4">
-          <Link href="#comments" className="">
+        <div className="ml-4">
+          <Link href="#comments" className="flex items-center">
             <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
             {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
           </Link>
