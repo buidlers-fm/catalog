@@ -309,7 +309,7 @@ export default function BookPage({
       <div className="mt-16 max-w-4xl mx-auto">
         <div className="mx-8 lg:mx-16">
           <div className="md:flex">
-            <div className="flex-grow-0 flex-shrink-0 w-64 mx-auto mb-16">
+            <div className="flex-grow-0 flex-shrink-0 w-64 mx-auto mb-16 md:mb-8">
               {book.coverImageUrl && !imgLoaded && <CoverPlaceholder size="lg" loading />}
               {book.coverImageUrl ? (
                 <img
