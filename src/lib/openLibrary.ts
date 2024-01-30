@@ -198,6 +198,8 @@ const OpenLibrary = {
       "edition_count",
       "first_publish_year",
       "isbn",
+      "oclc",
+      "lccn",
     ]
 
     if (includeEditions) {
@@ -216,11 +218,17 @@ const OpenLibrary = {
 
     // filter out unreliable results and apply limit
     // so far some markers of unreliable results (based on trial and error) include:
-    // + no isbn
+    // + no isbn/oclc/lccn
     // + no author name
-    results = results.filter(
-      (result: any) => result.isbn && result.authorName && result.authorName.length > 0,
-    )
+    function hasBookCode(result) {
+      return result.isbn || result.oclc || result.lccn
+    }
+
+    function hasAuthorName(result) {
+      return result.authorName && result.authorName.length > 0
+    }
+
+    results = results.filter((result: any) => hasBookCode(result) && hasAuthorName(result))
 
     // there are more pages of results in openlibrary OR
     // there are more filtered results than the limit
