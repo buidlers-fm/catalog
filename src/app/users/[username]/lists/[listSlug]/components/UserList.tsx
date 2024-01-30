@@ -173,24 +173,8 @@ export default function UserList({
         <div id="comments" className="mt-24">
           <hr className="my-12 h-[1px] border-none bg-gray-800" />
 
-          {currentUserProfile && (
-            <>
-              <div className="mt-8 font-mulish">
-                <div className="-mb-2">reply</div>
-                <EditComment
-                  parentId={listId}
-                  parentType={CommentParentType.List}
-                  onEditSuccess={getComments}
-                  onDeleteSuccess={getComments}
-                  showFormattingReferenceTooltip
-                />
-              </div>
-              <hr className="my-12 h-[1px] border-none bg-gray-800" />
-            </>
-          )}
-
           {comments.length > 0 ? (
-            <div className="mt-8">
+            <div className="mt-16">
               {comments.map((comment) => (
                 <CommentCard
                   key={comment.id}
@@ -202,6 +186,19 @@ export default function UserList({
             </div>
           ) : (
             <EmptyState text="No comments yet." />
+          )}
+
+          {currentUserProfile && (
+            <div className="mt-8 font-mulish">
+              <div className="-mb-2">reply</div>
+              <EditComment
+                parentId={listId}
+                parentType={CommentParentType.List}
+                onEditSuccess={getComments}
+                onDeleteSuccess={getComments}
+                showFormattingReferenceTooltip
+              />
+            </div>
           )}
         </div>
       )}
