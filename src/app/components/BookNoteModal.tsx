@@ -303,10 +303,11 @@ export default function BookNoteModal({
                         onChange={(e) => setText(e.target.value)}
                       />
                       <FormToggle
-                        label="Spoilers"
+                        label="spoilers"
                         name="hasSpoilers"
                         control={control}
                         defaultValue={hasSpoilers}
+                        compact
                       />
                       <div
                         className={
@@ -318,7 +319,7 @@ export default function BookNoteModal({
                         <button
                           type="button"
                           onClick={() => setIsEditingDates(true)}
-                          className="mt-2 cat-btn-link text-sm"
+                          className="mt-2 cat-btn-link"
                         >
                           {readingStatusToCopy[readingStatus].editDatesCopy}
                         </button>

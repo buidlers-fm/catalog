@@ -132,7 +132,11 @@ export default function BookLinkPostCard({
           {showText && !isEditing && (
             <div className="mt-2">
               {hasSpoilers ? (
-                <ExpandableSpoilerText text={text} maxChars={bookPostValidations.text.maxLength} />
+                <ExpandableSpoilerText
+                  text={text}
+                  maxChars={bookPostValidations.text.maxLength}
+                  type="post"
+                />
               ) : (
                 <CustomMarkdown markdown={text} />
               )}
