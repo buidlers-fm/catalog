@@ -4,13 +4,21 @@ import { FaComment } from "react-icons/fa"
 import { truncateString } from "lib/helpers/strings"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import Likes from "app/components/Likes"
+import SaveBookmark from "app/components/saves/SaveBookmark"
 import InteractionObjectType from "enums/InteractionObjectType"
+import CommentParentType from "enums/CommentParentType"
 
 const NUM_BOOK_COVERS = 4
 
-export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
+export default function ListCard({
+  list,
+  withByline = false,
+  separators = true,
+  compact = false,
+  currentUserProfile,
+}) {
   const totalBookCount = list.books.length
-  const { likeCount } = list
+  const { likeCount, saveId, id: listId } = list
   const books = list.books.slice(0, NUM_BOOK_COVERS)
 
   return (
@@ -48,6 +56,16 @@ export default function ListCard({ list, withByline = false, separators = true, 
                   <span className="text-sm text-gray-300 font-mulish">{list.comments.length}</span>
                 )}
               </div>
+              {currentUserProfile && (
+                <div className="ml-4">
+                  <SaveBookmark
+                    interactive={false}
+                    savedObjectType={CommentParentType.List}
+                    savedObjectId={listId}
+                    saveId={saveId}
+                  />
+                </div>
+              )}
             </div>
           </div>
           {withByline && <NameWithAvatar userProfile={list.owner} />}

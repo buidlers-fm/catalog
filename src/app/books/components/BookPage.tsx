@@ -608,7 +608,12 @@ export default function BookPage({
               <hr className="my-1 h-[1px] border-none bg-gray-300" />
               <div className="">
                 {bookLists.map((list) => (
-                  <ListCard key={list.id} list={list} withByline />
+                  <ListCard
+                    key={list.id}
+                    list={list}
+                    currentUserProfile={currentUserProfile}
+                    withByline
+                  />
                 ))}
               </div>
             </div>

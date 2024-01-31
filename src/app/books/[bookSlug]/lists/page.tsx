@@ -62,7 +62,12 @@ export default async function BookListsIndexPage({ params }) {
         {lists.length > 0 ? (
           <div className="">
             {lists.map((list) => (
-              <ListCard key={list.id} list={list} withByline />
+              <ListCard
+                key={list.id}
+                list={list}
+                currentUserProfile={currentUserProfile}
+                withByline
+              />
             ))}
           </div>
         ) : (
