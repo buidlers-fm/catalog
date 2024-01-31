@@ -18,4 +18,5 @@ export default interface BookNote {
   currentUserLike?: Like // in-memory only
   creatorLikedBook?: boolean // in-memory only
   hasSpoilers: boolean
+  saveId?: string // in-memory only
 }

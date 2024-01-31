@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateWithLikes } from "lib/server/decorators"
+import { decorateWithComments, decorateWithLikes, decorateWithSaves } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import UserBookNotesIndex from "app/users/[username]/(profilePages)/notes/components/UserBookNotesIndex"
+import CommentParentType from "enums/CommentParentType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import type { Metadata } from "next"
 
@@ -44,6 +45,17 @@ export default async function UserBookNotesPage({ params }) {
     InteractionObjectType.BookNote,
     currentUserProfile,
   )
+  userProfile.bookNotes = await decorateWithComments(
+    userProfile.bookNotes,
+    CommentParentType.Note,
+    currentUserProfile,
+  )
+  if (currentUserProfile)
+    userProfile.bookNotes = await decorateWithSaves(
+      userProfile.bookNotes,
+      CommentParentType.Note,
+      currentUserProfile,
+    )
 
   return <UserBookNotesIndex userProfile={userProfile} currentUserProfile={currentUserProfile} />
 }
