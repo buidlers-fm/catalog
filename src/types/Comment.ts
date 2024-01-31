@@ -17,4 +17,5 @@ export default interface Comment {
   parent?: any
   likeCount?: number
   currentUserLike?: Like // in-memory only
+  saveId?: string // in-memory only
 }
