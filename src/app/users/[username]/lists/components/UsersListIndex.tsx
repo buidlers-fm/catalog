@@ -4,7 +4,7 @@ import UserProfile from "lib/models/UserProfile"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
 
-export default function UserListsIndex({ lists, userProfile: _userProfile }) {
+export default function UserListsIndex({ lists, userProfile: _userProfile, currentUserProfile }) {
   const userProfile = UserProfile.build(_userProfile)
 
   return (
@@ -13,7 +13,7 @@ export default function UserListsIndex({ lists, userProfile: _userProfile }) {
         {lists.length > 0 ? (
           <div className="">
             {lists.map((list) => (
-              <ListCard key={list.id} list={list} />
+              <ListCard key={list.id} list={list} currentUserProfile={currentUserProfile} />
             ))}
           </div>
         ) : (

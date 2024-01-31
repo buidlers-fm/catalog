@@ -22,6 +22,7 @@ import { dateTimeFormats } from "lib/constants/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
+import SaveBookmark from "app/components/saves/SaveBookmark"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 
@@ -60,6 +61,7 @@ export default function UserList({
     updatedAt: _updatedAt,
     likeCount,
     currentUserLike,
+    saveId,
   } = list
   const { name, username } = UserProfile.build(userProfile)
   const createdAtFromNow = dayjs(createdAt).fromNow()
@@ -136,6 +138,16 @@ export default function UserList({
             {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
           </Link>
         </div>
+
+        {currentUserProfile && listId && (
+          <div className="ml-4">
+            <SaveBookmark
+              savedObjectType={CommentParentType.List}
+              savedObjectId={listId}
+              saveId={saveId}
+            />
+          </div>
+        )}
       </div>
       <div className="sm:my-4">
         <CustomMarkdown markdown={description} />

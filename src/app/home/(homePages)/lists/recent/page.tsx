@@ -44,7 +44,9 @@ export default async function RecentListsPage() {
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
       <div className="mb-2 text-sm">Recent lists from around catalog.</div>
       {lists.length > 0 ? (
-        lists.map((list) => <ListCard key={list.id} list={list} withByline />)
+        lists.map((list) => (
+          <ListCard key={list.id} list={list} currentUserProfile={currentUserProfile} withByline />
+        ))
       ) : (
         <EmptyState text="No recent lists." />
       )}

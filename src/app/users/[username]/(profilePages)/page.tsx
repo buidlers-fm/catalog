@@ -226,7 +226,7 @@ export default async function UserProfilePage({ params }) {
           {lists.length > 0 ? (
             <div className="">
               {lists.map((list) => (
-                <ListCard key={list.id} list={list} />
+                <ListCard key={list.id} list={list} currentUserProfile={currentUserProfile} />
               ))}
             </div>
           ) : (
