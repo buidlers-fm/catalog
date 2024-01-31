@@ -13,6 +13,7 @@ import {
   decorateWithFollowers,
   decorateWithLikes,
   decorateWithComments,
+  decorateWithSaves,
 } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import UserProfile from "lib/models/UserProfile"
@@ -142,11 +143,14 @@ export default async function UserProfilePage({ params }) {
 
   lists = await decorateLists(lists, currentUserProfile)
 
-  const _bookNotes = await decorateWithLikes(
+  let _bookNotes = await decorateWithLikes(
     userProfile.bookNotes!,
     InteractionObjectType.BookNote,
     currentUserProfile,
   )
+
+  if (currentUserProfile)
+    _bookNotes = await decorateWithSaves(_bookNotes, CommentParentType.Note, currentUserProfile)
 
   userProfile.currentStatuses = await decorateWithLikes(
     userProfile.currentStatuses || [],
