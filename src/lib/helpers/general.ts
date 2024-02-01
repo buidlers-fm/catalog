@@ -69,6 +69,10 @@ export const getUserListsLink = (username: string) => `/users/${username}/lists`
 
 export const getBookLink = (slug: string) => `/books/${slug}`
 
+export const getBookEditLink = (slug: string) => `/books/${slug}/edit`
+
+export const getBookEditLinkWithQueryString = (queryString: any) => `/books/edit?${queryString}`
+
 export const getBookListsLink = (slug: string) => `/books/${slug}/lists`
 
 export const getListLink = (userProfile, slug: string) =>

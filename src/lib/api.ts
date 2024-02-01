@@ -23,6 +23,11 @@ const api = {
       const url = `/api/books?${queryString}`
       return fetchJson(url)
     },
+    update: (bookId, requestData) =>
+      fetchJson(`/api/books/${bookId}`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
     search: (searchStr) => {
       const params = {
         query: searchStr,

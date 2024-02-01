@@ -8,6 +8,23 @@ datasource db {
   directUrl = env("DATABASE_URL_DIRECT")
 }
 
+model EditLog {
+  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  editorId         String      @map("editor_id") @db.Uuid
+  editedObjectType String      @map("edited_object_type")
+  editedObjectId   String      @map("edited_object_id") @db.Uuid
+  editType         String      @map("edit_type")
+  beforeJson       Json        @map("before_json")
+  afterJson        Json        @map("after_json")
+  editedFields     String[]    @map("edited_fields")
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  editor           UserProfile @relation(fields: [editorId], references: [id])
+
+  @@index([editorId])
+  @@index([editedObjectId, editedObjectType])
+  @@map("edit_logs")
+}
+
 model FeedbackSubmission {
   id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   text          String    @map("text")
@@ -43,6 +60,7 @@ model UserProfile {
   invitesCreated       UserInvite[]
   config               UserConfig?
   notifications        Notification[]
+  editLogs             EditLog[]
 
   @@index([nameSearch], type: Gin)
   @@map("user_profiles")
@@ -75,6 +93,8 @@ model Book {
   isTranslated             Boolean                   @default(false) @map("is_translated")
   originalTitle            String?                   @map("original_title")
   subtitle                 String?
+  wikipediaUrl             String?                   @map("wikipedia_url")
+  edited                   Boolean                   @default(false)
   titleAuthorSearch        Unsupported("tsvector")?  @default(dbgenerated("to_tsvector('english'::regconfig, ((((COALESCE(title, ''::text) || ' '::text) || COALESCE(original_title, ''::text)) || ' '::text) || COALESCE(author_name, ''::text)))")) @map("title_author_search")
   createdAt                DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime?                 @updatedAt @map("updated_at") @db.Timestamptz(6)

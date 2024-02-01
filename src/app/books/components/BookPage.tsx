@@ -1,5 +1,6 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Tooltip } from "react-tooltip"
@@ -7,11 +8,15 @@ import { BsJournalText } from "react-icons/bs"
 import { FaHeart, FaBookmark } from "react-icons/fa"
 import { FaPlus } from "react-icons/fa6"
 import { SlInfo } from "react-icons/sl"
+import { MdEdit } from "react-icons/md"
+import { TbExternalLink } from "react-icons/tb"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import {
   getBookLink,
+  getBookEditLink,
+  getBookEditLinkWithQueryString,
   getBookNotesLink,
   getBookPostsLink,
   getBookListsLink,
@@ -57,6 +62,8 @@ export default function BookPage({
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
+  const searchParams = useSearchParams()
+
   const [notes, setNotes] = useState<any[]>()
   const [posts, setPosts] = useState<any[]>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
@@ -428,6 +435,7 @@ export default function BookPage({
                   >
                     <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> add to list
                   </button>
+
                   <button
                     type="button"
                     onClick={() => setShowBookNoteModal(true)}
@@ -436,6 +444,21 @@ export default function BookPage({
                     <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> add note
                     or log
                   </button>
+
+                  <Link
+                    href={
+                      book.slug
+                        ? getBookEditLink(book.slug)
+                        : getBookEditLinkWithQueryString(searchParams.toString())
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="my-1 cat-btn cat-btn-sm text-left text-sm text-gray-200 hover:text-white"
+                    >
+                      <MdEdit className="inline-block -mt-[4px] text-sm" /> edit this book
+                    </button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -461,7 +484,7 @@ export default function BookPage({
               )}
               <div className="my-8">
                 {book.openLibraryWorkId && (
-                  <div className="my-2">
+                  <div className="">
                     <span className="text-gray-200">
                       {book.editionsCount
                         ? `${
@@ -479,6 +502,21 @@ export default function BookPage({
                     >
                       OpenLibrary
                     </Link>
+                    <TbExternalLink className="ml-1 -mt-1 inline-block" />
+                  </div>
+                )}
+
+                {book.wikipediaUrl && (
+                  <div className="">
+                    <Link
+                      href={book.wikipediaUrl}
+                      className="cat-underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Wikipedia
+                    </Link>
+                    <TbExternalLink className="ml-1 -mt-1 inline-block" />
                   </div>
                 )}
               </div>

@@ -6,7 +6,9 @@ import { reportToSentry } from "lib/sentry"
 import CoverSize from "enums/CoverSize"
 import type Book from "types/Book"
 
-async function findOrCreateBook(_book: Book) {
+async function findOrCreateBook(_book: Book, options: any = {}) {
+  const { processCoverImage = true } = options
+
   const existingBook = await prisma.book.findFirst({
     where: {
       openLibraryWorkId: _book.openLibraryWorkId,
@@ -17,7 +19,9 @@ async function findOrCreateBook(_book: Book) {
 
   const {
     title,
+    subtitle,
     authorName,
+    description,
     coverImageUrl,
     coverImageThumbnailUrl,
     openLibraryCoverImageUrl,
@@ -26,6 +30,7 @@ async function findOrCreateBook(_book: Book) {
     firstPublishedYear,
     isTranslated,
     originalTitle,
+    wikipediaUrl,
   } = _book
 
   const slug = await generateUniqueSlug(`${title} ${authorName}`, "book")
@@ -34,7 +39,9 @@ async function findOrCreateBook(_book: Book) {
     data: {
       slug,
       title,
+      subtitle,
       authorName,
+      description,
       coverImageUrl,
       coverImageThumbnailUrl,
       openLibraryCoverImageUrl,
@@ -43,11 +50,12 @@ async function findOrCreateBook(_book: Book) {
       firstPublishedYear: Number(firstPublishedYear),
       isTranslated,
       originalTitle,
+      wikipediaUrl,
     },
   })
 
   // fetch covers and upload to supabase storage, then update cover image urls on book
-  if (coverImageUrl) {
+  if (coverImageUrl && processCoverImage) {
     const baseOptions = {
       bookId: createdBook.id,
       bookSlug: slug,
