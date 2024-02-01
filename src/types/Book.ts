@@ -17,6 +17,7 @@ export default interface Book {
   openLibraryWorkId: string
   isTranslated?: boolean
   originalTitle?: string
+  wikipediaUrl?: string
   openLibraryBestEditionId?: string // in-memory only
   bookNotes?: BookNote[]
   bookPosts?: BookNote[]

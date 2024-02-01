@@ -49,38 +49,72 @@ export default async function BookPageBySlug({ params }: any) {
 
   if (!dbBook) notFound()
 
-  const workId = dbBook.openLibraryWorkId!
+  let book = dbBook
 
-  let openLibraryBook: any = {}
-  try {
-    openLibraryBook = await OpenLibrary.getFullBook(workId)
-  } catch (error: any) {
-    // if not found, let openLibraryBook stay blank
-    if (error.message !== "notfound") {
-      reportToSentry(error, { workId })
+  // fetch and update from OL if book has never been edited on catalog
+  if (!book.edited) {
+    const workId = dbBook.openLibraryWorkId!
+
+    let openLibraryBook: any = {}
+    try {
+      openLibraryBook = await OpenLibrary.getFullBook(workId)
+    } catch (error: any) {
+      // if not found, let openLibraryBook stay blank
+      if (error.message !== "notfound") {
+        reportToSentry(error, { workId })
+      }
     }
-  }
 
-  if (openLibraryBook) {
-    await prisma.book.update({
-      where: {
-        id: dbBook.id,
-      },
-      data: {
+    if (openLibraryBook) {
+      const useExistingCoverImageUrl =
+        dbBook.coverImageUrl && !dbBook.coverImageUrl.match(/openlibrary/)
+
+      const updateBookData = {
         title: openLibraryBook.title || undefined,
         authorName: openLibraryBook.authorName || undefined,
         subtitle: openLibraryBook.subtitle || undefined,
         description: openLibraryBook.description || undefined,
-        openLibraryCoverImageUrl: openLibraryBook.coverImageUrl || undefined,
+        coverImageUrl:
+          useExistingCoverImageUrl || !openLibraryBook.coverImageUrl
+            ? undefined
+            : openLibraryBook.coverImageUrl,
+        openLibraryCoverImageUrl:
+          useExistingCoverImageUrl || !openLibraryBook.coverImageUrl
+            ? undefined
+            : openLibraryBook.coverImageUrl,
         editionsCount: openLibraryBook.editionsCount || undefined,
         firstPublishedYear: openLibraryBook.firstPublishedYear || undefined,
         isTranslated: openLibraryBook.isTranslated,
         originalTitle: openLibraryBook.originalTitle || undefined,
-      },
-    })
-  }
+      }
 
-  let book = { ...openLibraryBook, ...dbBook }
+      try {
+        await prisma.book.update({
+          where: {
+            id: dbBook.id,
+          },
+          data: updateBookData,
+        })
+      } catch (error: any) {
+        reportToSentry(error, {
+          method: "BookPageBySlug.update_book_data",
+          ...updateBookData,
+        })
+      }
+
+      // override book with latest from OL _except_ for cover image urls
+      book = {
+        ...book,
+        ...openLibraryBook,
+        coverImageUrl: useExistingCoverImageUrl
+          ? book.coverImageUrl
+          : openLibraryBook.coverImageUrl,
+        openLibraryCoverImageUrl: useExistingCoverImageUrl
+          ? book.openLibraryCoverImageUrl
+          : openLibraryBook.coverImageUrl,
+      }
+    }
+  }
 
   let userLists: any[] = []
 

@@ -11,7 +11,7 @@ textarea:focus {
 }
 
 .cat-page-title {
-  @apply text-2xl font-mulish lowercase;
+  @apply text-2xl font-mulish;
 }
 
 .cat-eyebrow {

@@ -38,6 +38,9 @@ const METADATA_CONFIG = {
   book: {
     title: (title, authorName) => `${title} by ${authorName} • catalog`,
   },
+  "book.edit": {
+    title: (title) => `edit ${title} • catalog`,
+  },
   "book.lists": {
     title: (title, authorName) => `lists • ${title} by ${authorName} • catalog`,
   },
