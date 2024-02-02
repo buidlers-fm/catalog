@@ -158,6 +158,32 @@ const OpenLibrary = {
 
   getOlWorkPageUrl: (workId: string) => `${BASE_URL}/works/${workId}`,
 
+  getCoverUrlsForWork: async (workId: string) => {
+    // get work
+    const workUrl = `${BASE_URL}/works/${workId}.json`
+    const work = await fetchJson(workUrl)
+
+    const workCoverIds = work.covers || []
+
+    // get editions (up to 50 by default)
+    const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
+    const editionsRes = await fetchJson(editionsUrl)
+    const editions = editionsRes.entries
+
+    const editionsCoverIds = editions.map((edition: any) => edition.covers || []).flat()
+
+    // de-dupe cover ids
+    const allCoverIds = workCoverIds.concat(editionsCoverIds).filter(Boolean)
+    const uniqueSet = new Set(allCoverIds)
+    const uniqueCoverIds = Array.from(uniqueSet) as number[]
+
+    const coverUrls = uniqueCoverIds.map((coverId) =>
+      OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, OpenLibraryCoverSize.L),
+    )
+
+    return coverUrls
+  },
+
   getCoverUrl: (coverUrlType: CoverUrlType, id: string | number, size: OpenLibraryCoverSize) =>
     `${COVERS_BASE_URL}/${coverUrlType}/${id}-${size}.jpg`,
 

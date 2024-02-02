@@ -68,7 +68,7 @@ export default async function UserEditsPage({ params }) {
   }))
 
   return (
-    <div className="mt-4 max-w-lg mx-auto font-mulish">
+    <div className="mt-4 max-w-3xl mx-auto font-mulish">
       Book edits {isUsersProfile ? "you've" : `${name} has`} made.
       <div className="mt-4">
         {editLogs ? (

@@ -6,9 +6,14 @@ import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookTooltip from "app/components/books/BookTooltip"
+import EditType from "enums/EditType"
+
+function camelCaseToWords(str) {
+  return str.replace(/([A-Z])/g, " $1").toLowerCase()
+}
 
 export default function EditLogCard({ editLog, withCover = true }) {
-  const { id, editor, book, editedFields, createdAt } = editLog
+  const { id, editor, book, editType, editedFields, createdAt } = editLog
 
   const { name } = UserProfile.build(editor)
 
@@ -24,6 +29,8 @@ export default function EditLogCard({ editLog, withCover = true }) {
   }
 
   const coverImageUrl = book.coverImageThumbnailUrl || book.coverImageUrl
+
+  const isCoverEdit = editType === EditType.Cover
 
   return (
     <div className="flex items-center px-4 py-4 border-b border-b-gray-800 last:border-none">
@@ -46,7 +53,7 @@ export default function EditLogCard({ editLog, withCover = true }) {
         </>
       )}
       <div className="">
-        {name} edited{" "}
+        {name} edited {isCoverEdit ? "the cover of " : ""}
         <Link href={getBookLink(book.slug)} className="cat-link">
           {book.title}
         </Link>
@@ -55,7 +62,11 @@ export default function EditLogCard({ editLog, withCover = true }) {
           {createdAtFromNow}
         </span>
         {timestampTooltip}
-        <div className="ml-2 mt-1 text-sm text-gray-500">({editedFields.join(", ")})</div>
+        {!isCoverEdit && (
+          <div className="ml-2 mt-1 text-sm text-gray-500">
+            ({editedFields.map((fieldName) => camelCaseToWords(fieldName)).join(", ")})
+          </div>
+        )}
       </div>
     </div>
   )
