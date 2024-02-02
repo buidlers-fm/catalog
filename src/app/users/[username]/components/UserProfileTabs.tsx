@@ -8,7 +8,7 @@ import {
   getUserShelvesLink,
   getUserBookNotesLink,
   getUserFollowersLink,
-  getUserFollowingLink,
+  getUserEditsLink,
 } from "lib/helpers/general"
 
 function classNames(...classes) {
@@ -41,14 +41,14 @@ export default function UserProfileTabs({ userProfile }) {
       href: getUserBookNotesLink(username),
     },
     {
-      name: "followers",
-      layoutPath: "followers",
+      name: "friends",
+      layoutPath: "(friends)",
       href: getUserFollowersLink(username),
     },
     {
-      name: "following",
-      layoutPath: "following",
-      href: getUserFollowingLink(username),
+      name: "edits",
+      layoutPath: "edits",
+      href: getUserEditsLink(username),
     },
   ]
 
