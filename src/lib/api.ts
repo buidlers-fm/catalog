@@ -28,6 +28,11 @@ const api = {
         method: "PATCH",
         body: prepReqBody(requestData),
       }),
+    updateCover: (bookId, requestData) =>
+      fetchJson(`/api/books/${bookId}/covers`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
     search: (searchStr) => {
       const params = {
         query: searchStr,

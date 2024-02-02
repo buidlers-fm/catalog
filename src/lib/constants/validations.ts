@@ -1,4 +1,10 @@
 const validations = {
+  book: {
+    cover: {
+      maxWidth: 2000,
+      maxHeight: 2000,
+    },
+  },
   bookNote: {
     text: {
       maxLength: 1000,

@@ -1,5 +1,7 @@
 import { StorageClient } from "@supabase/storage-js"
 import { v4 as uuidv4 } from "uuid"
+import cryptoRandomString from "crypto-random-string"
+import { reportToSentry } from "lib/sentry"
 
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -33,20 +35,31 @@ async function deleteAvatar(avatarUrl) {
   if (avatarDeleteError) throw new Error(`Error deleting avatar: ${avatarDeleteError.message}`)
 }
 
-async function uploadCoverImage(coverImageBlob, options) {
-  const { bookId, bookSlug, size, mimeType, extension } = options
+async function uploadCoverImage(coverImageData, options) {
+  const { bookId, bookSlug, size, mimeType, extension, replace = false } = options
+
+  // add a nonce to the filename to prevent caching issues when cover has changed
+  const nonce = cryptoRandomString({ length: 6 })
+
   const fileDir = `books/covers/${bookId}/${size}`
-  const filename = `${bookSlug}-${size}.${extension}`
+  const filename = `${bookSlug}-${size}-${nonce}.${extension}`
   const filePath = `${fileDir}/${filename}`
   const imageUrl = `${storageBucketPath}/${filePath}`
 
   const { error: coverImageUploadError } = await storageClient
     .from("assets")
-    .upload(filePath, coverImageBlob, { contentType: mimeType })
+    .upload(filePath, coverImageData, {
+      contentType: mimeType,
+      upsert: replace,
+    })
 
   if (coverImageUploadError) {
     if (coverImageUploadError.message.match(/The resource already exists/)) {
-      console.log(coverImageUploadError.message)
+      reportToSentry(new Error("Cover image already exists"), {
+        imageUrl,
+        options,
+      })
+
       return imageUrl
     } else {
       throw new Error(`Error uploading cover image: ${coverImageUploadError.message}`)

@@ -143,9 +143,6 @@ export default function EditBook({ book }) {
 
   return (
     <div className="my-8 mx-8 sm:mx-16 ml:max-w-3xl ml:mx-auto font-mulish">
-      <div className="my-8 cat-page-title">
-        edit {book.title} by {book.authorName}
-      </div>
       <form onSubmit={handleSubmit(submit)}>
         <div className="my-8">
           <FormInput
