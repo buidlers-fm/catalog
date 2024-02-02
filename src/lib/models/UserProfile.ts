@@ -1,6 +1,7 @@
 import type BookNote from "types/BookNote"
 import type BookRead from "types/BookRead"
 import type UserCurrentStatus from "types/UserCurrentStatus"
+import type EditLog from "types/EditLog"
 
 export interface UserProfileProps {
   id: string
@@ -18,6 +19,7 @@ export interface UserProfileProps {
   currentStatuses?: UserCurrentStatus[]
   followers?: UserProfileProps[]
   following?: UserProfileProps[]
+  editLogs?: EditLog[]
 }
 
 export default class UserProfile {
@@ -51,6 +53,8 @@ export default class UserProfile {
 
   public following: UserProfile[] | UserProfileProps[] | undefined
 
+  public editLogs: EditLog[] | undefined
+
   constructor(userProfileProps: UserProfileProps) {
     this.id = userProfileProps.id
     this.userId = userProfileProps.userId
@@ -65,6 +69,7 @@ export default class UserProfile {
     this.bookNotes = userProfileProps.bookNotes
     this.bookReads = userProfileProps.bookReads
     this.currentStatuses = userProfileProps.currentStatuses
+    this.editLogs = userProfileProps.editLogs
 
     if (userProfileProps.followers) {
       this.followers = UserProfile.buildMany(userProfileProps.followers)

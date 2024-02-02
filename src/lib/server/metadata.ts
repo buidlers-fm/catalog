@@ -29,6 +29,9 @@ const METADATA_CONFIG = {
   "profile.following": {
     title: (name) => `${name}'s friends • catalog`,
   },
+  "profile.edits": {
+    title: (name) => `${name}'s edits • catalog`,
+  },
   "profile.list": {
     title: (name, listTitle) => `${listTitle}, a list by ${name} • catalog`,
   },
