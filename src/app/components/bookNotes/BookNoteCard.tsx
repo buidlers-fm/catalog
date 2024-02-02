@@ -165,7 +165,7 @@ export default function BookNoteCard({
             <div className="ml-4">
               <Link href={getNoteLink(id)} className="flex items-center">
                 <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-                {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+                {comments && <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>}
               </Link>
             </div>
           </div>

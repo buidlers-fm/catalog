@@ -45,7 +45,7 @@ export default function ListCard({ list, withByline = false, separators = true, 
               <div className="flex items-center ml-4">
                 <FaComment className="mr-1.5 text-gray-500 text-md" />
                 {list.comments && (
-                  <span className="text-sm text-gray-300">{list.comments.length}</span>
+                  <span className="text-sm text-gray-300 font-mulish">{list.comments.length}</span>
                 )}
               </div>
             </div>

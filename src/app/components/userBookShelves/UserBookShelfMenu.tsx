@@ -50,12 +50,12 @@ export default function UserBookShelfMenu({ book, currentUserShelf, onChange }) 
         {selectedShelf ? (
           <div className="flex items-center">
             <FaBookmark className="text-gold-500 text-sm" />
-            <div className="ml-1.5 mb-1">{shelfToCopy[selectedShelf]}</div>
+            <div className="ml-1.5">{shelfToCopy[selectedShelf]}</div>
           </div>
         ) : (
           <div className="flex items-center text-gray-300">
             <FaRegBookmark className="text-gray-300 text-sm" />
-            <div className="ml-1.5 mb-1">shelves</div>
+            <div className="ml-1.5">shelves</div>
           </div>
         )}
       </Menu.Button>

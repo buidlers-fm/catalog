@@ -102,7 +102,7 @@ export default function Likes({
         )}
 
         {(likeCount || likeCount === 0) && (
-          <span className="text-sm text-gray-300">{likeCount}</span>
+          <span className="text-sm text-gray-300 font-mulish">{likeCount}</span>
         )}
       </button>
       {likedByNames && likedByNames.length > 0 && (
@@ -121,7 +121,7 @@ export default function Likes({
   ) : (
     <div className="flex items-center">
       <FaHeart className="mr-1.5 text-gray-500 text-sm" />
-      {(likeCount || likeCount === 0) && <span className="text-sm text-gray-300">{likeCount}</span>}
+      {(likeCount || likeCount === 0) && <span className="text-sm text-gray-300 font-mulish">{likeCount}</span>}
     </div>
   )
 }

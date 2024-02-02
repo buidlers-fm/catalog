@@ -132,8 +132,8 @@ export default function UserList({
 
         <div className="ml-4">
           <Link href="#comments" className="flex items-center">
-            <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
-            {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+            <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+            {comments && <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>}
           </Link>
         </div>
       </div>
