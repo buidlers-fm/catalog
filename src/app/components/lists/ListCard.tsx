@@ -32,22 +32,22 @@ export default function ListCard({ list, withByline = false, separators = true, 
             <Link href={list.url}>
               <div className="font-bold">{truncateString(list.title, 64)}</div>
             </Link>
-            <div className="inline-block mr-3 text-gray-500 text-sm font-normal">
-              {totalBookCount} {totalBookCount === 1 ? "book" : "books"}
-            </div>
-            <div className="inline-block">
+            <div className="flex items-center my-1">
+              <div className="mr-3 text-gray-500 text-sm font-normal">
+                {totalBookCount} {totalBookCount === 1 ? "book" : "books"}
+              </div>
               <Likes
                 interactive={false}
                 likedObject={list}
                 likedObjectType={InteractionObjectType.List}
                 likeCount={likeCount}
               />
-            </div>
-            <div className="inline-block -mt-0.5 ml-4">
-              <FaComment className="inline-block mr-1.5 text-gray-500 text-md" />
-              {list.comments && (
-                <span className="text-sm text-gray-300">{list.comments.length}</span>
-              )}
+              <div className="flex items-center ml-4">
+                <FaComment className="mr-1.5 text-gray-500 text-md" />
+                {list.comments && (
+                  <span className="text-sm text-gray-300 font-mulish">{list.comments.length}</span>
+                )}
+              </div>
             </div>
           </div>
           {withByline && <NameWithAvatar userProfile={list.owner} />}

@@ -98,7 +98,7 @@ export default function CommentCard({
         </div>
       )}
 
-      <div className="my-3 flex">
+      <div className="flex items-center my-3">
         <Likes
           interactive={!!currentUserProfile}
           likedObject={comment}
@@ -108,15 +108,15 @@ export default function CommentCard({
         />
 
         {!!currentUserProfile && !isReplying && depth < 2 && onClickReply && (
-          <>
-            <FaRegComment className="inline-block mt-1 mr-1.5 text-gray-500 text-md" />
+          <div className="flex items-center">
+            <FaRegComment className="mr-1.5 text-gray-500 text-md" />
             <button
-              className="border-b border-b-gray-500 text-sm text-gray-500"
+              className="flex border-b border-b-gray-500 text-sm text-gray-500"
               onClick={onClickReply}
             >
               reply
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>

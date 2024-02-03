@@ -331,7 +331,7 @@ export default function BookPage({
               ) : (
                 <CoverPlaceholder size="lg" />
               )}
-              <div className="flex mt-2 mb-2">
+              <div className="flex items-center my-2">
                 <div id="book-likes" className="mx-2 w-fit">
                   <Likes
                     interactive={isSignedIn}

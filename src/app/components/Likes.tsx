@@ -92,42 +92,36 @@ export default function Likes({
     }
   }
 
-  return (
-    <div className="-mt-0.5">
-      {interactive ? (
-        <>
-          <button id={buttonId} onClick={toggleLike} className="inline-block mr-1.5">
-            {currentUserLike ? (
-              <FaHeart className="inline-block mr-1.5 text-red-300 text-sm" />
-            ) : (
-              <FaRegHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
-            )}
+  return interactive ? (
+    <div className="flex items-center">
+      <button id={buttonId} onClick={toggleLike} className="flex items-center mr-1.5">
+        {currentUserLike ? (
+          <FaHeart className="mr-1.5 text-red-300 text-sm" />
+        ) : (
+          <FaRegHeart className="mr-1.5 text-gray-500 text-sm" />
+        )}
 
-            {(likeCount || likeCount === 0) && (
-              <span className="inline-block text-sm text-gray-300">{likeCount}</span>
-            )}
-          </button>
-          {likedByNames && likedByNames.length > 0 && (
-            <Tooltip anchorSelect={`#${buttonId}`} className="text-sm font-mulish">
-              {likedByNamesToShow.map((name) => (
-                <div key={name}>{name}</div>
-              ))}
-              {likedByNamesRemaining > 0 && (
-                <div>
-                  & {likedByNamesRemaining} other{likedByNamesRemaining > 1 ? "s" : ""}
-                </div>
-              )}
-            </Tooltip>
+        {(likeCount || likeCount === 0) && (
+          <span className="text-sm text-gray-300 font-mulish">{likeCount}</span>
+        )}
+      </button>
+      {likedByNames && likedByNames.length > 0 && (
+        <Tooltip anchorSelect={`#${buttonId}`} className="text-sm font-mulish">
+          {likedByNamesToShow.map((name) => (
+            <div key={name}>{name}</div>
+          ))}
+          {likedByNamesRemaining > 0 && (
+            <div>
+              & {likedByNamesRemaining} other{likedByNamesRemaining > 1 ? "s" : ""}
+            </div>
           )}
-        </>
-      ) : (
-        <>
-          <FaHeart className="inline-block mr-1.5 text-gray-500 text-sm" />
-          {(likeCount || likeCount === 0) && (
-            <span className="inline-block text-sm text-gray-300">{likeCount}</span>
-          )}
-        </>
+        </Tooltip>
       )}
+    </div>
+  ) : (
+    <div className="flex items-center">
+      <FaHeart className="mr-1.5 text-gray-500 text-sm" />
+      {(likeCount || likeCount === 0) && <span className="text-sm text-gray-300 font-mulish">{likeCount}</span>}
     </div>
   )
 }

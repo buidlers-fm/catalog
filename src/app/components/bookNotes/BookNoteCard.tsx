@@ -154,7 +154,7 @@ export default function BookNoteCard({
               )}
             </div>
           )}
-          <div className="my-3 flex">
+          <div className="flex items-center my-3">
             <Likes
               interactive={!!currentUserProfile}
               likedObject={note}
@@ -162,10 +162,10 @@ export default function BookNoteCard({
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />
-            <div className="-mt-0.5 ml-4">
-              <Link href={getNoteLink(id)} className="">
-                <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
-                {comments && <span className="text-sm text-gray-300">{comments.length}</span>}
+            <div className="ml-4">
+              <Link href={getNoteLink(id)} className="flex items-center">
+                <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+                {comments && <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>}
               </Link>
             </div>
           </div>

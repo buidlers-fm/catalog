@@ -143,7 +143,7 @@ export default function BookLinkPostCard({
             </div>
           )}
 
-          <div className="my-3 flex">
+          <div className="flex items-center my-3">
             <Likes
               interactive={!!currentUserProfile}
               likedObject={post}
@@ -151,11 +151,11 @@ export default function BookLinkPostCard({
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />
-            <div className="-mt-0.5 ml-4">
-              <Link href={getPostLink(id)} className="">
-                <FaRegComment className="inline-block mr-1.5 text-gray-500 text-md" />
+            <div className="ml-4">
+              <Link href={getPostLink(id)} className="flex items-center">
+                <FaRegComment className="mr-1.5 text-gray-500 text-md" />
                 {comments && (
-                  <span className="text-sm text-gray-300">{commentCount || comments.length}</span>
+                  <span className="text-sm text-gray-300 font-mulish">{commentCount || comments.length}</span>
                 )}
               </Link>
             </div>
