@@ -29,6 +29,10 @@ export default function HomeTabs() {
       name: "recent notes",
       href: "/home/notes/recent",
     },
+    {
+      name: "leaderboard",
+      href: "/home/leaderboard",
+    },
   ]
 
   function isCurrentTab(tab) {

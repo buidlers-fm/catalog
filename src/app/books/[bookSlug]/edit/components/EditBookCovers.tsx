@@ -140,14 +140,7 @@ export default function EditBookCovers({ book }) {
   return (
     <div className="my-8 mx-8 sm:mx-16 ml:max-w-4xl ml:mx-auto font-mulish">
       <div className="mb-8 w-3/4">
-        <div className="mb-4">
-          Please only change the cover if the existing cover is missing or wrong, not just because
-          you prefer a different one. We'll figure out a way to handle cover preferences later on.
-        </div>
-        <div>
-          A cover in the book's original language OR in English is best (though in any language is
-          better than no cover at all).
-        </div>
+        <div className="mb-4">See cover guidelines below.</div>
       </div>
       <div className="flex flex-col sm:flex-row gap-16">
         <div className="">
@@ -282,6 +275,28 @@ export default function EditBookCovers({ book }) {
           {urlErrorMessage && <div className="text-red-500">{urlErrorMessage}</div>}
         </div>
       )}
+
+      <div className="text-sm text-gray-300">
+        <div className="mb-4">cover guidelines:</div>
+        <div className="mb-4">
+          Please only change the cover if the existing cover is missing or wrong, and not because
+          you prefer a different one. We'll figure out a way to handle cover preferences later on.
+        </div>
+        <div className="mb-4">
+          A cover in the book's original language OR in English is best (though in any language is
+          better than no cover at all).
+        </div>
+        <div className="mb-4">
+          A digital image of the cover is preferable to a scan or photo of a physical book. In some
+          cases this can conflict with the point above, if the best cover available also happens to
+          be a scan. That's OK, use your judgment!
+        </div>
+        <div className="mb-4">
+          An image from URL should be preferably at least 512 pixels on one side, but must be no
+          larger than 2000x2000 pixels. Use the best quality image you can find within those
+          dimensions.
+        </div>
+      </div>
 
       <button
         type="button"
