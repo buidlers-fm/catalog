@@ -143,8 +143,10 @@ export default function EditBook({ book }) {
 
   return (
     <div className="my-8 mx-8 sm:mx-16 ml:max-w-3xl ml:mx-auto font-mulish">
+      Please use English for all fields below, except for original title if it's in a different
+      language.
       <form onSubmit={handleSubmit(submit)}>
-        <div className="my-8">
+        <div className="my-8 w-96">
           <FormInput
             labelText="slug (not editable for now)"
             name="slug"
@@ -181,6 +183,7 @@ export default function EditBook({ book }) {
           />
           <FormInput
             labelText="author name"
+            descriptionText="Please use a romanized (Latin alphabet) spelling of the author name if it's in a different alphabet. Accent marks and diacritics are fine."
             name="authorName"
             type="text"
             formProps={register("authorName", validations.authorName)}
@@ -211,7 +214,7 @@ export default function EditBook({ book }) {
 
           <FormInput
             labelText="original title"
-            descriptionText="The title in the book's original language."
+            descriptionText="The title in the book's original language. If the book is originally in English, this should be the same as the title above."
             name="originalTitle"
             type="text"
             formProps={register("originalTitle", validations.originalTitle)}
