@@ -1,4 +1,4 @@
-last updated: january 26, 2024.
+last updated: february 2, 2024.
 
 # big things for jan-feb 2024
 
@@ -7,7 +7,7 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 - ✅ In-app notifications for likes, comments, etc.
 - ✅ Comment on all the things (including on other comments, in some cases).
 - ✅ Instead of just link posts, book posts can have text and become full discussion threads.
-- ⌛️ Allow catalog users to edit book details and covers, and add new books.
+- 🛠️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
 
@@ -16,6 +16,22 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## january 29 - february 4, 2024
+
+Main things:
+
+- Users can edit book details and covers
+  - (Not done yet: ability to add a new book; syncing back to OpenLibrary)
+- User profile shows the user's edit history
+- Added a leaderboard of users who have edited the most books
+
+Small fixes/improvements:
+
+- @-mentions: Fixed bug when @-mentioning someone on mobile
+- Search: Expand search to allow results from OpenLibrary that have an OCLC or LCCN code but no ISBN (previously all results required an ISBN)
+- Search: Strip leading articles from search term for (hopefully) better search results
+- Various styling tweaks
 
 ## january 22-28, 2024
 
