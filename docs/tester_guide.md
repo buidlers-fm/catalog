@@ -25,6 +25,9 @@ If you have any questions or run into any issues, let us know. We have a [Discor
 **Shelves vs. lists:**
 You don't need to create lists like "currently reading" or "to read", as you can use shelves for that, which include: **to read**, **up next**, **currently reading**, **read**, and **abandoned**. Shelves are a little different from lists in that everyone has the same set of shelves, they show up differently on your profile, and eventually they can have different privacy settings from your lists (for example, if you want private reading-tracking but public curation). At the moment, you can shelve a book by going to the book's page and clicking "shelves" (the bookmark icon), but we will be adding more convenient ways to shelve a book from anywhere, as well as more convenient ways to move a book from one shelf to the next. (You may find you prefer to use lists for everything anyway, which is totally fine!)
 
+**Notes vs. posts:**
+What the heck is the difference between a book note, and a (post/thread/conversation)? The best way to think of it is a "personal" vs. "public" distinction. The two look and feel somewhat similar now (and both are public right now), but over time they'll grow more into this distinction, where notes are for yourself and/or your friends who want to keep up with what you're reading and thinking (though you can keep them public if you want), and best for capturing quotes or your brief thoughts during/after your reading of the book. Whereas posts will be public and best for starting discussions (more like a Reddit thread), which is why posts can be much longer in length and support nested comments. If you want to share your review of a book, which should you use? If you're comfortable with (or prefer) the idea of strangers upvoting and responding to your review, use a post (click "start a thread" from the book's page). If you'd rather keep it close to home, use a note (click "add note or log" from the book's page).
+
 **Read dates and reading history:**
 If you add read dates to a book at any point (go to the book's page, click "add note or log"), they won't show up anywhere right now, but they'll be recorded and eventually we will be able to show them in a timeline of your reading history. So in the meantime, you can certainly create lists like "read in 2024" as many people have been doing, but just know that you can also use read dates instead of or in addition to lists, when it comes to tracking _when_ you read a book. To log a reread for a book that already has a finished date or that has been marked read, just add a new log with a new set of dates.
 
@@ -34,9 +37,9 @@ For our book search, and for all the book details you see, including titles, aut
 
 As such, you can expect to see lots of imperfections and weird things in the search results and book details: wonky capitalization, missing descriptions or covers, descriptions that are randomly in another language, cover images that are just a photo of an actual book, and more! Oh, and everything is a little wonkier for books whose original language is not English.
 
-But take heart: we will soon let you edit book details, and add/change cover images, so that you can fix whatever bothers you. And we hope that there will be books for which you find it worthwhile to do so. (See the note about OpenLibrary near the bottom of this page, for more on why you might do so.)
+But! You can edit book details, and add/change cover images, so that you can fix whatever bothers you. (Click "edit this book" from a book's page.) And we hope that there will be books for which you find it worthwhile to do so. (See the note about OpenLibrary near the bottom of this page, for more on why you might do so.)
 
-In the meantime, one tangible thing you can do to help: when you search for a book and get duplicate results (multiple results that all seem more or less correct), try to choose the "best" record (often the one with the most editions, or that has a cover image or the most filled-out details) as the one you interact with. Sometimes it's really not clear which one is the "best" record, and that's okay! But our system is set up to "learn" which book results are the best based on which ones you interact with (i.e., add to your lists/shelves or write notes about, etc), so you can help us filter for the best results just by paying extra attention to this as you use catalog.
+Another tangible thing you can do to help: when you search for a book and get duplicate results (multiple results that all seem more or less correct), try to choose the "best" record (often the one with the most editions, or that has a cover image or the most filled-out details) as the one you interact with. Sometimes it's really not clear which one is the "best" record, and that's okay! But our system is set up to "learn" which book results are the best based on which ones you interact with (i.e., add to your lists/shelves or write notes about, etc), so you can help us filter for the best results just by paying extra attention to this as you use catalog.
 
 # bugs and errors
 
@@ -70,7 +73,15 @@ Add links to books you're reading or thinking about (via "add a link" on the boo
 
 Whenever you're mentioning a book in a digital conversation, consider sharing the catalog.fyi book link instead of the Amazon link! For more of our thoughts on the topic of book links and their implications, you can read our newsletter post on it [here](https://catalog.fyi/news/catalog-news-003-the-book-link).
 
-(Eventually, when we've enabled this) Help us improve our books by adding and fixing book details and covers on books you care about. Particularly once we've worked out a way to sync our book data and edits back to OpenLibrary, your contributions here could affect _millions_ of people around the world.
+Help us improve our books by adding and fixing book details and covers on books you care about. Particularly once we've worked out a way to sync our book data and edits back to OpenLibrary (not implemented yet), your contributions here could affect _millions_ of people around the world.
 
 love,
 rory & glenn
+
+# appendix: troubleshooting
+
+**I'm getting an error when visiting any page on catalog, but it works from another device/browser or from an incognito tab.**
+Try clearing your cookies for catalog.fyi specifically (you can look up instructions for how to clear cookies or site data for a single site for your browser; it will also work if you clear ALL of your cookies, but it means you'll get logged out of every site you use!).
+
+**I'm having trouble resetting my password.**
+If you're not receiving the password reset email, check your spam folder; it's an automated email that's sent from rory@catalog.fyi. If you are receiving the email but you get an error when you click the link: it's best to try resetting your password from a desktop/laptop rather than a phone or tablet. If you're still having trouble, email rory@catalog.fyi and I'll set a temporary password for you, so that you can sign back in and change your password there.

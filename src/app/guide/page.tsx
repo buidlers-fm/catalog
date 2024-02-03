@@ -78,6 +78,10 @@ const sections = [
     title: "how to be a ⭐️ beta tester",
     href: "#how-to-be-a--beta-tester",
   },
+  {
+    title: "troubleshooting",
+    href: "#appendix-troubleshooting",
+  },
 ]
 
 export default function GuidePage() {
