@@ -60,7 +60,7 @@ export default function BookNoteCard({
     creatorLikedBook,
     comments,
     hasSpoilers,
-    saveId
+    saveId,
   } = note
 
   const creator = UserProfile.build(_creator)
@@ -202,14 +202,14 @@ export default function BookNoteCard({
               )}
             </div>
             {currentUserProfile && id && (
-                <div className="ml-4">
-                  <SaveBookmark
-                    savedObjectType={CommentParentType.Note}
-                    savedObjectId={id}
-                    saveId={saveId}
-                  />
-                </div>
-              )}
+              <div className="ml-4">
+                <SaveBookmark
+                  savedObjectType={CommentParentType.Note}
+                  savedObjectId={id}
+                  saveId={saveId}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
