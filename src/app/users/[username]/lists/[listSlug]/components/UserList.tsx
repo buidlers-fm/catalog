@@ -94,6 +94,8 @@ export default function UserList({
     setActiveView(_view)
   }
 
+  const replyAnchorId = "reply"
+
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto">
       <div className="sm:flex sm:items-start">
@@ -130,15 +132,20 @@ export default function UserList({
         />
 
         <div className="ml-4">
-          <Link href="#comments" className="flex items-center">
-            <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-            {comments && (
-              <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
-            )}
-          </Link>
+          <div className="flex items-center font-mulish text-sm text-gray-300">
+            <Link href="#comments" className="flex items-center">
+              <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+              {comments && (
+                <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+              )}
+            </Link>
+            <a href={`#${replyAnchorId}`} className="ml-4 border-b border-b-gray-300">
+              reply
+            </a>
+          </div>
         </div>
       </div>
-      <div className="sm:my-4">
+      <div className="my-4">
         <CustomMarkdown markdown={description} />
       </div>
       <div className="flex justify-end">
@@ -188,7 +195,7 @@ export default function UserList({
           )}
 
           {currentUserProfile && (
-            <div className="mt-8 font-mulish">
+            <div id={replyAnchorId} className="mt-8 font-mulish">
               <div className="-mb-2">reply</div>
               <EditComment
                 parentId={listId}

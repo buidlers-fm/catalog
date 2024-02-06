@@ -37,6 +37,8 @@ export default function Note({ note, currentUserProfile }) {
     router.back()
   }
 
+  const replyAnchorId = "reply"
+
   return (
     <div className="my-8 mx-8 ml:max-w-3xl ml:mx-auto">
       <BookNoteCard
@@ -44,6 +46,7 @@ export default function Note({ note, currentUserProfile }) {
         currentUserProfile={currentUserProfile}
         onEditSuccess={handleEditSuccess}
         onDeleteSuccess={handleDeleteSuccess}
+        commentsAnchorId={replyAnchorId}
       />
 
       {comments.length > 0 && (
@@ -60,7 +63,7 @@ export default function Note({ note, currentUserProfile }) {
       )}
 
       {currentUserProfile && (
-        <div className="mt-8 font-mulish">
+        <div id={replyAnchorId} className="mt-8 font-mulish">
           <div className="-mb-2">reply</div>
           <EditComment
             parentId={note.id}
