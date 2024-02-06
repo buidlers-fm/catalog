@@ -16,7 +16,6 @@ import Likes from "app/components/Likes"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import EditComment from "app/components/comments/EditComment"
 import CommentCard from "app/components/comments/CommentCard"
-import EmptyState from "app/components/EmptyState"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import UserProfile from "lib/models/UserProfile"
@@ -133,7 +132,9 @@ export default function UserList({
         <div className="ml-4">
           <Link href="#comments" className="flex items-center">
             <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-            {comments && <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>}
+            {comments && (
+              <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+            )}
           </Link>
         </div>
       </div>
@@ -173,7 +174,7 @@ export default function UserList({
         <div id="comments" className="mt-24">
           <hr className="my-12 h-[1px] border-none bg-gray-800" />
 
-          {comments.length > 0 ? (
+          {comments.length > 0 && (
             <div className="mt-16">
               {comments.map((comment) => (
                 <CommentCard
@@ -184,8 +185,6 @@ export default function UserList({
                 />
               ))}
             </div>
-          ) : (
-            <EmptyState text="No comments yet." />
           )}
 
           {currentUserProfile && (

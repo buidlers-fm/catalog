@@ -6,7 +6,6 @@ import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import EditComment from "app/components/comments/EditComment"
-import EmptyState from "app/components/EmptyState"
 import CommentCard from "app/components/comments/CommentCard"
 import CommentParentType from "enums/CommentParentType"
 
@@ -47,7 +46,7 @@ export default function Note({ note, currentUserProfile }) {
         onDeleteSuccess={handleDeleteSuccess}
       />
 
-      {comments.length > 0 ? (
+      {comments.length > 0 && (
         <div className="mt-8">
           {comments.map((comment) => (
             <CommentCard
@@ -58,8 +57,6 @@ export default function Note({ note, currentUserProfile }) {
             />
           ))}
         </div>
-      ) : (
-        <EmptyState text="No comments yet." />
       )}
 
       {currentUserProfile && (
