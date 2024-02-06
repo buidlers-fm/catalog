@@ -5,6 +5,7 @@ import FormattingReferenceTooltip from "app/components/FormattingReferenceToolti
 
 type Props = {
   labelText?: string
+  descriptionText?: string
   name: string
   type: string
   formProps?: any
@@ -18,6 +19,7 @@ type Props = {
 
 export default function FormTextarea({
   labelText,
+  descriptionText,
   name,
   type,
   rows = 3,
@@ -51,6 +53,7 @@ export default function FormTextarea({
           <label htmlFor={name}>{labelText}</label>
         </div>
       )}
+      {descriptionText && <div className="mb-2 text-sm text-gray-200">{descriptionText}</div>}
       <div className={`${fullWidth ? "w-full" : "w-full xs:w-96"}`}>
         {atMentionsEnabled ? (
           <AtMentions

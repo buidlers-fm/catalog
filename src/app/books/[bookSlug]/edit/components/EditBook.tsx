@@ -194,6 +194,7 @@ export default function EditBook({ book }) {
 
           <FormTextarea
             labelText="description"
+            descriptionText="Use the publisher's description, or the Wikipedia summary, or something comparable in tone to either. But please don't include any marketing blurbs (quotes from authors or reviewers)."
             name="description"
             type="text"
             formProps={register("description", validations.description)}
