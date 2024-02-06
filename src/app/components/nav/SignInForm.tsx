@@ -58,11 +58,6 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-      <div className="-mt-4 mb-6 text-sm">
-        <button onClick={() => toggleAuth(AuthForm.ForgotPassword)} className="cat-link">
-          forgot password?
-        </button>
-      </div>
       <button
         className="cat-btn cat-btn-gold my-2"
         onClick={handleSubmit}
@@ -71,6 +66,13 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
         Sign in
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}
+
+      <div className="mt-4 mb-6 text-sm">
+        <button onClick={() => toggleAuth(AuthForm.ForgotPassword)} className="cat-link">
+          forgot password?
+        </button>
+      </div>
+
       {/* disabling general sign up */}
       <div className="hidden">
         Don't have an account?{" "}

@@ -9,7 +9,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>()
-  const [successMessage, setSuccessMessage] = useState<string>()
+  const [success, setSuccess] = useState<boolean>(false)
 
   const validateInput = () => {
     if (!email) {
@@ -25,9 +25,7 @@ export default function ForgotPassword() {
       validateInput()
       await sendPasswordResetEmail(email)
 
-      setSuccessMessage(
-        "Password reset request submitted! Check your email for a link to reset your password.",
-      )
+      setSuccess(true)
     } catch (error: any) {
       setErrorMessage(error.message)
     }
@@ -37,13 +35,30 @@ export default function ForgotPassword() {
 
   return (
     <div className="my-8">
-      {successMessage ? (
-        <div className="my-24">{successMessage}</div>
+      {success ? (
+        <div className="my-24">
+          Password reset request submitted! Check your email for a link to reset your password. If
+          you don't see the email, check your spam folder.
+          <div className="mt-4">
+            Note: The link must be opened in the same browser where you are viewing this page.
+          </div>
+          <div className="mt-4">
+            If you still don't see the email or are having trouble resetting your password, please{" "}
+            <a href="mailto:staff@catalog.fyi" className="underline">
+              contact us
+            </a>
+            .
+          </div>
+        </div>
       ) : (
         <div>
           <div className="mb-8">
             We'll send a password reset link to your email address, if an account exists for that
             email.
+            <div className="mt-4">
+              (For best results, submit this request <span className="italic">and</span> open the
+              email link on a desktop or laptop computer, not a phone or tablet.)
+            </div>
           </div>
           <FormInput
             labelText="email address"
