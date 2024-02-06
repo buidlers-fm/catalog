@@ -40,7 +40,6 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     isTranslated,
     originalTitle,
     wikipediaUrl,
-    edited: true,
   }
 
   const changedFields: string[] = []

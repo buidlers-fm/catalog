@@ -16,7 +16,6 @@ import Likes from "app/components/Likes"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import EditComment from "app/components/comments/EditComment"
 import CommentCard from "app/components/comments/CommentCard"
-import EmptyState from "app/components/EmptyState"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import UserProfile from "lib/models/UserProfile"
@@ -95,6 +94,8 @@ export default function UserList({
     setActiveView(_view)
   }
 
+  const replyAnchorId = "reply"
+
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto">
       <div className="sm:flex sm:items-start">
@@ -131,13 +132,20 @@ export default function UserList({
         />
 
         <div className="ml-4">
-          <Link href="#comments" className="flex items-center">
-            <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-            {comments && <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>}
-          </Link>
+          <div className="flex items-center font-mulish text-sm text-gray-300">
+            <Link href="#comments" className="flex items-center">
+              <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+              {comments && (
+                <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+              )}
+            </Link>
+            <a href={`#${replyAnchorId}`} className="ml-4 border-b border-b-gray-300">
+              reply
+            </a>
+          </div>
         </div>
       </div>
-      <div className="sm:my-4">
+      <div className="my-4">
         <CustomMarkdown markdown={description} />
       </div>
       <div className="flex justify-end">
@@ -173,7 +181,7 @@ export default function UserList({
         <div id="comments" className="mt-24">
           <hr className="my-12 h-[1px] border-none bg-gray-800" />
 
-          {comments.length > 0 ? (
+          {comments.length > 0 && (
             <div className="mt-16">
               {comments.map((comment) => (
                 <CommentCard
@@ -184,12 +192,10 @@ export default function UserList({
                 />
               ))}
             </div>
-          ) : (
-            <EmptyState text="No comments yet." />
           )}
 
           {currentUserProfile && (
-            <div className="mt-8 font-mulish">
+            <div id={replyAnchorId} className="mt-8 font-mulish">
               <div className="-mb-2">reply</div>
               <EditComment
                 parentId={listId}

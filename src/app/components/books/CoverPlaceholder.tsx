@@ -1,5 +1,5 @@
 import { GiOpenBook } from "react-icons/gi"
-import { truncateString } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 
 export default function CoverPlaceholder({
   sizeClasses: _sizeClasses,

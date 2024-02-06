@@ -6,7 +6,6 @@ import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import BookPostCard from "app/components/bookPosts/BookPostCard"
 import EditComment from "app/components/comments/EditComment"
-import EmptyState from "app/components/EmptyState"
 import CommentSection from "app/components/comments/CommentSection"
 import CommentParentType from "enums/CommentParentType"
 
@@ -61,11 +60,11 @@ export default function Post({ post, currentUserProfile }) {
               showFormattingReferenceTooltip
             />
           </div>
-          <hr className="my-12 h-[1px] border-none bg-gray-800" />
+          {comments.length > 0 && <hr className="my-12 h-[1px] border-none bg-gray-800" />}
         </>
       )}
 
-      {comments.length > 0 ? (
+      {comments.length > 0 && (
         <div className="mt-8">
           {comments.map((comment) => (
             <CommentSection
@@ -76,8 +75,6 @@ export default function Post({ post, currentUserProfile }) {
             />
           ))}
         </div>
-      ) : (
-        <EmptyState text="No comments yet." />
       )}
     </div>
   )

@@ -7,7 +7,7 @@ import { FaHeart, FaRegComment } from "react-icons/fa"
 import { MdEdit } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import UserProfile from "lib/models/UserProfile"
+import UserProfile, { UserProfileProps } from "lib/models/UserProfile"
 import { getBookLink, getNoteLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
@@ -26,13 +26,23 @@ const { longAmericanDate: timestampFormat } = dateTimeFormats
 
 const TEXT_TRUNCATE_LENGTH = 500
 
+type Props = {
+  note: any
+  withCover?: boolean
+  commentsAnchorId?: string
+  currentUserProfile?: UserProfileProps
+  onEditSuccess: () => void
+  onDeleteSuccess: () => void
+}
+
 export default function BookNoteCard({
   note,
   withCover = true,
+  commentsAnchorId,
   currentUserProfile,
   onEditSuccess,
   onDeleteSuccess,
-}) {
+}: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
 
   const {
@@ -97,10 +107,10 @@ export default function BookNoteCard({
           </>
         )}
         <div className="grow">
-          <div className="flex flex-col xs:flex-row relative">
+          <div className="flex flex-col sm:flex-row relative">
             <NameWithAvatar userProfile={creator} />
 
-            <div className="xs:my-2 xs:ml-2 text-gray-500 text-sm font-mulish">
+            <div className="sm:my-2 sm:ml-2 text-gray-500 text-sm font-mulish">
               {readingStatus && readingStatus !== BookNoteReadingStatus.None && (
                 <span
                   className={`mr-2 inline-block mb-1 text-sm font-bold ${readingStatusColors[readingStatus]}`}
@@ -163,10 +173,24 @@ export default function BookNoteCard({
               currentUserLike={currentUserLike}
             />
             <div className="ml-4">
-              <Link href={getNoteLink(id)} className="flex items-center">
-                <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-                {comments && <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>}
-              </Link>
+              {commentsAnchorId ? (
+                <div className="flex items-center font-mulish text-sm text-gray-300">
+                  <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+                  {comments && (
+                    <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+                  )}
+                  <a href={`#${commentsAnchorId}`} className="ml-4 border-b border-b-gray-300">
+                    reply
+                  </a>
+                </div>
+              ) : (
+                <Link href={getNoteLink(id)} className="flex items-center">
+                  <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+                  {comments && (
+                    <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+                  )}
+                </Link>
+              )}
             </div>
           </div>
         </div>

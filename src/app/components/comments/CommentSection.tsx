@@ -35,7 +35,7 @@ export default function CommentSection({ comment: _comment, currentUserProfile, 
         isReplying={isReplying}
         onClickReply={() => setIsReplying(true)}
       />
-      <div className="ml-12">
+      <div className="ml-6 xs:ml-12">
         {isReplying && (
           <EditComment
             parentId={comment.id}

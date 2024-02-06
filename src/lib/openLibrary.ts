@@ -1,7 +1,8 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { reportToSentry } from "lib/sentry"
-import { fetchJson, isSameLanguage } from "lib/helpers/general"
+import { fetchJson } from "lib/helpers/general"
+import { isSameLanguage, prepStringForSearch } from "lib/helpers/strings"
 import CoverSize from "enums/CoverSize"
 import type Book from "types/Book"
 
@@ -216,7 +217,9 @@ const OpenLibrary = {
       return pubDateA.isAfter(pubDateB) ? 1 : -1
     }),
 
-  search: async (searchString: string, { includeEditions = false, limit = 3 }) => {
+  search: async (_searchString: string, { includeEditions = false, limit = 3 }) => {
+    const searchString = prepStringForSearch(_searchString)
+
     let searchFields = [
       "key",
       "title",

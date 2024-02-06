@@ -20,8 +20,8 @@ import {
   getBookNotesLink,
   getBookPostsLink,
   getBookListsLink,
-  joinStringsWithAnd,
 } from "lib/helpers/general"
+import { joinStringsWithAnd } from "lib/helpers/strings"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
@@ -609,7 +609,7 @@ export default function BookPage({
                     onClick={() => setShowNewBookPostModal(true)}
                     className="cat-btn cat-btn-sm cat-btn-gray mx-2"
                   >
-                    + create a thread
+                    +<span className="hidden xs:inline"> create a thread</span>
                   </button>
                 )}
                 <Link
@@ -637,7 +637,7 @@ export default function BookPage({
                     ))}
                   </div>
                 ) : (
-                  <EmptyState text="No links yet." />
+                  <EmptyState text="No conversations yet." />
                 )
               ) : (
                 <LoadingSection />

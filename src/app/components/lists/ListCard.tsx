@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { GiOpenBook } from "react-icons/gi"
 import { FaComment } from "react-icons/fa"
-import { truncateString } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"

@@ -4,7 +4,8 @@ import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { GiOpenBook } from "react-icons/gi"
-import { getBookLink, truncateString } from "lib/helpers/general"
+import { getBookLink } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 import BookTooltip from "app/components/books/BookTooltip"
 
 const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })

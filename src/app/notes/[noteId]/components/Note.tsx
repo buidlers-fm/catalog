@@ -6,7 +6,6 @@ import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import EditComment from "app/components/comments/EditComment"
-import EmptyState from "app/components/EmptyState"
 import CommentCard from "app/components/comments/CommentCard"
 import CommentParentType from "enums/CommentParentType"
 
@@ -38,6 +37,8 @@ export default function Note({ note, currentUserProfile }) {
     router.back()
   }
 
+  const replyAnchorId = "reply"
+
   return (
     <div className="my-8 mx-8 ml:max-w-3xl ml:mx-auto">
       <BookNoteCard
@@ -45,9 +46,10 @@ export default function Note({ note, currentUserProfile }) {
         currentUserProfile={currentUserProfile}
         onEditSuccess={handleEditSuccess}
         onDeleteSuccess={handleDeleteSuccess}
+        commentsAnchorId={replyAnchorId}
       />
 
-      {comments.length > 0 ? (
+      {comments.length > 0 && (
         <div className="mt-8">
           {comments.map((comment) => (
             <CommentCard
@@ -58,12 +60,10 @@ export default function Note({ note, currentUserProfile }) {
             />
           ))}
         </div>
-      ) : (
-        <EmptyState text="No comments yet." />
       )}
 
       {currentUserProfile && (
-        <div className="mt-8 font-mulish">
+        <div id={replyAnchorId} className="mt-8 font-mulish">
           <div className="-mb-2">reply</div>
           <EditComment
             parentId={note.id}

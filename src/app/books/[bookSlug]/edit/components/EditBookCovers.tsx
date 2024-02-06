@@ -125,6 +125,7 @@ export default function EditBookCovers({ book }) {
 
       setCurrentCoverUrl(selectedCoverUrl!)
       setSelectedCoverUrl(undefined)
+      setUrlInput("")
     } catch (error: any) {
       toast.error("Hmm, something went wrong.", { id: toastId })
 
@@ -218,11 +219,11 @@ export default function EditBookCovers({ book }) {
                 <div className="px-4 py-4 flex flex-wrap gap-4 max-h-96 overflow-auto bg-gray-900 rounded">
                   {openLibraryCoverUrls.map((coverUrl) => (
                     <div key={coverUrl} className="w-48">
-                      <button onClick={() => selectCover(coverUrl)}>
+                      <button type="button" onClick={() => selectCover(coverUrl)}>
                         <img
                           src={coverUrl}
                           alt="cover"
-                          className={`w-full mx-auto shadow-md rounded-md border-2 ${
+                          className={`w-full mx-auto p-1 rounded-md border-2 ${
                             isSelectedCover(coverUrl) ? "border-white" : "border-transparent"
                           } hover:border-white`}
                         />
@@ -259,7 +260,7 @@ export default function EditBookCovers({ book }) {
               name="selectedCoverUrl"
               type="text"
               className="grow px-3 pt-3 pb-2 bg-gray-900 focus:outline-gold-500 disabled:text-gray-500 rounded border-none"
-              placeholder="https://"
+              placeholder="https://example.com/image.jpg"
               value={urlInput}
               onChange={handleUrlInputChange}
             />
@@ -279,8 +280,9 @@ export default function EditBookCovers({ book }) {
       <div className="text-sm text-gray-300">
         <div className="mb-4">cover guidelines:</div>
         <div className="mb-4">
-          Please only change the cover if the existing cover is missing or wrong, and not because
-          you prefer a different one. We'll figure out a way to handle cover preferences later on.
+          Please only change the cover if the existing cover is missing, wrong, of poor image
+          quality, or doesn't adhere to these guidelines, and not because you prefer a different
+          one. We'll figure out a way to handle cover preferences later on.
         </div>
         <div className="mb-4">
           A cover in the book's original language OR in English is best (though in any language is
@@ -292,7 +294,7 @@ export default function EditBookCovers({ book }) {
           be a scan. That's OK, use your judgment!
         </div>
         <div className="mb-4">
-          An image from URL should be preferably at least 512 pixels on one side, but must be no
+          An image from URL should be preferably at least 500 pixels on one side, but must be no
           larger than 2000x2000 pixels. Use the best quality image you can find within those
           dimensions.
         </div>
