@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { Tooltip } from "react-tooltip"
 import { isMobile } from "react-device-detect"
-import { truncateString, getBookLink } from "lib/helpers/general"
+import { getBookLink } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 
 export default function BookTooltip({ book, anchorSelect: _anchorSelect }) {
   const anchorSelect = _anchorSelect || `#book-${book.id}`

@@ -1,4 +1,4 @@
-import * as Helpers from "lib/helpers/general"
+import * as Helpers from "lib/helpers/strings"
 
 describe("truncateString", () => {
   const { truncateString } = Helpers

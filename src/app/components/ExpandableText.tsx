@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { truncateString } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 import CustomMarkdown from "app/components/CustomMarkdown"
 
 export default function ExpandableText({ text, maxChars = 500, expanded = false }) {

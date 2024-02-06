@@ -6,7 +6,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { GiOpenBook } from "react-icons/gi"
 import { BsXLg } from "react-icons/bs"
 import { RxDragHandleDots2 } from "react-icons/rx"
-import { truncateString } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 import validations from "lib/constants/validations"
 import FormTextarea from "app/components/forms/FormTextarea"
 

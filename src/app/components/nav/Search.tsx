@@ -11,7 +11,7 @@ import api from "lib/api"
 import search from "lib/search/books"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
-import { truncateString } from "lib/helpers/general"
+import { truncateString, prepStringForSearch } from "lib/helpers/strings"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import type Book from "types/Book"
 
@@ -95,8 +95,10 @@ export default function Search({
     }
   }
 
-  const searchBooks = async (searchString: string) => {
-    if (searchString.length < 3) return
+  const searchBooks = async (_searchString: string) => {
+    if (_searchString.length < 3) return
+
+    const searchString = prepStringForSearch(_searchString)
 
     setIsSearching(true)
 

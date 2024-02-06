@@ -1,12 +1,7 @@
 import Link from "next/link"
 import CustomMarkdown from "app/components/CustomMarkdown"
-import {
-  getUserProfileLink,
-  getListLink,
-  getPostLink,
-  getNoteLink,
-  truncateString,
-} from "lib/helpers/general"
+import { getUserProfileLink, getListLink, getPostLink, getNoteLink } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import NotificationType from "enums/NotificationType"

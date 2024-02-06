@@ -20,8 +20,8 @@ import {
   getBookNotesLink,
   getBookPostsLink,
   getBookListsLink,
-  joinStringsWithAnd,
 } from "lib/helpers/general"
+import { joinStringsWithAnd } from "lib/helpers/strings"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
