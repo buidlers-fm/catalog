@@ -637,7 +637,7 @@ export default function BookPage({
                     ))}
                   </div>
                 ) : (
-                  <EmptyState text="No links yet." />
+                  <EmptyState text="No conversations yet." />
                 )
               ) : (
                 <LoadingSection />
