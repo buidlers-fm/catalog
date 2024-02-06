@@ -609,7 +609,7 @@ export default function BookPage({
                     onClick={() => setShowNewBookPostModal(true)}
                     className="cat-btn cat-btn-sm cat-btn-gray mx-2"
                   >
-                    + create a thread
+                    +<span className="hidden xs:inline"> create a thread</span>
                   </button>
                 )}
                 <Link
