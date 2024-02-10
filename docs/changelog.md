@@ -1,4 +1,4 @@
-last updated: february 2, 2024.
+last updated: february 10, 2024.
 
 # big things for jan-feb 2024
 
@@ -16,6 +16,18 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## february 5-11, 2024
+
+Small fixes/improvements:
+
+- Search: fixed bug so that we _actually_ strip leading articles from search term
+- Fixed bug where it would let you log an empty book edit even without changing any fields
+- Updated copy on edit book form to be clearer
+- Improved messaging around password reset and related errors
+- Upgraded to Next.js 14+ to fix some issues caused by Next.js bugs
+- Improved auth error handling (no more "white screen of death")
+- Various other styling, copy, UX tweaks
 
 ## january 29 - february 4, 2024
 
