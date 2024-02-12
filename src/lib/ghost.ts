@@ -1,15 +1,14 @@
-import GhostContentApi from "@tryghost/content-api"
 import GhostAdminApi from "@tryghost/admin-api"
+import { fetchJson } from "lib/helpers/general"
 
 const GHOST_URL = process.env.GHOST_URL!
+const GHOST_CONTENT_API_BASE_URL = `${GHOST_URL}/ghost/api/content/`
 const GHOST_CONTENT_API_KEY = process.env.GHOST_CONTENT_API_KEY!
 const GHOST_ADMIN_API_KEY = process.env.GHOST_ADMIN_API_KEY!
 
-const contentApi = new GhostContentApi({
-  url: GHOST_URL,
-  key: GHOST_CONTENT_API_KEY,
-  version: "v5.0",
-})
+const headers = {
+  "Accept-Version": "v5.0",
+}
 
 const adminApi = new GhostAdminApi({
   url: GHOST_URL,
@@ -18,17 +17,24 @@ const adminApi = new GhostAdminApi({
 })
 
 async function getAllPosts() {
-  const posts = await contentApi.posts.browse({ include: "authors" })
+  const url = `${GHOST_CONTENT_API_BASE_URL}posts?key=${GHOST_CONTENT_API_KEY}&include=authors`
+
+  const { posts } = await fetchJson(url, {
+    headers,
+  })
+
   return posts
 }
 
 async function getPost(slug: string) {
   try {
-    const post = await contentApi.posts.read(
-      { slug },
-      { include: "authors", formats: ["html", "plaintext"] },
-    )
-    return post
+    const url = `${GHOST_CONTENT_API_BASE_URL}posts/slug/${slug}?key=${GHOST_CONTENT_API_KEY}&include=authors&formats=html,plaintext`
+
+    const { posts } = await fetchJson(url, {
+      headers,
+    })
+
+    return posts?.[0]
   } catch (error: any) {
     const ERRORS_TO_IGNORE = [/ValidationError/, /NotFoundError/]
 
