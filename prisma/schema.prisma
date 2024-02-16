@@ -51,7 +51,6 @@ model UserProfile {
   user                 User                      @relation(fields: [userId], references: [id], onDelete: Restrict)
   lists                List[]
   pins                 Pin[]
-  nameSearch           Unsupported("tsvector")?  @default(dbgenerated("to_tsvector('simple'::regconfig, ((COALESCE(username, ''::text) || ' '::text) || COALESCE(display_name, ''::text)))")) @map("name_search")
   bookNotes            BookNote[]
   bookReads            BookRead[]
   currentStatuses      UserCurrentStatus[]
@@ -62,7 +61,6 @@ model UserProfile {
   notifications        Notification[]
   editLogs             EditLog[]
 
-  @@index([nameSearch], type: Gin)
   @@map("user_profiles")
 }
 
@@ -95,7 +93,7 @@ model Book {
   subtitle                 String?
   wikipediaUrl             String?                   @map("wikipedia_url")
   edited                   Boolean                   @default(false)
-  titleAuthorSearch        Unsupported("tsvector")?  @default(dbgenerated("to_tsvector('english'::regconfig, ((((COALESCE(title, ''::text) || ' '::text) || COALESCE(original_title, ''::text)) || ' '::text) || COALESCE(author_name, ''::text)))")) @map("title_author_search")
+  titleAuthorSearch        Unsupported("tsvector")?  @default(dbgenerated("''::tsvector")) @map("title_author_search")
   createdAt                DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime?                 @updatedAt @map("updated_at") @db.Timestamptz(6)
   bookNotes                BookNote[]
