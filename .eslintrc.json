@@ -43,6 +43,7 @@
     ],
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/control-has-associated-label": "off",
     "no-await-in-loop": "off",
     "no-else-return": "off",
     "no-inner-declarations": "off",
