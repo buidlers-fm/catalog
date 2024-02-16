@@ -18,8 +18,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
-      - name: Install dependencies
-        run: yarn
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - name: Install modules
+        run: pnpm install
       - name: Migrate database
         run: npx prisma migrate deploy
         env:

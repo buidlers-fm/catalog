@@ -7,10 +7,6 @@ Make sure to follow the [installation instructions](installations.md) to ensure 
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
 ```
 

@@ -7,7 +7,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
       - name: Install modules
-        run: yarn
+        run: pnpm install
       - name: Run ESLint
-        run: yarn lint
+        run: pnpm lint
