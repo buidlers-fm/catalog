@@ -8,6 +8,26 @@ datasource db {
   directUrl = env("DATABASE_URL_DIRECT")
 }
 
+model Adaptation {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookId         String    @map("book_id") @db.Uuid
+  title          String    @map("title")
+  type           String    @map("type")
+  dateString     String?   @map("date_string")
+  year           Int?      @map("year")
+  posterImageUrl String?   @map("poster_image_url")
+  letterboxdUrl  String?   @map("letterboxd_url")
+  tmdbUrl        String?   @map("tmdb_url")
+  imdbUrl        String?   @map("imdb_url")
+  wikipediaUrl   String?   @map("wikipedia_url")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  book           Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@map("adaptations")
+}
+
 model EditLog {
   id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   editorId         String      @map("editor_id") @db.Uuid
@@ -100,6 +120,7 @@ model Book {
   bookReads                BookRead[]
   userCurrentStatuses      UserCurrentStatus[]
   userShelfAssignments     UserBookShelfAssignment[]
+  adaptations              Adaptation[]
 
   @@index([openLibraryWorkId])
   @@index([titleAuthorSearch], type: Gin)

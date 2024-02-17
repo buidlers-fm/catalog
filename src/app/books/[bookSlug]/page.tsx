@@ -28,6 +28,11 @@ export default async function BookPageBySlug({ params }: any) {
       slug: bookSlug,
     },
     include: {
+      adaptations: {
+        orderBy: {
+          year: "desc",
+        },
+      },
       bookReads: {
         where: {
           readerId: userProfile?.id,

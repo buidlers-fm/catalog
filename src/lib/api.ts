@@ -6,6 +6,30 @@ import CommentParentType from "enums/CommentParentType"
 const prepReqBody = (data) => JSON.stringify(humps.decamelizeKeys(data))
 
 const api = {
+  adaptations: {
+    get: (bookId) => {
+      const params = {
+        bookId,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/adaptations?${queryString}`
+      return fetchJson(url)
+    },
+    create: (requestData) =>
+      fetchJson(`/api/adaptations`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+    update: (adaptationId, requestData) =>
+      fetchJson(`/api/adaptations/${adaptationId}`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
+    delete: (adaptationId) =>
+      fetchJson(`/api/adaptations/${adaptationId}`, {
+        method: "DELETE",
+      }),
+  },
   auth: {
     signUp: (requestData) =>
       fetchJson(`/api/auth/sign-up`, {
@@ -197,6 +221,16 @@ const api = {
       fetchJson(`/api/notifs/mark_all_as_read`, {
         method: "PATCH",
       }),
+  },
+  openGraph: {
+    get: (url) => {
+      const params = {
+        url,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const apiUrl = `/api/open_graph?${queryString}`
+      return fetchJson(apiUrl)
+    },
   },
   pins: {
     create: (requestData) =>

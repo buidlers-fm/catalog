@@ -1,6 +1,6 @@
 type Props = {
   labelText?: string | React.ReactNode
-  name: string
+  name?: string
   type: string
   descriptionText?: string
   accentColor?: string

@@ -52,6 +52,8 @@ export const getBookEditLinkWithQueryString = (queryString: any) => `/books/edit
 
 export const getBookEditCoversLink = (slug: string) => `/books/${slug}/edit/covers`
 
+export const getBookEditAdaptationsLink = (slug: string) => `/books/${slug}/edit/adaptations`
+
 export const getBookListsLink = (slug: string) => `/books/${slug}/lists`
 
 export const getListLink = (userProfile, slug: string) =>
