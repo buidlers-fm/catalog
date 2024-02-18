@@ -2,7 +2,11 @@
 
 import Link from "next/link"
 import { useSelectedLayoutSegment } from "next/navigation"
-import { getBookEditLink, getBookEditCoversLink } from "lib/helpers/general"
+import {
+  getBookEditLink,
+  getBookEditCoversLink,
+  getBookEditAdaptationsLink,
+} from "lib/helpers/general"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -21,6 +25,11 @@ export default function EditBookTabs({ book }) {
       name: "edit cover",
       layoutPath: "covers",
       href: getBookEditCoversLink(book.slug),
+    },
+    {
+      name: "adaptations",
+      layoutPath: "adaptations",
+      href: getBookEditAdaptationsLink(book.slug),
     },
   ]
 

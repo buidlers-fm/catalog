@@ -31,6 +31,18 @@ export default function EditLogCard({ editLog, withCover = true }) {
   const coverImageUrl = book.coverImageThumbnailUrl || book.coverImageUrl
 
   const isCoverEdit = editType === EditType.Cover
+  const isAdaptationEdit = editType.match(/adaptation/)
+
+  let editTypeText = `${name} edited `
+  if (isCoverEdit) {
+    editTypeText = `${name} changed the cover of `
+  } else if (editType === EditType.AdaptationCreate) {
+    editTypeText = `${name} added an adaptation to `
+  } else if (editType === EditType.AdaptationUpdate) {
+    editTypeText = `${name} edited an adaptation of `
+  } else if (editType === EditType.AdaptationDelete) {
+    editTypeText = `${name} removed an adaptation from `
+  }
 
   return (
     <div className="flex items-center px-4 py-4 border-b border-b-gray-800 last:border-none">
@@ -53,7 +65,7 @@ export default function EditLogCard({ editLog, withCover = true }) {
         </>
       )}
       <div className="">
-        {name} edited {isCoverEdit ? "the cover of " : ""}
+        {editTypeText}
         <Link href={getBookLink(book.slug)} className="cat-link">
           {book.title}
         </Link>
@@ -62,7 +74,7 @@ export default function EditLogCard({ editLog, withCover = true }) {
           {createdAtFromNow}
         </span>
         {timestampTooltip}
-        {!isCoverEdit && (
+        {!isCoverEdit && !isAdaptationEdit && (
           <div className="ml-2 mt-1 text-sm text-gray-500">
             ({editedFields.map((fieldName) => camelCaseToWords(fieldName)).join(", ")})
           </div>

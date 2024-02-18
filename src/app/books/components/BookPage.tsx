@@ -39,6 +39,7 @@ import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookReadStatus from "enums/BookReadStatus"
 import UserBookShelf, { shelfToCopy } from "enums/UserBookShelf"
+import AdaptationCard from "app/components/AdaptationCard"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type List from "types/List"
@@ -461,6 +462,16 @@ export default function BookPage({
                   </Link>
                 </div>
               )}
+
+              {book.adaptations && book.adaptations.length > 0 && (
+                <div className="mt-8 font-mulish hidden md:block">
+                  <div className="cat-eyebrow">adaptations</div>
+                  <hr className="my-1 h-[1px] border-none bg-gray-300" />
+                  {book.adaptations.map((adaptation) => (
+                    <AdaptationCard key={adaptation.id} adaptation={adaptation} compact />
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex-grow mx-auto md:ml-16">
               <h1 className="mb-1 text-4xl font-semibold">
@@ -521,6 +532,16 @@ export default function BookPage({
                 )}
               </div>
             </div>
+
+            {book.adaptations && book.adaptations.length > 0 && (
+              <div className="mt-8 font-mulish md:hidden">
+                <div className="cat-eyebrow">adaptations</div>
+                <hr className="my-1 h-[1px] border-none bg-gray-300" />
+                {book.adaptations.map((adaptation) => (
+                  <AdaptationCard key={adaptation.id} adaptation={adaptation} />
+                ))}
+              </div>
+            )}
           </div>
 
           {showFriendsSection && (

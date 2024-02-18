@@ -37,6 +37,7 @@
     "humps": "^2.0.1",
     "lodash.debounce": "^4.0.8",
     "next": "14.1.0",
+    "open-graph-scraper": "^6.4.0",
     "postcss": "8.4.26",
     "postinstall-postinstall": "^2.1.0",
     "prisma": "^5.2.0",

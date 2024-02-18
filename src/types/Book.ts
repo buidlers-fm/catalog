@@ -1,6 +1,7 @@
 import type BookNote from "types/BookNote"
 import type Like from "types/Like"
 import type UserBookShelfAssignment from "types/UserBookShelfAssignment"
+import type Adaptation from "types/Adaptation"
 
 export default interface Book {
   id?: string
@@ -18,11 +19,12 @@ export default interface Book {
   isTranslated?: boolean
   originalTitle?: string
   wikipediaUrl?: string
-  openLibraryBestEditionId?: string // in-memory only
   bookNotes?: BookNote[]
   bookPosts?: BookNote[]
   bookReads?: any[] // TODO
   userShelfAssignments?: UserBookShelfAssignment[]
+  adaptations?: Adaptation[]
+  openLibraryBestEditionId?: string // in-memory only
   likeCount?: number // in-memory only
   currentUserLike?: Like // in-memory only
   totalShelfCounts?: any // in-memory only
