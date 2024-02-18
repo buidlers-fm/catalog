@@ -1,4 +1,4 @@
-last updated: february 10, 2024.
+last updated: february 17, 2024.
 
 # big things for jan-feb 2024
 
@@ -9,6 +9,7 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 - ✅ Instead of just link posts, book posts can have text and become full discussion threads.
 - 🛠️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
+- ⌛️ Bluesky integration phase 0: ability to add existing Bluesky feeds to books as read-only conversations.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
 
 ---
@@ -16,6 +17,17 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## february 12-18, 2024
+
+Main things:
+
+- Users can add TV/movie adaptations to books
+
+Small fixes/improvements:
+
+- Internal improvements (to automated testing) which will allow us to reduce risk of introducing bugs as we develop
+- More thorough automated site monitoring so we can know when important pages go down
 
 ## february 5-11, 2024
 
@@ -103,3 +115,11 @@ Small fixes/improvements:
 - Fixed newsletter subscribe which was briefly broken by our domain update
 - Differentiate between read vs. unread announcements (envelope state at top right)
 - Misc tiny bug fixes
+
+## december 21 - january 7, 2024
+
+Launched catalog.fyi and invited the first users!
+
+## july 15 - december 20, 2023
+
+Pre-launch: Built out the first version of catalog.
