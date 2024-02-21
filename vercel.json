@@ -8,6 +8,9 @@
   "functions": {
     "src/app/api/**": {
       "maxDuration": 300
+    },
+    "src/app/**": {
+      "maxDuration": 30
     }
   }
 }
