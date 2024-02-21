@@ -19,6 +19,7 @@ export default interface Book {
   isTranslated?: boolean
   originalTitle?: string
   wikipediaUrl?: string
+  edited: boolean
   bookNotes?: BookNote[]
   bookPosts?: BookNote[]
   bookReads?: any[] // TODO

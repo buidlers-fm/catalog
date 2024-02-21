@@ -521,7 +521,7 @@ export default function BookPage({
               <div className="mt-8 mb-4 md:w-11/12">
                 <CustomMarkdown markdown={description} />
               </div>
-              {book.description && (
+              {book.description && !book.edited && (
                 <div className="px-8 flex justify-end text-sm text-gray-300">
                   — from OpenLibrary
                 </div>
