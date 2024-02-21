@@ -12,6 +12,7 @@ import { MdEdit } from "react-icons/md"
 import { TbExternalLink } from "react-icons/tb"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
+// import BlueskyClient from "lib/bluesky"
 import { reportToSentry } from "lib/sentry"
 import {
   getBookLink,
@@ -30,6 +31,7 @@ import BookNoteModal from "app/components/BookNoteModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import NewBookPostModal from "app/components/NewBookPostModal"
 import BookPostCard from "app/components/bookPosts/BookPostCard"
+import BlueskyPostCard from "app/components/BlueskyPostCard"
 import ListCard from "app/components/lists/ListCard"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import EmptyState from "app/components/EmptyState"
@@ -50,6 +52,11 @@ const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
 const DEFAULT_DESCRIPTION = "No description found."
 
+enum ConversationsTab {
+  Catalog,
+  Bluesky,
+}
+
 export default function BookPage({
   book,
   userLists,
@@ -67,6 +74,7 @@ export default function BookPage({
 
   const [notes, setNotes] = useState<any[]>()
   const [posts, setPosts] = useState<any[]>()
+  const [blueskyPosts] = useState<any[]>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
@@ -79,12 +87,33 @@ export default function BookPage({
   const [showNewBookPostModal, setShowNewBookPostModal] = useState<boolean>(false)
   const [showLikeAddNoteTooltip, setShowLikeAddNoteTooltip] = useState<boolean>(false)
   const [showShelvesAddNoteTooltip, setShowShelvesAddNoteTooltip] = useState<boolean>(false)
+  const [conversationsTab, setConversationsTab] = useState<ConversationsTab>(
+    ConversationsTab.Catalog,
+  )
 
   const imgRef = useRef(null)
 
   useEffect(() => {
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
+
+  // useEffect(() => {
+  //   async function getBlueskyPosts() {
+  //     const _blueskyPosts = await BlueskyClient.getFeed(
+  //       "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaalhofhk5k2m",
+  //     )
+
+  //     setBlueskyPosts(_blueskyPosts)
+  //   }
+
+  //   getBlueskyPosts()
+  // }, [])
+
+  useEffect(() => {
+    if (posts && posts.length === 0 && blueskyPosts && blueskyPosts.length > 0) {
+      setConversationsTab(ConversationsTab.Bluesky)
+    }
+  }, [posts, blueskyPosts])
 
   const getBook = useCallback(async () => {
     try {
@@ -594,7 +623,7 @@ export default function BookPage({
           )}
 
           {notes && notes.length > 0 && (
-            <div className="mt-8 font-mulish">
+            <div className="mt-8 mb-16 font-mulish">
               <div className="flex justify-between text-gray-300 text-sm">
                 <div className="cat-eyebrow">top notes</div>
                 <div className="flex -mt-1">
@@ -619,51 +648,106 @@ export default function BookPage({
             </div>
           )}
 
-          <div className="mt-16 font-mulish">
+          <div className="mt-8 mb-16 font-mulish">
             <div className="flex justify-between text-gray-300 text-sm">
-              <div className="flex">
-                <div className="cat-eyebrow">top conversations</div>
-              </div>
-              <div className="flex -mt-1">
-                {isSignedIn && (
-                  <button
-                    onClick={() => setShowNewBookPostModal(true)}
-                    className="cat-btn cat-btn-sm cat-btn-gray mx-2"
-                  >
-                    +<span className="hidden xs:inline"> create a thread</span>
-                  </button>
+              <div className="py-1 flex items-center">
+                <div className="cat-eyebrow mr-4">
+                  top conversations{blueskyPosts && blueskyPosts.length > 0 && " on"}
+                </div>
+
+                {blueskyPosts && blueskyPosts.length > 0 && (
+                  <>
+                    <button
+                      onClick={() => setConversationsTab(ConversationsTab.Catalog)}
+                      className={`
+        ${
+          conversationsTab === ConversationsTab.Catalog
+            ? "text-gold-500 border-b border-b-gold-500"
+            : "text-gray-500"
+        } mr-4 text-sm
+        `}
+                    >
+                      catalog
+                    </button>
+                    <button
+                      onClick={() => setConversationsTab(ConversationsTab.Bluesky)}
+                      className={`
+        ${
+          conversationsTab === ConversationsTab.Bluesky
+            ? "text-gold-500 border-b border-b-gold-500"
+            : "text-gray-500"
+        } text-sm
+        `}
+                    >
+                      bluesky
+                    </button>
+                  </>
                 )}
-                <Link
-                  className={`inline-block ${isSignedIn ? "my-1 xs:mb-0" : ""} mx-2`}
-                  href={getBookPostsLink(book.slug!)}
-                >
-                  more
-                </Link>
               </div>
-            </div>
-            <hr className="my-1 h-[1px] border-none bg-gray-300" />
-            <div className="">
-              {posts ? (
-                posts.length > 0 ? (
-                  <div>
-                    {posts.map((post) => (
-                      <BookPostCard
-                        key={post.id}
-                        post={post}
-                        withCover={false}
-                        currentUserProfile={currentUserProfile}
-                        onEditSuccess={getBookPosts}
-                        onDeleteSuccess={getBookPosts}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState text="No conversations yet." />
-                )
-              ) : (
-                <LoadingSection />
+
+              {conversationsTab === ConversationsTab.Catalog && (
+                <div className="flex -mt-1">
+                  {isSignedIn && (
+                    <button
+                      onClick={() => setShowNewBookPostModal(true)}
+                      className="cat-btn cat-btn-sm cat-btn-gray mx-2"
+                    >
+                      +<span className="hidden xs:inline"> create a thread</span>
+                    </button>
+                  )}
+                  <Link
+                    className={`inline-block ${isSignedIn ? "my-1 xs:mb-0" : ""} mx-2`}
+                    href={getBookPostsLink(book.slug!)}
+                  >
+                    more
+                  </Link>
+                </div>
               )}
             </div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+
+            {conversationsTab === ConversationsTab.Catalog && (
+              <div className="">
+                {posts ? (
+                  posts.length > 0 ? (
+                    <div>
+                      {posts.map((post) => (
+                        <BookPostCard
+                          key={post.id}
+                          post={post}
+                          withCover={false}
+                          currentUserProfile={currentUserProfile}
+                          onEditSuccess={getBookPosts}
+                          onDeleteSuccess={getBookPosts}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState text="No conversations on catalog yet." />
+                  )
+                ) : (
+                  <LoadingSection />
+                )}
+              </div>
+            )}
+
+            {conversationsTab === ConversationsTab.Bluesky && (
+              <div className="max-w-xl mx-auto">
+                {blueskyPosts ? (
+                  blueskyPosts.length > 0 ? (
+                    <div>
+                      {blueskyPosts.map((post) => (
+                        <BlueskyPostCard key={post.cid} post={post} />
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState text="No Bluesky posts yet." />
+                  )
+                ) : (
+                  <LoadingSection />
+                )}
+              </div>
+            )}
           </div>
 
           {bookLists && bookLists.length > 0 && (
