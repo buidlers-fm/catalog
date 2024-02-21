@@ -10,8 +10,6 @@ export default function GlobalError({ error }) {
     Sentry.captureException(error)
   }, [error])
 
-  const isRefreshTokenError = error?.message?.includes("Refresh Token Not Found")
-
   return (
     <html lang="en">
       <body className="bg-black text-white">
@@ -20,22 +18,16 @@ export default function GlobalError({ error }) {
             <div className="max-w-xl mx-auto py-32 px-8 text-center">
               <div className="text-xl">Oops! Something went wrong.</div>
               <div className="mt-4 text-md text-gray-300">
-                {isRefreshTokenError ? (
-                  "It looks like your cookies are stale. Try clearing your cookies just for catalog.fyi, and then refreshing the page. (You can look up instructions for how to clear cookies for a specific site with the device/browser you're using, so that you don't have to clear ALL your cookies and get logged out of everything you use.)"
-                ) : (
-                  <>
-                    It's likely that we got the error report and will look into it, but you can get
-                    in touch by{" "}
-                    <a href="mailto:staff@catalog.fyi" className="cat-link">
-                      email
-                    </a>{" "}
-                    or{" "}
-                    <a href="https://discord.gg/BWTSEkDT9W" className="cat-link">
-                      Discord
-                    </a>{" "}
-                    if you need help from our team.
-                  </>
-                )}
+                It's likely that we got the error report and will look into it, but you can get in
+                touch by{" "}
+                <a href="mailto:staff@catalog.fyi" className="cat-link">
+                  email
+                </a>{" "}
+                or{" "}
+                <a href="https://discord.gg/BWTSEkDT9W" className="cat-link">
+                  Discord
+                </a>{" "}
+                if you need help from our team.
               </div>
             </div>
           </main>
