@@ -29,7 +29,7 @@ export function normalizeString(str) {
     result = result.replace(new RegExp(toRemove, "g"), "")
   })
 
-  result = stripPunctuation(result)
+  result = prepStringForSearch(result)
 
   return result
 }

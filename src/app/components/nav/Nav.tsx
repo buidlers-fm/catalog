@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import humps from "humps"
 import "react-modern-drawer/dist/index.css"
 import { BsSearch, BsXLg } from "react-icons/bs"
+import { useUser } from "lib/contexts/UserContext"
 import { getUserProfileLink } from "lib/helpers/general"
 import { reportToSentry } from "lib/sentry"
 import Search from "app/components/nav/Search"
@@ -15,10 +16,12 @@ import type Book from "types/Book"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
 
-export default function Nav({ currentUserProfile }) {
+export default function Nav() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const { isFetching: isLoading, currentUserProfile } = useUser()
 
   const navigate = (item, type) => {
     if (type === "books") return navigateToBookPage(item)
@@ -56,16 +59,24 @@ export default function Nav({ currentUserProfile }) {
   return (
     <>
       <div className="inline-block lg:hidden">
-        <MobileNav currentUserProfile={currentUserProfile} onSelectItem={navigate} />
+        <MobileNav
+          currentUserProfile={currentUserProfile}
+          isLoading={isLoading}
+          onSelectItem={navigate}
+        />
       </div>
       <div className="hidden lg:inline-block">
-        <DesktopNav currentUserProfile={currentUserProfile} onSelectItem={navigate} />
+        <DesktopNav
+          currentUserProfile={currentUserProfile}
+          isLoading={isLoading}
+          onSelectItem={navigate}
+        />
       </div>
     </>
   )
 }
 
-function MobileNav({ currentUserProfile, onSelectItem }) {
+function MobileNav({ currentUserProfile, isLoading, onSelectItem }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [showMobileSearch, setShowMobileSearch] = useState(false)
@@ -89,7 +100,13 @@ function MobileNav({ currentUserProfile, onSelectItem }) {
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
       {currentUserProfile && <Announcements currentUserProfile={currentUserProfile} isMobile />}
-      <UserNav currentUserProfile={currentUserProfile} />
+      {isLoading ? (
+        <div className="ml-2 mt-1 h-6 w-6 bg-gray-500 rounded-full animate-pulse" />
+      ) : (
+        <div className="mt-1.5">
+          <UserNav currentUserProfile={currentUserProfile} />
+        </div>
+      )}
       <Drawer
         open={showMobileSearch}
         onClose={() => setShowMobileSearch(false)}
@@ -113,7 +130,7 @@ function MobileNav({ currentUserProfile, onSelectItem }) {
   )
 }
 
-function DesktopNav({ currentUserProfile, onSelectItem }) {
+function DesktopNav({ currentUserProfile, isLoading, onSelectItem }) {
   return (
     <div className="flex">
       <div className="mr-10">
@@ -125,7 +142,11 @@ function DesktopNav({ currentUserProfile, onSelectItem }) {
           <Announcements currentUserProfile={currentUserProfile} isMobile={false} />
         )}
         <div className="mr-4 mt-2">
-          <UserNav currentUserProfile={currentUserProfile} />
+          {isLoading ? (
+            <div className="h-6 w-6 bg-gray-500 rounded-full animate-pulse" />
+          ) : (
+            <UserNav currentUserProfile={currentUserProfile} />
+          )}
         </div>
       </div>
     </div>

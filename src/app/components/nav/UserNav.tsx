@@ -74,7 +74,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
         {currentUserProfile ? (
           <Menu>
             <Menu.Button className="cat-btn-text mt-2 lg:mt-0 ml-4 mr-2">
-              <div className="flex">
+              <div className="flex items-center">
                 {currentUserProfile.avatarUrl ? (
                   <div className="mr-3 w-[24px] h-[24px] overflow-hidden rounded-full">
                     <img
@@ -106,7 +106,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                           <div className="relative">
                             <span>notifs</span>
                             {hasUnreadNotifs && (
-                              <span className="w-1.5 h-1.5 absolute top-2.5 right-6 rounded-full bg-gold-200" />
+                              <span className="w-1.5 h-1.5 absolute top-1.5 right-6 rounded-full bg-gold-200" />
                             )}
                           </div>
                         ) : (

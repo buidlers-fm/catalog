@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import api from "lib/api"
@@ -90,6 +90,7 @@ export default function EditBook({ book }) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<BookFormData>({
     defaultValues: {
@@ -109,7 +110,7 @@ export default function EditBook({ book }) {
     const toastId = toast.loading("Saving your changes...")
 
     try {
-      await api.books.update(book.id, formData)
+      await api.books.update(book.id, requestData)
 
       const successMessage = (
         <div className="flex flex-col ml-2">
@@ -138,6 +139,13 @@ export default function EditBook({ book }) {
   const authorNameValue = watch("authorName")
   const descriptionValue = watch("description")
   const originalTitleValue = watch("originalTitle")
+  const isOriginallyEnglishValue = watch("isOriginallyEnglish")
+
+  useEffect(() => {
+    if (isOriginallyEnglishValue) {
+      setValue("originalTitle", titleValue)
+    }
+  }, [setValue, isOriginallyEnglishValue, titleValue])
 
   const readyToSubmit = titleValue?.length > 0 && authorNameValue.length > 0
 
@@ -215,13 +223,15 @@ export default function EditBook({ book }) {
 
           <FormInput
             labelText="original title"
-            descriptionText="The title in the book's original language. If the book is originally in English, this should be the same as the title above."
+            descriptionText="The title in the book's original language. If the book is originally in English, this will be set to the title above."
             name="originalTitle"
             type="text"
             formProps={register("originalTitle", validations.originalTitle)}
             remainingChars={MAX_LENGTHS.originalTitle - (originalTitleValue?.length || 0)}
             errorMessage={errors.originalTitle?.message}
             fullWidth={false}
+            value={isOriginallyEnglishValue ? titleValue : originalTitleValue}
+            disabled={isOriginallyEnglishValue}
           />
 
           <FormInput

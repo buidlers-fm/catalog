@@ -5,8 +5,7 @@ import { FaDiscord } from "react-icons/fa"
 import { BsEnvelopeFill } from "react-icons/bs"
 import { UserProvider } from "lib/contexts/UserContext"
 import { NotificationsProvider } from "lib/contexts/NotificationsContext"
-import { getCurrentUserProfile } from "lib/server/auth"
-import Nav from "app/components/nav/Nav"
+import CatalogHeader from "app/components/CatalogHeader"
 import Toast from "app/components/Toast"
 import type { Metadata } from "next"
 
@@ -35,21 +34,13 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const currentUserProfile = await getCurrentUserProfile()
-  const isSignedIn = !!currentUserProfile
-
   return (
     <html lang="en">
       <body className={`${fontsClassNames} bg-black text-white`}>
         <UserProvider>
           <NotificationsProvider>
             <div className="flex flex-col h-screen">
-              <header className="px-8 py-8 flex justify-between">
-                <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
-                  <Link href={isSignedIn ? "/home" : "/"}>catalog</Link>
-                </div>
-                <Nav currentUserProfile={currentUserProfile} />
-              </header>
+              <CatalogHeader />
               <main className="mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
                 {children}
               </main>

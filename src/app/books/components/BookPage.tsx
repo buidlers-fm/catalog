@@ -372,22 +372,24 @@ export default function BookPage({
                     onChange={onLikeChange}
                   />
                 </div>
-                <Tooltip
-                  anchorSelect="#book-likes"
-                  className="font-mulish"
-                  place="right"
-                  clickable
-                  isOpen={showLikeAddNoteTooltip}
-                >
-                  <button
-                    onClick={() => {
-                      setShowBookNoteModal(true)
-                      setShowLikeAddNoteTooltip(false)
-                    }}
+                {showLikeAddNoteTooltip && (
+                  <Tooltip
+                    anchorSelect="#book-likes"
+                    className="font-mulish"
+                    place="bottom-start"
+                    clickable
+                    isOpen={showLikeAddNoteTooltip}
                   >
-                    <div className="underline">Add a note?</div>
-                  </button>
-                </Tooltip>
+                    <button
+                      onClick={() => {
+                        setShowBookNoteModal(true)
+                        setShowLikeAddNoteTooltip(false)
+                      }}
+                    >
+                      <div className="underline">Add a note?</div>
+                    </button>
+                  </Tooltip>
+                )}
                 {isSignedIn && (
                   <div id="book-shelves" className="ml-2 w-fit">
                     <UserBookShelfMenu
@@ -397,22 +399,24 @@ export default function BookPage({
                     />
                   </div>
                 )}
-                <Tooltip
-                  anchorSelect="#book-shelves"
-                  className="font-mulish"
-                  place="right"
-                  clickable
-                  isOpen={showShelvesAddNoteTooltip}
-                >
-                  <button
-                    onClick={() => {
-                      setShowBookNoteModal(true)
-                      setShowShelvesAddNoteTooltip(false)
-                    }}
+                {showShelvesAddNoteTooltip && (
+                  <Tooltip
+                    anchorSelect="#book-shelves"
+                    className="font-mulish"
+                    place="right"
+                    clickable
+                    isOpen={showShelvesAddNoteTooltip}
                   >
-                    <div className="underline">Edit dates or add a note?</div>
-                  </button>
-                </Tooltip>
+                    <button
+                      onClick={() => {
+                        setShowBookNoteModal(true)
+                        setShowShelvesAddNoteTooltip(false)
+                      }}
+                    >
+                      <div className="underline">Edit dates or add a note?</div>
+                    </button>
+                  </Tooltip>
+                )}
               </div>
 
               <div className="flex px-2 font-mulish text-sm text-gray-200">
@@ -517,7 +521,7 @@ export default function BookPage({
               <div className="mt-8 mb-4 md:w-11/12">
                 <CustomMarkdown markdown={description} />
               </div>
-              {book.description && (
+              {book.description && !book.edited && (
                 <div className="px-8 flex justify-end text-sm text-gray-300">
                   — from OpenLibrary
                 </div>

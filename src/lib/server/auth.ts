@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { cache } from "react"
 import humps from "humps"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import prisma from "lib/prisma"
+import { reportToSentry } from "lib/sentry"
 
 type Options = {
   requireSignedIn?: boolean
@@ -25,8 +27,23 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
 
   const supabase = createServerSupabaseClient()
 
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
+  let data
+  try {
+    const supabaseRes = await supabase.auth.getSession()
+    ;({ data } = supabaseRes)
+    if (supabaseRes.error) throw supabaseRes.error
+  } catch (error: any) {
+    const isRefreshTokenError = error?.message?.includes("Refresh Token Not Found")
+    if (isRefreshTokenError) {
+      reportToSentry(error, {
+        method: "getCurrentUserProfile",
+      })
+
+      redirect("/auth-error")
+    } else {
+      throw error
+    }
+  }
 
   const { session } = humps.camelizeKeys(data)
 
