@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { Suspense } from "react"
 import { useUser } from "lib/contexts/UserContext"
 import Nav from "app/components/nav/Nav"
 
@@ -13,7 +14,9 @@ export default function CatalogHeader() {
       <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
         <Link href={isSignedIn ? "/home" : "/"}>catalog</Link>
       </div>
-      <Nav />
+      <Suspense>
+        <Nav />
+      </Suspense>
     </header>
   )
 }
