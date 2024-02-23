@@ -82,7 +82,7 @@ export default function Search({
     }
 
     return debounce(onSearchChange, DEBOUNCE_THRESHOLD_MS)
-  }, [])
+  }, [isNav, isSignedIn])
 
   const searchUsers = async (searchString: string) => {
     setIsSearching(true)
