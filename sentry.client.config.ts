@@ -15,6 +15,7 @@ if (env !== "development") {
 
     ignoreErrors: [
       "ResizeObserver loop completed with undelivered notifications.",
+      "ResizeObserver loop limit exceeded",
       "Failed to fetch",
       "network error",
       "Warning: Mention: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
