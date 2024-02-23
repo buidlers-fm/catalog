@@ -13,12 +13,13 @@ const createJestConfig = nextJest({
 
 const config: Config = {
   preset: "ts-jest",
-  testEnvironment: "@quramy/jest-prisma/environment",
+  testEnvironment: "@quramy/jest-prisma-node/environment",
 
   // The glob patterns Jest uses to detect test files
   testMatch: ["**/tests/**/*.test.[jt]s?(x)"],
 
   moduleNameMapper: {
+    "^app/(.*)": "<rootDir>/src/app/$1",
     "^enums/(.*)": "<rootDir>/src/enums/$1",
     "^lib/(.*)": "<rootDir>/src/lib/$1",
     "crypto-random-string": "<rootDir>/tests/__mocks__/crypto-random-string.ts",
