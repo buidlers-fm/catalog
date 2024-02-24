@@ -1,4 +1,4 @@
-last updated: february 17, 2024.
+last updated: february 23, 2024.
 
 # big things for jan-feb 2024
 
@@ -9,7 +9,7 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 - ✅ Instead of just link posts, book posts can have text and become full discussion threads.
 - 🛠️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
-- ⌛️ Bluesky integration phase 0: ability to add existing Bluesky feeds to books as read-only conversations.
+- 🛠️ Bluesky integration phase 0: ability to add existing Bluesky feeds to books as read-only conversations.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
 
 ---
@@ -17,6 +17,20 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## february 19-25, 2024
+
+Small fixes/improvements:
+
+- Attempted to fix bug where clicking "shelves" on book page sometimes opens the "add a note" modal
+- Fixed: description shouldn't say "from OpenLibrary" if book has been edited
+- Fixed: "originally in English" checkbox broken on edit book page
+- Lock original title to be the same as title, if book is originally in English
+- Better detection of whether book is originally in English
+- Clearer messaging (new error page) when user gets "refresh token" error
+- Fixed bug with user ("@") search that was introduced by the above
+- Changed how book page loads, to try to reduce timeout errors on this page.
+- Added Bluesky logo 🦋
 
 ## february 12-18, 2024
 
