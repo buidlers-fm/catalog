@@ -1,5 +1,5 @@
 import prisma from "lib/prisma"
-import { setUpCurrentUserProfile, tearDownCurrentUserProfile } from "lib/helpers/test"
+import { createRandomUser, deleteUser } from "lib/helpers/test"
 import { createList } from "lib/api/lists"
 
 describe("createList", () => {
@@ -35,11 +35,11 @@ describe("createList", () => {
 
   let currentUserProfile
   beforeAll(async () => {
-    currentUserProfile = await setUpCurrentUserProfile(jestPrisma.originalClient)
+    currentUserProfile = await createRandomUser(jestPrisma.originalClient)
   })
 
   afterAll(async () => {
-    await tearDownCurrentUserProfile(jestPrisma.originalClient)
+    await deleteUser(currentUserProfile.userId, jestPrisma.originalClient)
   })
 
   describe("list with no books", () => {

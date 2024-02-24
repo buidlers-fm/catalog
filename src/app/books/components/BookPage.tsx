@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
+import humps from "humps"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaHeart, FaBookmark } from "react-icons/fa"
@@ -47,6 +48,7 @@ import type Book from "types/Book"
 import type List from "types/List"
 import type Like from "types/Like"
 import type BookRead from "types/BookRead"
+import type BookActivity from "types/BookActivity"
 
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
@@ -59,19 +61,18 @@ enum ConversationsTab {
 
 export default function BookPage({
   book,
-  userLists,
-  bookLists,
   isSignedIn,
   currentUserProfile,
 }: {
   book: Book
-  userLists: List[]
-  bookLists?: List[]
   isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
   const searchParams = useSearchParams()
 
+  const [userLists, setUserLists] = useState<List[]>([])
+  const [bookLists, setBookLists] = useState<List[]>()
+  const [bookActivity, setBookActivity] = useState<BookActivity>({} as any)
   const [notes, setNotes] = useState<any[]>()
   const [posts, setPosts] = useState<any[]>()
   const [blueskyPosts] = useState<any[]>()
@@ -96,6 +97,41 @@ export default function BookPage({
   useEffect(() => {
     if ((imgRef.current as any)?.complete) setImgLoaded(true)
   }, [])
+
+  useEffect(() => {
+    async function getUserLists() {
+      const _userLists = await api.lists.get({
+        userProfileId: currentUserProfile.id,
+      })
+
+      setUserLists(_userLists)
+    }
+
+    if (currentUserProfile) getUserLists()
+  }, [currentUserProfile])
+
+  useEffect(() => {
+    async function getBookLists() {
+      const _bookLists = await api.lists.get({
+        bookId: book.id,
+        limit: LISTS_LIMIT,
+      })
+
+      setBookLists(_bookLists)
+    }
+
+    if (book.id) getBookLists()
+  }, [book])
+
+  useEffect(() => {
+    async function getBookActivity() {
+      const _bookActivity = await api.books.getActivity(book.id)
+
+      setBookActivity(_bookActivity)
+    }
+
+    if (book.id) getBookActivity()
+  }, [book])
 
   // useEffect(() => {
   //   async function getBlueskyPosts() {
@@ -325,11 +361,11 @@ export default function BookPage({
     ])
   }
 
-  const totalShelfCounts = book.totalShelfCounts || {}
-  const totalFavoritedCount = book.totalFavoritedCount || 0
-  const shelvesToFriendsProfiles = book.shelvesToFriendsProfiles || {}
-  const likedByFriendsProfiles = book.likedByFriendsProfiles || []
-  const favoritedByFriendsProfiles = book.favoritedByFriendsProfiles || []
+  const totalShelfCounts = humps.decamelizeKeys(bookActivity.totalShelfCounts) || {}
+  const totalFavoritedCount = bookActivity.totalFavoritedCount || 0
+  const shelvesToFriendsProfiles = humps.decamelizeKeys(bookActivity.shelvesToFriendsProfiles) || {}
+  const likedByFriendsProfiles = bookActivity.likedByFriendsProfiles || []
+  const favoritedByFriendsProfiles = bookActivity.favoritedByFriendsProfiles || []
 
   const totalShelfCount = (Object.values(totalShelfCounts) as number[]).reduce((a, b) => a + b, 0)
 
@@ -766,7 +802,7 @@ export default function BookPage({
               </div>
               <hr className="my-1 h-[1px] border-none bg-gray-300" />
               <div className="">
-                {bookLists.slice(0, LISTS_LIMIT).map((list) => (
+                {bookLists.map((list) => (
                   <ListCard key={list.id} list={list} withByline />
                 ))}
               </div>

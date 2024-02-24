@@ -47,6 +47,7 @@ const api = {
       const url = `/api/books?${queryString}`
       return fetchJson(url)
     },
+    getActivity: (bookId) => fetchJson(`/api/books/${bookId}/activity`),
     update: (bookId, requestData) =>
       fetchJson(`/api/books/${bookId}`, {
         method: "PATCH",
@@ -188,6 +189,11 @@ const api = {
       }),
   },
   lists: {
+    get: (params: { userProfileId?: string; bookId?: string; limit?: number }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/lists?${queryString}`
+      return fetchJson(url)
+    },
     create: (requestData) =>
       fetchJson(`/api/lists`, {
         method: "POST",

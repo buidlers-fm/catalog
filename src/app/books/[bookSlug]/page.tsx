@@ -3,7 +3,7 @@ import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateBook, decorateWithLikes, decorateLists } from "lib/server/decorators"
+import { decorateWithLikes } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
@@ -94,7 +94,7 @@ export default async function BookPageBySlug({ params }: any) {
       }
 
       try {
-        await prisma.book.update({
+        prisma.book.update({
           where: {
             id: dbBook.id,
           },
@@ -121,62 +121,12 @@ export default async function BookPageBySlug({ params }: any) {
     }
   }
 
-  let userLists: any[] = []
-
-  if (userProfile) {
-    const _userLists = await prisma.list.findMany({
-      where: {
-        ownerId: userProfile.id,
-        designation: null,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: {
-        listItemAssignments: {
-          orderBy: {
-            sortOrder: "asc",
-          },
-        },
-      },
-    })
-
-    userLists = await decorateLists(_userLists, userProfile)
-  }
-
-  const _bookLists = await prisma.list.findMany({
-    where: {
-      designation: null,
-      listItemAssignments: {
-        some: {
-          listedObjectType: "book",
-          listedObjectId: book.id,
-        },
-      },
-    },
-    include: {
-      listItemAssignments: {
-        orderBy: {
-          sortOrder: "asc",
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
-
-  const bookLists = await decorateLists(_bookLists, userProfile)
-
-  book = await decorateBook(book, userProfile)
   book = (await decorateWithLikes([book], InteractionObjectType.Book, userProfile))[0]
 
   return (
     <RemountOnPathChange
       ComponentToRemount={BookPage}
       book={book}
-      userLists={userLists}
-      bookLists={bookLists}
       isSignedIn={!!userProfile}
       currentUserProfile={userProfile}
     />
