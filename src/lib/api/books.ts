@@ -4,7 +4,13 @@ import { uploadCoverImage } from "lib/server/supabaseStorage"
 import { generateUniqueSlug, fetchImageAsBlob } from "lib/helpers/general"
 import { reportToSentry } from "lib/sentry"
 import CoverSize from "enums/CoverSize"
+import ListedObjectType from "enums/ListedObjectType"
+import ListDesignation from "enums/ListDesignation"
+import InteractionType from "enums/InteractionType"
+import InteractionObjectType from "enums/InteractionObjectType"
+import UserBookShelf from "enums/UserBookShelf"
 import type Book from "types/Book"
+import type BookActivity from "types/BookActivity"
 
 async function findOrCreateBook(_book: Book, options: any = {}) {
   const { processCoverImage = true } = options
@@ -108,4 +114,121 @@ async function findOrCreateBook(_book: Book, options: any = {}) {
   return createdBook
 }
 
-export { findOrCreateBook }
+async function getBookActivity(book, currentUserProfile): Promise<BookActivity> {
+  // get shelf counts
+  const allShelfAssignments = await prisma.userBookShelfAssignment.findMany({
+    where: {
+      bookId: book.id,
+    },
+    include: {
+      userProfile: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const totalShelfCounts = allShelfAssignments.reduce(
+    (result, assignment) => ({
+      ...result,
+      [assignment.shelf as UserBookShelf]: (result[assignment.shelf] || 0) + 1,
+    }),
+    {} as any,
+  )
+
+  // get favorited count
+  const favoritedAssignments = await prisma.listItemAssignment.findMany({
+    where: {
+      listedObjectId: book.id,
+      listedObjectType: ListedObjectType.Book,
+      list: {
+        designation: ListDesignation.Favorite,
+      },
+    },
+    include: {
+      list: {
+        include: {
+          creator: true,
+        },
+      },
+    },
+  })
+
+  // get friends data
+  let shelvesToFriendsProfiles: any = {}
+  let likedByFriendsProfiles: any[] = []
+  let favoritedByFriendsProfiles: any[] = []
+
+  if (currentUserProfile) {
+    const allCurrentUserFollows = await prisma.interaction.findMany({
+      where: {
+        objectId: currentUserProfile.id,
+        objectType: InteractionObjectType.User,
+        interactionType: InteractionType.Follow,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    })
+
+    const allFollowedIds = new Set(allCurrentUserFollows.map((follow) => follow.agentId))
+
+    const friendsShelfAssignments = allShelfAssignments.filter((assignment) =>
+      allFollowedIds.has(assignment.userProfile.id),
+    )
+
+    shelvesToFriendsProfiles = friendsShelfAssignments.reduce(
+      (result, assignment) => ({
+        [assignment.shelf]: [...(result[assignment.shelf] || []), assignment.userProfile],
+      }),
+      {},
+    )
+
+    const friendsLikes = await prisma.interaction.findMany({
+      where: {
+        agentId: {
+          in: Array.from(allFollowedIds),
+        },
+        objectType: InteractionObjectType.Book,
+        objectId: book.id,
+        interactionType: InteractionType.Like,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    const likedByFriendsProfileIds = friendsLikes.map((like) => like.agentId)
+
+    likedByFriendsProfiles = await prisma.userProfile.findMany({
+      where: {
+        id: {
+          in: likedByFriendsProfileIds,
+        },
+      },
+    })
+
+    likedByFriendsProfiles.sort((a: any, b: any) => {
+      const aIndex = likedByFriendsProfileIds.indexOf(a.id)
+      const bIndex = likedByFriendsProfileIds.indexOf(b.id)
+
+      return aIndex - bIndex
+    })
+
+    favoritedByFriendsProfiles = favoritedAssignments
+      .filter((assignment) => allFollowedIds.has(assignment.list.creatorId))
+      .map((assignment) => assignment.list.creator)
+  }
+
+  const activity: BookActivity = {
+    totalShelfCounts,
+    totalFavoritedCount: favoritedAssignments.length,
+    shelvesToFriendsProfiles,
+    likedByFriendsProfiles,
+    favoritedByFriendsProfiles,
+  }
+
+  return activity
+}
+
+export { findOrCreateBook, getBookActivity }

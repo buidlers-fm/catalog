@@ -1,36 +1,17 @@
 import { v4 as uuidv4 } from "uuid"
 import prisma from "lib/prisma"
 
-const CURRENT_USER_EMAIL = "current_user@test.com"
-const CURRENT_USER_USERNAME = "current_user"
-
-async function setUpCurrentUserProfile(prismaClient = prisma) {
-  let user = await prismaClient.user.findFirst({
-    where: {
-      email: CURRENT_USER_EMAIL,
-    },
-  })
-
-  if (!user) {
-    user = await prismaClient.user.create({
-      data: {
-        id: uuidv4(),
-        email: CURRENT_USER_EMAIL,
-      },
-    })
-  }
-
-  let userProfile = await prismaClient.userProfile.findFirst({
-    where: {
-      userId: user.id,
-    },
-  })
-
-  if (userProfile) return userProfile
-
-  userProfile = await prismaClient.userProfile.create({
+async function createRandomUser(prismaClient = prisma) {
+  const user = await prismaClient.user.create({
     data: {
-      username: CURRENT_USER_USERNAME,
+      id: uuidv4(),
+      email: `${uuidv4()}@test.com`,
+    },
+  })
+
+  const userProfile = await prismaClient.userProfile.create({
+    data: {
+      username: uuidv4(),
       userId: user.id,
     },
   })
@@ -38,18 +19,18 @@ async function setUpCurrentUserProfile(prismaClient = prisma) {
   return userProfile
 }
 
-async function tearDownCurrentUserProfile(prismaClient = prisma) {
+async function deleteUser(userId: string, prismaClient = prisma) {
   await prismaClient.userProfile.deleteMany({
     where: {
-      username: CURRENT_USER_USERNAME,
+      userId,
     },
   })
 
   await prismaClient.user.deleteMany({
     where: {
-      email: CURRENT_USER_EMAIL,
+      id: userId,
     },
   })
 }
 
-export { setUpCurrentUserProfile, tearDownCurrentUserProfile }
+export { createRandomUser, deleteUser }
