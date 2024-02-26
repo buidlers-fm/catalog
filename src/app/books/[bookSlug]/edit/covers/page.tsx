@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
@@ -18,8 +18,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 export default async function EditBookCoversPage({ params }) {
   const { bookSlug } = params
 
-  const currentUserProfile = await getCurrentUserProfile()
-  if (!currentUserProfile) redirect("/")
+  await getCurrentUserProfile({ requireSignedIn: true })
 
   const book = (await prisma.book.findFirst({
     where: {

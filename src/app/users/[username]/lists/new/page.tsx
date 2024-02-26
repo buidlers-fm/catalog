@@ -16,10 +16,7 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateListPage({ params, searchParams }) {
-  const currentUserProfile = await getCurrentUserProfile()
-
-  // redirect if not signed in
-  if (!currentUserProfile) redirect("/")
+  const currentUserProfile = await getCurrentUserProfile({ requireSignedIn: true })
 
   // redirect if not on own profile
   const { username } = params
