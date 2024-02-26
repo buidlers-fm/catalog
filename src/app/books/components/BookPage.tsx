@@ -61,11 +61,9 @@ enum ConversationsTab {
 
 export default function BookPage({
   book,
-  isSignedIn,
   currentUserProfile,
 }: {
   book: Book
-  isSignedIn: boolean
   currentUserProfile: UserProfileProps
 }) {
   const searchParams = useSearchParams()
@@ -360,6 +358,8 @@ export default function BookPage({
       getCurrentUserShelf(dbBook),
     ])
   }
+
+  const isSignedIn = !!currentUserProfile
 
   const totalShelfCounts = humps.decamelizeKeys(bookActivity.totalShelfCounts) || {}
   const totalFavoritedCount = bookActivity.totalFavoritedCount || 0

@@ -8,7 +8,7 @@ import { getBookEditLink } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
 
-export default async function BookPageByQuery({ searchParams }) {
+export default async function EditBookPage({ searchParams }) {
   const { openLibraryWorkId, openLibraryEditionId: openLibraryBestEditionId } =
     humps.camelizeKeys(searchParams)
 
