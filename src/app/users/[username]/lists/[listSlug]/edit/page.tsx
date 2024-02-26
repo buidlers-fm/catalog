@@ -19,7 +19,10 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
 
-  const currentUserProfile = await getCurrentUserProfile({ requireSignedIn: true, redirectPath: "/home" })
+  const currentUserProfile = await getCurrentUserProfile({
+    requireSignedIn: true,
+    redirectPath: `/users/${username}/lists/${listSlug}`,
+  })
 
   const userProfile = await prisma.userProfile.findFirst({
     where: {

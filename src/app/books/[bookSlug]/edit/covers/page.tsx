@@ -18,7 +18,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 export default async function EditBookCoversPage({ params }) {
   const { bookSlug } = params
 
-  await getCurrentUserProfile({ requireSignedIn: true })
+  await getCurrentUserProfile({ requireSignedIn: true, redirectPath: `/books/${bookSlug}` })
 
   const book = (await prisma.book.findFirst({
     where: {

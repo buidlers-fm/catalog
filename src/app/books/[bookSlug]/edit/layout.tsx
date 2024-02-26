@@ -7,9 +7,9 @@ import EditBookTabs from "app/books/[bookSlug]/edit/components/EditBookTabs"
 export const dynamic = "force-dynamic"
 
 export default async function EditBookLayout({ params, children }) {
-  await getCurrentUserProfile({ requireSignedIn: true })
-
   const { bookSlug } = params
+
+  await getCurrentUserProfile({ requireSignedIn: true, redirectPath: `/books/${bookSlug}` })
 
   const book = await prisma.book.findFirst({
     where: {
