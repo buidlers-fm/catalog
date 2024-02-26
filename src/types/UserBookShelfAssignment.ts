@@ -5,6 +5,6 @@ export default interface UserBookShelfAssignment {
   shelf: UserBookShelf
   bookId: string
   userProfileId: string
-  createdAt?: string
-  updatedAt?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }

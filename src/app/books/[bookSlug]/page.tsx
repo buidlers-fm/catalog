@@ -9,6 +9,7 @@ import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
 import InteractionObjectType from "enums/InteractionObjectType"
 import type { Metadata } from "next"
+import type Book from "types/Book"
 
 export const dynamic = "force-dynamic"
 
@@ -126,8 +127,7 @@ export default async function BookPageBySlug({ params }: any) {
   return (
     <RemountOnPathChange
       ComponentToRemount={BookPage}
-      book={book}
-      isSignedIn={!!userProfile}
+      book={book as Book}
       currentUserProfile={userProfile}
     />
   )

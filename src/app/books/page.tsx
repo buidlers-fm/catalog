@@ -5,7 +5,6 @@ import OpenLibrary from "lib/openLibrary"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { reportToSentry } from "lib/sentry"
 import { getBookLink } from "lib/helpers/general"
-import { decorateLists } from "lib/server/decorators"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
 import type { Metadata } from "next"
@@ -71,29 +70,6 @@ export default async function BookPageByQuery({ searchParams }) {
 
   const userProfile = await getCurrentUserProfile()
 
-  let userLists: any[] = []
-
-  if (userProfile) {
-    const _userLists = await prisma.list.findMany({
-      where: {
-        ownerId: userProfile.id,
-        designation: null,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: {
-        listItemAssignments: {
-          orderBy: {
-            sortOrder: "asc",
-          },
-        },
-      },
-    })
-
-    userLists = await decorateLists(_userLists, userProfile)
-  }
-
   const book = {
     ...openLibraryBook,
     likeCount: 0,
@@ -103,8 +79,7 @@ export default async function BookPageByQuery({ searchParams }) {
     <RemountOnPathChange
       ComponentToRemount={BookPage}
       book={book}
-      isSignedIn={!!userProfile}
-      userLists={userLists}
+      currentUserProfile={userProfile}
     />
   )
 }

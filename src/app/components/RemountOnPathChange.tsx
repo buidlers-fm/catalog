@@ -1,8 +1,17 @@
 "use client"
 
 import { usePathname, useSearchParams } from "next/navigation"
+import type Book from "types/Book"
+import type { UserProfileProps } from "lib/models/UserProfile"
 
-export default function RemountOnPathChange({ ComponentToRemount, ...props }) {
+type BookPageProps = {
+  book: Book
+  currentUserProfile: UserProfileProps
+}
+
+type Props = BookPageProps & { ComponentToRemount: React.ComponentType<BookPageProps> }
+
+export default function RemountOnPathChange({ ComponentToRemount, ...props }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
