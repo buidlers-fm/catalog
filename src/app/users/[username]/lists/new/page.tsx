@@ -16,13 +16,14 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateListPage({ params, searchParams }) {
-  const currentUserProfile = await getCurrentUserProfile()
+  const { username } = params
 
-  // redirect if not signed in
-  if (!currentUserProfile) redirect("/")
+  const currentUserProfile = await getCurrentUserProfile({
+    requireSignedIn: true,
+    redirectPath: `/users/${username}/lists`,
+  })
 
   // redirect if not on own profile
-  const { username } = params
   if (username !== currentUserProfile.username) redirect(getUserListsLink(username))
 
   const { with: openLibraryWorkId } = searchParams

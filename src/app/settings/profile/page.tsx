@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
@@ -16,8 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function SettingsProfilePage() {
-  const userProfile = await getCurrentUserProfile()
-  if (!userProfile) redirect("/")
+  const userProfile = await getCurrentUserProfile({ requireSignedIn: true })
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {

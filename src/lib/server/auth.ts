@@ -9,11 +9,13 @@ import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 
 type Options = {
+  redirectPath?: string
   requireSignedIn?: boolean
   withRoles?: boolean
 }
 
 const defaultOptions = {
+  redirectPath: "/",
   requireSignedIn: false,
   withRoles: false,
 }
@@ -25,7 +27,7 @@ const createServerSupabaseClient = cache(() => {
 })
 
 const getCurrentUserProfile = async (options: Options = defaultOptions) => {
-  const { requireSignedIn, withRoles } = options
+  const { redirectPath, requireSignedIn, withRoles } = options
 
   const supabase = createServerSupabaseClient()
 
@@ -49,7 +51,7 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
 
   const { session } = humps.camelizeKeys(data)
 
-  if (!session && requireSignedIn) throw new Error("Session not found")
+  if (!session && requireSignedIn) redirect(redirectPath)
 
   let currentUserProfile
   if (session) {
@@ -64,7 +66,7 @@ const getCurrentUserProfile = async (options: Options = defaultOptions) => {
     })
   }
 
-  if (!currentUserProfile && requireSignedIn) throw new Error("User not found")
+  if (!currentUserProfile && requireSignedIn) redirect(redirectPath)
 
   return currentUserProfile
 }

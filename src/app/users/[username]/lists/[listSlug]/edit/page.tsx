@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
@@ -19,8 +19,10 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 export default async function UserListPage({ params }) {
   const { username, listSlug } = params
 
-  const currentUserProfile = await getCurrentUserProfile()
-  if (!currentUserProfile) redirect("/home")
+  const currentUserProfile = await getCurrentUserProfile({
+    requireSignedIn: true,
+    redirectPath: `/users/${username}/lists/${listSlug}`,
+  })
 
   const userProfile = await prisma.userProfile.findFirst({
     where: {

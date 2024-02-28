@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { TiWarningOutline } from "react-icons/ti"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
@@ -7,12 +7,9 @@ import EditBookTabs from "app/books/[bookSlug]/edit/components/EditBookTabs"
 export const dynamic = "force-dynamic"
 
 export default async function EditBookLayout({ params, children }) {
-  const currentUserProfile = await getCurrentUserProfile()
-  const isSignedIn = !!currentUserProfile
-
-  if (!isSignedIn) redirect("/")
-
   const { bookSlug } = params
+
+  await getCurrentUserProfile({ requireSignedIn: true, redirectPath: `/books/${bookSlug}` })
 
   const book = await prisma.book.findFirst({
     where: {
