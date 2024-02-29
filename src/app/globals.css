@@ -89,7 +89,15 @@ textarea:focus {
 }
 
 .cat-news-post {
-  @apply text-lg;
+  @apply text-lg text-gray-100;
+}
+
+.cat-news-post a {
+  @apply border-b border-b-gray-200;
+}
+
+.cat-news-post h2 {
+  @apply mt-16 mb-6 text-2xl font-semibold;
 }
 
 .cat-news-post p {
@@ -109,9 +117,9 @@ textarea:focus {
 }
 
 .cat-news-post ul {
-  @apply list-disc list-inside;
+  @apply list-disc list-inside ml-12;
 }
 
 .cat-news-post li {
-  @apply my-4;
+  @apply my-4 -indent-6;
 }

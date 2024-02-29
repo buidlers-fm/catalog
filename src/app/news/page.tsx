@@ -8,6 +8,8 @@ import { dateTimeFormats } from "lib/constants/dateTime"
 import GhostSubscribe from "app/components/GhostSubscribe"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "news • catalog",
   openGraph: {
