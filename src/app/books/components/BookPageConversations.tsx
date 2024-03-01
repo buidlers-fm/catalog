@@ -115,13 +115,13 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
   return (
     <>
       <div className="flex justify-between text-gray-300 text-sm">
-        <div className="py-1 flex items-center">
+        <div className="py-1 flex flex-wrap items-center">
           <div className="cat-eyebrow mr-4">
             top conversations{blueskyPosts && blueskyPosts.length > 0 && " on"}
           </div>
 
           {blueskyPosts && blueskyPosts.length > 0 && (
-            <>
+            <div className="flex">
               <button
                 onClick={() => setConversationsTab(ConversationsTab.Catalog)}
                 className={`
@@ -146,28 +146,28 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
               >
                 bluesky
               </button>
-            </>
+            </div>
           )}
         </div>
 
-        {conversationsTab === ConversationsTab.Catalog && (
-          <div className="flex -mt-1">
-            {isSignedIn && (
+        {conversationsTab === ConversationsTab.Catalog &&
+          (isSignedIn ? (
+            <div className="flex -mt-1 items-end">
               <button
                 onClick={() => setShowNewBookPostModal(true)}
                 className="cat-btn cat-btn-sm cat-btn-gray mx-2"
               >
-                +<span className="hidden xs:inline"> create a thread</span>
+                +<span className="hidden sm:inline"> create a thread</span>
               </button>
-            )}
-            <Link
-              className={`inline-block ${isSignedIn ? "my-1 xs:mb-0" : ""} mx-2`}
-              href={getBookPostsLink(book.slug!)}
-            >
-              more
-            </Link>
-          </div>
-        )}
+              <Link className="inline-block mb-1 mx-2" href={getBookPostsLink(book.slug!)}>
+                more
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <Link href={getBookPostsLink(book.slug!)}>more</Link>
+            </div>
+          ))}
       </div>
       <hr className="my-1 h-[1px] border-none bg-gray-300" />
 
