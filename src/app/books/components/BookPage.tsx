@@ -13,30 +13,24 @@ import { MdEdit } from "react-icons/md"
 import { TbExternalLink } from "react-icons/tb"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
-// import BlueskyClient from "lib/bluesky"
 import { reportToSentry } from "lib/sentry"
 import {
   getBookLink,
   getBookEditLink,
   getBookEditLinkWithQueryString,
   getBookNotesLink,
-  getBookPostsLink,
   getBookListsLink,
 } from "lib/helpers/general"
 import { joinStringsWithAnd } from "lib/helpers/strings"
+import BookPageConversations from "app/books/components/BookPageConversations"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import BookNoteModal from "app/components/BookNoteModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
-import NewBookPostModal from "app/components/NewBookPostModal"
-import BookPostCard from "app/components/bookPosts/BookPostCard"
-import BlueskyPostCard from "app/components/BlueskyPostCard"
 import ListCard from "app/components/lists/ListCard"
 import CustomMarkdown from "app/components/CustomMarkdown"
-import EmptyState from "app/components/EmptyState"
-import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -54,11 +48,6 @@ const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
 const DEFAULT_DESCRIPTION = "No description found."
 
-enum ConversationsTab {
-  Catalog,
-  Bluesky,
-}
-
 export default function BookPage({
   book,
   currentUserProfile,
@@ -67,13 +56,10 @@ export default function BookPage({
   currentUserProfile: UserProfileProps
 }) {
   const searchParams = useSearchParams()
-
   const [userLists, setUserLists] = useState<List[]>([])
   const [bookLists, setBookLists] = useState<List[]>()
   const [bookActivity, setBookActivity] = useState<BookActivity>({} as any)
   const [notes, setNotes] = useState<any[]>()
-  const [posts, setPosts] = useState<any[]>()
-  const [blueskyPosts] = useState<any[]>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
@@ -83,12 +69,8 @@ export default function BookPage({
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
   const [showBookNoteModal, setShowBookNoteModal] = useState<boolean>(false)
-  const [showNewBookPostModal, setShowNewBookPostModal] = useState<boolean>(false)
   const [showLikeAddNoteTooltip, setShowLikeAddNoteTooltip] = useState<boolean>(false)
   const [showShelvesAddNoteTooltip, setShowShelvesAddNoteTooltip] = useState<boolean>(false)
-  const [conversationsTab, setConversationsTab] = useState<ConversationsTab>(
-    ConversationsTab.Catalog,
-  )
 
   const imgRef = useRef(null)
 
@@ -131,28 +113,11 @@ export default function BookPage({
     if (book.id) getBookActivity()
   }, [book])
 
-  // useEffect(() => {
-  //   async function getBlueskyPosts() {
-  //     const _blueskyPosts = await BlueskyClient.getFeed(
-  //       "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaalhofhk5k2m",
-  //     )
-
-  //     setBlueskyPosts(_blueskyPosts)
-  //   }
-
-  //   getBlueskyPosts()
-  // }, [])
-
-  useEffect(() => {
-    if (posts && posts.length === 0 && blueskyPosts && blueskyPosts.length > 0) {
-      setConversationsTab(ConversationsTab.Bluesky)
-    }
-  }, [posts, blueskyPosts])
-
   const getBook = useCallback(async () => {
     try {
       const _book = await api.books.get(book.openLibraryWorkId)
       window.history.replaceState(null, "", getBookLink(_book.slug))
+      book.id = _book.id
       return _book
     } catch (error: any) {
       reportToSentry(error, {
@@ -160,7 +125,7 @@ export default function BookPage({
         currentUserProfile,
       })
     }
-  }, [book.openLibraryWorkId, currentUserProfile])
+  }, [currentUserProfile, book])
 
   const getBookNotes = useCallback(
     async (dbBook?) => {
@@ -187,30 +152,6 @@ export default function BookPage({
     [book.id, getBook, currentUserProfile],
   )
 
-  const getBookPosts = useCallback(
-    async (dbBook?) => {
-      let bookId = book.id || dbBook?.id
-      if (!bookId) bookId = (await getBook()).id
-
-      const requestData = {
-        bookId,
-        noteTypes: [BookNoteType.Post],
-        sort: Sort.Popular,
-      }
-
-      try {
-        const _posts = await api.bookNotes.get(requestData)
-        setPosts(_posts.slice(0, BOOK_NOTES_LIMIT))
-      } catch (error: any) {
-        reportToSentry(error, {
-          ...requestData,
-          currentUserProfile,
-        })
-      }
-    },
-    [book.id, getBook, currentUserProfile],
-  )
-
   useEffect(() => {
     if (book.id) {
       getBookNotes()
@@ -218,14 +159,6 @@ export default function BookPage({
       setNotes([])
     }
   }, [book.id, getBookNotes])
-
-  useEffect(() => {
-    if (book.id) {
-      getBookPosts()
-    } else {
-      setPosts([])
-    }
-  }, [book.id, getBookPosts])
 
   useEffect(() => {
     const _existingBookRead = findLastUnfinishedBookRead(book.bookReads)
@@ -689,105 +622,11 @@ export default function BookPage({
           )}
 
           <div className="mt-8 mb-16 font-mulish">
-            <div className="flex justify-between text-gray-300 text-sm">
-              <div className="py-1 flex items-center">
-                <div className="cat-eyebrow mr-4">
-                  top conversations{blueskyPosts && blueskyPosts.length > 0 && " on"}
-                </div>
-
-                {blueskyPosts && blueskyPosts.length > 0 && (
-                  <>
-                    <button
-                      onClick={() => setConversationsTab(ConversationsTab.Catalog)}
-                      className={`
-        ${
-          conversationsTab === ConversationsTab.Catalog
-            ? "text-gold-500 border-b border-b-gold-500"
-            : "text-gray-500"
-        } mr-4 text-sm
-        `}
-                    >
-                      catalog
-                    </button>
-                    <button
-                      onClick={() => setConversationsTab(ConversationsTab.Bluesky)}
-                      className={`
-        ${
-          conversationsTab === ConversationsTab.Bluesky
-            ? "text-gold-500 border-b border-b-gold-500"
-            : "text-gray-500"
-        } text-sm
-        `}
-                    >
-                      bluesky
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {conversationsTab === ConversationsTab.Catalog && (
-                <div className="flex -mt-1">
-                  {isSignedIn && (
-                    <button
-                      onClick={() => setShowNewBookPostModal(true)}
-                      className="cat-btn cat-btn-sm cat-btn-gray mx-2"
-                    >
-                      +<span className="hidden xs:inline"> create a thread</span>
-                    </button>
-                  )}
-                  <Link
-                    className={`inline-block ${isSignedIn ? "my-1 xs:mb-0" : ""} mx-2`}
-                    href={getBookPostsLink(book.slug!)}
-                  >
-                    more
-                  </Link>
-                </div>
-              )}
-            </div>
-            <hr className="my-1 h-[1px] border-none bg-gray-300" />
-
-            {conversationsTab === ConversationsTab.Catalog && (
-              <div className="">
-                {posts ? (
-                  posts.length > 0 ? (
-                    <div>
-                      {posts.map((post) => (
-                        <BookPostCard
-                          key={post.id}
-                          post={post}
-                          withCover={false}
-                          currentUserProfile={currentUserProfile}
-                          onEditSuccess={getBookPosts}
-                          onDeleteSuccess={getBookPosts}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyState text="No conversations on catalog yet." />
-                  )
-                ) : (
-                  <LoadingSection />
-                )}
-              </div>
-            )}
-
-            {conversationsTab === ConversationsTab.Bluesky && (
-              <div className="max-w-xl mx-auto">
-                {blueskyPosts ? (
-                  blueskyPosts.length > 0 ? (
-                    <div>
-                      {blueskyPosts.map((post) => (
-                        <BlueskyPostCard key={post.cid} post={post} />
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyState text="No Bluesky posts yet." />
-                  )
-                ) : (
-                  <LoadingSection />
-                )}
-              </div>
-            )}
+            <BookPageConversations
+              book={book}
+              currentUserProfile={currentUserProfile}
+              getBook={getBook}
+            />
           </div>
 
           {bookLists && bookLists.length > 0 && (
@@ -826,12 +665,6 @@ export default function BookPage({
             isOpen={showBookNoteModal}
             onClose={() => setShowBookNoteModal(false)}
             onSuccess={refetchBookData}
-          />
-          <NewBookPostModal
-            book={book}
-            isOpen={showNewBookPostModal}
-            onClose={() => setShowNewBookPostModal(false)}
-            onSuccess={getBookPosts}
           />
         </>
       )}
