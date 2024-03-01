@@ -13,7 +13,7 @@ import { MdEdit } from "react-icons/md"
 import { TbExternalLink } from "react-icons/tb"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
-// import BlueskyClient from "lib/bluesky"
+import BlueskyClient from "lib/bluesky"
 import { reportToSentry } from "lib/sentry"
 import {
   getBookLink,
@@ -32,7 +32,7 @@ import BookNoteModal from "app/components/BookNoteModal"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import NewBookPostModal from "app/components/NewBookPostModal"
 import BookPostCard from "app/components/bookPosts/BookPostCard"
-import BlueskyPostCard from "app/components/BlueskyPostCard"
+import BlueskyPostCardWrapper from "app/components/BlueskyPostCardWrapper"
 import ListCard from "app/components/lists/ListCard"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import EmptyState from "app/components/EmptyState"
@@ -53,6 +53,7 @@ import type BookActivity from "types/BookActivity"
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
 const DEFAULT_DESCRIPTION = "No description found."
+const BLUESKY_POSTS_LIMIT = 10
 
 enum ConversationsTab {
   Catalog,
@@ -67,13 +68,13 @@ export default function BookPage({
   currentUserProfile: UserProfileProps
 }) {
   const searchParams = useSearchParams()
-
   const [userLists, setUserLists] = useState<List[]>([])
   const [bookLists, setBookLists] = useState<List[]>()
   const [bookActivity, setBookActivity] = useState<BookActivity>({} as any)
   const [notes, setNotes] = useState<any[]>()
   const [posts, setPosts] = useState<any[]>()
-  const [blueskyPosts] = useState<any[]>()
+  const [blueskyPosts, setBlueskyPosts] = useState<any[]>()
+  const [blueskyNextPage, setBlueskyNextPage] = useState<string>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
@@ -131,17 +132,25 @@ export default function BookPage({
     if (book.id) getBookActivity()
   }, [book])
 
-  // useEffect(() => {
-  //   async function getBlueskyPosts() {
-  //     const _blueskyPosts = await BlueskyClient.getFeed(
-  //       "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaalhofhk5k2m",
-  //     )
+  useEffect(() => {
+    async function getBlueskyPosts() {
+      const { posts: _blueskyPosts, nextPage: _nextPage } = await BlueskyClient.getFeed(
+        // "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaalhofhk5k2m",
+        "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaaogozwjpftk",
+        {
+          limit: BLUESKY_POSTS_LIMIT,
+        },
+      )
 
-  //     setBlueskyPosts(_blueskyPosts)
-  //   }
+      console.log(_blueskyPosts)
+      console.log(_nextPage)
 
-  //   getBlueskyPosts()
-  // }, [])
+      setBlueskyPosts(_blueskyPosts)
+      setBlueskyNextPage(_nextPage)
+    }
+
+    getBlueskyPosts()
+  }, [])
 
   useEffect(() => {
     if (posts && posts.length === 0 && blueskyPosts && blueskyPosts.length > 0) {
@@ -347,6 +356,19 @@ export default function BookPage({
 
       setShowShelvesAddNoteTooltip(true)
     }
+  }
+
+  const getMoreBlueskyPosts = async () => {
+    const { posts: nextPosts, nextPage: _nextPage } = await BlueskyClient.getFeed(
+      "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaaogozwjpftk",
+      {
+        limit: BLUESKY_POSTS_LIMIT,
+        nextPage: blueskyNextPage,
+      },
+    )
+
+    setBlueskyPosts([...(blueskyPosts || []), ...nextPosts])
+    setBlueskyNextPage(_nextPage)
   }
 
   const refetchBookData = async () => {
@@ -772,13 +794,20 @@ export default function BookPage({
             )}
 
             {conversationsTab === ConversationsTab.Bluesky && (
-              <div className="max-w-xl mx-auto">
+              <div className="max-w-xl mx-auto mt-8 h-[600px] overflow-auto px-4 bg-gray-900 rounded">
                 {blueskyPosts ? (
                   blueskyPosts.length > 0 ? (
                     <div>
                       {blueskyPosts.map((post) => (
-                        <BlueskyPostCard key={post.cid} post={post} />
+                        <BlueskyPostCardWrapper key={post.cid} post={post} />
                       ))}
+                      {blueskyNextPage && (
+                        <div className="px-2 py-4 text-center">
+                          <button className="font-mulish" onClick={getMoreBlueskyPosts}>
+                            load more
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <EmptyState text="No Bluesky posts yet." />
