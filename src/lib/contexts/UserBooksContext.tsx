@@ -14,6 +14,7 @@ type UserBooksProviderValue = {
   unshelveBook: (bookId: string) => Promise<void>
   likeBook: (book: Book) => Promise<void>
   unlikeBook: (book: Book) => Promise<void>
+  setBookIdsToLiked: (bookIdsToLiked: any) => void
   isLoading: boolean
 }
 
@@ -145,9 +146,19 @@ export function UserBooksProvider({ children }) {
       unshelveBook,
       likeBook,
       unlikeBook,
+      setBookIdsToLiked,
       isLoading,
     }),
-    [bookIdsToShelves, bookIdsToLiked, shelveBook, unshelveBook, likeBook, unlikeBook, isLoading],
+    [
+      bookIdsToShelves,
+      bookIdsToLiked,
+      shelveBook,
+      unshelveBook,
+      likeBook,
+      unlikeBook,
+      setBookIdsToLiked,
+      isLoading,
+    ],
   )
 
   return <UserBooksContext.Provider value={providerValue}>{children}</UserBooksContext.Provider>
