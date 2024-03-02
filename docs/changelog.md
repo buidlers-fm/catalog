@@ -1,22 +1,34 @@
-last updated: february 23, 2024.
+last updated: march 1, 2024.
 
-# big things for jan-feb 2024
+# big things for march - april 2024
 
 key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
-- ✅ In-app notifications for likes, comments, etc.
-- ✅ Comment on all the things (including on other comments, in some cases).
-- ✅ Instead of just link posts, book posts can have text and become full discussion threads.
 - 🛠️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
 - 🛠️ Bluesky integration phase 0: ability to add existing Bluesky feeds to books as read-only conversations.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
+- ⌛️ Allow users to see and edit their reading history/timeline (also with privacy/visibility settings).
 
 ---
 
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## february 26 - march 3, 2024
+
+Main things:
+
+- Bluesky read-only integration enabled specifically for Middlemarch (#MiddlemarchMadness) and Moby Dick (#AMonthOfDick) feeds.
+- Book cover overlay: like/unlike or shelve a book from almost anywhere you can see a book cover.
+
+Small fixes/improvements:
+
+- Fixed bug with "add book to lists"
+- Fixed styling on catalog news page posts
+- You can now unshelve a book completely (vs. just moving it to a different shelf)
+- Fixed bug with tapping a book cover on mobile, for reals this time
 
 ## february 19-25, 2024
 
