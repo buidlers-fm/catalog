@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { getSelectorsByUserAgent } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"

@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Tooltip } from "react-tooltip"
 import { getSelectorsByUserAgent } from "react-device-detect"

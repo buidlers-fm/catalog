@@ -1,3 +1,5 @@
+"use client"
+
 import { getSelectorsByUserAgent } from "react-device-detect"
 import { Tooltip } from "react-tooltip"
 import { SlInfo } from "react-icons/sl"
