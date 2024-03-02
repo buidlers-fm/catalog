@@ -1,14 +1,13 @@
 "use client"
 
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
+import { getSelectorsByUserAgent } from "react-device-detect"
 import { GiOpenBook } from "react-icons/gi"
 import { getBookLink } from "lib/helpers/general"
 import { truncateString } from "lib/helpers/strings"
+import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
-
-const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
 const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
@@ -17,6 +16,13 @@ const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
 
 export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = navigator?.userAgent || ""
+    const { isMobile: _isMobile } = getSelectorsByUserAgent(userAgent)
+    setIsMobile(_isMobile)
+  }, [])
 
   const imgRef = useRef(null)
 
@@ -28,18 +34,16 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
 
   return (
     <div key={book.id} className="flex flex-col items-center justify-center">
-      <LinkOrDiv
-        // @ts-ignore this is a weird case, just let it be
-        href={isMobile ? undefined : getBookLink(book.slug)}
-        className="grow flex items-center"
+      <div
+        className={`grow flex items-center ${
+          isFavorite ? favoriteBookWidths : defaultWidths
+        } h-auto my-8 mx-auto sm:my-4`}
       >
-        <button
-          className={`${
-            isFavorite ? favoriteBookWidths : defaultWidths
-          } h-auto my-8 mx-auto sm:my-4`}
-          disabled={isMobile}
-        >
-          <div>
+        <div className="relative group">
+          <LinkOrDiv
+            // @ts-ignore this is a weird case, just let it be
+            href={isMobile ? undefined : getBookLink(book.slug)}
+          >
             {book.coverImageUrl && !imgLoaded && (
               <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
             )}
@@ -55,10 +59,13 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
             ) : (
               <CoverPlaceholder isFavorite={isFavorite} book={book} />
             )}
-          </div>
-        </button>
-      </LinkOrDiv>
+          </LinkOrDiv>
+          <BookCoverOverlay book={book} positionClass="bottom-1" />
+        </div>
+      </div>
+
       <BookTooltip book={book} anchorSelect={`#book-${book.id}`} />
+
       {isRanked && (
         <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
       )}

@@ -1,10 +1,14 @@
+"use client"
+
 import Link from "next/link"
-import { isMobile } from "react-device-detect"
+import { useState, useEffect } from "react"
+import { getSelectorsByUserAgent } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
 import { useUser } from "lib/contexts/UserContext"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
+import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import Likes from "app/components/Likes"
@@ -17,6 +21,14 @@ export default function CurrentStatus({
   isProfilePage = true,
 }) {
   const { currentUserProfile } = useUser()
+
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = navigator?.userAgent || ""
+    const { isMobile: _isMobile } = getSelectorsByUserAgent(userAgent)
+    setIsMobile(_isMobile)
+  }, [])
 
   const userProfile = UserProfile.build(_userProfile)
   const { name } = userProfile
@@ -49,24 +61,28 @@ export default function CurrentStatus({
                 isProfilePage && "lg:w-2/3 lg:mx-auto lg:mt-6"
               }`}
             >
-              <Link href={getBookLink(book.slug)}>
-                <button disabled={isMobile}>
-                  {book.coverImageUrl ? (
-                    <img
-                      src={book.coverImageUrl}
-                      alt="cover"
-                      className="object-top mx-auto shadow-md rounded-sm"
-                    />
-                  ) : (
-                    <CoverPlaceholder
-                      book={book}
-                      sizeClasses={`w-[72px] h-[108px] xs:w-[96px] xs:h-[144px] ${
-                        isProfilePage && "lg:w-[144px] lg:h-[216px]"
-                      }`}
-                    />
-                  )}
-                </button>
-              </Link>
+              <div className="relative group">
+                <Link href={getBookLink(book.slug)}>
+                  <button disabled={isMobile}>
+                    {book.coverImageUrl ? (
+                      <img
+                        src={book.coverImageUrl}
+                        alt="cover"
+                        className="object-top mx-auto shadow-md rounded-sm"
+                      />
+                    ) : (
+                      <CoverPlaceholder
+                        book={book}
+                        sizeClasses={`w-[72px] h-[108px] xs:w-[96px] xs:h-[144px] ${
+                          isProfilePage && "lg:w-[144px] lg:h-[216px]"
+                        }`}
+                      />
+                    )}
+                  </button>
+                </Link>
+
+                <BookCoverOverlay book={book} positionClass="bottom-3" />
+              </div>
             </div>
             <BookTooltip book={book} anchorSelect={`#${bookTooltipAnchorId}`} />
           </>

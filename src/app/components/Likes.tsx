@@ -6,6 +6,8 @@ import { FaRegHeart, FaHeart } from "react-icons/fa"
 import { Tooltip } from "react-tooltip"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
+import { useUserBooks } from "lib/contexts/UserBooksContext"
+import InteractionObjectType from "enums/InteractionObjectType"
 import type Like from "types/Like"
 
 export default function Likes({
@@ -25,6 +27,8 @@ export default function Likes({
   onChange?: (likeCount?: number, currentUserLike?: Like) => void
   buttonId?: string
 }) {
+  const { setBookIdsToLiked } = useUserBooks()
+
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(_currentUserLike)
   const [likeCount, setLikeCount] = useState<number | undefined>(_likeCount)
 
@@ -55,6 +59,16 @@ export default function Likes({
 
         try {
           await api.likes.delete(currentUserLike.id)
+
+          // update context state
+          if (likedObjectType === InteractionObjectType.Book) {
+            setBookIdsToLiked((prev) => {
+              const next = { ...prev }
+              delete next[likedObject.id]
+              return next
+            })
+          }
+
           if (onChange) onChange(newLikeCount, undefined)
         } catch (error: any) {
           setCurrentUserLike(originalCurrentUserLike)
@@ -73,7 +87,17 @@ export default function Likes({
             likedObject,
             likedObjectType,
           })
+
           setCurrentUserLike(createdLike)
+
+          // update context state
+          if (likedObjectType === InteractionObjectType.Book) {
+            setBookIdsToLiked((prev) => ({
+              ...prev,
+              [likedObject.id]: true,
+            }))
+          }
+
           if (onChange) onChange(newLikeCount, createdLike)
         } catch (error: any) {
           setCurrentUserLike(undefined)
@@ -121,7 +145,9 @@ export default function Likes({
   ) : (
     <div className="flex items-center">
       <FaHeart className="mr-1.5 text-gray-500 text-sm" />
-      {(likeCount || likeCount === 0) && <span className="text-sm text-gray-300 font-mulish">{likeCount}</span>}
+      {(likeCount || likeCount === 0) && (
+        <span className="text-sm text-gray-300 font-mulish">{likeCount}</span>
+      )}
     </div>
   )
 }

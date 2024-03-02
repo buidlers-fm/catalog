@@ -429,4 +429,40 @@ const addBook = async (book, list) => {
   return createdListItemAssignment
 }
 
-export { createList, updateList, addBook }
+const removeBook = async (bookId, list) => {
+  const existingListItemAssignments = await prisma.listItemAssignment.findMany({
+    where: {
+      listId: list.id,
+    },
+    orderBy: {
+      sortOrder: "asc",
+    },
+  })
+
+  const existingListItemAssignmentForBook = existingListItemAssignments.find(
+    (lta) => lta.listedObjectId === bookId,
+  )
+
+  if (!existingListItemAssignmentForBook) return
+
+  const removedItemSortOrder = existingListItemAssignmentForBook.sortOrder
+
+  const deletePromise = prisma.listItemAssignment.delete({
+    where: {
+      id: existingListItemAssignmentForBook.id,
+    },
+  })
+
+  await prisma.$transaction([
+    deletePromise,
+
+    // re-assign sort order for remaining items
+    prisma.$queryRaw`
+      UPDATE "list_item_assignments"
+      SET "sort_order" = "sort_order" - 1
+      WHERE "sort_order" > ${removedItemSortOrder} AND "list_id" = ${list.id}::uuid
+    `,
+  ])
+}
+
+export { createList, updateList, addBook, removeBook }

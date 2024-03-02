@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
-import { setUserBookShelf } from "lib/api/userBookShelves"
+import { shelveBook, unshelveBook } from "lib/api/userBookShelves"
 import { todayNoonUtc } from "lib/helpers/general"
 import UserBookShelf from "enums/UserBookShelf"
 import BookReadStatus from "enums/BookReadStatus"
@@ -14,19 +14,24 @@ export const GET = withApiHandling(
     const queryParams = _req.nextUrl.searchParams
     const bookId = queryParams.get("book_id") || undefined
 
-    if (!bookId) {
-      const errorMsg = "book_id is required"
-      return NextResponse.json({ error: errorMsg }, { status: 400 })
+    let resData
+
+    if (bookId) {
+      resData = await prisma.userBookShelfAssignment.findFirst({
+        where: {
+          bookId,
+          userProfileId: currentUserProfile.id,
+        },
+      })
+    } else {
+      resData = await prisma.userBookShelfAssignment.findMany({
+        where: {
+          userProfileId: currentUserProfile.id,
+        },
+      })
     }
 
-    const currentUserBookShelfAssignment = await prisma.userBookShelfAssignment.findFirst({
-      where: {
-        bookId,
-        userProfileId: currentUserProfile.id,
-      },
-    })
-
-    const resBody = humps.decamelizeKeys(currentUserBookShelfAssignment)
+    const resBody = humps.decamelizeKeys(resData)
 
     return NextResponse.json(resBody, { status: 200 })
   },
@@ -47,7 +52,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     return NextResponse.json({ error: errorMsg }, { status: 400 })
   }
 
-  const updatedUserBookShelfAssignment = await setUserBookShelf({
+  const updatedUserBookShelfAssignment = await shelveBook({
     book,
     shelf,
     userProfile: currentUserProfile,
@@ -132,3 +137,26 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   return NextResponse.json(resBody, { status: 200 })
 })
+
+export const DELETE = withApiHandling(
+  async (_req: NextRequest, { params }) => {
+    const { currentUserProfile } = params
+    const queryParams = _req.nextUrl.searchParams
+    const bookId = queryParams.get("book_id") || undefined
+
+    if (!bookId) {
+      const errorMsg = "book_id is required"
+      return NextResponse.json({ error: errorMsg }, { status: 400 })
+    }
+
+    await unshelveBook({
+      bookId,
+      userProfile: currentUserProfile,
+    })
+
+    const resBody = humps.decamelizeKeys({ bookId })
+
+    return NextResponse.json(resBody, { status: 200 })
+  },
+  { requireJsonBody: false },
+)

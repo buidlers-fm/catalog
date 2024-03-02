@@ -1,10 +1,10 @@
 import prisma from "lib/prisma"
 import { findOrCreateBook } from "lib/api/books"
-import { addBook } from "lib/api/lists"
+import { addBook, removeBook } from "lib/api/lists"
 import UserBookShelf from "enums/UserBookShelf"
 import ListDesignation from "enums/ListDesignation"
 
-export async function setUserBookShelf({ book, shelf, userProfile }) {
+export async function shelveBook({ book, shelf, userProfile }) {
   if (!book || !shelf) {
     throw new Error("book and status are required")
   }
@@ -61,4 +61,39 @@ export async function setUserBookShelf({ book, shelf, userProfile }) {
   }
 
   return updatedUserBookShelfAssignment
+}
+
+export async function unshelveBook({ bookId, userProfile }) {
+  if (!bookId || !userProfile) {
+    throw new Error("bookId and userProfileId are required")
+  }
+
+  const existingUserBookShelfAssignment = await prisma.userBookShelfAssignment.findFirst({
+    where: {
+      bookId,
+      userProfileId: userProfile.id,
+    },
+  })
+
+  const isReadShelf = existingUserBookShelfAssignment?.shelf === UserBookShelf.Read
+
+  await prisma.userBookShelfAssignment.deleteMany({
+    where: {
+      bookId,
+      userProfileId: userProfile.id,
+    },
+  })
+
+  if (isReadShelf) {
+    const readList = await prisma.list.findFirst({
+      where: {
+        creatorId: userProfile.id,
+        designation: ListDesignation.Read,
+      },
+    })
+
+    if (readList) {
+      await removeBook(bookId, readList)
+    }
+  }
 }

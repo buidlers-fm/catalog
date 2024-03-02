@@ -12,6 +12,7 @@ import { getBookLink, getPostLink, getDomainFromUrl } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import allValidations from "lib/constants/validations"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
+import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookPost from "app/components/bookPosts/EditBookPost"
@@ -65,17 +66,21 @@ export default function BookLinkPostCard({
         {withCover && (
           <>
             <div id={`book-link-${id}`} className="w-16 mr-6 shrink-0">
-              <Link href={getBookLink(book.slug)}>
-                {book.coverImageUrl ? (
-                  <img
-                    src={book.coverImageUrl}
-                    alt="cover"
-                    className="w-full mx-auto shadow-md rounded-xs"
-                  />
-                ) : (
-                  <CoverPlaceholder size="sm" />
-                )}
-              </Link>
+              <div className="relative group">
+                <Link href={getBookLink(book.slug)}>
+                  {book.coverImageUrl ? (
+                    <img
+                      src={book.coverImageUrl}
+                      alt="cover"
+                      className="w-full mx-auto shadow-md rounded-xs"
+                    />
+                  ) : (
+                    <CoverPlaceholder size="sm" />
+                  )}
+                </Link>
+
+                <BookCoverOverlay book={book} positionClass="bottom-1" />
+              </div>
             </div>
             <BookTooltip book={book} anchorSelect={`#book-link-${id}`} />
           </>
@@ -155,7 +160,9 @@ export default function BookLinkPostCard({
               <Link href={getPostLink(id)} className="flex items-center">
                 <FaRegComment className="mr-1.5 text-gray-500 text-md" />
                 {comments && (
-                  <span className="text-sm text-gray-300 font-mulish">{commentCount || comments.length}</span>
+                  <span className="text-sm text-gray-300 font-mulish">
+                    {commentCount || comments.length}
+                  </span>
                 )}
               </Link>
             </div>

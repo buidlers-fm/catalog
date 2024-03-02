@@ -1,14 +1,29 @@
+"use client"
+
 import Link from "next/link"
+import { useState, useEffect } from "react"
 import { Tooltip } from "react-tooltip"
-import { isMobile } from "react-device-detect"
+import { getSelectorsByUserAgent } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
 import { truncateString } from "lib/helpers/strings"
 
 export default function BookTooltip({ book, anchorSelect: _anchorSelect }) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = navigator?.userAgent || ""
+    const { isMobile: _isMobile } = getSelectorsByUserAgent(userAgent)
+    setIsMobile(_isMobile)
+  }, [])
+
   const anchorSelect = _anchorSelect || `#book-${book.id}`
 
   return (
-    <Tooltip anchorSelect={anchorSelect} className="max-w-[240px] font-mulish" clickable={isMobile}>
+    <Tooltip
+      anchorSelect={anchorSelect}
+      className="z-50 max-w-[240px] font-mulish"
+      clickable={isMobile}
+    >
       <Link href={getBookLink(book.slug)}>
         <button disabled={!isMobile}>
           <div className="text-center">{truncateString(`${book.title}`, 40)}</div>

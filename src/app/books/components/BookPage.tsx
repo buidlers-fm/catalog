@@ -63,9 +63,6 @@ export default function BookPage({
   const [existingBookRead, setExistingBookRead] = useState<BookRead | undefined>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
-  const [currentUserShelf, setCurrentUserShelf] = useState<string | undefined>(
-    book.userShelfAssignments?.[0]?.shelf,
-  )
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [showAddBookToListsModal, setShowAddBookToListsModal] = useState<boolean>(false)
   const [showBookNoteModal, setShowBookNoteModal] = useState<boolean>(false)
@@ -238,29 +235,7 @@ export default function BookPage({
     }
   }
 
-  const getCurrentUserShelf = async (dbBook?) => {
-    let bookId = book.id || dbBook?.id
-    if (!bookId) bookId = (await getBook()).id
-
-    const requestData = {
-      bookId,
-    }
-
-    try {
-      const _currentUserShelf = (await api.userBookShelves.get(requestData))?.shelf
-
-      setCurrentUserShelf(_currentUserShelf)
-    } catch (error: any) {
-      reportToSentry(error, {
-        ...requestData,
-        currentUserProfile,
-      })
-    }
-  }
-
   const onShelfChange = async (shelf) => {
-    setCurrentUserShelf(shelf)
-
     const shelvesWithBookReadUpdate = [
       UserBookShelf.CurrentlyReading,
       UserBookShelf.Read,
@@ -284,12 +259,7 @@ export default function BookPage({
 
   const refetchBookData = async () => {
     const dbBook = await getBook()
-    Promise.all([
-      updateLikes(dbBook),
-      getBookNotes(dbBook),
-      getBookReads(dbBook),
-      getCurrentUserShelf(dbBook),
-    ])
+    Promise.all([updateLikes(dbBook), getBookNotes(dbBook), getBookReads(dbBook)])
   }
 
   const isSignedIn = !!currentUserProfile
@@ -361,11 +331,7 @@ export default function BookPage({
                 )}
                 {isSignedIn && (
                   <div id="book-shelves" className="ml-2 w-fit">
-                    <UserBookShelfMenu
-                      book={book}
-                      currentUserShelf={currentUserShelf}
-                      onChange={onShelfChange}
-                    />
+                    <UserBookShelfMenu book={book} onChange={onShelfChange} />
                   </div>
                 )}
                 {showShelvesAddNoteTooltip && (
