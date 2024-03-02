@@ -5,7 +5,7 @@ import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { getBookNotes } from "lib/server/bookNotes"
 import { findOrCreateBook } from "lib/api/books"
-import { setUserBookShelf } from "lib/api/userBookShelves"
+import { shelveBook } from "lib/api/userBookShelves"
 import { findOrCreateLike, deleteLikeByParams } from "lib/api/likes"
 import { getAllAtMentions } from "lib/helpers/general"
 import { createNotifsFromMentions } from "lib/server/notifs"
@@ -194,7 +194,7 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
   }
 
   if (readingStatus !== BookNoteReadingStatus.None) {
-    await setUserBookShelf({
+    await shelveBook({
       book,
       shelf: statusToShelfMapping[readingStatus],
       userProfile,

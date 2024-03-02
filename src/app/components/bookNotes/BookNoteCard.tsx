@@ -13,6 +13,7 @@ import { dateTimeFormats } from "lib/constants/dateTime"
 import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
 import ExpandableText from "app/components/ExpandableText"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
+import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookNote from "app/components/bookNotes/EditBookNote"
@@ -91,18 +92,23 @@ export default function BookNoteCard({
         {withCover && (
           <>
             <div id={`book-note-${id}`} className="w-16 mr-6 shrink-0">
-              <Link href={getBookLink(book.slug)}>
-                {book.coverImageUrl ? (
-                  <img
-                    src={book.coverImageUrl}
-                    alt="cover"
-                    className="w-full mx-auto shadow-md rounded-xs"
-                  />
-                ) : (
-                  <CoverPlaceholder size="sm" />
-                )}
-              </Link>
+              <div className="relative group">
+                <Link href={getBookLink(book.slug)}>
+                  {book.coverImageUrl ? (
+                    <img
+                      src={book.coverImageUrl}
+                      alt="cover"
+                      className="w-full mx-auto shadow-md rounded-xs"
+                    />
+                  ) : (
+                    <CoverPlaceholder size="sm" />
+                  )}
+                </Link>
+
+                <BookCoverOverlay book={book} positionClass="bottom-1" />
+              </div>
             </div>
+
             <BookTooltip book={book} anchorSelect={`#book-note-${id}`} />
           </>
         )}

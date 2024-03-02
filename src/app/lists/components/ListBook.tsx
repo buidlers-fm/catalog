@@ -1,19 +1,21 @@
 "use client"
 
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
+import { getSelectorsByUserAgent } from "react-device-detect"
 import { GiOpenBook } from "react-icons/gi"
 import { getBookLink } from "lib/helpers/general"
 import { truncateString } from "lib/helpers/strings"
+import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
-
-const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
 
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
 const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
 const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
+
+const userAgent = navigator?.userAgent || ""
+const { isMobile }: any = getSelectorsByUserAgent(userAgent)
 
 export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
@@ -33,13 +35,12 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
         href={isMobile ? undefined : getBookLink(book.slug)}
         className="grow flex items-center"
       >
-        <button
+        <div
           className={`${
             isFavorite ? favoriteBookWidths : defaultWidths
           } h-auto my-8 mx-auto sm:my-4`}
-          disabled={isMobile}
         >
-          <div>
+          <div className="relative group">
             {book.coverImageUrl && !imgLoaded && (
               <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
             )}
@@ -55,10 +56,13 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
             ) : (
               <CoverPlaceholder isFavorite={isFavorite} book={book} />
             )}
+            <BookCoverOverlay book={book} positionClass="bottom-1" />
           </div>
-        </button>
+        </div>
       </LinkOrDiv>
+
       <BookTooltip book={book} anchorSelect={`#book-${book.id}`} />
+
       {isRanked && (
         <span className="flex justify-center w-1/2 border-b border-gray-700">{rank}</span>
       )}

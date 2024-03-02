@@ -169,7 +169,7 @@ const api = {
   },
   likes: {
     get: (params: {
-      likedObjectId: string
+      likedObjectId?: string
       likedObjectType?: string
       userProfileId?: string
       compact?: boolean
@@ -187,6 +187,14 @@ const api = {
       fetchJson(`/api/likes/${likeId}`, {
         method: "DELETE",
       }),
+    deleteByParams: (params) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/likes?${queryString}`
+
+      return fetchJson(url, {
+        method: "DELETE",
+      })
+    },
   },
   lists: {
     get: (params: { userProfileId?: string; bookId?: string; limit?: number }) => {
@@ -275,7 +283,7 @@ const api = {
     },
   },
   userBookShelves: {
-    get: (params: { bookId?: string }) => {
+    get: (params: { bookId?: string } = {}) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/user_book_shelves?${queryString}`
       return fetchJson(url)
@@ -285,6 +293,13 @@ const api = {
         method: "POST",
         body: prepReqBody(requestData),
       }),
+    remove: (bookId) => {
+      const requestData = { bookId }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(requestData)).toString()
+      return fetchJson(`/api/user_book_shelves?${queryString}`, {
+        method: "DELETE",
+      })
+    },
   },
   userConfigs: {
     update: (requestData) =>

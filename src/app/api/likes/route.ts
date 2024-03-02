@@ -3,7 +3,7 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { findOrCreateBook } from "lib/api/books"
-import { findOrCreateLike } from "lib/api/likes"
+import { findOrCreateLike, deleteLikeByParams } from "lib/api/likes"
 import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -64,7 +64,7 @@ export const GET = withApiHandling(
       })
 
       let currentUserLike
-      if (currentUserProfile) {
+      if (currentUserProfile && likedObjectId) {
         currentUserLike = likes.find((like) => like.agentId === currentUserProfile.id)
       }
 
@@ -103,3 +103,21 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   return NextResponse.json(resBody, { status: 200 })
 })
+
+export const DELETE = withApiHandling(
+  async (_req: NextRequest, { params }) => {
+    const { currentUserProfile } = params
+    const queryParams = _req.nextUrl.searchParams
+    const likedObjectId = queryParams.get("liked_object_id") || undefined
+    const likedObjectType = queryParams.get("liked_object_type") || undefined
+
+    await deleteLikeByParams({
+      likedObjectType,
+      likedObjectId,
+      userProfile: currentUserProfile,
+    })
+
+    return NextResponse.json({}, { status: 200 })
+  },
+  { requireJsonBody: false },
+)

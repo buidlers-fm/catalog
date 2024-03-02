@@ -1,8 +1,10 @@
-import dynamic from "next/dynamic"
+import { getSelectorsByUserAgent } from "react-device-detect"
 import { Tooltip } from "react-tooltip"
 import { SlInfo } from "react-icons/sl"
 
-const { isMobile }: any = dynamic(() => import("react-device-detect") as any, { ssr: false })
+const userAgent = navigator?.userAgent || ""
+const { isMobile }: any = getSelectorsByUserAgent(userAgent)
+
 const tdClasses = "bg-gray-900 p-2"
 
 const FormattingReferenceTooltip = () => (
