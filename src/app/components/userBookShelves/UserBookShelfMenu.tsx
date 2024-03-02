@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Menu } from "@headlessui/react"
+import { Float } from "@headlessui-float/react"
 import { FaBookmark, FaRegBookmark } from "react-icons/fa"
 import toast from "react-hot-toast"
 import { reportToSentry } from "lib/sentry"
@@ -96,25 +97,21 @@ export default function UserBookShelfMenu({ book, onChange, compact = false }: P
 
   return (
     <Menu>
-      <Menu.Button className="flex items-center cat-btn-text text-sm">
-        {selectedShelf ? (
-          <div className="flex items-center">
-            <FaBookmark className="text-gold-500 text-sm" />
-            {!compact && <div className="ml-1.5">{shelfToCopy[selectedShelf]}</div>}
-          </div>
-        ) : (
-          <div className="flex items-center text-gray-300">
-            <FaRegBookmark className="text-gray-300 text-sm" />
-            {!compact && <div className="ml-1.5">shelves</div>}
-          </div>
-        )}
-      </Menu.Button>
-      <div className="relative">
-        <Menu.Items
-          className={`absolute z-50 ${
-            compact ? "left-6" : "left-20"
-          } -top-32 w-[144px] bg-gray-900 rounded`}
-        >
+      <Float placement="right" offset={10} flip>
+        <Menu.Button className="flex items-center cat-btn-text text-sm">
+          {selectedShelf ? (
+            <div className="flex items-center">
+              <FaBookmark className="text-gold-500 text-sm" />
+              {!compact && <div className="ml-1.5">{shelfToCopy[selectedShelf]}</div>}
+            </div>
+          ) : (
+            <div className="flex items-center text-gray-300">
+              <FaRegBookmark className="text-gray-300 text-sm" />
+              {!compact && <div className="ml-1.5">shelves</div>}
+            </div>
+          )}
+        </Menu.Button>
+        <Menu.Items className="w-[144px] bg-gray-900 rounded">
           {SHELVES.map((shelf) => (
             <Menu.Item key={shelf}>
               <button
@@ -128,7 +125,7 @@ export default function UserBookShelfMenu({ book, onChange, compact = false }: P
             </Menu.Item>
           ))}
         </Menu.Items>
-      </div>
+      </Float>
     </Menu>
   )
 }

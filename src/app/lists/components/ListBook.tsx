@@ -34,17 +34,16 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
 
   return (
     <div key={book.id} className="flex flex-col items-center justify-center">
-      <LinkOrDiv
-        // @ts-ignore this is a weird case, just let it be
-        href={isMobile ? undefined : getBookLink(book.slug)}
-        className="grow flex items-center"
+      <div
+        className={`grow flex items-center ${
+          isFavorite ? favoriteBookWidths : defaultWidths
+        } h-auto my-8 mx-auto sm:my-4`}
       >
-        <div
-          className={`${
-            isFavorite ? favoriteBookWidths : defaultWidths
-          } h-auto my-8 mx-auto sm:my-4`}
-        >
-          <div className="relative group">
+        <div className="relative group">
+          <LinkOrDiv
+            // @ts-ignore this is a weird case, just let it be
+            href={isMobile ? undefined : getBookLink(book.slug)}
+          >
             {book.coverImageUrl && !imgLoaded && (
               <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
             )}
@@ -60,10 +59,10 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
             ) : (
               <CoverPlaceholder isFavorite={isFavorite} book={book} />
             )}
-            <BookCoverOverlay book={book} positionClass="bottom-1" />
-          </div>
+          </LinkOrDiv>
+          <BookCoverOverlay book={book} positionClass="bottom-1" />
         </div>
-      </LinkOrDiv>
+      </div>
 
       <BookTooltip book={book} anchorSelect={`#book-${book.id}`} />
 
