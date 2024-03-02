@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useState, useEffect } from "react"
 import { getSelectorsByUserAgent } from "react-device-detect"
 import { getBookLink } from "lib/helpers/general"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
@@ -13,9 +14,6 @@ import CustomMarkdown from "app/components/CustomMarkdown"
 import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"
 
-const userAgent = navigator?.userAgent || ""
-const { isMobile }: any = getSelectorsByUserAgent(userAgent)
-
 export default function CurrentStatus({
   userProfile: _userProfile,
   userCurrentStatus,
@@ -23,6 +21,14 @@ export default function CurrentStatus({
   isProfilePage = true,
 }) {
   const { currentUserProfile } = useUser()
+
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = navigator?.userAgent || ""
+    const { isMobile: _isMobile } = getSelectorsByUserAgent(userAgent)
+    setIsMobile(_isMobile)
+  }, [])
 
   const userProfile = UserProfile.build(_userProfile)
   const { name } = userProfile

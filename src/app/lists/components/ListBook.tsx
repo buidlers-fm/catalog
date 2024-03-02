@@ -14,11 +14,15 @@ const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
 const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
 
-const userAgent = navigator?.userAgent || ""
-const { isMobile }: any = getSelectorsByUserAgent(userAgent)
-
 export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = navigator?.userAgent || ""
+    const { isMobile: _isMobile } = getSelectorsByUserAgent(userAgent)
+    setIsMobile(_isMobile)
+  }, [])
 
   const imgRef = useRef(null)
 
