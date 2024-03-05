@@ -20,6 +20,7 @@ export interface UserProfileProps {
   followers?: UserProfileProps[]
   following?: UserProfileProps[]
   editLogs?: EditLog[]
+  pins?: any[]
 }
 
 export default class UserProfile {
@@ -55,6 +56,8 @@ export default class UserProfile {
 
   public editLogs: EditLog[] | undefined
 
+  public pins: any[] | undefined
+
   constructor(userProfileProps: UserProfileProps) {
     this.id = userProfileProps.id
     this.userId = userProfileProps.userId
@@ -70,6 +73,7 @@ export default class UserProfile {
     this.bookReads = userProfileProps.bookReads
     this.currentStatuses = userProfileProps.currentStatuses
     this.editLogs = userProfileProps.editLogs
+    this.pins = userProfileProps.pins
 
     if (userProfileProps.followers) {
       this.followers = UserProfile.buildMany(userProfileProps.followers)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
@@ -13,16 +13,7 @@ const BOOK_NOTES_LIMIT = 3
 export default function BookNotes({ userProfile, currentUserProfile }: any) {
   const [notes, setNotes] = useState<any[]>([])
 
-  useEffect(() => {
-    const _notes =
-      (userProfile.bookNotes || [])
-        .filter((note) => note.noteType === BookNoteType.JournalEntry && !!note.text)
-        .slice(0, BOOK_NOTES_LIMIT) || []
-
-    setNotes(_notes)
-  }, [userProfile.bookNotes])
-
-  async function getBookNotes() {
+  const getBookNotes = useCallback(async () => {
     const requestData = {
       userProfileId: userProfile.id,
       limit: BOOK_NOTES_LIMIT,
@@ -40,7 +31,11 @@ export default function BookNotes({ userProfile, currentUserProfile }: any) {
         currentUserProfile,
       })
     }
-  }
+  }, [currentUserProfile, userProfile.id])
+
+  useEffect(() => {
+    getBookNotes()
+  }, [getBookNotes, userProfile.id])
 
   return (
     notes.length > 0 && (
