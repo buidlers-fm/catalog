@@ -66,6 +66,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
     { name: "shelves", path: getUserShelvesLink(username) },
     { name: "lists", path: getUserListsLink(username) },
     { name: "friends", path: getUserFollowingLink(username) },
+    { name: "saved", path: "/saved" },
   ]
 
   return (
