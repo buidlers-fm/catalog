@@ -15,7 +15,7 @@ export default function EditProfileCurrentStatus({
   onCancel,
 }) {
   const [selectedBook, setSelectedBook] = useState<Book | null | undefined>(userCurrentStatus?.book)
-  const [text, setText] = useState<string>(userCurrentStatus?.text)
+  const [text, setText] = useState<string>(userCurrentStatus?.text || "")
   const [textErrorMsg, setTextErrorMsg] = useState<string>()
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [showBookSearch, setShowBookSearch] = useState<boolean>(false)
