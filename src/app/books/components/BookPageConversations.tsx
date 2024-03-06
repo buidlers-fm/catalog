@@ -1,16 +1,17 @@
 import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
+import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
 import BlueskyClient from "lib/bluesky"
 import { reportToSentry } from "lib/sentry"
 import { getBookPostsLink } from "lib/helpers/general"
-import NewBookPostModal from "app/components/NewBookPostModal"
 import BookPostCard from "app/components/bookPosts/BookPostCard"
 import BlueskyPostCardWrapper from "app/components/BlueskyPostCardWrapper"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
+import CurrentModal from "enums/CurrentModal"
 
 const BOOK_POSTS_LIMIT = 3
 const BLUESKY_POSTS_LIMIT = 10
@@ -28,13 +29,14 @@ const slugsToFeedUris = {
 }
 
 export default function BookPageConversations({ book, currentUserProfile, getBook }) {
+  const { setCurrentModal, setOnNewPostSuccess } = useModals()
+
   const [posts, setPosts] = useState<any[]>()
   const [blueskyPosts, setBlueskyPosts] = useState<any[]>()
   const [blueskyNextPage, setBlueskyNextPage] = useState<string>()
   const [conversationsTab, setConversationsTab] = useState<ConversationsTab>(
     ConversationsTab.Catalog,
   )
-  const [showNewBookPostModal, setShowNewBookPostModal] = useState<boolean>(false)
 
   const isSignedIn = !!currentUserProfile
 
@@ -86,10 +88,14 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
     [book.id, getBook, currentUserProfile],
   )
 
-  function handleCreatedPost() {
+  const handleCreatedPost = useCallback(async () => {
     setConversationsTab(ConversationsTab.Catalog)
     getBookPosts()
-  }
+  }, [getBookPosts])
+
+  useEffect(() => {
+    setOnNewPostSuccess(() => handleCreatedPost)
+  }, [setOnNewPostSuccess, handleCreatedPost])
 
   useEffect(() => {
     if (book.id) {
@@ -154,7 +160,7 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
           (isSignedIn ? (
             <div className="flex -mt-1 items-end">
               <button
-                onClick={() => setShowNewBookPostModal(true)}
+                onClick={() => setCurrentModal(CurrentModal.NewPost)}
                 className="cat-btn cat-btn-sm cat-btn-gray mx-2"
               >
                 +<span className="hidden sm:inline"> create a thread</span>
@@ -219,15 +225,6 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
             <LoadingSection />
           )}
         </div>
-      )}
-
-      {isSignedIn && (
-        <NewBookPostModal
-          book={book}
-          isOpen={showNewBookPostModal}
-          onClose={() => setShowNewBookPostModal(false)}
-          onSuccess={handleCreatedPost}
-        />
       )}
     </>
   )
