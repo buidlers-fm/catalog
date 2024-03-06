@@ -10,6 +10,7 @@ import type Book from "types/Book"
 type UserBooksProviderValue = {
   bookIdsToShelves: { [key: string]: UserBookShelf }
   bookIdsToLiked: { [key: string]: boolean }
+  fetchShelfAssignments: () => Promise<void>
   shelveBook: (book: Book, shelf: UserBookShelf) => Promise<void>
   unshelveBook: (bookId: string) => Promise<void>
   likeBook: (book: Book) => Promise<void>
@@ -142,6 +143,7 @@ export function UserBooksProvider({ children }) {
     () => ({
       bookIdsToShelves,
       bookIdsToLiked,
+      fetchShelfAssignments,
       shelveBook,
       unshelveBook,
       likeBook,
@@ -152,6 +154,7 @@ export function UserBooksProvider({ children }) {
     [
       bookIdsToShelves,
       bookIdsToLiked,
+      fetchShelfAssignments,
       shelveBook,
       unshelveBook,
       likeBook,
