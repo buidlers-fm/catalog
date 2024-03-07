@@ -9,6 +9,7 @@ import { Tooltip } from "react-tooltip"
 import { BsXLg } from "react-icons/bs"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import { SlInfo } from "react-icons/sl"
+import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
@@ -16,9 +17,10 @@ import FormTextarea from "app/components/forms/FormTextarea"
 import FormToggle from "app/components/forms/FormToggle"
 import allValidations from "lib/constants/validations"
 import { dateTimeFormats } from "lib/constants/dateTime"
-import { dateStringToDateTime } from "lib/helpers/general"
+import { dateStringToDateTime, getNoteLink } from "lib/helpers/general"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import BookNoteType from "enums/BookNoteType"
+import CurrentModal from "enums/CurrentModal"
 import type Book from "types/Book"
 import type BookRead from "types/BookRead"
 
@@ -87,6 +89,8 @@ export default function BookNoteModal({
   like: boolean
   existingBookRead?: BookRead
 }) {
+  const { setCurrentBook, setCurrentModal } = useModals()
+
   const [readingStatus, setReadingStatus] = useState<BookNoteReadingStatus>()
   const [text, setText] = useState<string>("")
   const [textErrorMessage, setTextErrorMessage] = useState<string>()
@@ -180,6 +184,7 @@ export default function BookNoteModal({
 
   const handleClose = async () => {
     await onClose()
+    setCurrentBook(undefined)
     setReadingStatus(undefined)
   }
 
@@ -216,12 +221,21 @@ export default function BookNoteModal({
     }
 
     try {
-      await api.bookNotes.create(requestData)
+      const createdNote = await api.bookNotes.create(requestData)
 
-      toast.success(`Note saved!`, { id: toastId })
+      const successMessage = (
+        <div className="flex flex-col xs:block ml-2">
+          Note saved!&nbsp;&nbsp;
+          <a href={getNoteLink(createdNote.id)} className="underline">
+            View your note.
+          </a>
+        </div>
+      )
+
+      toast.success(successMessage, { id: toastId })
 
       await handleClose()
-      await onSuccess()
+      if (onSuccess) await onSuccess()
       reset()
     } catch (error: any) {
       reportToSentry(error, requestData)
@@ -240,8 +254,15 @@ export default function BookNoteModal({
             <BsXLg className="text-xl" />
           </button>
 
-          <div className="mt-4 flex flex-col md:flex-row">
-            <div className="shrink-0 w-36">
+          <button
+            onClick={() => setCurrentModal(CurrentModal.GlobalCreate)}
+            className="md:hidden mb-2 cat-link text-sm text-gray-300"
+          >
+            back to menu
+          </button>
+
+          <div className="mt-2 flex flex-col md:flex-row">
+            <div className="shrink-0 w-36 flex flex-col justify-between items-start">
               {book.coverImageUrl ? (
                 <img
                   src={book.coverImageUrl}
@@ -251,6 +272,12 @@ export default function BookNoteModal({
               ) : (
                 <CoverPlaceholder size="md" />
               )}
+              <button
+                onClick={() => setCurrentModal(CurrentModal.GlobalCreate)}
+                className="hidden md:block my-2 cat-link text-sm text-gray-300"
+              >
+                back to menu
+              </button>
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
               <div className="">

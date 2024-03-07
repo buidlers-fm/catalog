@@ -6,12 +6,15 @@ import { useState, useEffect } from "react"
 import humps from "humps"
 import "react-modern-drawer/dist/index.css"
 import { BsSearch, BsXLg } from "react-icons/bs"
+import { FaPlus } from "react-icons/fa"
 import { useUser } from "lib/contexts/UserContext"
+import { useModals } from "lib/contexts/ModalsContext"
 import { getUserProfileLink } from "lib/helpers/general"
 import { reportToSentry } from "lib/sentry"
 import Search from "app/components/nav/Search"
 import UserNav from "app/components/nav/UserNav"
 import Announcements from "app/components/nav/Announcements"
+import CurrentModal from "enums/CurrentModal"
 import type Book from "types/Book"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
@@ -22,6 +25,7 @@ export default function Nav() {
   const searchParams = useSearchParams()
 
   const { isFetching: isLoading, currentUserProfile } = useUser()
+  const { setCurrentModal } = useModals()
 
   const navigate = (item, type) => {
     if (type === "books") return navigateToBookPage(item)
@@ -63,6 +67,7 @@ export default function Nav() {
           currentUserProfile={currentUserProfile}
           isLoading={isLoading}
           onSelectItem={navigate}
+          setCurrentModal={setCurrentModal}
         />
       </div>
       <div className="hidden lg:inline-block">
@@ -70,13 +75,14 @@ export default function Nav() {
           currentUserProfile={currentUserProfile}
           isLoading={isLoading}
           onSelectItem={navigate}
+          setCurrentModal={setCurrentModal}
         />
       </div>
     </>
   )
 }
 
-function MobileNav({ currentUserProfile, isLoading, onSelectItem }) {
+function MobileNav({ currentUserProfile, isLoading, onSelectItem, setCurrentModal }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [showMobileSearch, setShowMobileSearch] = useState(false)
@@ -95,15 +101,23 @@ function MobileNav({ currentUserProfile, isLoading, onSelectItem }) {
   }
 
   return (
-    <div className="flex">
-      <button className="mt-1 px-2" onClick={() => setShowMobileSearch(true)}>
+    <div className="flex items-center">
+      <button className="px-2" onClick={() => setShowMobileSearch(true)}>
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
+
       {currentUserProfile && <Announcements currentUserProfile={currentUserProfile} isMobile />}
+
+      {currentUserProfile && (
+        <div className="mx-2">
+          <CreateButton setCurrentModal={setCurrentModal} />
+        </div>
+      )}
+
       {isLoading ? (
-        <div className="ml-2 mt-1 h-6 w-6 bg-gray-500 rounded-full animate-pulse" />
+        <div className="ml-2 -mt-1 h-6 w-6 bg-gray-500 rounded-full animate-pulse" />
       ) : (
-        <div className="mt-1.5">
+        <div className="-mt-0.5">
           <UserNav currentUserProfile={currentUserProfile} />
         </div>
       )}
@@ -130,17 +144,24 @@ function MobileNav({ currentUserProfile, isLoading, onSelectItem }) {
   )
 }
 
-function DesktopNav({ currentUserProfile, isLoading, onSelectItem }) {
+function DesktopNav({ currentUserProfile, isLoading, onSelectItem, setCurrentModal }) {
   return (
     <div className="flex">
-      <div className="mr-10">
+      <div className="mr-8">
         <Search onSelect={onSelectItem} isSignedIn={!!currentUserProfile} />
       </div>
 
-      <div className="flex">
+      <div className="flex items-center">
         {currentUserProfile && (
           <Announcements currentUserProfile={currentUserProfile} isMobile={false} />
         )}
+
+        {currentUserProfile && (
+          <div className="mr-2.5 my-2">
+            <CreateButton setCurrentModal={setCurrentModal} />
+          </div>
+        )}
+
         <div className="mr-4 mt-2">
           {isLoading ? (
             <div className="h-6 w-6 bg-gray-500 rounded-full animate-pulse" />
@@ -150,5 +171,16 @@ function DesktopNav({ currentUserProfile, isLoading, onSelectItem }) {
         </div>
       </div>
     </div>
+  )
+}
+
+function CreateButton({ setCurrentModal }) {
+  return (
+    <button
+      onClick={() => setCurrentModal(CurrentModal.GlobalCreate)}
+      className="cat-btn p-2 cat-btn-gold"
+    >
+      <FaPlus className="text-xs text-black" />
+    </button>
   )
 }

@@ -70,7 +70,7 @@ export default function ResetPassword() {
       />
 
       <button
-        className="cat-btn cat-btn-gold my-2"
+        className="cat-btn cat-btn-md cat-btn-gold my-2"
         onClick={handleSubmit}
         disabled={isSubmitting || !password || !confirmPassword}
       >

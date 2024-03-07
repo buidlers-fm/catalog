@@ -12,13 +12,24 @@ import type Book from "types/Book"
 
 const SHELVES = Object.values(UserBookShelf)
 
+enum MenuButtonShape {
+  Icon,
+  Button,
+}
+
 type Props = {
   book: Book
   onChange?: (shelf: UserBookShelf) => void
   compact?: boolean
+  menuButtonShape?: MenuButtonShape
 }
 
-export default function UserBookShelfMenu({ book, onChange, compact = false }: Props) {
+export default function UserBookShelfMenu({
+  book,
+  onChange,
+  compact = false,
+  menuButtonShape = MenuButtonShape.Icon,
+}: Props) {
   const { bookIdsToShelves, shelveBook, unshelveBook, isLoading } = useUserBooks()
   const currentUserShelf = book.id ? bookIdsToShelves[book.id] : undefined
 
@@ -93,24 +104,32 @@ export default function UserBookShelfMenu({ book, onChange, compact = false }: P
     }
   }
 
-  if (isLoading) return <FaBookmark className="text-gray-500 text-sm animate-pulse" />
+  if (isLoading && menuButtonShape === MenuButtonShape.Icon) {
+    return <FaBookmark className="text-gray-500 text-sm animate-pulse" />
+  }
 
   return (
     <Menu>
       <Float placement="right" offset={10} flip>
-        <Menu.Button className="flex items-center cat-btn-text text-sm">
-          {selectedShelf ? (
-            <div className="flex items-center">
-              <FaBookmark className="text-gold-500 text-sm" />
-              {!compact && <div className="ml-1.5">{shelfToCopy[selectedShelf]}</div>}
-            </div>
-          ) : (
-            <div className="flex items-center text-gray-300">
-              <FaRegBookmark className="text-gray-300 text-sm" />
-              {!compact && <div className="ml-1.5">shelves</div>}
-            </div>
-          )}
-        </Menu.Button>
+        {menuButtonShape === MenuButtonShape.Icon ? (
+          <Menu.Button className="flex items-center cat-btn-text text-sm">
+            {selectedShelf ? (
+              <div className="flex items-center">
+                <FaBookmark className="text-gold-500 text-sm" />
+                {!compact && <div className="ml-1.5">{shelfToCopy[selectedShelf]}</div>}
+              </div>
+            ) : (
+              <div className="flex items-center text-gray-300">
+                <FaRegBookmark className="text-gray-300 text-sm" />
+                {!compact && <div className="ml-1.5">shelves</div>}
+              </div>
+            )}
+          </Menu.Button>
+        ) : (
+          <Menu.Button className="block my-4 cat-btn cat-btn-md cat-btn-gold" disabled={isLoading}>
+            <FaRegBookmark className="inline-block -mt-1 mr-1 text-[16px]" /> shelve book
+          </Menu.Button>
+        )}
         <Menu.Items className="w-[144px] bg-gray-900 rounded">
           {SHELVES.map((shelf) => (
             <Menu.Item key={shelf}>
@@ -129,3 +148,5 @@ export default function UserBookShelfMenu({ book, onChange, compact = false }: P
     </Menu>
   )
 }
+
+export { MenuButtonShape }

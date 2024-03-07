@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { useState } from "react"
-import { BsEnvelopeFill, BsEnvelopePaperHeartFill } from "react-icons/bs"
+import { BsEnvelopePaperHeartFill } from "react-icons/bs"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 
@@ -22,7 +22,7 @@ export default function Announcements({ isMobile, currentUserProfile }) {
   }
 
   const iconOpenClasses = isMobile ? "text-[24px]" : "text-[22px]"
-  const iconClosedClasses = isMobile ? "text-[24px]" : "text-[22px]"
+  // const iconClosedClasses = isMobile ? "text-[24px]" : "text-[22px]"
 
   async function readAnnouncements() {
     if (!hasNewAnnouncements) return
@@ -40,17 +40,23 @@ export default function Announcements({ isMobile, currentUserProfile }) {
     setHasNewAnnouncements(false)
   }
 
+  if (!hasNewAnnouncements) return null
+
   return (
     <button className={`relative ${buttonClasses}`} onClick={readAnnouncements}>
       <Link href="/guide">
-        {hasNewAnnouncements ? (
-          <>
-            <BsEnvelopePaperHeartFill className={`${iconOpenClasses} text-gray-200`} />
-            <span className="w-1.5 h-1.5 absolute top-3 -right-1.5 rounded-full bg-red-300" />
-          </>
-        ) : (
-          <BsEnvelopeFill className={`${iconClosedClasses} text-gray-500`} />
-        )}
+        {/* for if we need to differentiate between read/unread icons again
+          {hasNewAnnouncements ? (
+            <>
+              <BsEnvelopePaperHeartFill className={`${iconOpenClasses} text-gray-200`} />
+              <span className="w-1.5 h-1.5 absolute top-3 -right-1.5 rounded-full bg-red-300" />
+            </>
+          ) : (
+            <BsEnvelopeFill className={`${iconClosedClasses} text-gray-500`} />
+          )}
+        */}
+        <BsEnvelopePaperHeartFill className={`${iconOpenClasses} text-gray-200`} />
+        <span className="w-1.5 h-1.5 absolute top-3 -right-1.5 rounded-full bg-red-300" />
       </Link>
     </button>
   )

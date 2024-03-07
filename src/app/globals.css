@@ -29,7 +29,6 @@ textarea:focus {
 
 .cat-btn {
   @apply font-mulish font-semibold lowercase rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
-  @apply cat-btn-md;
 }
 
 .cat-btn-sm {

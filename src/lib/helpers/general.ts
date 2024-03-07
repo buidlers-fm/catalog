@@ -46,6 +46,23 @@ export const getUserListsLink = (username: string) => `/users/${username}/lists`
 
 export const getBookLink = (slug: string) => `/books/${slug}`
 
+export const getBookLinkWithOpenLibraryIds = (book) => {
+  const queryParams = {
+    openLibraryWorkId: book.openLibraryWorkId,
+    openLibraryEditionId: book.openLibraryBestEditionId,
+  }
+
+  const queryStr = new URLSearchParams(humps.decamelizeKeys(queryParams))
+  const path = `/books?${queryStr}`
+
+  return path
+}
+
+export const getBookLinkAgnostic = (book) => {
+  if (book.slug) return getBookLink(book.slug)
+  return getBookLinkWithOpenLibraryIds(book)
+}
+
 export const getBookEditLink = (slug: string) => `/books/${slug}/edit`
 
 export const getBookEditLinkWithQueryString = (queryString: any) => `/books/edit?${queryString}`

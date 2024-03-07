@@ -5,6 +5,7 @@ import { useUser } from "lib/contexts/UserContext"
 import { useUserBooks } from "lib/contexts/UserBooksContext"
 import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
+import GlobalCreateModal from "app/components/GlobalCreateModal"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import BookNoteModal from "app/components/BookNoteModal"
 import NewBookPostModal from "app/components/NewBookPostModal"
@@ -45,39 +46,43 @@ export default function Modals() {
     return null
   }
 
-  if (!currentBook) {
-    return null
-  }
-
   return (
     <>
-      {currentModal === CurrentModal.AddBookToLists && (
-        <AddBookToListsModal
-          book={currentBook}
-          userLists={userLists}
-          isOpen
-          onClose={() => setCurrentModal(undefined)}
-        />
+      {currentModal === CurrentModal.GlobalCreate && (
+        <GlobalCreateModal isOpen onClose={() => setCurrentModal(undefined)} />
       )}
 
-      {currentModal === CurrentModal.NewNote && (
-        <BookNoteModal
-          book={currentBook}
-          like={isBookLiked}
-          existingBookRead={existingBookRead}
-          isOpen
-          onClose={() => setCurrentModal(undefined)}
-          onSuccess={onNewNoteSuccess}
-        />
-      )}
+      {currentBook && (
+        <>
+          {currentModal === CurrentModal.AddBookToLists && (
+            <AddBookToListsModal
+              book={currentBook}
+              userLists={userLists}
+              isOpen
+              onClose={() => setCurrentModal(undefined)}
+            />
+          )}
 
-      {currentModal === CurrentModal.NewPost && (
-        <NewBookPostModal
-          book={currentBook}
-          isOpen
-          onClose={() => setCurrentModal(undefined)}
-          onSuccess={onNewPostSuccess}
-        />
+          {currentModal === CurrentModal.NewNote && (
+            <BookNoteModal
+              book={currentBook}
+              like={isBookLiked}
+              existingBookRead={existingBookRead}
+              isOpen
+              onClose={() => setCurrentModal(undefined)}
+              onSuccess={onNewNoteSuccess}
+            />
+          )}
+
+          {currentModal === CurrentModal.NewPost && (
+            <NewBookPostModal
+              book={currentBook}
+              isOpen
+              onClose={() => setCurrentModal(undefined)}
+              onSuccess={onNewPostSuccess}
+            />
+          )}
+        </>
       )}
     </>
   )

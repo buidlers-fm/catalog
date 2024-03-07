@@ -49,7 +49,6 @@ export default async function BookListsIndexPage({ params }) {
     orderBy: {
       createdAt: "desc",
     },
-    take: 3,
   })
 
   const lists = await decorateLists(_lists, currentUserProfile)

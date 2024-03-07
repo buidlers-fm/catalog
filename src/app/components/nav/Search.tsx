@@ -26,6 +26,8 @@ type Props = {
   disabledMessage?: string
   fullWidth?: boolean
   isSignedIn?: boolean
+  placeholderText?: string
+  maxHeightClass?: string
 }
 
 const concatUniqueSearchResults = (resultsA, resultsB) => {
@@ -45,6 +47,8 @@ export default function Search({
   disabledMessage,
   fullWidth: _fullWidth,
   isSignedIn = false,
+  placeholderText,
+  maxHeightClass = "max-h-[calc(100vh-192px)]",
 }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -214,15 +218,17 @@ export default function Search({
     searchMode === "books" && ((isSearching && !searchResults) || !!selectedBook)
   const isLoadingMoreBooksResults = searchMode === "books" && isSearching && searchResults
 
-  let placeholder
-  if (isNav) {
-    if (isSignedIn) {
-      placeholder = "book title and author (or @ for user)"
+  let placeholder = placeholderText
+  if (!placeholder) {
+    if (isNav) {
+      if (isSignedIn) {
+        placeholder = "book title and author (or @ for user)"
+      } else {
+        placeholder = "search by title and author"
+      }
     } else {
-      placeholder = "search by title and author"
+      placeholder = "add by title and author"
     }
-  } else {
-    placeholder = "add by title and author"
   }
 
   return (
@@ -258,6 +264,7 @@ export default function Search({
                     <UserSearchResults
                       isLoading={isLoadingUsers}
                       searchResults={userSearchResults}
+                      maxHeightClass={maxHeightClass}
                     />
                   ) : (
                     <BookSearchResults
@@ -265,6 +272,7 @@ export default function Search({
                       searchResults={searchResults}
                       isLoadingMoreResults={isLoadingMoreBooksResults}
                       moreResultsExist={moreResultsExist}
+                      maxHeightClass={maxHeightClass}
                     />
                   )}
                 </Combobox.Options>
@@ -277,7 +285,7 @@ export default function Search({
   )
 }
 
-function UserSearchResults({ isLoading, searchResults }) {
+function UserSearchResults({ isLoading, searchResults, maxHeightClass }) {
   return (
     <>
       {isLoading && (
@@ -290,7 +298,7 @@ function UserSearchResults({ isLoading, searchResults }) {
         <div className="px-6 py-3">No users found.</div>
       )}
       {!isLoading && searchResults && searchResults.length > 0 && (
-        <div className="max-h-[calc(100vh-192px)] overflow-y-auto">
+        <div className={`${maxHeightClass} overflow-y-auto`}>
           {searchResults.map((userProfile) => (
             <Combobox.Option key={userProfile.id} value={userProfile} as={Fragment}>
               {({ active }) => (
@@ -310,7 +318,13 @@ function UserSearchResults({ isLoading, searchResults }) {
   )
 }
 
-function BookSearchResults({ isLoading, searchResults, isLoadingMoreResults, moreResultsExist }) {
+function BookSearchResults({
+  isLoading,
+  searchResults,
+  isLoadingMoreResults,
+  moreResultsExist,
+  maxHeightClass,
+}) {
   return (
     <>
       {isLoading && (
@@ -323,7 +337,7 @@ function BookSearchResults({ isLoading, searchResults, isLoadingMoreResults, mor
         <div className="px-6 py-3">No books found.</div>
       )}
       {!isLoading && searchResults && searchResults.length > 0 && (
-        <div className="max-h-[calc(100vh-192px)] overflow-y-auto">
+        <div className={`${maxHeightClass} overflow-y-auto`}>
           {searchResults.map((book) => (
             <Combobox.Option key={book.openLibraryWorkId} value={book} as={Fragment}>
               {({ active }) => (

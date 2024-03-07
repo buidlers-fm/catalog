@@ -58,7 +58,13 @@ export default function BookPage({
 }) {
   const searchParams = useSearchParams()
   const { fetchShelfAssignments } = useUserBooks()
-  const { setCurrentBook, setCurrentModal, setExistingBookRead, setOnNewNoteSuccess } = useModals()
+  const {
+    setPotentialCurrentBook,
+    setCurrentBook,
+    setCurrentModal,
+    setExistingBookRead,
+    setOnNewNoteSuccess,
+  } = useModals()
 
   const [bookLists, setBookLists] = useState<List[]>()
   const [bookActivity, setBookActivity] = useState<BookActivity>({} as any)
@@ -70,8 +76,8 @@ export default function BookPage({
   const [showShelvesAddNoteTooltip, setShowShelvesAddNoteTooltip] = useState<boolean>(false)
 
   useEffect(() => {
-    setCurrentBook(book)
-  }, [book, setCurrentBook])
+    setPotentialCurrentBook(book)
+  }, [book, setPotentialCurrentBook])
 
   const imgRef = useRef(null)
 
@@ -269,6 +275,11 @@ export default function BookPage({
     setOnNewNoteSuccess(() => refetchBookData)
   }, [setOnNewNoteSuccess, refetchBookData])
 
+  function showModal(modalType: CurrentModal) {
+    setCurrentBook(book)
+    setCurrentModal(modalType)
+  }
+
   const isSignedIn = !!currentUserProfile
 
   const totalShelfCounts = humps.decamelizeKeys(bookActivity.totalShelfCounts) || {}
@@ -327,7 +338,7 @@ export default function BookPage({
                 >
                   <button
                     onClick={() => {
-                      setCurrentModal(CurrentModal.NewNote)
+                      showModal(CurrentModal.NewNote)
                       setShowLikeAddNoteTooltip(false)
                     }}
                   >
@@ -350,7 +361,7 @@ export default function BookPage({
                 >
                   <button
                     onClick={() => {
-                      setCurrentModal(CurrentModal.NewNote)
+                      showModal(CurrentModal.NewNote)
                       setShowShelvesAddNoteTooltip(false)
                     }}
                   >
@@ -405,7 +416,7 @@ export default function BookPage({
               <div className="mt-4 mb-8 font-mulish">
                 <button
                   type="button"
-                  onClick={() => setCurrentModal(CurrentModal.AddBookToLists)}
+                  onClick={() => showModal(CurrentModal.AddBookToLists)}
                   className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                 >
                   <FaPlus className="inline-block -mt-[5px] mr-1 text-[14px]" /> add to list
@@ -413,7 +424,7 @@ export default function BookPage({
 
                 <button
                   type="button"
-                  onClick={() => setCurrentModal(CurrentModal.NewNote)}
+                  onClick={() => showModal(CurrentModal.NewNote)}
                   className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
                 >
                   <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> add note or
