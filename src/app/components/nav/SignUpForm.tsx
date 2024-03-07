@@ -104,7 +104,11 @@ export default function SignUpForm({
         textColor="text-teal-500"
         focusColor="focus:ring-teal-500"
       />
-      <button className="cat-btn cat-btn-teal my-4" onClick={handleSubmit} disabled={isSubmitting}>
+      <button
+        className="cat-btn cat-btn-md cat-btn-teal my-4"
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+      >
         Sign up
       </button>
       {errorMessage && <div className="my-3 text-red-500">{errorMessage}</div>}

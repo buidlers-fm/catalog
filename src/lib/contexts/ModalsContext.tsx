@@ -11,6 +11,8 @@ type ModalsProviderValue = {
   setCurrentModal: (modal?: CurrentModal) => void
   currentBook?: Book
   setCurrentBook: (book?: Book) => void
+  potentialCurrentBook?: Book
+  setPotentialCurrentBook: (book?: Book) => void
   existingBookRead?: BookRead
   setExistingBookRead: (bookRead?: BookRead) => void
   onNewNoteSuccess: () => void
@@ -26,15 +28,21 @@ export function ModalsProvider({ children }) {
 
   const [currentModal, setCurrentModal] = useState<CurrentModal>()
   const [currentBook, setCurrentBook] = useState<Book>()
+  const [potentialCurrentBook, setPotentialCurrentBook] = useState<Book>()
   const [existingBookRead, setExistingBookRead] = useState<BookRead>()
   const [onNewNoteSuccess, setOnNewNoteSuccess] = useState<() => void>(() => {})
   const [onNewPostSuccess, setOnNewPostSuccess] = useState<() => void>(() => {})
 
   useEffect(() => {
+    setCurrentBook(undefined)
     setCurrentModal(undefined)
     setExistingBookRead(undefined)
     setOnNewNoteSuccess(() => {})
     setOnNewPostSuccess(() => {})
+
+    if (!pathname.includes("/books")) {
+      setPotentialCurrentBook(undefined)
+    }
   }, [pathname])
 
   const providerValue = useMemo(
@@ -43,6 +51,8 @@ export function ModalsProvider({ children }) {
       setCurrentModal,
       currentBook,
       setCurrentBook,
+      potentialCurrentBook,
+      setPotentialCurrentBook,
       existingBookRead,
       setExistingBookRead,
       onNewNoteSuccess,
@@ -55,6 +65,8 @@ export function ModalsProvider({ children }) {
       setCurrentModal,
       currentBook,
       setCurrentBook,
+      potentialCurrentBook,
+      setPotentialCurrentBook,
       existingBookRead,
       setExistingBookRead,
       onNewNoteSuccess,

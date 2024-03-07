@@ -7,19 +7,23 @@ import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import { FaRegQuestionCircle } from "react-icons/fa"
 import { Tooltip } from "react-tooltip"
+import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import allValidations from "lib/constants/validations"
-import { isValidHttpUrl } from "lib/helpers/general"
+import { isValidHttpUrl, getPostLink } from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormInput from "app/components/forms/FormInput"
 import FormTextarea from "app/components/forms/FormTextarea"
 import FormToggle from "app/components/forms/FormToggle"
 import BookNoteType from "enums/BookNoteType"
+import CurrentModal from "enums/CurrentModal"
 
 const bookPostValidations = allValidations.bookPost
 
 export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
+  const { setCurrentBook, setCurrentModal } = useModals()
+
   const [text, setText] = useState<string>("")
   const [textErrorMessage, setTextErrorMessage] = useState<string>()
   const [isBusy, setIsBusy] = useState<boolean>(false)
@@ -68,6 +72,7 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
 
   const handleClose = async () => {
     await onClose()
+    setCurrentBook(undefined)
   }
 
   const submit = async (formData: BookPostFormData) => {
@@ -96,11 +101,20 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
     }
 
     try {
-      await api.bookPosts.create(requestData)
+      const createdPost = await api.bookPosts.create(requestData)
 
-      toast.success(`Post saved!`, { id: toastId })
+      const successMessage = (
+        <div className="flex flex-col xs:block ml-2">
+          Post saved!&nbsp;&nbsp;
+          <a href={getPostLink(createdPost.id)} className="underline">
+            View your post.
+          </a>
+        </div>
+      )
 
-      await onSuccess()
+      toast.success(successMessage, { id: toastId })
+
+      if (onSuccess) await onSuccess()
       await handleClose()
       reset()
     } catch (error: any) {
@@ -136,6 +150,13 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
             <BsXLg className="text-xl" />
           </button>
 
+          <button
+            onClick={() => setCurrentModal(CurrentModal.GlobalCreate)}
+            className="md:hidden mb-2 cat-link text-sm text-gray-300"
+          >
+            back to menu
+          </button>
+
           <div className="mt-4 flex flex-col md:flex-row">
             <div className="shrink-0 w-36">
               {book.coverImageUrl ? (
@@ -147,9 +168,16 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
               ) : (
                 <CoverPlaceholder size="md" />
               )}
+
+              <button
+                onClick={() => setCurrentModal(CurrentModal.GlobalCreate)}
+                className="hidden md:block my-2 cat-link text-sm text-gray-300"
+              >
+                back to menu
+              </button>
             </div>
             <div className="mt-8 md:mt-0 md:ml-8">
-              <div className="cat-eyebrow-uppercase">New post</div>
+              <div className="cat-eyebrow-uppercase">New post / thread</div>
               <div className="grow mt-4 text-2xl font-semibold font-newsreader">{book.title}</div>
               <div className="text-gray-300 text-lg font-newsreader">by {book.authorName}</div>
               <div className="">

@@ -6,15 +6,18 @@ import { Dialog } from "@headlessui/react"
 import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
 import { FaCheck, FaPlus } from "react-icons/fa6"
+import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import { useUser } from "lib/contexts/UserContext"
 import { getNewListLink } from "lib/helpers/general"
+import CurrentModal from "enums/CurrentModal"
 import type List from "types/List"
 
 export default function AddBookToListsModal({ book, userLists, onClose, isOpen }) {
   const router = useRouter()
   const { currentUser } = useUser()
+  const { setCurrentBook, setCurrentModal } = useModals()
 
   const [selectedLists, setSelectedLists] = useState<List[]>([])
   const [isBusy, setIsBusy] = useState<boolean>(false)
@@ -36,6 +39,7 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
 
   const handleClose = async () => {
     await onClose()
+    setCurrentBook(undefined)
   }
 
   const handleClickNewList = () => {
@@ -108,7 +112,14 @@ export default function AddBookToListsModal({ book, userLists, onClose, isOpen }
             ))}
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <button
+              onClick={() => setCurrentModal(CurrentModal.GlobalCreate)}
+              className="cat-link text-sm text-gray-300"
+            >
+              back to menu
+            </button>
+
             <button
               type="button"
               onClick={handleSubmit}

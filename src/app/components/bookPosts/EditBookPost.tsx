@@ -128,7 +128,7 @@ export default function EditBookLinkPost({ bookPost, onEditSuccess, onDeleteSucc
       <div className="flex justify-end">
         <button
           disabled={isBusy}
-          className="mr-2 cat-btn cat-btn-red-outline text-red-500"
+          className="mr-2 cat-btn cat-btn-sm cat-btn-red-outline text-red-500"
           onClick={() => setShowDeleteConfirmation(true)}
         >
           <TbTrash className="text-xl" />

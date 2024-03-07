@@ -304,7 +304,7 @@ export default function EditBookCovers({ book }) {
         type="button"
         onClick={submit}
         disabled={(!selectedCoverUrl && !urlInput) || isSubmitting}
-        className="my-8 cat-btn cat-btn-gold"
+        className="my-8 cat-btn cat-btn-sm cat-btn-gold"
       >
         save
       </button>
