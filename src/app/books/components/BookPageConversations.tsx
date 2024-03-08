@@ -29,7 +29,7 @@ const slugsToFeedUris = {
 }
 
 export default function BookPageConversations({ book, currentUserProfile, getBook }) {
-  const { setCurrentModal, setOnNewPostSuccess } = useModals()
+  const { setCurrentBook, setCurrentModal, setOnNewPostSuccess } = useModals()
 
   const [posts, setPosts] = useState<any[]>()
   const [blueskyPosts, setBlueskyPosts] = useState<any[]>()
@@ -118,6 +118,11 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
     setBlueskyNextPage(_nextPage)
   }
 
+  function showModal(modalType: CurrentModal) {
+    setCurrentBook(book)
+    setCurrentModal(modalType)
+  }
+
   return (
     <>
       <div className="flex justify-between text-gray-300 text-sm">
@@ -160,7 +165,7 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
           (isSignedIn ? (
             <div className="flex -mt-1 items-end">
               <button
-                onClick={() => setCurrentModal(CurrentModal.NewPost)}
+                onClick={() => showModal(CurrentModal.NewPost)}
                 className="cat-btn cat-btn-sm cat-btn-gray mx-2"
               >
                 +<span className="hidden sm:inline"> create a thread</span>
