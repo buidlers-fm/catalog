@@ -21,7 +21,7 @@ A running journal of things we've been working on around catalog. 🛠️ 🚧
 
 Main things:
 
-- New `+` button in nav so you can add a book to your shelves/lists or post about it from any page.
+- New "+" button in nav so you can add a book to your shelves/lists or post about it from any page.
 
 Small fixes/improvements:
 
