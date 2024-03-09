@@ -7,6 +7,7 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 - 🛠️ Allow catalog users to edit book details and covers, and add new books.
   - Sync these changes back to OpenLibrary if possible.
 - 🛠️ Bluesky integration phase 0: ability to add existing Bluesky feeds to books as read-only conversations.
+- 🛠️ A whole batch of UI features to make it easier to interact with a book from any page.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
 - ⌛️ Allow users to see and edit their reading history/timeline (also with privacy/visibility settings).
 
@@ -15,6 +16,18 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## march 4-10, 2024
+
+Main things:
+
+- New `+` button in nav so you can add a book to your shelves/lists or post about it from any page.
+
+Small fixes/improvements:
+
+- Fixed bug when trying to edit a current status that currently has no text
+- Changed how the profile page loads, to make it load faster and to reduce timeout errors on this page
+- Fixed: book's lists page not showing all lists
 
 ## february 26 - march 3, 2024
 
