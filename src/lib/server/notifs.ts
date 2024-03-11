@@ -1,4 +1,3 @@
-import humps from "humps"
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import { commentParentTypeToNotificationObjectType } from "lib/helpers/general"

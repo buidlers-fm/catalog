@@ -186,13 +186,13 @@ export const decorateWithSaves = async (
   })
 
   const savesByItemId = saves.reduce((result, save) => {
-    result[save.objectId] = save.id
+    result[save.objectId] = save
     return result
   }, {})
 
   return items.map((item) => ({
     ...item,
-    saveId: savesByItemId[item.id],
+    save: savesByItemId[item.id],
   }))
 }
 

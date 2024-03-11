@@ -60,7 +60,7 @@ export default function UserList({
     updatedAt: _updatedAt,
     likeCount,
     currentUserLike,
-    saveId,
+    save,
   } = list
   const { name, username } = UserProfile.build(userProfile)
   const createdAtFromNow = dayjs(createdAt).fromNow()
@@ -150,9 +150,9 @@ export default function UserList({
         {currentUserProfile && listId && (
           <div className="ml-4">
             <SaveBookmark
-              savedObjectType={CommentParentType.List}
+              savedObjectType={InteractionObjectType.List}
               savedObjectId={listId}
-              saveId={saveId}
+              saveId={save?.id}
             />
           </div>
         )}

@@ -9,7 +9,6 @@ import SaveBookmark from "app/components/saves/SaveBookmark"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import ExpandableText from "app/components/ExpandableText"
 import Likes from "app/components/Likes"
-import CommentParentType from "enums/CommentParentType"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 const TEXT_TRUNCATE_LENGTH = 500
@@ -39,7 +38,7 @@ export default function CommentCard({
     likeCount,
     currentUserLike,
     depth,
-    saveId,
+    save,
   } = comment
 
   const [text, setText] = useState<string>(_text)
@@ -112,7 +111,7 @@ export default function CommentCard({
 
         {!!currentUserProfile && !isReplying && depth < 2 && onClickReply && (
           <div className="flex items-center">
-            <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+            <FaRegComment className="ml-2 mr-1.5 text-gray-500 text-md" />
             <button
               className="flex border-b border-b-gray-500 text-sm text-gray-500"
               onClick={onClickReply}
@@ -125,9 +124,9 @@ export default function CommentCard({
         {currentUserProfile && id && (
           <div className="ml-4">
             <SaveBookmark
-              savedObjectType={CommentParentType.Comment}
+              savedObjectType={InteractionObjectType.Comment}
               savedObjectId={id}
-              saveId={saveId}
+              saveId={save?.id}
             />
           </div>
         )}

@@ -1,5 +1,6 @@
 import CommentParentType from "enums/CommentParentType"
 import type Like from "types/Like"
+import type Save from "types/Save"
 
 export default interface Comment {
   id?: string
@@ -17,5 +18,5 @@ export default interface Comment {
   parent?: any
   likeCount?: number
   currentUserLike?: Like // in-memory only
-  saveId?: string // in-memory only
+  save?: Save // in-memory only
 }

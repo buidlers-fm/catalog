@@ -21,7 +21,6 @@ import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import Likes from "app/components/Likes"
 import InteractionObjectType from "enums/InteractionObjectType"
-import CommentParentType from "enums/CommentParentType"
 
 dayjs.extend(relativeTime)
 
@@ -50,7 +49,7 @@ export default function BookLinkPostCard({
     currentUserLike,
     comments,
     commentCount,
-    saveId,
+    save,
   } = post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
@@ -172,9 +171,9 @@ export default function BookLinkPostCard({
             {currentUserProfile && id && (
               <div className="ml-4">
                 <SaveBookmark
-                  savedObjectType={CommentParentType.Post}
+                  savedObjectType={InteractionObjectType.Post}
                   savedObjectId={id}
-                  saveId={saveId}
+                  saveId={save?.id}
                 />
               </div>
             )}

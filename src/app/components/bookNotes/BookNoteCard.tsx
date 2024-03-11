@@ -21,7 +21,6 @@ import Likes from "app/components/Likes"
 import SaveBookmark from "app/components/saves/SaveBookmark"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import InteractionObjectType from "enums/InteractionObjectType"
-import CommentParentType from "enums/CommentParentType"
 
 dayjs.extend(relativeTime)
 
@@ -60,7 +59,7 @@ export default function BookNoteCard({
     creatorLikedBook,
     comments,
     hasSpoilers,
-    saveId,
+    save,
   } = note
 
   const creator = UserProfile.build(_creator)
@@ -204,9 +203,9 @@ export default function BookNoteCard({
             {currentUserProfile && id && (
               <div className="ml-4">
                 <SaveBookmark
-                  savedObjectType={CommentParentType.Note}
+                  savedObjectType={InteractionObjectType.Note}
                   savedObjectId={id}
-                  saveId={saveId}
+                  saveId={save?.id}
                 />
               </div>
             )}
