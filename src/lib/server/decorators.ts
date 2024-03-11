@@ -51,7 +51,8 @@ export const decorateLists = async (lists, currentUserProfile?) => {
 
   _lists = await decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
   _lists = await decorateWithComments(_lists, CommentParentType.List, currentUserProfile)
-  if (currentUserProfile) _lists = await decorateWithSaves(_lists, CommentParentType.List, currentUserProfile)
+  if (currentUserProfile)
+    _lists = await decorateWithSaves(_lists, InteractionObjectType.List, currentUserProfile)
 
   return _lists
 }
@@ -165,8 +166,8 @@ export const decorateWithLikes = async (
 }
 
 export const decorateWithSaves = async (
-  lists: any[],
-  objectType: CommentParentType,
+  items: any[],
+  objectType: InteractionObjectType,
   currentUserProfile: UserProfileProps,
 ) => {
   const saves = await prisma.interaction.findMany({
@@ -175,7 +176,7 @@ export const decorateWithSaves = async (
       agentType: InteractionAgentType.User,
       interactionType: InteractionType.Save,
       objectId: {
-        in: lists.map((list) => list.id),
+        in: items.map((item) => item.id),
       },
       objectType,
     },
@@ -184,14 +185,14 @@ export const decorateWithSaves = async (
     },
   })
 
-  const savesByListId = saves.reduce((result, save) => {
+  const savesByItemId = saves.reduce((result, save) => {
     result[save.objectId] = save.id
     return result
   }, {})
 
-  return lists.map((list) => ({
-    ...list,
-    saveId: savesByListId[list.id],
+  return items.map((item) => ({
+    ...item,
+    saveId: savesByItemId[item.id],
   }))
 }
 
@@ -247,7 +248,7 @@ export const decorateComments = async (comments, currentUserProfile, depth = 0) 
   if (currentUserProfile)
     finalComments = await decorateWithSaves(
       finalComments,
-      CommentParentType.Comment,
+      InteractionObjectType.Comment,
       currentUserProfile,
     )
 

@@ -33,7 +33,8 @@ export default async function RecentNotesPage() {
 
   notes = await decorateWithLikes(notes, InteractionObjectType.BookNote, currentUserProfile)
   notes = await decorateWithComments(notes, CommentParentType.Note, currentUserProfile)
-  if (currentUserProfile) notes = await decorateWithSaves(notes, CommentParentType.Note, currentUserProfile)
+  if (currentUserProfile)
+    notes = await decorateWithSaves(notes, InteractionObjectType.BookNote, currentUserProfile)
 
   return <NotesIndex notes={notes} currentUserProfile={currentUserProfile} />
 }

@@ -103,7 +103,11 @@ async function getBookNotes(params: {
   bookNotes = await decorateWithComments(bookNotes, commentParentType, currentUserProfile)
 
   if (currentUserProfile)
-    bookNotes = await decorateWithSaves(bookNotes, CommentParentType.Note, currentUserProfile)
+    bookNotes = await decorateWithSaves(
+      bookNotes,
+      InteractionObjectType.BookNote,
+      currentUserProfile,
+    )
 
   return bookNotes
 }

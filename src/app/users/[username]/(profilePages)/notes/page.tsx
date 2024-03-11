@@ -53,7 +53,7 @@ export default async function UserBookNotesPage({ params }) {
   if (currentUserProfile)
     userProfile.bookNotes = await decorateWithSaves(
       userProfile.bookNotes,
-      CommentParentType.Note,
+      InteractionObjectType.BookNote,
       currentUserProfile,
     )
 

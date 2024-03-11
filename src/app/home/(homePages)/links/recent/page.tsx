@@ -44,7 +44,7 @@ export default async function RecentPostsPage() {
   posts = await decorateWithComments(posts, CommentParentType.Post, currentUserProfile)
 
   if (currentUserProfile)
-    posts = await decorateWithSaves(posts, CommentParentType.Post, currentUserProfile)
+    posts = await decorateWithSaves(posts, InteractionObjectType.BookNote, currentUserProfile)
 
   return <PostsIndex posts={posts} currentUserProfile={currentUserProfile} />
 }
