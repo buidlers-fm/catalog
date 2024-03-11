@@ -42,7 +42,7 @@ export default async function UserBookNotesPage({ params }) {
 
   userProfile.bookNotes = await decorateWithLikes(
     userProfile.bookNotes,
-    InteractionObjectType.BookNote,
+    InteractionObjectType.Note,
     currentUserProfile,
   )
   userProfile.bookNotes = await decorateWithComments(
@@ -53,7 +53,7 @@ export default async function UserBookNotesPage({ params }) {
   if (currentUserProfile)
     userProfile.bookNotes = await decorateWithSaves(
       userProfile.bookNotes,
-      InteractionObjectType.BookNote,
+      InteractionObjectType.Note,
       currentUserProfile,
     )
 

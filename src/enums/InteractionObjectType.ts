@@ -1,5 +1,6 @@
 enum InteractionObjectType {
-  BookNote = "book_note",
+  Note = "note",
+  Post = "post",
   Book = "book",
   Comment = "comment",
   List = "list",
@@ -8,7 +9,8 @@ enum InteractionObjectType {
 }
 
 const interactionObjectTypesToTableNames = {
-  [InteractionObjectType.BookNote]: "book_notes",
+  [InteractionObjectType.Note]: "book_notes",
+  [InteractionObjectType.Post]: "book_notes",
   [InteractionObjectType.Book]: "books",
   [InteractionObjectType.Comment]: "comments",
   [InteractionObjectType.List]: "lists",

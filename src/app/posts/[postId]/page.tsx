@@ -33,10 +33,10 @@ export default async function PostPage({ params }) {
   })
 
   if (!post) notFound()
-  ;[post] = await decorateWithLikes([post], InteractionObjectType.BookNote, currentUserProfile)
+  ;[post] = await decorateWithLikes([post], InteractionObjectType.Post, currentUserProfile)
   ;[post] = await decorateWithComments([post], CommentParentType.Post, currentUserProfile)
   if (currentUserProfile)
-    [post] = await decorateWithSaves([post], InteractionObjectType.BookNote, currentUserProfile)
+    [post] = await decorateWithSaves([post], InteractionObjectType.Post, currentUserProfile)
 
   return <Post post={post} currentUserProfile={currentUserProfile} />
 }

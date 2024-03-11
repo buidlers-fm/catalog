@@ -65,7 +65,7 @@ export const decorateWithLikes = async (
   let objects = _objects
 
   // decorate book note objects with whether creator liked the book
-  if (objectType === InteractionObjectType.BookNote) {
+  if (objectType === InteractionObjectType.Note) {
     // all book note creators' likes of all the books (set might contain some irrelevant likes)
     const allCreatorBookLikes = await prisma.interaction.findMany({
       where: {

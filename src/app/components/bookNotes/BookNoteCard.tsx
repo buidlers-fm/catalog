@@ -177,7 +177,7 @@ export default function BookNoteCard({
             <Likes
               interactive={!!currentUserProfile}
               likedObject={note}
-              likedObjectType={InteractionObjectType.BookNote}
+              likedObjectType={InteractionObjectType.Note}
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />

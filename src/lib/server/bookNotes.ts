@@ -90,11 +90,13 @@ async function getBookNotes(params: {
     })
   }
 
-  let bookNotes = await decorateWithLikes(
-    _bookNotes,
-    InteractionObjectType.BookNote,
-    currentUserProfile,
-  )
+  // in practice this is always an array with 1 item because
+  // querying for multiple types at once is deprecated, as a concept
+  const noteType = noteTypes[0] as BookNoteType
+  const objectType =
+    noteType === BookNoteType.Post ? InteractionObjectType.Post : InteractionObjectType.Note
+
+  let bookNotes = await decorateWithLikes(_bookNotes, objectType, currentUserProfile)
 
   const commentParentType = noteTypes.includes(BookNoteType.Post)
     ? CommentParentType.Post
@@ -103,11 +105,7 @@ async function getBookNotes(params: {
   bookNotes = await decorateWithComments(bookNotes, commentParentType, currentUserProfile)
 
   if (currentUserProfile)
-    bookNotes = await decorateWithSaves(
-      bookNotes,
-      InteractionObjectType.BookNote,
-      currentUserProfile,
-    )
+    bookNotes = await decorateWithSaves(bookNotes, objectType, currentUserProfile)
 
   return bookNotes
 }

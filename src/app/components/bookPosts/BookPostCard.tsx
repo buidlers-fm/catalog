@@ -155,7 +155,7 @@ export default function BookLinkPostCard({
             <Likes
               interactive={!!currentUserProfile}
               likedObject={post}
-              likedObjectType={InteractionObjectType.BookNote}
+              likedObjectType={InteractionObjectType.Post}
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />
