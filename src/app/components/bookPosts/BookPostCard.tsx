@@ -27,6 +27,16 @@ dayjs.extend(relativeTime)
 const { longAmericanDate: timestampFormat } = dateTimeFormats
 const bookPostValidations = allValidations.bookPost
 
+type Props = {
+  post: any
+  withCover?: boolean
+  showText?: boolean
+  currentUserProfile?: any
+  onEditSuccess: () => void
+  onDeleteSuccess: () => void
+  onSaveUnsave?: () => void
+}
+
 export default function BookLinkPostCard({
   post,
   withCover = true,
@@ -34,7 +44,8 @@ export default function BookLinkPostCard({
   currentUserProfile,
   onEditSuccess,
   onDeleteSuccess,
-}) {
+  onSaveUnsave,
+}: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const {
     id,
@@ -174,6 +185,7 @@ export default function BookLinkPostCard({
                   savedObjectType={InteractionObjectType.Post}
                   savedObjectId={id}
                   saveId={save?.id}
+                  onSaveUnsave={onSaveUnsave}
                 />
               </div>
             )}

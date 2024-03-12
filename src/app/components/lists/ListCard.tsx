@@ -9,13 +9,23 @@ import InteractionObjectType from "enums/InteractionObjectType"
 
 const NUM_BOOK_COVERS = 4
 
+type Props = {
+  list: any
+  withByline?: boolean
+  separators?: boolean
+  compact?: boolean
+  currentUserProfile?: any
+  onSaveUnsave?: () => void
+}
+
 export default function ListCard({
   list,
   withByline = false,
   separators = true,
   compact = false,
   currentUserProfile,
-}) {
+  onSaveUnsave,
+}: Props) {
   const totalBookCount = list.books.length
   const { likeCount, save, id: listId } = list
   const books = list.books.slice(0, NUM_BOOK_COVERS)
@@ -34,7 +44,7 @@ export default function ListCard({
             ))}
           </div>
         </Link>
-        <div className="mt-4 sm:mt-2 sm:mx-4 grow">
+        <div className="mt-4 sm:mt-2 sm:mx-4 grow font-mulish">
           <div className="mt-[-8px]">
             <Link href={list.url}>
               <div className="font-bold">{truncateString(list.title, 64)}</div>
@@ -61,6 +71,7 @@ export default function ListCard({
                     savedObjectType={InteractionObjectType.List}
                     savedObjectId={listId}
                     saveId={save?.id}
+                    onSaveUnsave={onSaveUnsave}
                   />
                 </div>
               )}

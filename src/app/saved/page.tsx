@@ -1,39 +1,29 @@
-import { notFound, redirect } from "next/navigation"
-import prisma from "lib/prisma"
+import { redirect } from "next/navigation"
 import { getCurrentUserProfile } from "lib/server/auth"
-import InteractionType from "enums/InteractionType"
-import InteractionAgentType from "enums/InteractionAgentType"
+import SavedItems from "app/components/SavedItems"
+import type { Metadata } from "next"
 
-const SavedPage = async () => {
+export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "saved items • catalog",
+  openGraph: {
+    title: "saved items • catalog",
+  },
+}
+
+export default async function SavedPage() {
   const currentUserProfile = await getCurrentUserProfile({ requireSignedIn: true })
+  console.log(1)
   const isSignedIn = !!currentUserProfile
 
+  console.log(2)
   if (!isSignedIn) redirect("/")
 
-  const saves = await prisma.interaction.findMany({
-    where: {
-      interactionType: InteractionType.Save,
-      agentId: currentUserProfile.id,
-      agentType: InteractionAgentType.User,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
-
-  if (!saves) notFound()
-
-  // CHANGE ME
+  console.log(3)
   return (
     <div className="flex justify-center items-center flex-col">
-      {saves.map((save) => (
-        <div key={save.id}>
-          <span>Saved Object Type: {save.objectType}</span>
-          <span>Saved Object ID: {save.objectId}</span>
-        </div>
-      ))}
+      <SavedItems />
     </div>
   )
 }
-
-export default SavedPage

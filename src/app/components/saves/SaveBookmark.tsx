@@ -12,9 +12,15 @@ interface SaveProps {
   savedObjectType: InteractionObjectType
   savedObjectId: string
   saveId?: string
+  onSaveUnsave?: () => void
 }
 
-const SaveBookmark = ({ savedObjectType, savedObjectId, saveId: _saveId }: SaveProps) => {
+const SaveBookmark = ({
+  savedObjectType,
+  savedObjectId,
+  saveId: _saveId,
+  onSaveUnsave,
+}: SaveProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [saveId, setSaveId] = useState(_saveId)
 
@@ -29,7 +35,21 @@ const SaveBookmark = ({ savedObjectType, savedObjectId, saveId: _saveId }: SaveP
 
       setSaveId(savedObjectResp.id)
 
-      toast.success(`Saved ${savedObjectType}!`)
+      const successMessage = (
+        <div className="">
+          Saved {savedObjectType}! Go to your{" "}
+          <a href="/saved" className="underline">
+            saved items
+          </a>{" "}
+          to see it.
+        </div>
+      )
+
+      toast.success(successMessage)
+
+      if (onSaveUnsave) {
+        onSaveUnsave()
+      }
     } catch (error: any) {
       reportToSentry(error, {
         savedObjectId,
@@ -52,6 +72,10 @@ const SaveBookmark = ({ savedObjectType, savedObjectId, saveId: _saveId }: SaveP
       setSaveId(undefined)
 
       toast.success(`Unsaved ${savedObjectType}!`)
+
+      if (onSaveUnsave) {
+        onSaveUnsave()
+      }
     } catch (error: any) {
       reportToSentry(error, {
         savedObjectId,

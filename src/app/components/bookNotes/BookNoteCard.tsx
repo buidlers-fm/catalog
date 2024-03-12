@@ -35,6 +35,7 @@ type Props = {
   currentUserProfile?: UserProfileProps
   onEditSuccess: () => void
   onDeleteSuccess: () => void
+  onSaveUnsave?: () => void
 }
 
 export default function BookNoteCard({
@@ -44,6 +45,7 @@ export default function BookNoteCard({
   currentUserProfile,
   onEditSuccess,
   onDeleteSuccess,
+  onSaveUnsave,
 }: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
 
@@ -206,6 +208,7 @@ export default function BookNoteCard({
                   savedObjectType={InteractionObjectType.Note}
                   savedObjectId={id}
                   saveId={save?.id}
+                  onSaveUnsave={onSaveUnsave}
                 />
               </div>
             )}

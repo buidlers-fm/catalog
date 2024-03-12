@@ -283,6 +283,7 @@ const api = {
     },
   },
   saves: {
+    get: () => fetchJson(`/api/saves`),
     create: (requestData) =>
       fetchJson(`/api/saves`, {
         method: "POST",

@@ -14,6 +14,7 @@ async function getBookNotes(params: {
   limit?: number
   requireText?: boolean
   sort?: Sort
+  moreFilters?: any
 }) {
   const {
     currentUserProfile,
@@ -24,6 +25,8 @@ async function getBookNotes(params: {
     requireText,
     sort,
   } = params
+
+  const moreFilters = params.moreFilters || {}
 
   const DEFAULT_LIMIT = 1000
   const limit = _limit || DEFAULT_LIMIT
@@ -52,6 +55,7 @@ async function getBookNotes(params: {
         bookId,
         text: textParams,
         noteType: noteTypeParams,
+        ...moreFilters,
       },
       include: {
         creator: true,
@@ -77,6 +81,7 @@ async function getBookNotes(params: {
         text: textParams,
         noteType: noteTypeParams,
         creatorId: userProfileId,
+        ...moreFilters,
       },
       include: {
         creator: true,

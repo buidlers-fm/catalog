@@ -19,6 +19,7 @@ type Props = {
   onDelete: () => void
   isReplying?: boolean
   onClickReply?: () => void
+  onSaveUnsave?: () => void
 }
 
 export default function CommentCard({
@@ -27,6 +28,7 @@ export default function CommentCard({
   onDelete,
   isReplying = false,
   onClickReply,
+  onSaveUnsave,
 }: Props) {
   const {
     id,
@@ -127,6 +129,7 @@ export default function CommentCard({
               savedObjectType={InteractionObjectType.Comment}
               savedObjectId={id}
               saveId={save?.id}
+              onSaveUnsave={onSaveUnsave}
             />
           </div>
         )}
