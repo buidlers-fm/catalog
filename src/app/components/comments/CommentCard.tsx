@@ -5,6 +5,7 @@ import { MdEdit } from "react-icons/md"
 import { FaRegComment } from "react-icons/fa"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import EditComment from "app/components/comments/EditComment"
+import SaveBookmark from "app/components/saves/SaveBookmark"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import ExpandableText from "app/components/ExpandableText"
 import Likes from "app/components/Likes"
@@ -18,6 +19,7 @@ type Props = {
   onDelete: () => void
   isReplying?: boolean
   onClickReply?: () => void
+  onSaveUnsave?: () => void
 }
 
 export default function CommentCard({
@@ -26,6 +28,7 @@ export default function CommentCard({
   onDelete,
   isReplying = false,
   onClickReply,
+  onSaveUnsave,
 }: Props) {
   const {
     id,
@@ -37,6 +40,7 @@ export default function CommentCard({
     likeCount,
     currentUserLike,
     depth,
+    save,
   } = comment
 
   const [text, setText] = useState<string>(_text)
@@ -109,13 +113,24 @@ export default function CommentCard({
 
         {!!currentUserProfile && !isReplying && depth < 2 && onClickReply && (
           <div className="flex items-center">
-            <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+            <FaRegComment className="ml-2 mr-1.5 text-gray-500 text-md" />
             <button
               className="flex border-b border-b-gray-500 text-sm text-gray-500"
               onClick={onClickReply}
             >
               reply
             </button>
+          </div>
+        )}
+
+        {currentUserProfile && id && (
+          <div className="ml-4">
+            <SaveBookmark
+              savedObjectType={InteractionObjectType.Comment}
+              savedObjectId={id}
+              saveId={save?.id}
+              onSaveUnsave={onSaveUnsave}
+            />
           </div>
         )}
       </div>

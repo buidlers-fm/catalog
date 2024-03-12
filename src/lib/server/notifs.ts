@@ -1,4 +1,3 @@
-import humps from "humps"
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import { commentParentTypeToNotificationObjectType } from "lib/helpers/general"
@@ -35,11 +34,8 @@ async function createNotifFromSource(source) {
 
   let notifiedUserProfileId
 
-  if (objectType === InteractionObjectType.BookNote || objectType === InteractionObjectType.List) {
-    const modelName = humps.camelize(objectType)
-
-    // @ts-ignore dynamic model name
-    const object = await prisma[modelName].findFirst({
+  if (objectType === InteractionObjectType.List) {
+    const object = await prisma.list.findFirst({
       where: {
         id: objectId,
       },
@@ -48,7 +44,25 @@ async function createNotifFromSource(source) {
     if (object) {
       notifiedUserProfileId = object.creatorId
     } else {
-      reportToSentry(new Error(`${objectType} not found, can't create notif`), {
+      reportToSentry(new Error(`List not found, can't create notif`), {
+        source,
+      })
+      return
+    }
+  } else if (
+    objectType === InteractionObjectType.Note ||
+    objectType === InteractionObjectType.Post
+  ) {
+    const object = await prisma.bookNote.findFirst({
+      where: {
+        id: objectId,
+      },
+    })
+
+    if (object) {
+      notifiedUserProfileId = object.creatorId
+    } else {
+      reportToSentry(new Error(`Note or post not found, can't create notif`), {
         source,
       })
       return

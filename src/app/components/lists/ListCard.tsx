@@ -4,13 +4,30 @@ import { FaComment } from "react-icons/fa"
 import { truncateString } from "lib/helpers/strings"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import Likes from "app/components/Likes"
+import SaveBookmark from "app/components/saves/SaveBookmark"
 import InteractionObjectType from "enums/InteractionObjectType"
 
 const NUM_BOOK_COVERS = 4
 
-export default function ListCard({ list, withByline = false, separators = true, compact = false }) {
+type Props = {
+  list: any
+  withByline?: boolean
+  separators?: boolean
+  compact?: boolean
+  currentUserProfile?: any
+  onSaveUnsave?: () => void
+}
+
+export default function ListCard({
+  list,
+  withByline = false,
+  separators = true,
+  compact = false,
+  currentUserProfile,
+  onSaveUnsave,
+}: Props) {
   const totalBookCount = list.books.length
-  const { likeCount } = list
+  const { likeCount, save, id: listId } = list
   const books = list.books.slice(0, NUM_BOOK_COVERS)
 
   return (
@@ -27,7 +44,7 @@ export default function ListCard({ list, withByline = false, separators = true, 
             ))}
           </div>
         </Link>
-        <div className="mt-4 sm:mt-2 sm:mx-4 grow">
+        <div className="mt-4 sm:mt-2 sm:mx-4 grow font-mulish">
           <div className="mt-[-8px]">
             <Link href={list.url}>
               <div className="font-bold">{truncateString(list.title, 64)}</div>
@@ -48,6 +65,16 @@ export default function ListCard({ list, withByline = false, separators = true, 
                   <span className="text-sm text-gray-300 font-mulish">{list.comments.length}</span>
                 )}
               </div>
+              {currentUserProfile && (
+                <div className="ml-4">
+                  <SaveBookmark
+                    savedObjectType={InteractionObjectType.List}
+                    savedObjectId={listId}
+                    saveId={save?.id}
+                    onSaveUnsave={onSaveUnsave}
+                  />
+                </div>
+              )}
             </div>
           </div>
           {withByline && <NameWithAvatar userProfile={list.owner} />}

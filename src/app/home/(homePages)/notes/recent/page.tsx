@@ -1,6 +1,6 @@
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
+import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
 import NotesIndex from "app/home/components/NotesIndex"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookNoteType from "enums/BookNoteType"
@@ -31,8 +31,10 @@ export default async function RecentNotesPage() {
     take: NOTES_LIMIT,
   })
 
-  notes = await decorateWithLikes(notes, InteractionObjectType.BookNote, currentUserProfile)
+  notes = await decorateWithLikes(notes, InteractionObjectType.Note, currentUserProfile)
   notes = await decorateWithComments(notes, CommentParentType.Note, currentUserProfile)
+  if (currentUserProfile)
+    notes = await decorateWithSaves(notes, InteractionObjectType.Note, currentUserProfile)
 
   return <NotesIndex notes={notes} currentUserProfile={currentUserProfile} />
 }

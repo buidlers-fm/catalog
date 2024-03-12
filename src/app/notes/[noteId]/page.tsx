@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
-import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
+import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
 import Note from "app/notes/[noteId]/components/Note"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
@@ -33,8 +33,10 @@ export default async function NotePage({ params }) {
   })
 
   if (!note) notFound()
-  ;[note] = await decorateWithLikes([note], InteractionObjectType.BookNote, currentUserProfile)
+  ;[note] = await decorateWithLikes([note], InteractionObjectType.Note, currentUserProfile)
   ;[note] = await decorateWithComments([note], CommentParentType.Note, currentUserProfile)
+  if (currentUserProfile)
+    [note] = await decorateWithSaves([note], InteractionObjectType.Note, currentUserProfile)
 
   return <Note note={note} currentUserProfile={currentUserProfile} />
 }

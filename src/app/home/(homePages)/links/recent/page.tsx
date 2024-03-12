@@ -1,6 +1,6 @@
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
-import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
+import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
 import PostsIndex from "app/home/components/PostsIndex"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
@@ -39,9 +39,12 @@ export default async function RecentPostsPage() {
     take: POSTS_LIMIT,
   })
 
-  posts = await decorateWithLikes(posts, InteractionObjectType.BookNote, currentUserProfile)
+  posts = await decorateWithLikes(posts, InteractionObjectType.Post, currentUserProfile)
 
   posts = await decorateWithComments(posts, CommentParentType.Post, currentUserProfile)
+
+  if (currentUserProfile)
+    posts = await decorateWithSaves(posts, InteractionObjectType.Post, currentUserProfile)
 
   return <PostsIndex posts={posts} currentUserProfile={currentUserProfile} />
 }

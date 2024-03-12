@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
-import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
+import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
 import Post from "app/posts/[postId]/components/Post"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
@@ -33,8 +33,10 @@ export default async function PostPage({ params }) {
   })
 
   if (!post) notFound()
-  ;[post] = await decorateWithLikes([post], InteractionObjectType.BookNote, currentUserProfile)
+  ;[post] = await decorateWithLikes([post], InteractionObjectType.Post, currentUserProfile)
   ;[post] = await decorateWithComments([post], CommentParentType.Post, currentUserProfile)
+  if (currentUserProfile)
+    [post] = await decorateWithSaves([post], InteractionObjectType.Post, currentUserProfile)
 
   return <Post post={post} currentUserProfile={currentUserProfile} />
 }

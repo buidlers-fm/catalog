@@ -26,8 +26,8 @@ const createServerSupabaseClient = cache(() => {
   return createServerComponentClient({ cookies: () => cookieStore })
 })
 
-const getCurrentUserProfile = async (options: Options = defaultOptions) => {
-  const { redirectPath, requireSignedIn, withRoles } = options
+const getCurrentUserProfile = async (options: Options = {}) => {
+  const { redirectPath, requireSignedIn, withRoles } = { ...defaultOptions, ...options }
 
   const supabase = createServerSupabaseClient()
 

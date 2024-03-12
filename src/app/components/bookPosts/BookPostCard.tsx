@@ -16,6 +16,7 @@ import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import EditBookPost from "app/components/bookPosts/EditBookPost"
+import SaveBookmark from "app/components/saves/SaveBookmark"
 import ExpandableSpoilerText from "app/components/ExpandableSpoilerText"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import Likes from "app/components/Likes"
@@ -26,6 +27,16 @@ dayjs.extend(relativeTime)
 const { longAmericanDate: timestampFormat } = dateTimeFormats
 const bookPostValidations = allValidations.bookPost
 
+type Props = {
+  post: any
+  withCover?: boolean
+  showText?: boolean
+  currentUserProfile?: any
+  onEditSuccess: () => void
+  onDeleteSuccess: () => void
+  onSaveUnsave?: () => void
+}
+
 export default function BookLinkPostCard({
   post,
   withCover = true,
@@ -33,7 +44,8 @@ export default function BookLinkPostCard({
   currentUserProfile,
   onEditSuccess,
   onDeleteSuccess,
-}) {
+  onSaveUnsave,
+}: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const {
     id,
@@ -48,6 +60,7 @@ export default function BookLinkPostCard({
     currentUserLike,
     comments,
     commentCount,
+    save,
   } = post
 
   const isCreatedByCurrentUser = creator.id === currentUserProfile?.id
@@ -152,7 +165,7 @@ export default function BookLinkPostCard({
             <Likes
               interactive={!!currentUserProfile}
               likedObject={post}
-              likedObjectType={InteractionObjectType.BookNote}
+              likedObjectType={InteractionObjectType.Post}
               likeCount={likeCount}
               currentUserLike={currentUserLike}
             />
@@ -166,6 +179,16 @@ export default function BookLinkPostCard({
                 )}
               </Link>
             </div>
+            {currentUserProfile && id && (
+              <div className="ml-4">
+                <SaveBookmark
+                  savedObjectType={InteractionObjectType.Post}
+                  savedObjectId={id}
+                  saveId={save?.id}
+                  onSaveUnsave={onSaveUnsave}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

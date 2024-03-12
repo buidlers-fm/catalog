@@ -51,6 +51,8 @@ export const decorateLists = async (lists, currentUserProfile?) => {
 
   _lists = await decorateWithLikes(_lists, InteractionObjectType.List, currentUserProfile)
   _lists = await decorateWithComments(_lists, CommentParentType.List, currentUserProfile)
+  if (currentUserProfile)
+    _lists = await decorateWithSaves(_lists, InteractionObjectType.List, currentUserProfile)
 
   return _lists
 }
@@ -63,7 +65,7 @@ export const decorateWithLikes = async (
   let objects = _objects
 
   // decorate book note objects with whether creator liked the book
-  if (objectType === InteractionObjectType.BookNote) {
+  if (objectType === InteractionObjectType.Note) {
     // all book note creators' likes of all the books (set might contain some irrelevant likes)
     const allCreatorBookLikes = await prisma.interaction.findMany({
       where: {
@@ -163,6 +165,37 @@ export const decorateWithLikes = async (
   }))
 }
 
+export const decorateWithSaves = async (
+  items: any[],
+  objectType: InteractionObjectType,
+  currentUserProfile: UserProfileProps,
+) => {
+  const saves = await prisma.interaction.findMany({
+    where: {
+      agentId: currentUserProfile.id,
+      agentType: InteractionAgentType.User,
+      interactionType: InteractionType.Save,
+      objectId: {
+        in: items.map((item) => item.id),
+      },
+      objectType,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
+  const savesByItemId = saves.reduce((result, save) => {
+    result[save.objectId] = save
+    return result
+  }, {})
+
+  return items.map((item) => ({
+    ...item,
+    save: savesByItemId[item.id],
+  }))
+}
+
 function countComments(obj, depth = 0) {
   if (!obj.comments) return 0
 
@@ -211,6 +244,13 @@ export const decorateComments = async (comments, currentUserProfile, depth = 0) 
       depth,
     )
   }
+
+  if (currentUserProfile)
+    finalComments = await decorateWithSaves(
+      finalComments,
+      InteractionObjectType.Comment,
+      currentUserProfile,
+    )
 
   return finalComments.map((comment) => ({
     ...comment,

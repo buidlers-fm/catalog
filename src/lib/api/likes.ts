@@ -10,7 +10,11 @@ enum UpdateLikeCountMode {
   Decrement,
 }
 
-const typesWithLikeCounts = [InteractionObjectType.BookNote, InteractionObjectType.Comment]
+const typesWithLikeCounts = [
+  InteractionObjectType.Note,
+  InteractionObjectType.Post,
+  InteractionObjectType.Comment,
+]
 
 async function getUpdateLikeCountParams(mode, params: any = {}) {
   const { likedObjectType, likedObjectId } = params
@@ -76,7 +80,10 @@ export async function findOrCreateLike({ likedObjectType, likedObjectId, userPro
 
     let updateLikeCountPromise
 
-    if (likedObjectType === InteractionObjectType.BookNote) {
+    if (
+      likedObjectType === InteractionObjectType.Note ||
+      likedObjectType === InteractionObjectType.Post
+    ) {
       updateLikeCountPromise = prisma.bookNote.update(updateLikeCountParams)
     } else if (likedObjectType === InteractionObjectType.Comment) {
       updateLikeCountPromise = prisma.comment.update(updateLikeCountParams)
@@ -110,7 +117,10 @@ export async function deleteLike(like) {
 
     let updateLikeCountPromise
 
-    if (like.objectType === InteractionObjectType.BookNote) {
+    if (
+      like.objectType === InteractionObjectType.Note ||
+      like.objectType === InteractionObjectType.Post
+    ) {
       updateLikeCountPromise = prisma.bookNote.update(updateLikeCountParams)
     } else if (like.objectType === InteractionObjectType.Comment) {
       updateLikeCountPromise = prisma.comment.update(updateLikeCountParams)
@@ -144,7 +154,10 @@ export async function deleteLikeByParams({ likedObjectType, likedObjectId, userP
 
     let updateLikeCountPromise
 
-    if (likedObjectType === InteractionObjectType.BookNote) {
+    if (
+      likedObjectType === InteractionObjectType.Note ||
+      likedObjectType === InteractionObjectType.Post
+    ) {
       updateLikeCountPromise = prisma.bookNote.update(updateLikeCountParams)
     } else if (likedObjectType === InteractionObjectType.Comment) {
       updateLikeCountPromise = prisma.comment.update(updateLikeCountParams)

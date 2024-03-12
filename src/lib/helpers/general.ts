@@ -76,6 +76,8 @@ export const getBookListsLink = (slug: string) => `/books/${slug}/lists`
 export const getListLink = (userProfile, slug: string) =>
   `/users/${userProfile.username}/lists/${slug}`
 
+export const getListLinkById = (listId: string) => `/lists/${listId}`
+
 export const getNewListLink = (userProfile) => `${getUserListsLink(userProfile.username)}/new`
 
 export const getEditListLink = (userProfile, slug: string) =>

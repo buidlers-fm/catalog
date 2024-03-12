@@ -1,5 +1,5 @@
 import prisma from "lib/prisma"
-import { decorateWithLikes, decorateWithComments } from "lib/server/decorators"
+import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
 import BookNoteType from "enums/BookNoteType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
@@ -14,6 +14,7 @@ async function getBookNotes(params: {
   limit?: number
   requireText?: boolean
   sort?: Sort
+  moreFilters?: any
 }) {
   const {
     currentUserProfile,
@@ -24,6 +25,8 @@ async function getBookNotes(params: {
     requireText,
     sort,
   } = params
+
+  const moreFilters = params.moreFilters || {}
 
   const DEFAULT_LIMIT = 1000
   const limit = _limit || DEFAULT_LIMIT
@@ -52,6 +55,7 @@ async function getBookNotes(params: {
         bookId,
         text: textParams,
         noteType: noteTypeParams,
+        ...moreFilters,
       },
       include: {
         creator: true,
@@ -77,6 +81,7 @@ async function getBookNotes(params: {
         text: textParams,
         noteType: noteTypeParams,
         creatorId: userProfileId,
+        ...moreFilters,
       },
       include: {
         creator: true,
@@ -90,17 +95,22 @@ async function getBookNotes(params: {
     })
   }
 
-  let bookNotes = await decorateWithLikes(
-    _bookNotes,
-    InteractionObjectType.BookNote,
-    currentUserProfile,
-  )
+  // in practice this is always an array with 1 item because
+  // querying for multiple types at once is deprecated, as a concept
+  const noteType = noteTypes[0] as BookNoteType
+  const objectType =
+    noteType === BookNoteType.Post ? InteractionObjectType.Post : InteractionObjectType.Note
+
+  let bookNotes = await decorateWithLikes(_bookNotes, objectType, currentUserProfile)
 
   const commentParentType = noteTypes.includes(BookNoteType.Post)
     ? CommentParentType.Post
     : CommentParentType.Note
 
   bookNotes = await decorateWithComments(bookNotes, commentParentType, currentUserProfile)
+
+  if (currentUserProfile)
+    bookNotes = await decorateWithSaves(bookNotes, objectType, currentUserProfile)
 
   return bookNotes
 }
