@@ -19,7 +19,10 @@ export default async function SavedPage() {
   if (!isSignedIn) redirect("/")
 
   return (
-    <div className="flex justify-center items-center flex-col">
+    <div className="w-full sm:w-[576px] sm:mx-auto px-8 sm:px-16">
+      <div className="cat-page-title">your saved items</div>
+      <hr className="my-1 h-[1px] border-none bg-white" />
+
       <SavedItems />
     </div>
   )

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { useUser } from "lib/contexts/UserContext"
 import api from "lib/api"
 import { getNoteLink, getPostLink, getListLinkById } from "lib/helpers/general"
+import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import BookLinkPostCard from "app/components/bookPosts/BookPostCard"
@@ -54,11 +55,16 @@ export default function SavedItems() {
     setVisibleItems(_visibleItems)
   }, [savedItems, currentFilter])
 
-  return (
-    <div className="w-full sm:w-[576px] px-8 sm:px-16">
-      <div className="cat-page-title">your saved items</div>
-      <hr className="my-1 h-[1px] border-none bg-white" />
+  if (!savedItems) {
+    return <LoadingSection />
+  }
 
+  if (savedItems.length === 0) {
+    return <EmptyState text="You haven't saved anything yet." />
+  }
+
+  return (
+    <>
       <div className="flex justify-end items-baseline mt-4 text-gray-300 font-mulish">
         filter by type:
         <select
@@ -74,7 +80,7 @@ export default function SavedItems() {
         </select>
       </div>
 
-      {visibleItems ? (
+      {visibleItems && visibleItems.length > 0 ? (
         visibleItems.map((savedItem) => (
           <div key={savedItem.id} className="py-4 border-b border-b-gray-300 last:border-none">
             {savedItem.save.objectType === InteractionObjectType.Note && (
@@ -148,8 +154,8 @@ export default function SavedItems() {
           </div>
         ))
       ) : (
-        <LoadingSection />
+        <EmptyState text="No items match the current filter." />
       )}
-    </div>
+    </>
   )
 }
