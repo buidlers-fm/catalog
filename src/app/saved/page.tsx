@@ -14,13 +14,10 @@ export const metadata: Metadata = {
 
 export default async function SavedPage() {
   const currentUserProfile = await getCurrentUserProfile({ requireSignedIn: true })
-  console.log(1)
   const isSignedIn = !!currentUserProfile
 
-  console.log(2)
   if (!isSignedIn) redirect("/")
 
-  console.log(3)
   return (
     <div className="flex justify-center items-center flex-col">
       <SavedItems />
