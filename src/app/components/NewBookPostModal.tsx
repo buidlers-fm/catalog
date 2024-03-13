@@ -114,6 +114,8 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
 
       toast.success(successMessage, { id: toastId })
 
+      console.log("NewBookPostModal onSuccess", onSuccess)
+
       if (onSuccess) await onSuccess()
       await handleClose()
       reset()

@@ -89,11 +89,13 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
   )
 
   const handleCreatedPost = useCallback(async () => {
+    console.log("handleCreatedPost")
     setConversationsTab(ConversationsTab.Catalog)
     getBookPosts()
   }, [getBookPosts])
 
   useEffect(() => {
+    console.log("setting onNewPostSuccess")
     setOnNewPostSuccess(() => handleCreatedPost)
   }, [setOnNewPostSuccess, handleCreatedPost])
 
