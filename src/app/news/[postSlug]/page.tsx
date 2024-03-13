@@ -7,6 +7,8 @@ import { getMetadata } from "lib/server/metadata"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 export async function generateMetadata({ params }): Promise<Metadata> {
   return getMetadata({
     key: "news.post",
