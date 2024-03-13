@@ -4,8 +4,11 @@ import prisma from "lib/prisma"
 import { getAllAtMentions } from "lib/helpers/general"
 import { createNotifsFromMentions } from "lib/server/notifs"
 import { withApiHandling } from "lib/api/withApiHandling"
+import { reportToSentry } from "lib/sentry"
 import NotificationType from "enums/NotificationType"
 import NotificationObjectType from "enums/NotificationObjectType"
+import InteractionObjectType from "enums/InteractionObjectType"
+import BookNoteType from "enums/BookNoteType"
 import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
@@ -97,6 +100,30 @@ export const DELETE = withApiHandling(
         id: bookNoteId,
       },
     })
+
+    try {
+      await prisma.notification.deleteMany({
+        where: {
+          objectId: bookNoteId,
+          objectType: NotificationObjectType.BookNote,
+        },
+      })
+
+      await prisma.interaction.deleteMany({
+        where: {
+          objectId: bookNoteId,
+          objectType:
+            bookNote.noteType === BookNoteType.JournalEntry
+              ? InteractionObjectType.Note
+              : InteractionObjectType.Post,
+        },
+      })
+    } catch (error: any) {
+      reportToSentry(error, {
+        method: "api.book_notes.delete.delete_associated_objects",
+        bookNoteId,
+      })
+    }
 
     return NextResponse.json({}, { status: 200 })
   },
