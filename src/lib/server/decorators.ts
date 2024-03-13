@@ -455,42 +455,49 @@ export const decorateNotifs = async (notifs) => {
   const bookNoteIdsToBookNotes = idsToObjects(allBookNotes)
   const listIdsToLists = idsToObjects(allLists)
 
-  return notifs.map((notif) => {
-    let object
-    let source
-    let rootObject
-    let rootObjectType
+  return notifs
+    .map((notif) => {
+      let object
+      let source
+      let rootObject
+      let rootObjectType
 
-    if (notif.objectType === NotificationObjectType.BookNote) {
-      object = bookNoteIdsToBookNotes[notif.objectId]
-    } else if (notif.objectType === NotificationObjectType.Comment) {
-      object = commentIdsToComments[notif.objectId]
-      if (
-        object.rootObjectType === CommentParentType.Note ||
-        object.rootObjectType === CommentParentType.Post
-      ) {
-        rootObject = bookNoteIdsToBookNotes[object.rootObjectId]
-        rootObjectType = NotificationObjectType.BookNote
-      } else if (object.rootObjectType === CommentParentType.List) {
-        rootObject = listIdsToLists[object.rootObjectId]
-        rootObjectType = NotificationObjectType.List
+      if (notif.objectType === NotificationObjectType.BookNote) {
+        object = bookNoteIdsToBookNotes[notif.objectId]
+      } else if (notif.objectType === NotificationObjectType.Comment) {
+        object = commentIdsToComments[notif.objectId]
+
+        if (!object) return null
+
+        if (
+          object.rootObjectType === CommentParentType.Note ||
+          object.rootObjectType === CommentParentType.Post
+        ) {
+          rootObject = bookNoteIdsToBookNotes[object.rootObjectId]
+          rootObjectType = NotificationObjectType.BookNote
+        } else if (object.rootObjectType === CommentParentType.List) {
+          rootObject = listIdsToLists[object.rootObjectId]
+          rootObjectType = NotificationObjectType.List
+        }
+      } else if (notif.objectType === NotificationObjectType.List) {
+        object = listIdsToLists[notif.objectId]
       }
-    } else if (notif.objectType === NotificationObjectType.List) {
-      object = listIdsToLists[notif.objectId]
-    }
 
-    if (notif.sourceType === NotificationObjectType.Comment) {
-      source = commentIdsToComments[notif.sourceId]
-    }
+      if (notif.sourceType === NotificationObjectType.Comment) {
+        source = commentIdsToComments[notif.sourceId]
+      }
 
-    return {
-      ...notif,
-      agent: agentIdsToAgents[notif.agentId],
-      object,
-      source,
-      rootObject,
-      rootObjectType,
-      notifiedUser: notifiedUserProfileIdsToNotifiedUserProfiles[notif.notifiedUserProfileId],
-    }
-  })
+      if (!object) return null
+
+      return {
+        ...notif,
+        agent: agentIdsToAgents[notif.agentId],
+        object,
+        source,
+        rootObject,
+        rootObjectType,
+        notifiedUser: notifiedUserProfileIdsToNotifiedUserProfiles[notif.notifiedUserProfileId],
+      }
+    })
+    .filter(Boolean)
 }

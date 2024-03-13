@@ -1,7 +1,6 @@
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import { commentParentTypeToNotificationObjectType } from "lib/helpers/general"
-import InteractionObjectType from "enums/InteractionObjectType"
 import NotificationType from "enums/NotificationType"
 import NotificationAgentType from "enums/NotificationAgentType"
 import NotificationObjectType from "enums/NotificationObjectType"
@@ -34,7 +33,7 @@ async function createNotifFromSource(source) {
 
   let notifiedUserProfileId
 
-  if (objectType === InteractionObjectType.List) {
+  if (objectType === NotificationObjectType.List) {
     const object = await prisma.list.findFirst({
       where: {
         id: objectId,
@@ -49,10 +48,7 @@ async function createNotifFromSource(source) {
       })
       return
     }
-  } else if (
-    objectType === InteractionObjectType.Note ||
-    objectType === InteractionObjectType.Post
-  ) {
+  } else if (objectType === NotificationObjectType.BookNote) {
     const object = await prisma.bookNote.findFirst({
       where: {
         id: objectId,
@@ -67,7 +63,7 @@ async function createNotifFromSource(source) {
       })
       return
     }
-  } else if (objectType === InteractionObjectType.Comment) {
+  } else if (objectType === NotificationObjectType.Comment) {
     const comment = await prisma.comment.findFirst({
       where: {
         id: objectId,
@@ -82,7 +78,7 @@ async function createNotifFromSource(source) {
       })
       return
     }
-  } else if (objectType === InteractionObjectType.UserCurrentStatus) {
+  } else if (objectType === NotificationObjectType.UserCurrentStatus) {
     const userCurrentStatus = await prisma.userCurrentStatus.findFirst({
       where: {
         id: objectId,
@@ -105,6 +101,8 @@ async function createNotifFromSource(source) {
     })
     return
   }
+
+  if (agentId === notifiedUserProfileId) return
 
   const notifData = {
     agentId,
@@ -159,20 +157,23 @@ async function createNotifFromComment(comment) {
 }
 
 async function createNotifsFromMentions(mentions: Mention[]) {
-  const notifsData = mentions.map((mention) => {
-    const { agentId, objectId, objectType, sourceId, sourceType, mentionedUserProfileId } = mention
+  const notifsData = mentions
+    .map((mention) => {
+      const { agentId, objectId, objectType, sourceId, sourceType, mentionedUserProfileId } =
+        mention
 
-    return {
-      agentId,
-      agentType: NotificationAgentType.User,
-      type: NotificationType.Mention,
-      objectId,
-      objectType,
-      sourceId,
-      sourceType,
-      notifiedUserProfileId: mentionedUserProfileId,
-    }
-  })
+      return {
+        agentId,
+        agentType: NotificationAgentType.User,
+        type: NotificationType.Mention,
+        objectId,
+        objectType,
+        sourceId,
+        sourceType,
+        notifiedUserProfileId: mentionedUserProfileId,
+      }
+    })
+    .filter((notifData) => notifData.agentId !== notifData.notifiedUserProfileId)
 
   try {
     await prisma.notification.createMany({
