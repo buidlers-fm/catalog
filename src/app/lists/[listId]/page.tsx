@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation"
+import { validate as isValidUuid } from "uuid"
 import prisma from "lib/prisma"
 import { getMetadata } from "lib/server/metadata"
 import { getListLink } from "lib/helpers/general"
@@ -15,6 +16,8 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
 export default async function ListPageById({ params }) {
   const { listId } = params
+
+  if (!isValidUuid(listId)) notFound()
 
   const list = await prisma.list.findFirst({
     where: {
