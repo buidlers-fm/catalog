@@ -285,7 +285,7 @@ export default function BookPage({
 
   const totalShelfCounts = humps.decamelizeKeys(bookActivity.totalShelfCounts) || {}
   const totalFavoritedCount = bookActivity.totalFavoritedCount || 0
-  const shelvesToFriendsProfiles = humps.decamelizeKeys(bookActivity.shelvesToFriendsProfiles) || {}
+  const shelvesToFriendsProfiles = bookActivity.shelvesToFriendsProfiles || {}
   const likedByFriendsProfiles = bookActivity.likedByFriendsProfiles || []
   const favoritedByFriendsProfiles = bookActivity.favoritedByFriendsProfiles || []
 
@@ -556,12 +556,14 @@ export default function BookPage({
                 </div>
               )}
 
-              {Object.entries(shelvesToFriendsProfiles).map(([shelfKey, friendsProfiles]) => {
+              {Object.entries(shelvesToFriendsProfiles).map(([_shelfKey, friendsProfiles]) => {
                 if (!friendsProfiles || (friendsProfiles as any[]).length === 0) return null
 
+                const shelfKey = humps.decamelize(_shelfKey)
                 const names = (friendsProfiles as any[]).map(
                   (profile) => profile.displayName || profile.username,
                 )
+
                 return (
                   <div key={shelfKey} className="my-2">
                     <FaBookmark className="inline-block -mt-0.5 mr-1.5 text-gold-500 text-sm" />
