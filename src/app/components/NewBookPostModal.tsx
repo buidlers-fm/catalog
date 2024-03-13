@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Dialog } from "@headlessui/react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
@@ -70,62 +70,65 @@ export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
     },
   }
 
-  const handleClose = async () => {
+  const handleClose = useCallback(async () => {
     await onClose()
     setCurrentBook(undefined)
-  }
+  }, [onClose, setCurrentBook])
 
-  const submit = async (formData: BookPostFormData) => {
-    if (text && text.length > bookPostValidations.text.maxLength) {
-      setTextErrorMessage(validations.text.maxLength.message)
-      return
-    }
+  const submit = useCallback(
+    async (formData: BookPostFormData) => {
+      if (text && text.length > bookPostValidations.text.maxLength) {
+        setTextErrorMessage(validations.text.maxLength.message)
+        return
+      }
 
-    if (!text && !formData.linkUrl) {
-      setErrorMessage("Link OR text is required.")
-      return
-    }
+      if (!text && !formData.linkUrl) {
+        setErrorMessage("Link OR text is required.")
+        return
+      }
 
-    setErrorMessage(undefined)
-    setIsBusy(true)
+      setErrorMessage(undefined)
+      setIsBusy(true)
 
-    const toastId = toast.loading("Saving your post...")
+      const toastId = toast.loading("Saving your post...")
 
-    const requestData = {
-      title: formData.title,
-      linkUrl: formData.linkUrl,
-      noteType: BookNoteType.Post,
-      text,
-      hasSpoilers: formData.hasSpoilers,
-      book,
-    }
+      const requestData = {
+        title: formData.title,
+        linkUrl: formData.linkUrl,
+        noteType: BookNoteType.Post,
+        text,
+        hasSpoilers: formData.hasSpoilers,
+        book,
+      }
 
-    try {
-      const createdPost = await api.bookPosts.create(requestData)
+      try {
+        const createdPost = await api.bookPosts.create(requestData)
 
-      const successMessage = (
-        <div className="flex flex-col xs:block ml-2">
-          Post saved!&nbsp;&nbsp;
-          <a href={getPostLink(createdPost.id)} className="underline">
-            View your post.
-          </a>
-        </div>
-      )
+        const successMessage = (
+          <div className="flex flex-col xs:block ml-2">
+            Post saved!&nbsp;&nbsp;
+            <a href={getPostLink(createdPost.id)} className="underline">
+              View your post.
+            </a>
+          </div>
+        )
 
-      toast.success(successMessage, { id: toastId })
+        toast.success(successMessage, { id: toastId })
 
-      console.log("NewBookPostModal onSuccess", onSuccess)
+        console.log("NewBookPostModal onSuccess", onSuccess)
 
-      if (onSuccess) await onSuccess()
-      await handleClose()
-      reset()
-    } catch (error: any) {
-      reportToSentry(error, requestData)
-      toast.error("Hmm, something went wrong.", { id: toastId })
-    }
+        if (onSuccess) await onSuccess()
+        await handleClose()
+        reset()
+      } catch (error: any) {
+        reportToSentry(error, requestData)
+        toast.error("Hmm, something went wrong.", { id: toastId })
+      }
 
-    setIsBusy(false)
-  }
+      setIsBusy(false)
+    },
+    [onSuccess, text, book, reset, handleClose, validations.text.maxLength],
+  )
 
   const readyToSubmit =
     titleValue &&

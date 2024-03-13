@@ -29,6 +29,7 @@ import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
+import BookLinkPostCard from "app/components/bookPosts/BookPostCard"
 import ListCard from "app/components/lists/ListCard"
 import ExpandableText from "app/components/ExpandableText"
 import BookNoteType from "enums/BookNoteType"
@@ -70,6 +71,8 @@ export default function BookPage({
   const [bookLists, setBookLists] = useState<List[]>()
   const [bookActivity, setBookActivity] = useState<BookActivity>({} as any)
   const [notes, setNotes] = useState<any[]>()
+  const [currentUserNotesAndPosts, setCurrentUserNotesAndPosts] = useState<any[]>()
+  const [posts, setPosts] = useState<any[]>()
   const [likeCount, setLikeCount] = useState<number | undefined>(book.likeCount)
   const [currentUserLike, setCurrentUserLike] = useState<Like | undefined>(book.currentUserLike)
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
@@ -123,8 +126,52 @@ export default function BookPage({
     }
   }, [currentUserProfile, book])
 
+  const getCurrentUserBookNotes = useCallback(
+    async (dbBook?) => {
+      let bookId = book.id || dbBook?.id
+      if (!bookId) bookId = (await getBook()).id
+
+      const notesRequestData = {
+        bookId,
+        noteTypes: [BookNoteType.JournalEntry],
+        requireText: true,
+        userProfileId: currentUserProfile.id,
+        limit: BOOK_NOTES_LIMIT,
+      }
+
+      const postsRequestData = {
+        bookId,
+        noteTypes: [BookNoteType.Post],
+        userProfileId: currentUserProfile.id,
+        limit: BOOK_NOTES_LIMIT,
+      }
+
+      try {
+        const getNotes = api.bookNotes.get(notesRequestData)
+        const getPosts = api.bookNotes.get(postsRequestData)
+
+        const [_notes, _posts] = await Promise.all([getNotes, getPosts])
+
+        const _currentUserNotesAndPosts = [..._notes, ..._posts]
+          .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf())
+          .slice(0, BOOK_NOTES_LIMIT)
+
+        setCurrentUserNotesAndPosts(_currentUserNotesAndPosts)
+      } catch (error: any) {
+        reportToSentry(error, {
+          method: "BookPage.getCurrentUserBookNotes",
+          notesRequestData,
+          postsRequestData,
+          currentUserProfile,
+        })
+      }
+    },
+    [book.id, getBook, currentUserProfile],
+  )
   const getBookNotes = useCallback(
     async (dbBook?) => {
+      if (currentUserProfile) getCurrentUserBookNotes(dbBook)
+
       let bookId = book.id || dbBook?.id
       if (!bookId) bookId = (await getBook()).id
 
@@ -133,11 +180,40 @@ export default function BookPage({
         noteTypes: [BookNoteType.JournalEntry],
         requireText: true,
         sort: Sort.Popular,
+        limit: BOOK_NOTES_LIMIT,
       }
 
       try {
         const _notes = await api.bookNotes.get(requestData)
-        setNotes(_notes.slice(0, BOOK_NOTES_LIMIT))
+        setNotes(_notes)
+      } catch (error: any) {
+        reportToSentry(error, {
+          method: "BookPage.getBookNotes",
+          ...requestData,
+          currentUserProfile,
+        })
+      }
+    },
+    [book.id, getBook, currentUserProfile, getCurrentUserBookNotes],
+  )
+
+  const getBookPosts = useCallback(
+    async (dbBook?) => {
+      if (currentUserProfile) getCurrentUserBookNotes(dbBook)
+
+      let bookId = book.id || dbBook?.id
+      if (!bookId) bookId = (await getBook()).id
+
+      const requestData = {
+        bookId,
+        noteTypes: [BookNoteType.Post],
+        sort: Sort.Popular,
+        limit: BOOK_NOTES_LIMIT,
+      }
+
+      try {
+        const _posts = await api.bookNotes.get(requestData)
+        setPosts(_posts)
       } catch (error: any) {
         reportToSentry(error, {
           ...requestData,
@@ -145,7 +221,7 @@ export default function BookPage({
         })
       }
     },
-    [book.id, getBook, currentUserProfile],
+    [book.id, getBook, currentUserProfile, getCurrentUserBookNotes],
   )
 
   useEffect(() => {
@@ -576,6 +652,42 @@ export default function BookPage({
           </div>
         )}
 
+        {currentUserNotesAndPosts && currentUserNotesAndPosts.length > 0 && (
+          <div className="mt-8 mb-16 font-mulish">
+            <div className="flex justify-between text-gray-300 text-sm">
+              <div className="cat-eyebrow">latest by you</div>
+            </div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+            <div className="">
+              {currentUserNotesAndPosts.map((item) => {
+                if (item.noteType === BookNoteType.JournalEntry) {
+                  return (
+                    <BookNoteCard
+                      key={item.id}
+                      note={item}
+                      withCover={false}
+                      currentUserProfile={currentUserProfile}
+                      onEditSuccess={getBookNotes}
+                      onDeleteSuccess={getBookNotes}
+                    />
+                  )
+                } else {
+                  return (
+                    <BookLinkPostCard
+                      key={item.id}
+                      post={item}
+                      withCover={false}
+                      currentUserProfile={currentUserProfile}
+                      onEditSuccess={getBookPosts}
+                      onDeleteSuccess={getBookPosts}
+                    />
+                  )
+                }
+              })}
+            </div>
+          </div>
+        )}
+
         {notes && notes.length > 0 && (
           <div className="mt-8 mb-16 font-mulish">
             <div className="flex justify-between text-gray-300 text-sm">
@@ -607,6 +719,8 @@ export default function BookPage({
             book={book}
             currentUserProfile={currentUserProfile}
             getBook={getBook}
+            posts={posts}
+            onChange={getCurrentUserBookNotes}
           />
         </div>
 

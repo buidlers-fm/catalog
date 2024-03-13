@@ -28,7 +28,13 @@ const slugsToFeedUris = {
     "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaalhofhk5k2m",
 }
 
-export default function BookPageConversations({ book, currentUserProfile, getBook }) {
+export default function BookPageConversations({
+  book,
+  currentUserProfile,
+  getBook,
+  posts: bookPagePosts,
+  onChange,
+}) {
   const { setCurrentBook, setCurrentModal, setOnNewPostSuccess } = useModals()
 
   const [posts, setPosts] = useState<any[]>()
@@ -39,6 +45,12 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
   )
 
   const isSignedIn = !!currentUserProfile
+
+  useEffect(() => {
+    if (bookPagePosts) {
+      setPosts(bookPagePosts)
+    }
+  }, [bookPagePosts])
 
   useEffect(() => {
     async function getBlueskyPosts(feedUri) {
@@ -91,8 +103,14 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
   const handleCreatedPost = useCallback(async () => {
     console.log("handleCreatedPost")
     setConversationsTab(ConversationsTab.Catalog)
-    getBookPosts()
-  }, [getBookPosts])
+    if (onChange) onChange()
+    return getBookPosts()
+  }, [getBookPosts, onChange])
+
+  const handleChange = useCallback(() => {
+    if (onChange) onChange()
+    return getBookPosts()
+  }, [getBookPosts, onChange])
 
   useEffect(() => {
     console.log("setting onNewPostSuccess")
@@ -195,8 +213,8 @@ export default function BookPageConversations({ book, currentUserProfile, getBoo
                     post={post}
                     withCover={false}
                     currentUserProfile={currentUserProfile}
-                    onEditSuccess={getBookPosts}
-                    onDeleteSuccess={getBookPosts}
+                    onEditSuccess={handleChange}
+                    onDeleteSuccess={handleChange}
                   />
                 ))}
               </div>
