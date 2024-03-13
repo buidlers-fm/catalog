@@ -124,7 +124,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                       onClick={() => setShowFeedbackModal(true)}
                       className="w-full cat-btn-text hover:bg-gray-700 px-4 py-2 text-left rounded-bl rounded-br"
                     >
-                      feedback
+                      help
                     </button>
                   </div>
                 </Menu.Item>
