@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import { FaRegBookmark } from "react-icons/fa"
 import { useUser } from "lib/contexts/UserContext"
 import api from "lib/api"
 import { getNoteLink, getPostLink, getListLinkById } from "lib/helpers/general"
@@ -60,7 +61,13 @@ export default function SavedItems() {
   }
 
   if (savedItems.length === 0) {
-    return <EmptyState text="You haven't saved anything yet." />
+    const text = (
+      <div>
+        Save any list, note, post, or comment by clicking its{" "}
+        <FaRegBookmark className="inline-block mx-1 text-gray-500 text-sm" /> bookmark button.
+      </div>
+    )
+    return <EmptyState text={text} />
   }
 
   return (

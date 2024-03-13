@@ -54,8 +54,17 @@ export default function FeedbackModal({ onClose, isOpen }) {
           </button>
 
           <div className="mt-8 md:mt-0 md:ml-8">
-            <div className="cat-eyebrow-uppercase">Feedback</div>
             <div className="my-4 w-full sm:w-96 max-w-[384px]">
+              <div className="cat-eyebrow-uppercase">help</div>
+              <div className="mt-2 mb-8">
+                Check the{" "}
+                <a href="/guide" className="underline" target="_blank">
+                  guide
+                </a>{" "}
+                to see if your question is answered there.
+              </div>
+
+              <div className="cat-eyebrow-uppercase -mb-2">Feedback</div>
               <FormTextarea
                 labelText="Bugs, issues, suggestions, things you particularly like, feature requests, etc? Let us know!"
                 name="text"
@@ -70,7 +79,19 @@ export default function FeedbackModal({ onClose, isOpen }) {
                 onChange={(e) => setText(e.target.value)}
               />
 
-              <div className="">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={submit}
+                  className="mt-4 cat-btn cat-btn-sm cat-btn-gold"
+                  disabled={isBusy || !readyToSubmit}
+                >
+                  save
+                </button>
+              </div>
+
+              <div className="mt-4 cat-eyebrow-uppercase">contact</div>
+              <div className="mt-2">
                 Need a response from us? Contact us via{" "}
                 <a
                   href="mailto:staff@catalog.fyi"
@@ -90,17 +111,6 @@ export default function FeedbackModal({ onClose, isOpen }) {
                   Discord
                 </a>{" "}
                 instead.
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={submit}
-                  className="mt-4 cat-btn cat-btn-sm cat-btn-gold"
-                  disabled={isBusy || !readyToSubmit}
-                >
-                  save
-                </button>
               </div>
             </div>
           </div>

@@ -7,9 +7,9 @@ export default function ExpandableText({ text, maxChars = 500, expanded = false 
 
   return text?.length && text.length > maxChars ? (
     <>
-      <span className="mr-2">
+      <div className="">
         <CustomMarkdown markdown={isExpanded ? text : truncateString(text, maxChars)} />
-      </span>
+      </div>
       <button className="cat-eyebrow" onClick={() => setIsExpanded(!isExpanded)}>
         {isExpanded ? "less" : "more"}
       </button>

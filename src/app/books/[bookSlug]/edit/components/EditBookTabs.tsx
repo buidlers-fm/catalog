@@ -17,12 +17,12 @@ export default function EditBookTabs({ book }) {
 
   const tabs = [
     {
-      name: "edit details",
+      name: "details",
       layoutPath: null,
       href: getBookEditLink(book.slug),
     },
     {
-      name: "edit cover",
+      name: "cover",
       layoutPath: "covers",
       href: getBookEditCoversLink(book.slug),
     },
@@ -38,8 +38,8 @@ export default function EditBookTabs({ book }) {
   }
 
   return (
-    <div className="w-fit border-b border-gray-700 px-8 rounded-sm font-mulish">
-      <nav className="-mb-px flex gap-x-16" aria-label="Tabs">
+    <div className="mx-auto w-full sm:w-fit border-b border-gray-700 px-8 rounded-sm font-mulish">
+      <nav className="-mb-px flex gap-x-8 sm:gap-x-16" aria-label="Tabs">
         {tabs.map((tab) => (
           <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
         ))}

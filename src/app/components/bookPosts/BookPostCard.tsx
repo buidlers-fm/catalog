@@ -129,7 +129,6 @@ export default function BookLinkPostCard({
             </div>
           )}
           <div className="flex flex-col xs:flex-row">
-            <div className="xs:my-2 mr-2 text-sm font-mulish">posted by</div>
             <NameWithAvatar userProfile={creator} />
 
             <div className="xs:my-2 xs:ml-2 text-gray-500 text-sm font-mulish">

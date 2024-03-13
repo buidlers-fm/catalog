@@ -154,7 +154,7 @@ export default function EditBook({ book }) {
       Please use English for all fields below, except for original title if it's in a different
       language.
       <form onSubmit={handleSubmit(submit)}>
-        <div className="my-8 w-96">
+        <div className="my-8 w-full sm:w-96">
           <FormInput
             labelText="slug (not editable for now)"
             name="slug"

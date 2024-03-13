@@ -3,6 +3,9 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { updateList } from "lib/api/lists"
+import { reportToSentry } from "lib/sentry"
+import NotificationObjectType from "enums/NotificationObjectType"
+import InteractionObjectType from "enums/InteractionObjectType"
 import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
@@ -81,6 +84,27 @@ export const DELETE = withApiHandling(
         id: listId,
       },
     })
+
+    try {
+      await prisma.notification.deleteMany({
+        where: {
+          objectId: listId,
+          objectType: NotificationObjectType.List,
+        },
+      })
+
+      await prisma.interaction.deleteMany({
+        where: {
+          objectId: listId,
+          objectType: InteractionObjectType.List,
+        },
+      })
+    } catch (error: any) {
+      reportToSentry(error, {
+        method: "api.lists.delete.delete_associated_objects",
+        listId,
+      })
+    }
 
     return NextResponse.json({}, { status: 200 })
   },

@@ -426,6 +426,15 @@ const addBook = async (book, list) => {
     data: listItemAssignment,
   })
 
+  await prisma.list.update({
+    where: {
+      id: list.id,
+    },
+    data: {
+      updatedAt: new Date(),
+    },
+  })
+
   return createdListItemAssignment
 }
 

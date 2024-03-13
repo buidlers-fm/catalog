@@ -23,7 +23,7 @@ export default function GlobalCreateModal({
   const { currentBook, setCurrentBook, potentialCurrentBook, setCurrentModal } = useModals()
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-10">
+    <Dialog open={isOpen} onClose={onClose} className="relative z-40">
       <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
       <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
         <Dialog.Panel

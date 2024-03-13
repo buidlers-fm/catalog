@@ -39,7 +39,7 @@ export default function BookNotesIndex({ book, currentUserProfile }) {
   }, [getBookNotes])
 
   return (
-    <div className="mt-4 max-w-3xl mx-auto font-mulish">
+    <div className="mt-4 max-w-3xl mx-auto px-8 font-mulish">
       <div className="cat-eyebrow">Notes on</div>
       <Link href={getBookLink(book.slug)}>
         <h1 className="my-2 text-4xl font-semibold font-newsreader">{book.title}</h1>

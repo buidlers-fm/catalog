@@ -38,7 +38,7 @@ export default function ListCard({
     >
       <div className="sm:flex items-center">
         <Link href={list.url}>
-          <div className="w-[208px] flex shrink-0 mr-4">
+          <div className="w-[208px] flex shrink-0 mr-4 relative z-0">
             {books.map((book, idx) => (
               <ListCardBook key={book.id} book={book} idx={idx} />
             ))}

@@ -21,7 +21,7 @@ export default function BookTooltip({ book, anchorSelect: _anchorSelect }) {
   return (
     <Tooltip
       anchorSelect={anchorSelect}
-      className="z-50 max-w-[240px] font-mulish"
+      className="z-10 max-w-[240px] font-mulish"
       clickable={isMobile}
     >
       <Link href={getBookLink(book.slug)}>

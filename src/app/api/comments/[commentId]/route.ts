@@ -5,8 +5,11 @@ import { createNotifsFromMentions } from "lib/server/notifs"
 import { getAllAtMentions, commentParentTypeToNotificationObjectType } from "lib/helpers/general"
 import { decorateComments } from "lib/server/decorators"
 import { withApiHandling } from "lib/api/withApiHandling"
+import { reportToSentry } from "lib/sentry"
 import NotificationType from "enums/NotificationType"
 import NotificationSourceType from "enums/NotificationSourceType"
+import NotificationObjectType from "enums/NotificationObjectType"
+import InteractionObjectType from "enums/InteractionObjectType"
 import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
@@ -127,6 +130,35 @@ export const DELETE = withApiHandling(
         id: commentId,
       },
     })
+
+    try {
+      await prisma.notification.deleteMany({
+        where: {
+          OR: [
+            {
+              objectId: commentId,
+              objectType: NotificationObjectType.Comment,
+            },
+            {
+              sourceId: commentId,
+              sourceType: NotificationSourceType.Comment,
+            },
+          ],
+        },
+      })
+
+      await prisma.interaction.deleteMany({
+        where: {
+          objectId: commentId,
+          objectType: InteractionObjectType.Comment,
+        },
+      })
+    } catch (error: any) {
+      reportToSentry(error, {
+        method: "api.comments.delete.delete_associated_objects",
+        commentId,
+      })
+    }
 
     return NextResponse.json({}, { status: 200 })
   },
