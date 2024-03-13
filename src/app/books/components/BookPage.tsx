@@ -30,7 +30,7 @@ import Likes from "app/components/Likes"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import ListCard from "app/components/lists/ListCard"
-import CustomMarkdown from "app/components/CustomMarkdown"
+import ExpandableText from "app/components/ExpandableText"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -48,6 +48,7 @@ import type BookActivity from "types/BookActivity"
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
 const DEFAULT_DESCRIPTION = "No description found."
+const DESCRIPTION_MAX_CHARS = 800
 
 export default function BookPage({
   book,
@@ -471,7 +472,7 @@ export default function BookPage({
             {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
             <h2 className="my-2 text-xl">by {book.authorName}</h2>
             <div className="mt-8 mb-4 md:w-11/12">
-              <CustomMarkdown markdown={description} />
+              <ExpandableText text={description} maxChars={DESCRIPTION_MAX_CHARS} />
             </div>
             {book.description && !book.edited && (
               <div className="px-8 flex justify-end text-sm text-gray-300">— from OpenLibrary</div>
