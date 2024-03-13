@@ -57,7 +57,7 @@ export default async function SignUpPage({ searchParams }) {
   }
 
   return (
-    <div className="max-w-sm mx-auto font-mulish">
+    <div className="max-w-sm mx-auto px-8 font-mulish">
       <h1 className="cat-page-title my-12">sign up</h1>
       <SignUpForm inviteCode={inviteCode} />
     </div>

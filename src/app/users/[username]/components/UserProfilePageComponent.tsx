@@ -42,13 +42,9 @@ export default function UserProfilePageComponent({
             </div>
           ) : (
             <div className="h-48 flex items-center justify-center text-center font-newsreader italic text-lg text-gray-300">
-              {isUsersProfile ? "You haven't" : `${name} hasn't`} added any favorite books yet.
-              {isUsersProfile && (
-                <>
-                  <br />
-                  Edit your profile to add some.
-                </>
-              )}
+              {isUsersProfile
+                ? "Edit your profile to add your favorite books."
+                : `${name} hasn't added any favorite books yet.`}
             </div>
           )}
         </div>
@@ -87,7 +83,11 @@ export default function UserProfilePageComponent({
             </div>
           ) : (
             <EmptyState
-              text={`${isUsersProfile ? "You haven't" : `${name} hasn't`} created any lists yet.`}
+              text={
+                isUsersProfile
+                  ? "Create lists to group books by a common theme, either for yourself or to share with friends."
+                  : `${name} hasn't created any lists yet.`
+              }
             />
           )}
         </div>
