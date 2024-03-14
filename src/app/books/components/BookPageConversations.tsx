@@ -100,22 +100,17 @@ export default function BookPageConversations({
     [book.id, getBook, currentUserProfile],
   )
 
-  const handleCreatedPost = useCallback(async () => {
-    console.log("handleCreatedPost")
-    setConversationsTab(ConversationsTab.Catalog)
-    if (onChange) onChange()
-    return getBookPosts()
-  }, [getBookPosts, onChange])
-
   const handleChange = useCallback(() => {
     if (onChange) onChange()
     return getBookPosts()
   }, [getBookPosts, onChange])
 
-  useEffect(() => {
-    console.log("setting onNewPostSuccess")
-    setOnNewPostSuccess(() => handleCreatedPost)
-  }, [setOnNewPostSuccess, handleCreatedPost])
+  const handleCreatedPost = useCallback(async () => {
+    console.log("onNewPostSuccess, running")
+    setConversationsTab(ConversationsTab.Catalog)
+    if (onChange) onChange()
+    return getBookPosts()
+  }, [getBookPosts, onChange])
 
   useEffect(() => {
     if (book.id) {
@@ -139,6 +134,8 @@ export default function BookPageConversations({
   }
 
   function showModal(modalType: CurrentModal) {
+    console.log("setting onNewPostSuccess")
+    setOnNewPostSuccess(() => handleCreatedPost)
     setCurrentBook(book)
     setCurrentModal(modalType)
   }

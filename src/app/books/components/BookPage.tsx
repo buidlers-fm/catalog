@@ -339,6 +339,7 @@ export default function BookPage({
   }
 
   const refetchBookData = useCallback(async () => {
+    console.log("refetchBookData, running")
     const dbBook = await getBook()
     Promise.all([
       updateLikes(dbBook),
@@ -348,11 +349,9 @@ export default function BookPage({
     ])
   }, [getBook, updateLikes, getBookNotes, getBookReads, fetchShelfAssignments])
 
-  useEffect(() => {
-    setOnNewNoteSuccess(() => refetchBookData)
-  }, [setOnNewNoteSuccess, refetchBookData])
-
   function showModal(modalType: CurrentModal) {
+    console.log("setting onNewNoteSuccess")
+    setOnNewNoteSuccess(() => refetchBookData)
     setCurrentBook(book)
     setCurrentModal(modalType)
   }
