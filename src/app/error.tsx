@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { reportToSentry } from "lib/sentry"
 
-export default function ErrorPage({ error }) {
+export default function ErrorPage({ error, errorMessage }: { error?: any; errorMessage?: string }) {
   useEffect(() => {
     reportToSentry(error)
   }, [error])
@@ -11,6 +11,9 @@ export default function ErrorPage({ error }) {
   return (
     <div className="max-w-xl mx-auto py-32 px-8 text-center">
       <div className="text-xl">Oops! Something went wrong.</div>
+
+      {errorMessage && <div className="mt-4 text-md text-gray-300">{errorMessage}</div>}
+
       <div className="mt-4 text-md text-gray-300">
         It's likely that we got the error report and will look into it, but you can get in touch by{" "}
         <a href="mailto:staff@catalog.fyi" className="cat-link">
