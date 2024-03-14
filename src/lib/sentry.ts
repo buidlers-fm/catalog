@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/nextjs"
 
 function reportToSentry(error, data: any = {}) {
   console.error(error)
+  console.log(data)
 
   const sentryContext: any = {
     extra: data,

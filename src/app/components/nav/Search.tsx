@@ -59,11 +59,14 @@ export default function Search({
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [selectedBook, setSelectedBook] = useState<Book | null>()
   const [selectedUser, setSelectedUser] = useState<any | null>()
+  const [errorMessage, setErrorMessage] = useState<string>()
 
   const fullWidth = _fullWidth === undefined ? isMobileNav : _fullWidth
 
   const debouncedSearchHandler = useMemo(() => {
     async function onSearchChange(e: any) {
+      setErrorMessage(undefined)
+
       const searchString = e.target.value
       setMoreResultsExist(false)
 
@@ -121,26 +124,40 @@ export default function Search({
 
     try {
       const searchOpenLibrary = async () => {
-        const { moreResultsExist: _moreResultsExist, resultsForPage: _results } =
-          await OpenLibrary.search(searchString, { includeEditions: false, limit: RESULTS_LIMIT })
+        try {
+          const { moreResultsExist: _moreResultsExist, resultsForPage: _results } =
+            await OpenLibrary.search(searchString, { includeEditions: false, limit: RESULTS_LIMIT })
 
-        // because this search's results are just placeholders until the
-        // better, slower results come in
-        if (searchWithEditionsFinished) return
+          // because this search's results are just placeholders until the
+          // better, slower results come in
+          if (searchWithEditionsFinished) return
 
-        const results = search.processResults(_results, searchString, {
-          applyFuzzySearch: false,
-        })
+          const results = search.processResults(_results, searchString, {
+            applyFuzzySearch: false,
+          })
 
-        // apply limit for the results being rendered now, but don't apply limit
-        // for results that will get processed along with the other results when
-        // they come back, so that we have all results available
-        allOpenLibraryResults = results
-        let currentResults = concatUniqueSearchResults(existingBooksResults, results)
-        currentResults = currentResults.slice(0, RESULTS_LIMIT)
+          // apply limit for the results being rendered now, but don't apply limit
+          // for results that will get processed along with the other results when
+          // they come back, so that we have all results available
+          allOpenLibraryResults = results
+          let currentResults = concatUniqueSearchResults(existingBooksResults, results)
+          currentResults = currentResults.slice(0, RESULTS_LIMIT)
 
-        setSearchResults(currentResults)
-        setMoreResultsExist(_moreResultsExist)
+          setSearchResults(currentResults)
+          setMoreResultsExist(_moreResultsExist)
+        } catch (error: any) {
+          if (error.message?.match(/json/i) || error.message?.match(/timed out/i)) {
+            setErrorMessage(
+              "Our search partner OpenLibrary may be experiencing issues. Try again later for better results!",
+            )
+          }
+          reportToSentry(error, {
+            searchString,
+            options: {
+              includeEditions: false,
+            },
+          })
+        }
       }
 
       const searchOpenLibraryWithEditions = async () => {
@@ -168,6 +185,12 @@ export default function Search({
           setSearchResults(currentResults)
           setMoreResultsExist(_moreResultsExist)
         } catch (error: any) {
+          if (error.message?.match(/json/i) || error.message?.match(/timed out/i)) {
+            setErrorMessage(
+              "Our search partner OpenLibrary may be experiencing issues. Try again later for better results!",
+            )
+          }
+
           reportToSentry(error, {
             searchString,
             options: {
@@ -272,6 +295,7 @@ export default function Search({
                       searchResults={searchResults}
                       isLoadingMoreResults={isLoadingMoreBooksResults}
                       moreResultsExist={moreResultsExist}
+                      errorMessage={errorMessage}
                       maxHeightClass={maxHeightClass}
                     />
                   )}
@@ -323,6 +347,7 @@ function BookSearchResults({
   searchResults,
   isLoadingMoreResults,
   moreResultsExist,
+  errorMessage,
   maxHeightClass,
 }) {
   return (
@@ -383,6 +408,7 @@ function BookSearchResults({
               More results exist. Try searching by title and author to narrow them down!
             </li>
           )}
+          {errorMessage && <li className="px-6 py-6 text-gray-200">{errorMessage}</li>}
         </div>
       )}
     </>

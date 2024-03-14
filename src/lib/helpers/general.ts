@@ -3,22 +3,50 @@ import slugify from "slug"
 import cryptoRandomString from "crypto-random-string"
 import { validate as isValidUuid } from "uuid"
 import prisma from "lib/prisma"
+import { reportToSentry } from "lib/sentry"
 import { BASE_URLS_BY_ENV } from "lib/constants/urls"
 import CommentParentType from "enums/CommentParentType"
 import NotificationObjectType from "enums/NotificationObjectType"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
-  const res = await fetch(url, options)
+  const TIMEOUT = 10_000 // 10 seconds
 
-  if (res.status < 200 || res.status >= 300) {
-    console.log(res)
+  let res
+  let resClone
+  try {
+    const fetchPromise = fetch(url, options)
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Request timed out")), TIMEOUT)
+    })
+
+    res = await Promise.race([fetchPromise, timeoutPromise])
+
+    // clone the response so we can read the body twice:
+    // if the first try errors, the second is for reporting the error
+    resClone = res.clone()
+
+    if (res.status < 200 || res.status >= 300) {
+      const resBody = await res.json()
+
+      if (resBody.error) {
+        throw new Error(resBody.error)
+      } else {
+        throw new Error(`Failed to fetch ${url}: ${res.status}`)
+      }
+    }
+
     const resBody = await res.json()
-    console.log(resBody)
-    throw new Error(resBody.error)
-  }
+    return humps.camelizeKeys(resBody)
+  } catch (error: any) {
+    reportToSentry(error, {
+      url: url.toString(),
+      options,
+      res,
+      resBody: await resClone?.text(),
+    })
 
-  const resBody = await res.json()
-  return humps.camelizeKeys(resBody)
+    throw error
+  }
 }
 
 export const isValidHttpUrl = (string) => {
