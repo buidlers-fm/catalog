@@ -77,19 +77,17 @@ const readingStatusToCopy = {
 export default function BookNoteModal({
   book,
   onClose,
-  onSuccess,
   isOpen,
   like: _like,
   existingBookRead: _existingBookRead,
 }: {
   book: Book
   onClose: () => void
-  onSuccess: () => void
   isOpen: boolean
   like: boolean
   existingBookRead?: BookRead
 }) {
-  const { setCurrentBook, setCurrentModal } = useModals()
+  const { setCurrentBook, setCurrentModal, onNewNoteSuccess: onSuccess } = useModals()
 
   const [readingStatus, setReadingStatus] = useState<BookNoteReadingStatus>()
   const [text, setText] = useState<string>("")
@@ -235,6 +233,9 @@ export default function BookNoteModal({
       toast.success(successMessage, { id: toastId })
 
       await handleClose()
+
+      console.log("BookNoteModal onSuccess", onSuccess)
+
       if (onSuccess) await onSuccess()
       reset()
     } catch (error: any) {

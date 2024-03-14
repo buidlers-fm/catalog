@@ -15,14 +15,7 @@ import type List from "types/List"
 export default function Modals() {
   const { currentUserProfile } = useUser()
   const { bookIdsToLiked } = useUserBooks()
-  const {
-    currentModal,
-    setCurrentModal,
-    currentBook,
-    existingBookRead,
-    onNewNoteSuccess,
-    onNewPostSuccess,
-  } = useModals()
+  const { currentModal, setCurrentModal, currentBook, existingBookRead } = useModals()
 
   const [userLists, setUserLists] = useState<List[]>([])
 
@@ -70,7 +63,6 @@ export default function Modals() {
               existingBookRead={existingBookRead}
               isOpen
               onClose={() => setCurrentModal(undefined)}
-              onSuccess={onNewNoteSuccess}
             />
           )}
 
@@ -79,7 +71,6 @@ export default function Modals() {
               book={currentBook}
               isOpen
               onClose={() => setCurrentModal(undefined)}
-              onSuccess={onNewPostSuccess}
             />
           )}
         </>

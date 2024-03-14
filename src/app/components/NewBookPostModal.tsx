@@ -21,8 +21,8 @@ import CurrentModal from "enums/CurrentModal"
 
 const bookPostValidations = allValidations.bookPost
 
-export default function NewBookPostModal({ book, onClose, onSuccess, isOpen }) {
-  const { setCurrentBook, setCurrentModal } = useModals()
+export default function NewBookPostModal({ book, onClose, isOpen }) {
+  const { setCurrentBook, setCurrentModal, onNewPostSuccess: onSuccess } = useModals()
 
   const [text, setText] = useState<string>("")
   const [textErrorMessage, setTextErrorMessage] = useState<string>()
