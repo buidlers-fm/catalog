@@ -21,18 +21,6 @@ export default function HomeTabs() {
       name: "notifs",
       href: "/home/notifs",
     },
-    {
-      name: "recent lists",
-      href: "/home/lists/recent",
-    },
-    {
-      name: "recent notes",
-      href: "/home/notes/recent",
-    },
-    {
-      name: "leaderboard",
-      href: "/home/leaderboard",
-    },
   ]
 
   function isCurrentTab(tab) {
@@ -41,7 +29,7 @@ export default function HomeTabs() {
 
   return (
     <div className="font-mulish">
-      <div className="sm:hidden max-w-xs mx-auto border border-gray-700 px-8 rounded-sm">
+      <div className="sm:hidden w-fit max-w-xs mx-auto border-b border-b-gray-700 px-8 rounded-sm">
         <nav className="-mb-px" aria-label="Tabs">
           <div className="flex space-x-4 justify-center">
             {tabs.slice(0, 3).map((tab) => (
@@ -53,19 +41,9 @@ export default function HomeTabs() {
               />
             ))}
           </div>
-          <div className="flex space-x-4 justify-center">
-            {tabs.slice(3).map((tab) => (
-              <TabLink
-                key={tab.name}
-                tab={tab}
-                isCurrentTab={isCurrentTab(tab)}
-                hasUnreadNotifs={hasUnreadNotifs}
-              />
-            ))}
-          </div>
         </nav>
       </div>
-      <div className="hidden sm:block border border-gray-700 px-8 rounded-sm">
+      <div className="hidden sm:block w-fit mx-auto border-b border-b-gray-700 px-8 rounded-sm">
         <nav className="-mb-px flex justify-center space-x-8" aria-label="Tabs">
           {tabs.map((tab) => (
             <TabLink

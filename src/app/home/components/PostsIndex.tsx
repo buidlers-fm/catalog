@@ -38,7 +38,7 @@ export default function PostsIndex({ posts: _posts, currentUserProfile }) {
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
-      <div className="mb-2 text-sm">Recent links from around catalog.</div>
+      <div className="mb-2 text-sm">Recent conversations and links from around catalog.</div>
       {posts ? (
         posts.length > 0 ? (
           posts.map((post) => (

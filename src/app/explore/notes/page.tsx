@@ -1,3 +1,4 @@
+import Link from "next/link"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
@@ -5,8 +6,18 @@ import NotesIndex from "app/home/components/NotesIndex"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookNoteType from "enums/BookNoteType"
 import CommentParentType from "enums/CommentParentType"
+import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "explore notes • catalog",
+  description: "Recent notes from around catalog.",
+  openGraph: {
+    title: "explore notes • catalog",
+    description: "Recent notes from around catalog.",
+  },
+}
 
 const NOTES_LIMIT = 50
 
@@ -36,5 +47,15 @@ export default async function RecentNotesPage() {
   if (currentUserProfile)
     notes = await decorateWithSaves(notes, InteractionObjectType.Note, currentUserProfile)
 
-  return <NotesIndex notes={notes} currentUserProfile={currentUserProfile} />
+  return (
+    <div className="mt-4 max-w-3xl mx-auto font-mulish">
+      <div className="cat-page-title mb-4">
+        <Link href="/explore" className="cat-link">
+          explore
+        </Link>
+        {" / "}notes
+      </div>
+      <NotesIndex notes={notes} currentUserProfile={currentUserProfile} />
+    </div>
+  )
 }

@@ -120,6 +120,16 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                 <hr className="my-1 w-3/4 mx-auto border-gray-700" />
                 <Menu.Item>
                   <div className="">
+                    <Link href="/explore">
+                      <button className="w-full cat-btn-text hover:bg-gray-700 px-4 py-2 text-left rounded-tl rounded-tr">
+                        explore
+                      </button>
+                    </Link>
+                  </div>
+                </Menu.Item>
+                <hr className="my-1 w-3/4 mx-auto border-gray-700" />
+                <Menu.Item>
+                  <div className="">
                     <button
                       onClick={() => setShowFeedbackModal(true)}
                       className="w-full cat-btn-text hover:bg-gray-700 px-4 py-2 text-left rounded-bl rounded-br"
