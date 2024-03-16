@@ -3,18 +3,27 @@
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { getSelectorsByUserAgent } from "react-device-detect"
+import { Tooltip } from "react-tooltip"
+import { FaNoteSticky } from "react-icons/fa6"
 import { GiOpenBook } from "react-icons/gi"
 import { getBookLink } from "lib/helpers/general"
 import { truncateString } from "lib/helpers/strings"
 import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
+import CustomMarkdown from "app/components/CustomMarkdown"
 
 const defaultWidths = "w-[72px] xs:w-[96px] sm:w-[144px]"
 const favoriteBookWidths = "w-[72px] xs:w-[96px] sm:w-[144px] ml:w-[144px]"
 const defaultHeights = "h-[116px] xs:h-[154px] sm:h-[216px]"
 const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
 
-export default function ListBook({ book, isFavorite = false, isRanked = false, rank = 0 }) {
+export default function ListBook({
+  book,
+  note = undefined,
+  isFavorite = false,
+  isRanked = false,
+  rank = 0,
+}) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -60,7 +69,10 @@ export default function ListBook({ book, isFavorite = false, isRanked = false, r
               <CoverPlaceholder isFavorite={isFavorite} book={book} />
             )}
           </LinkOrDiv>
+
           <BookCoverOverlay book={book} positionClass="bottom-1" />
+
+          {note && <ListNote book={book} note={note} positionClass="-bottom-2 -right-3" />}
         </div>
       </div>
 
@@ -93,3 +105,26 @@ const CoverPlaceholder = ({ book, loading = false, isFavorite = false }) => (
     )}
   </div>
 )
+
+const ListNote = ({ book, note, positionClass }) => {
+  const tooltipAnchorId = `book-${book.id}-featured-note`
+
+  return (
+    <div className={`absolute ${positionClass}`}>
+      <FaNoteSticky id={tooltipAnchorId} className="text-gold-500 text-3xl" />
+      <Tooltip
+        anchorSelect={`#${tooltipAnchorId}`}
+        openOnClick
+        className="z-10 max-w-[360px] font-newsreader"
+        clickable
+      >
+        <div className="font-bold">{truncateString(`${book.title}`, 40)}</div>
+        <div className="mb-2">{truncateString(`by ${book.authorName}`, 40)}</div>
+        <CustomMarkdown markdown={note} />
+        <Link href={getBookLink(book.slug)} className="mt-2 font-mulish underline">
+          Go to book page
+        </Link>
+      </Tooltip>
+    </div>
+  )
+}

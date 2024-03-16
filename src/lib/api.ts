@@ -167,6 +167,13 @@ const api = {
         body: prepReqBody(requestData),
       }),
   },
+  leaderboard: {
+    get: (params: { limit?: number }) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/leaderboard?${queryString}`
+      return fetchJson(url)
+    },
+  },
   likes: {
     get: (params: {
       likedObjectId?: string
@@ -197,7 +204,12 @@ const api = {
     },
   },
   lists: {
-    get: (params: { userProfileId?: string; bookId?: string; limit?: number }) => {
+    get: (params: {
+      userProfileId?: string
+      bookId?: string
+      limit?: number
+      featured?: boolean
+    }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/lists?${queryString}`
       return fetchJson(url)

@@ -8,6 +8,8 @@ import { createList } from "lib/api/lists"
 import { decorateLists } from "lib/server/decorators"
 import type { NextRequest } from "next/server"
 
+const FEATURED_LIST_TAG = "featured"
+
 export const GET = withApiHandling(
   async (_req: NextRequest) => {
     const currentUserProfile = await getCurrentUserProfile()
@@ -17,10 +19,7 @@ export const GET = withApiHandling(
     const limit = _req.nextUrl.searchParams.get("limit")
       ? Number(_req.nextUrl.searchParams.get("limit"))
       : undefined
-
-    if (!bookId && !userProfileId) {
-      return NextResponse.json({ error: "book_id or user_profile_id is required" }, { status: 400 })
-    }
+    const featured = _req.nextUrl.searchParams.get("featured") === "true"
 
     if (bookId && !isValidUuid(bookId)) {
       return NextResponse.json({ error: "book_id is not a valid UUID" }, { status: 400 })
@@ -50,6 +49,22 @@ export const GET = withApiHandling(
             listedObjectId: bookId,
           },
         },
+      }
+    }
+
+    if (featured) {
+      const featuredListTagAssignment = await prisma.tagAssignment.findFirst({
+        where: {
+          tag: FEATURED_LIST_TAG,
+        },
+      })
+
+      if (featuredListTagAssignment) {
+        whereQueryParams = {
+          id: featuredListTagAssignment.taggedObjectId,
+        }
+      } else {
+        return NextResponse.json([], { status: 200 })
       }
     }
 

@@ -1,3 +1,4 @@
+import Link from "next/link"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
@@ -10,10 +11,10 @@ import type { Metadata } from "next"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "recent links • catalog",
+  title: "explore conversations • catalog",
   description: "Recent links from around catalog.",
   openGraph: {
-    title: "recent links • catalog",
+    title: "explore conversations • catalog",
     description: "Recent links from around catalog.",
   },
 }
@@ -46,5 +47,15 @@ export default async function RecentPostsPage() {
   if (currentUserProfile)
     posts = await decorateWithSaves(posts, InteractionObjectType.Post, currentUserProfile)
 
-  return <PostsIndex posts={posts} currentUserProfile={currentUserProfile} />
+  return (
+    <div className="mt-4 max-w-3xl mx-auto font-mulish">
+      <div className="cat-page-title mb-4">
+        <Link href="/explore" className="cat-link">
+          explore
+        </Link>
+        {" / "}conversations
+      </div>
+      <PostsIndex posts={posts} currentUserProfile={currentUserProfile} />
+    </div>
+  )
 }

@@ -1,3 +1,4 @@
+import Link from "next/link"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { decorateLists } from "lib/server/decorators"
@@ -8,10 +9,10 @@ import type { Metadata } from "next"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "recent lists • catalog",
+  title: "explore lists • catalog",
   description: "Recent lists from around catalog.",
   openGraph: {
-    title: "recent lists • catalog",
+    title: "explore lists • catalog",
     description: "Recent lists from around catalog.",
   },
 }
@@ -42,6 +43,12 @@ export default async function RecentListsPage() {
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
+      <div className="cat-page-title mb-4">
+        <Link href="/explore" className="cat-link">
+          explore
+        </Link>
+        {" / "}lists
+      </div>
       <div className="mb-2 text-sm">Recent lists from around catalog.</div>
       {lists.length > 0 ? (
         lists.map((list) => (
