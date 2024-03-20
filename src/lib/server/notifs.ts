@@ -1,6 +1,9 @@
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
-import { commentParentTypeToNotificationObjectType } from "lib/helpers/general"
+import {
+  commentParentTypeToNotificationObjectType,
+  interactionObjectTypeToNotificationObjectType,
+} from "lib/helpers/general"
 import NotificationType from "enums/NotificationType"
 import NotificationAgentType from "enums/NotificationAgentType"
 import NotificationObjectType from "enums/NotificationObjectType"
@@ -131,7 +134,9 @@ async function createNotifFromSource(source) {
 }
 
 async function createNotifFromLike(likeInteraction) {
-  const { id, agentId, objectId, objectType } = likeInteraction
+  const { id, agentId, objectId, objectType: interactionObjectType } = likeInteraction
+
+  const objectType = interactionObjectTypeToNotificationObjectType(interactionObjectType)
 
   return createNotifFromSource({
     id,

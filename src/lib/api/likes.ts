@@ -3,7 +3,6 @@ import { createNotifFromLike } from "lib/server/notifs"
 import InteractionType from "enums/InteractionType"
 import InteractionAgentType from "enums/InteractionAgentType"
 import InteractionObjectType from "enums/InteractionObjectType"
-import NotificationObjectType from "enums/NotificationObjectType"
 
 enum UpdateLikeCountMode {
   Increment,
@@ -94,7 +93,7 @@ export async function findOrCreateLike({ likedObjectType, likedObjectId, userPro
     createdLike = await createLikePromise
   }
 
-  if (Object.values(NotificationObjectType).includes(likedObjectType)) {
+  if (likedObjectType !== InteractionObjectType.Book) {
     await createNotifFromLike(createdLike)
   }
 
