@@ -1,4 +1,4 @@
-last updated: march 1, 2024.
+last updated: march 19, 2024.
 
 # big things for march - april 2024
 
@@ -16,6 +16,30 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## march 11-17, 2024
+
+Main things:
+
+- New [explore](https://catalog.fyi/explore) page featuring new books picked out by catalog staff. (Some elements that were on the home page have been moved to the explore page.)
+- You can now save any list, comment, note, or post by clicking its bookmark icon, and you can view your saved items on their own page ("saved" in the user menu).
+
+Small fixes/improvements:
+
+- Improved handling for when OpenLibrary fails to respond.
+- Fixed: notes/conversations on book page failing to update when you've posted a new one.
+- Fixed 3 bugs involving notifications: some notifs failing to create; page crashing when trying to load a notif for a deleted item; don't notify yourself if you comment on your own item or mention yourself.
+- Fixed: we now always redirect root (catalog.fyi) to home page (not landing page) if signed in.
+- Fixed: z-index bug where book covers from the underlying page would sometimes incorrectly appear on top of the current modal.
+- Fixed: display name not used in friends' shelf activity on the book page.
+- Fixed: catalog news post page caching issue.
+- Cleanup: delete related notifs and likes when an item (list, comment, note, etc) is deleted.
+- Restored the link to the guide (now found in the feedback modal, which is now named "help" in the menu).
+- Update list's "last updated" time when a book is added via "add book to lists".
+- Book page description expands/collapses when text is long.
+- Book page now has "latest by you" section to gather your own notes/posts.
+- Misc copy changes to make empty states more helpful.
+- Misc styling tweaks: edit book page, book's "more notes/conversations/lists" pages, and mobile footer.
 
 ## march 4-10, 2024
 
