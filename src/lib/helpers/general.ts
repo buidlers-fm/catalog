@@ -7,6 +7,7 @@ import { reportToSentry } from "lib/sentry"
 import { BASE_URLS_BY_ENV } from "lib/constants/urls"
 import CommentParentType from "enums/CommentParentType"
 import NotificationObjectType from "enums/NotificationObjectType"
+import InteractionObjectType from "enums/InteractionObjectType"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const TIMEOUT = 10_000 // 10 seconds
@@ -246,4 +247,13 @@ export function commentParentTypeToNotificationObjectType(parentType: string) {
   }
 
   return specialMappings[parentType] || parentType
+}
+
+export function interactionObjectTypeToNotificationObjectType(objectType: string) {
+  const specialMappings = {
+    [InteractionObjectType.Note]: NotificationObjectType.BookNote,
+    [InteractionObjectType.Post]: NotificationObjectType.BookNote,
+  }
+
+  return specialMappings[objectType] || objectType
 }
