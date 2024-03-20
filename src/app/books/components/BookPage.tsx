@@ -24,6 +24,7 @@ import {
   getBookListsLink,
 } from "lib/helpers/general"
 import { joinStringsWithAnd } from "lib/helpers/strings"
+import CopyableLinkButton from "app/components/CopyableLinkButton"
 import BookPageConversations from "app/books/components/BookPageConversations"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
@@ -50,6 +51,13 @@ const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
 const DEFAULT_DESCRIPTION = "No description found."
 const DESCRIPTION_MAX_CHARS = 800
+
+let pageUrl
+if (typeof window !== "undefined") {
+  pageUrl = window.location.href
+} else {
+  pageUrl = ""
+}
 
 export default function BookPage({
   book,
@@ -393,40 +401,45 @@ export default function BookPage({
             ) : (
               <CoverPlaceholder size="lg" />
             )}
-            <div className="flex items-center my-2">
-              <div id="book-likes" className="mx-2 w-fit">
-                <Likes
-                  interactive={isSignedIn}
-                  likedObject={book}
-                  likedObjectType={InteractionObjectType.Book}
-                  likeCount={likeCount}
-                  currentUserLike={currentUserLike}
-                  onChange={onLikeChange}
-                />
-              </div>
-              {showLikeAddNoteTooltip && (
-                <Tooltip
-                  anchorSelect="#book-likes"
-                  className="font-mulish"
-                  place="bottom-start"
-                  clickable
-                  isOpen={showLikeAddNoteTooltip}
-                >
-                  <button
-                    onClick={() => {
-                      showModal(CurrentModal.NewNote)
-                      setShowLikeAddNoteTooltip(false)
-                    }}
-                  >
-                    <div className="underline">Add a note?</div>
-                  </button>
-                </Tooltip>
-              )}
-              {isSignedIn && (
-                <div id="book-shelves" className="ml-2 w-fit">
-                  <UserBookShelfMenu book={book} onChange={onShelfChange} />
+            <div className="flex justify-between items-center my-2">
+              <div className="flex items-center">
+                <div id="book-likes" className="mx-2 w-fit">
+                  <Likes
+                    interactive={isSignedIn}
+                    likedObject={book}
+                    likedObjectType={InteractionObjectType.Book}
+                    likeCount={likeCount}
+                    currentUserLike={currentUserLike}
+                    onChange={onLikeChange}
+                  />
                 </div>
-              )}
+                {showLikeAddNoteTooltip && (
+                  <Tooltip
+                    anchorSelect="#book-likes"
+                    className="font-mulish"
+                    place="bottom-start"
+                    clickable
+                    isOpen={showLikeAddNoteTooltip}
+                  >
+                    <button
+                      onClick={() => {
+                        showModal(CurrentModal.NewNote)
+                        setShowLikeAddNoteTooltip(false)
+                      }}
+                    >
+                      <div className="underline">Add a note?</div>
+                    </button>
+                  </Tooltip>
+                )}
+                {isSignedIn && (
+                  <div id="book-shelves" className="ml-2 w-fit">
+                    <UserBookShelfMenu book={book} onChange={onShelfChange} />
+                  </div>
+                )}
+              </div>
+
+              <CopyableLinkButton url={pageUrl} />
+
               {showShelvesAddNoteTooltip && (
                 <Tooltip
                   anchorSelect="#book-shelves"
