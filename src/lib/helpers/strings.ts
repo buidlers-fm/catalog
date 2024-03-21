@@ -15,8 +15,13 @@ export function truncateString(_str: string | undefined, maxChars: number) {
 
   if (str.length <= maxChars) return str
 
-  const lastSpaceIndex = str.lastIndexOf(" ", maxChars)
-  const truncatedString = str.substring(0, lastSpaceIndex).trim()
+  let boundaryIndex = str.lastIndexOf(" ", maxChars)
+
+  if (boundaryIndex === -1) {
+    boundaryIndex = maxChars
+  }
+
+  const truncatedString = str.substring(0, boundaryIndex).trim()
 
   return `${truncatedString}...`
 }

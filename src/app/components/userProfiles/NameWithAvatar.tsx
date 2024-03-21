@@ -2,6 +2,7 @@ import Link from "next/link"
 import { FaUserCircle } from "react-icons/fa"
 import UserProfile from "lib/models/UserProfile"
 import { getUserProfileLink } from "lib/helpers/general"
+import { truncateString } from "lib/helpers/strings"
 
 export default function NameWithAvatar({
   userProfile,
@@ -9,6 +10,7 @@ export default function NameWithAvatar({
   bothNames = false,
   inline = false,
   link = true,
+  maxChars = 30,
 }) {
   const { username, displayName, avatarUrl, name } = UserProfile.build(userProfile)
 
@@ -21,7 +23,7 @@ export default function NameWithAvatar({
           className={`mr-2 ${large ? "w-[48px] h-[48px]" : "w-[20px] h-[20px]"} rounded-full`}
         />
       ) : (
-        <FaUserCircle className={`mr-2 ${large ? "text-5xl" : "text-xl"} text-gold-100`} />
+        <FaUserCircle className={`shrink-0 mr-2 ${large ? "text-5xl" : "text-xl"} text-gold-100`} />
       )}
       {bothNames ? (
         displayName ? (
@@ -44,7 +46,7 @@ export default function NameWithAvatar({
           </div>
         )
       ) : (
-        <div className={`${large ? "mt-3 ml-3" : "text-sm"}`}>{name}</div>
+        <div className={`${large ? "mt-3 ml-3" : "text-sm"}`}>{truncateString(name, maxChars)}</div>
       )}
     </div>
   )

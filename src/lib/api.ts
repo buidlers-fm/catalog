@@ -159,6 +159,11 @@ const api = {
       })
     },
   },
+  home: {
+    activity: {
+      get: () => fetchJson("/api/home/activity"),
+    },
+  },
   invites: {
     get: () => fetchJson(`/api/user_invites`),
     create: (requestData) =>
