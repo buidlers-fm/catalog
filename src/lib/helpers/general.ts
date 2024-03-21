@@ -257,3 +257,12 @@ export function interactionObjectTypeToNotificationObjectType(objectType: string
 
   return specialMappings[objectType] || objectType
 }
+
+export function getWorldCatUrl({ isbn, oclc }: { isbn?: string; oclc?: string }) {
+  const baseUrl = "https://www.worldcat.org"
+
+  if (oclc) return `${baseUrl}/oclc/${oclc}`
+  if (isbn) return `${baseUrl}/isbn/${isbn}`
+
+  return ""
+}

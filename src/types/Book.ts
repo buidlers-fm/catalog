@@ -26,6 +26,8 @@ export default interface Book {
   userShelfAssignments?: UserBookShelfAssignment[]
   adaptations?: Adaptation[]
   openLibraryBestEditionId?: string // in-memory only
+  isbn?: string // in-memory only
+  oclc?: string // in-memory only
   likeCount?: number // in-memory only
   currentUserLike?: Like // in-memory only
   totalShelfCounts?: any // in-memory only

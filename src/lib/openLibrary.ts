@@ -138,6 +138,16 @@ const OpenLibrary = {
       return Math.min(...(pubYears as number[]))
     }
 
+    const isbn = editions
+      .map((e) => [...(e.isbn13 || []), ...(e.isbn10 || [])])
+      .flat()
+      .filter(Boolean)[0]
+
+    const oclc = editions
+      .map((e) => e.oclcNumbers)
+      .flat()
+      .filter(Boolean)[0]
+
     const book: Book = {
       title: isTranslated ? bestEnglishEdition.title : work.title,
       subtitle: isTranslated
@@ -152,6 +162,8 @@ const OpenLibrary = {
       openLibraryWorkId: workId,
       isTranslated,
       originalTitle: work.title,
+      isbn,
+      oclc,
     }
 
     return book

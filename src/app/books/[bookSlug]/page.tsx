@@ -58,23 +58,23 @@ export default async function BookPageBySlug({ params }: any) {
   let book = dbBook
 
   // fetch and update from OL if book has never been edited on catalog
-  if (!book.edited) {
-    const workId = dbBook.openLibraryWorkId!
+  const workId = dbBook.openLibraryWorkId!
 
-    let openLibraryBook: any = {}
-    try {
-      openLibraryBook = await OpenLibrary.getFullBook(workId)
-    } catch (error: any) {
-      // if not found, let openLibraryBook stay blank
-      if (error.message !== "notfound") {
-        reportToSentry(error, { workId })
-      }
+  let openLibraryBook: any = {}
+  try {
+    openLibraryBook = await OpenLibrary.getFullBook(workId)
+  } catch (error: any) {
+    // if not found, let openLibraryBook stay blank
+    if (error.message !== "notfound") {
+      reportToSentry(error, { workId })
     }
+  }
 
-    if (openLibraryBook) {
-      const useExistingCoverImageUrl =
-        dbBook.coverImageUrl && !dbBook.coverImageUrl.match(/openlibrary/)
+  if (openLibraryBook) {
+    const useExistingCoverImageUrl =
+      dbBook.coverImageUrl && !dbBook.coverImageUrl.match(/openlibrary/)
 
+    if (!book.edited) {
       const updateBookData = {
         title: openLibraryBook.title || undefined,
         authorName: openLibraryBook.authorName || undefined,
@@ -107,18 +107,16 @@ export default async function BookPageBySlug({ params }: any) {
           ...updateBookData,
         })
       }
+    }
 
-      // override book with latest from OL _except_ for cover image urls
-      book = {
-        ...book,
-        ...openLibraryBook,
-        coverImageUrl: useExistingCoverImageUrl
-          ? book.coverImageUrl
-          : openLibraryBook.coverImageUrl,
-        openLibraryCoverImageUrl: useExistingCoverImageUrl
-          ? book.openLibraryCoverImageUrl
-          : openLibraryBook.coverImageUrl,
-      }
+    // override book with latest from OL _except_ for cover image urls
+    book = {
+      ...book,
+      ...openLibraryBook,
+      coverImageUrl: useExistingCoverImageUrl ? book.coverImageUrl : openLibraryBook.coverImageUrl,
+      openLibraryCoverImageUrl: useExistingCoverImageUrl
+        ? book.openLibraryCoverImageUrl
+        : openLibraryBook.coverImageUrl,
     }
   }
 

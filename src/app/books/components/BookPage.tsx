@@ -7,7 +7,7 @@ import humps from "humps"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaHeart, FaBookmark } from "react-icons/fa"
-import { FaPlus } from "react-icons/fa6"
+import { FaPlus, FaBuildingColumns } from "react-icons/fa6"
 import { SlInfo } from "react-icons/sl"
 import { MdEdit } from "react-icons/md"
 import { TbExternalLink } from "react-icons/tb"
@@ -22,6 +22,7 @@ import {
   getBookEditLinkWithQueryString,
   getBookNotesLink,
   getBookListsLink,
+  getWorldCatUrl,
 } from "lib/helpers/general"
 import { joinStringsWithAnd } from "lib/helpers/strings"
 import CopyableLinkButton from "app/components/CopyableLinkButton"
@@ -382,6 +383,8 @@ export default function BookPage({
 
   const description = book.description || DEFAULT_DESCRIPTION
 
+  const worldCatUrl = getWorldCatUrl({ isbn: book.isbn, oclc: book.oclc })
+
   return (
     <div className="mt-16 max-w-4xl mx-auto">
       <div className="mx-8 lg:mx-16">
@@ -502,7 +505,7 @@ export default function BookPage({
             </div>
 
             {isSignedIn && (
-              <div className="mt-4 mb-8 font-mulish">
+              <div className="mt-4 mb-4 font-mulish">
                 <button
                   type="button"
                   onClick={() => showModal(CurrentModal.AddBookToLists)}
@@ -534,6 +537,27 @@ export default function BookPage({
                     <MdEdit className="inline-block -mt-[4px] text-sm" /> edit this book
                   </button>
                 </Link>
+              </div>
+            )}
+
+            {worldCatUrl && (
+              <div className="mt-8 font-mulish text-sm">
+                <div className="cat-eyebrow">
+                  <FaBuildingColumns className="inline-block -mt-1.5 mr-1.5" />
+                  check nearby libraries
+                </div>
+                <hr className="my-1 h-[1px] border-none bg-gray-300" />
+                <div className="py-1">
+                  <a
+                    href={worldCatUrl}
+                    className="cat-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    WorldCat
+                  </a>
+                  <TbExternalLink className="ml-1 -mt-1 inline-block" />
+                </div>
               </div>
             )}
 
