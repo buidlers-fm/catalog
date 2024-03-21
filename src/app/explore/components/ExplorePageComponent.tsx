@@ -88,7 +88,7 @@ export default function ExplorePageComponent() {
 
       <div className="mt-8 mb-16 font-mulish">
         <div className="flex justify-between items-baseline text-sm">
-          <div className="text-4xl -mb-2 font-semibold font-newsreader">recent notes</div>
+          <div className="text-3xl -mb-2 font-semibold font-newsreader">recent notes</div>
           <div className="flex -mt-1">
             <Link className="inline-block mt-1 mx-2" href="/explore/notes">
               more
@@ -115,7 +115,7 @@ export default function ExplorePageComponent() {
 
       <div className="mt-8 mb-16 font-mulish">
         <div className="flex justify-between items-baseline text-sm">
-          <div className="text-4xl -mb-2 font-semibold font-newsreader">
+          <div className="text-3xl -mb-2 font-semibold font-newsreader">
             recent conversations and links
           </div>
           <div className="flex -mt-1">
@@ -144,7 +144,7 @@ export default function ExplorePageComponent() {
 
       <div className="mt-16 font-mulish">
         <div className="flex justify-between items-baseline text-sm">
-          <div className="text-4xl -mb-2 font-semibold font-newsreader">recent lists</div>
+          <div className="text-3xl -mb-2 font-semibold font-newsreader">recent lists</div>
           <div className="flex -mt-1">
             <Link className="inline-block mt-1 mx-2" href="/explore/lists">
               more
@@ -170,7 +170,7 @@ export default function ExplorePageComponent() {
 
       <div className="mt-16 font-mulish">
         <div className="flex justify-between items-baseline text-sm">
-          <div className="text-4xl -mb-2 font-semibold font-newsreader">leaderboard</div>
+          <div className="text-3xl -mb-2 font-semibold font-newsreader">leaderboard</div>
           <div className="flex -mt-1">
             <Link className="inline-block mt-1 mx-2" href="/explore/leaderboard">
               more

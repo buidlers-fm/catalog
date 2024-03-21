@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { Menu } from "@headlessui/react"
 import { BsXLg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
+import { RxCaretDown } from "react-icons/rx"
 import { useUser } from "lib/contexts/UserContext"
 import { useNotifications } from "lib/contexts/NotificationsContext"
 import {
@@ -88,6 +89,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                   <FaUserCircle className="mr-3 text-2xl text-gold-100" />
                 )}
                 <span className="hidden sm:inline">{currentUserProfile.username}</span>
+                <RxCaretDown className="inline-block mt-1 ml-0.5 text-2xl text-gray-300" />
               </div>
             </Menu.Button>
             <div className="relative">

@@ -116,14 +116,18 @@ const ListNote = ({ book, note, positionClass }) => {
         anchorSelect={`#${tooltipAnchorId}`}
         openOnClick
         className="z-10 max-w-[360px] font-newsreader"
+        opacity={1}
+        style={{ backgroundColor: "hsl(45, 8%, 22%)" }} // bg-gray-900
         clickable
       >
-        <div className="font-bold">{truncateString(`${book.title}`, 40)}</div>
-        <div className="mb-2">{truncateString(`by ${book.authorName}`, 40)}</div>
-        <CustomMarkdown markdown={note} />
-        <Link href={getBookLink(book.slug)} className="mt-2 font-mulish underline">
-          Go to book page
-        </Link>
+        <div className="m-1 p-2">
+          <div className="font-bold">{truncateString(`${book.title}`, 40)}</div>
+          <div className="mb-2">{truncateString(`by ${book.authorName}`, 40)}</div>
+          <CustomMarkdown markdown={note} />
+          <Link href={getBookLink(book.slug)} className="block mt-2 font-mulish underline">
+            go to book page
+          </Link>
+        </div>
       </Tooltip>
     </div>
   )

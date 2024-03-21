@@ -31,7 +31,7 @@ export default function FeaturedBooks() {
   return (
     <div className="mt-4 xs:w-[440px] sm:w-[600px] xs:mx-auto">
       <div className="sm:flex sm:items-start">
-        <div className="text-4xl font-semibold mb-1 sm:mr-6">featured new books</div>
+        <div className="text-3xl font-semibold mb-1 sm:mr-6">featured new books</div>
       </div>
 
       <div className="">
