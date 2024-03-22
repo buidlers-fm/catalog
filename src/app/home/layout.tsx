@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { getCurrentUserProfile } from "lib/server/auth"
-import HomeTabs from "app/home/components/HomeTabs"
 
 export const dynamic = "force-dynamic"
 
@@ -15,9 +14,6 @@ export default async function HomeLayout({ children }) {
           explore
         </Link>{" "}
         page for featured new books and the latest from the catalog community.
-      </div>
-      <div className="mt-4 mb-12 max-w-xl mx-auto">
-        <HomeTabs />
       </div>
       {children}
     </div>
