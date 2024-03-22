@@ -57,7 +57,7 @@ export default async function BookPageBySlug({ params }: any) {
 
   let book = dbBook
 
-  // fetch and update from OL if book has never been edited on catalog
+  // fetch from OL, and update if book has never been edited on catalog
   const workId = dbBook.openLibraryWorkId!
 
   let openLibraryBook: any = {}
@@ -74,7 +74,13 @@ export default async function BookPageBySlug({ params }: any) {
     const useExistingCoverImageUrl =
       dbBook.coverImageUrl && !dbBook.coverImageUrl.match(/openlibrary/)
 
-    if (!book.edited) {
+    if (book.edited) {
+      // use book data, but use OL data for missing fields
+      book = {
+        ...openLibraryBook,
+        ...book,
+      }
+    } else {
       const updateBookData = {
         title: openLibraryBook.title || undefined,
         authorName: openLibraryBook.authorName || undefined,
@@ -107,12 +113,17 @@ export default async function BookPageBySlug({ params }: any) {
           ...updateBookData,
         })
       }
+
+      // override book with latest from OL
+      book = {
+        ...book,
+        ...openLibraryBook,
+      }
     }
 
-    // override book with latest from OL _except_ for cover image urls
+    // handle cover image urls separately
     book = {
       ...book,
-      ...openLibraryBook,
       coverImageUrl: useExistingCoverImageUrl ? book.coverImageUrl : openLibraryBook.coverImageUrl,
       openLibraryCoverImageUrl: useExistingCoverImageUrl
         ? book.openLibraryCoverImageUrl
