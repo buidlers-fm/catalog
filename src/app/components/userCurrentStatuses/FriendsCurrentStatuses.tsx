@@ -5,6 +5,8 @@ import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
 import InteractionObjectType from "enums/InteractionObjectType"
 
+const LIMIT = 5
+
 export default async function FriendsCurrentStatuses({ currentUserProfile }) {
   const twoWeeksAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 14)
 
@@ -39,6 +41,7 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
         new Date(b.currentStatuses[0].createdAt).valueOf() -
         new Date(a.currentStatuses[0].createdAt).valueOf(),
     )
+    .slice(0, LIMIT)
 
   // decorate current statuses with likes
   const decoratedCurrentStatuses = await decorateWithLikes(
@@ -56,10 +59,10 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
   })
 
   return (
-    <div className="mt-4 max-w-lg mx-auto font-mulish">
+    <div className="mt-4 max-w-xl mx-auto font-mulish">
       <div className="cat-eyebrow">friends' recent statuses</div>
       <hr className="my-1 h-[1px] border-none bg-gray-300" />
-      <div>
+      <div className="max-w-lg mx-auto">
         {following ? (
           following.length > 0 ? (
             followingWithCurrentStatuses.length > 0 ? (
@@ -73,7 +76,7 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
                 ))}
               </div>
             ) : (
-              <EmptyState text="None of your friends has set a current status recently." small />
+              <EmptyState text="None of your friends has set a status recently." small />
             )
           ) : (
             <EmptyState text="You're not following anyone yet." small />

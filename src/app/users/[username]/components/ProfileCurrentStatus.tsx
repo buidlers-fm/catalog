@@ -10,6 +10,7 @@ export default function ProfileCurrentStatus({
   userProfile: _userProfile,
   userCurrentStatus: _userCurrentStatus,
   isUsersProfile,
+  isProfilePage = true,
 }) {
   const [userCurrentStatus, setUserCurrentStatus] = useState<any>(_userCurrentStatus)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -29,7 +30,7 @@ export default function ProfileCurrentStatus({
   return (
     <>
       <div className="cat-eyebrow flex justify-between">
-        current status
+        {isProfilePage ? "current status" : "your current status"}
         {isUsersProfile && !isEditing && (
           <button onClick={() => setIsEditing(true)}>
             <MdEdit className="inline-block -mt-1 text-lg text-gray-300" />
@@ -43,12 +44,14 @@ export default function ProfileCurrentStatus({
           onEditSuccess={handleEditSuccess}
           onDeleteSuccess={handleDeleteSuccess}
           onCancel={() => setIsEditing(false)}
+          isProfilePage={isProfilePage}
         />
       ) : (
         <CurrentStatus
           userProfile={userProfile}
           userCurrentStatus={userCurrentStatus}
           isUsersProfile={isUsersProfile}
+          isProfilePage={isProfilePage}
         />
       )}
     </>

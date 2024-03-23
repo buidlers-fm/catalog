@@ -13,6 +13,7 @@ export default function EditProfileCurrentStatus({
   onEditSuccess,
   onDeleteSuccess,
   onCancel,
+  isProfilePage = true,
 }) {
   const [selectedBook, setSelectedBook] = useState<Book | null | undefined>(userCurrentStatus?.book)
   const [text, setText] = useState<string>(userCurrentStatus?.text || "")
@@ -83,8 +84,12 @@ export default function EditProfileCurrentStatus({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row lg:flex-col sm:items-end lg:items-start">
-      <div className="sm:mr-8 lg:mr-0">
+    <div
+      className={`flex flex-col sm:flex-row sm:items-end ${
+        isProfilePage && "lg:flex-col lg:items-start"
+      }`}
+    >
+      <div className={`sm:mr-8 ${isProfilePage && "lg:mr-0"}`}>
         <div className="w-[144px] mx-auto my-4">
           {selectedBook ? (
             <div className="">
@@ -128,7 +133,7 @@ export default function EditProfileCurrentStatus({
             </button>
           ))}
       </div>
-      <div className="grow lg:w-[256px]">
+      <div className={`grow ${isProfilePage && "lg:w-[256px]"}`}>
         <FormTextarea
           name="text"
           type="text"

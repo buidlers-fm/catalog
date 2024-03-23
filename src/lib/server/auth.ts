@@ -12,12 +12,14 @@ type Options = {
   redirectPath?: string
   requireSignedIn?: boolean
   withRoles?: boolean
+  include?: any
 }
 
 const defaultOptions = {
   redirectPath: "/",
   requireSignedIn: false,
   withRoles: false,
+  include: undefined,
 }
 
 // prevents vercel error. ref: https://github.com/vercel/next.js/issues/49373
@@ -27,7 +29,7 @@ const createServerSupabaseClient = cache(() => {
 })
 
 const getCurrentUserProfile = async (options: Options = {}) => {
-  const { redirectPath, requireSignedIn, withRoles } = { ...defaultOptions, ...options }
+  const { redirectPath, requireSignedIn, withRoles, include } = { ...defaultOptions, ...options }
 
   const supabase = createServerSupabaseClient()
 
@@ -62,6 +64,7 @@ const getCurrentUserProfile = async (options: Options = {}) => {
       include: {
         roleAssignments: withRoles,
         config: true,
+        ...include,
       },
     })
   }

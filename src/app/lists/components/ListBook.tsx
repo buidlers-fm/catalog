@@ -23,6 +23,8 @@ export default function ListBook({
   isFavorite = false,
   isRanked = false,
   rank = 0,
+  widthClasses = "",
+  heightClasses = "",
 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -41,20 +43,24 @@ export default function ListBook({
 
   const LinkOrDiv = isMobile ? "div" : Link
 
+  const widthClassesToUse = widthClasses || (isFavorite ? favoriteBookWidths : defaultWidths)
+  const heightClassesToUse = heightClasses || (isFavorite ? favoriteBookHeights : defaultHeights)
+
   return (
     <div key={book.id} className="flex flex-col items-center justify-center">
-      <div
-        className={`grow flex items-center ${
-          isFavorite ? favoriteBookWidths : defaultWidths
-        } h-auto my-8 mx-auto sm:my-4`}
-      >
+      <div className={`grow flex items-center ${widthClassesToUse} h-auto my-8 mx-auto sm:my-4`}>
         <div className="relative group">
           <LinkOrDiv
             // @ts-ignore this is a weird case, just let it be
             href={isMobile ? undefined : getBookLink(book.slug)}
           >
             {book.coverImageUrl && !imgLoaded && (
-              <CoverPlaceholder book={book} isFavorite={isFavorite} loading />
+              <CoverPlaceholder
+                book={book}
+                widthClasses={widthClassesToUse}
+                heightClasses={heightClassesToUse}
+                loading
+              />
             )}
             {book.coverImageUrl ? (
               <img
@@ -66,7 +72,11 @@ export default function ListBook({
                 onLoad={() => setImgLoaded(true)}
               />
             ) : (
-              <CoverPlaceholder isFavorite={isFavorite} book={book} />
+              <CoverPlaceholder
+                widthClasses={widthClassesToUse}
+                heightClasses={heightClassesToUse}
+                book={book}
+              />
             )}
           </LinkOrDiv>
 
@@ -85,14 +95,10 @@ export default function ListBook({
   )
 }
 
-const CoverPlaceholder = ({ book, loading = false, isFavorite = false }) => (
+const CoverPlaceholder = ({ book, loading = false, widthClasses, heightClasses }) => (
   <div
     id={`book-${book.id}`}
-    className={`${
-      isFavorite
-        ? `${favoriteBookWidths} ${favoriteBookHeights}`
-        : `${defaultWidths} ${defaultHeights}`
-    } p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center text-sm text-gray-200`}
+    className={`${widthClasses} ${heightClasses} p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center text-sm text-gray-200`}
   >
     {loading ? (
       "Loading..."
