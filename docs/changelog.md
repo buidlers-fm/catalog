@@ -1,4 +1,4 @@
-last updated: march 19, 2024.
+last updated: march 22, 2024.
 
 # big things for march - april 2024
 
@@ -16,6 +16,19 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## march 18-24, 2024
+
+Main things:
+
+- Revamped the (signed-in) homepage to include all the latest activity from your friends, including latest books shelved, latest statuses, and latest notes and lists your friends have created.
+
+Small fixes/improvements:
+
+- Fixed: notifs not getting created when liking a note/post.
+- Added "copy link" button to book page for easy sharing.
+- Added WorldCat link to book page so you can check nearby libraries for the book.
+- Misc styling tweaks: explore page, user nav button.
 
 ## march 11-17, 2024
 
