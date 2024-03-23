@@ -5,6 +5,8 @@ import api from "lib/api"
 import ListBook from "app/lists/components/ListBook"
 import LoadingSection from "app/components/LoadingSection"
 
+const LIMIT = 8
+
 export default function FeaturedBooks() {
   const [list, setList] = useState<any>()
 
@@ -40,7 +42,7 @@ export default function FeaturedBooks() {
 
       {list ? (
         <div className="sm:my-4 p-0 grid grid-cols-3 xs:grid-cols-4 -mx-2 ml:gap-x-[28px]">
-          {list.books!.map((book, index: number) => (
+          {list.books!.slice(0, LIMIT).map((book, index: number) => (
             <ListBook
               key={book!.id}
               book={book}
