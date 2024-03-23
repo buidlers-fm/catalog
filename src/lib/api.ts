@@ -74,6 +74,7 @@ const api = {
       noteTypes?: string[]
       limit?: number
       requireText?: boolean
+      following?: boolean
       sort?: Sort
     }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
@@ -214,6 +215,7 @@ const api = {
       bookId?: string
       limit?: number
       featured?: boolean
+      following?: boolean
     }) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/lists?${queryString}`

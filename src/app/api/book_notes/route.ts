@@ -28,6 +28,7 @@ export const GET = withApiHandling(
     const noteTypes = queryParams.get("note_types")?.split(",") as BookNoteType[]
     const limit = Number(queryParams.get("limit")) || undefined
     const requireText = queryParams.get("require_text") === "true"
+    const following = queryParams.get("following") === "true"
     const sort = (queryParams.get("sort") as Sort) || undefined
 
     const bookNotes = await getBookNotes({
@@ -37,6 +38,7 @@ export const GET = withApiHandling(
       noteTypes,
       limit,
       requireText,
+      following,
       sort,
     })
 

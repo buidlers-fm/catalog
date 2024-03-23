@@ -5,7 +5,7 @@ import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { createList } from "lib/api/lists"
-import { decorateLists } from "lib/server/decorators"
+import { decorateLists, decorateWithFollowing } from "lib/server/decorators"
 import type { NextRequest } from "next/server"
 
 const FEATURED_LIST_TAG = "featured"
@@ -20,6 +20,7 @@ export const GET = withApiHandling(
       ? Number(_req.nextUrl.searchParams.get("limit"))
       : undefined
     const featured = _req.nextUrl.searchParams.get("featured") === "true"
+    const following = _req.nextUrl.searchParams.get("following") === "true"
 
     if (bookId && !isValidUuid(bookId)) {
       return NextResponse.json({ error: "book_id is not a valid UUID" }, { status: 400 })
@@ -68,6 +69,21 @@ export const GET = withApiHandling(
       }
     }
 
+    if (following) {
+      if (!currentUserProfile)
+        throw new Error("currentUserProfile must be provided to filter by following")
+
+      // get following
+      const [decoratedUserProfile] = await decorateWithFollowing([currentUserProfile])
+      const followingIds = decoratedUserProfile.following.map((f) => f.id)
+
+      whereQueryParams = {
+        ...whereQueryParams,
+        creatorId: {
+          in: followingIds,
+        },
+      }
+    }
     const _lists = await prisma.list.findMany({
       where: whereQueryParams,
       orderBy: {

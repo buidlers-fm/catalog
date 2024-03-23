@@ -105,14 +105,16 @@ export default function CurrentStatus({
         </>
       )}
 
-      <div className="mt-4">
-        <Likes
-          interactive={!!currentUserProfile}
-          likedObject={userCurrentStatus}
-          likedObjectType={InteractionObjectType.UserCurrentStatus}
-          currentUserLike={currentUserLike}
-        />
-      </div>
+      {!isUsersProfile && (
+        <div className="mt-4">
+          <Likes
+            interactive={!!currentUserProfile}
+            likedObject={userCurrentStatus}
+            likedObjectType={InteractionObjectType.UserCurrentStatus}
+            currentUserLike={currentUserLike}
+          />
+        </div>
+      )}
     </div>
   ) : (
     <div className="py-8 px-4 flex items-center justify-center font-newsreader italic text-gray-300">

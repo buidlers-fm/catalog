@@ -1,5 +1,10 @@
 import prisma from "lib/prisma"
-import { decorateWithLikes, decorateWithComments, decorateWithSaves } from "lib/server/decorators"
+import {
+  decorateWithLikes,
+  decorateWithComments,
+  decorateWithSaves,
+  decorateWithFollowing,
+} from "lib/server/decorators"
 import BookNoteType from "enums/BookNoteType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import CommentParentType from "enums/CommentParentType"
@@ -13,6 +18,7 @@ async function getBookNotes(params: {
   noteTypes: string[]
   limit?: number
   requireText?: boolean
+  following?: boolean
   sort?: Sort
   moreFilters?: any
 }) {
@@ -23,6 +29,7 @@ async function getBookNotes(params: {
     noteTypes,
     limit: _limit,
     requireText,
+    following,
     sort,
   } = params
 
@@ -45,6 +52,22 @@ async function getBookNotes(params: {
         in: noteTypes,
       }
     : undefined
+
+  let creatorIdFilter
+  if (following) {
+    if (!currentUserProfile)
+      throw new Error("currentUserProfile must be provided to filter by following")
+
+    // get following
+    const [decoratedUserProfile] = await decorateWithFollowing([currentUserProfile])
+    const followingIds = decoratedUserProfile.following.map((f) => f.id)
+
+    creatorIdFilter = {
+      in: followingIds,
+    }
+  } else {
+    creatorIdFilter = userProfileId
+  }
 
   if (sort && sort === Sort.Popular) {
     if (!bookId) throw new Error("bookId must be provided to sort by popular")
@@ -80,7 +103,7 @@ async function getBookNotes(params: {
         bookId,
         text: textParams,
         noteType: noteTypeParams,
-        creatorId: userProfileId,
+        creatorId: creatorIdFilter,
         ...moreFilters,
       },
       include: {
