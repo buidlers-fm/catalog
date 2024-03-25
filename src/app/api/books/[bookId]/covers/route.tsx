@@ -89,6 +89,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       coverImageUrl: largeImageUrl,
       coverImageThumbnailUrl: thumbnailImageUrl,
       openLibraryCoverImageUrl: isFromOpenLibrary ? coverImageUrl : undefined,
+      edited: true,
     },
   })
 
