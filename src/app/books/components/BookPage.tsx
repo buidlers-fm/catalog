@@ -8,6 +8,7 @@ import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaHeart, FaBookmark } from "react-icons/fa"
 import { FaPlus, FaBuildingColumns } from "react-icons/fa6"
+import { PiShootingStarFill } from "react-icons/pi"
 import { SlInfo } from "react-icons/sl"
 import { MdEdit } from "react-icons/md"
 import { TbExternalLink } from "react-icons/tb"
@@ -348,7 +349,6 @@ export default function BookPage({
   }
 
   const refetchBookData = useCallback(async () => {
-    console.log("refetchBookData, running")
     const dbBook = await getBook()
     Promise.all([
       updateLikes(dbBook),
@@ -359,7 +359,6 @@ export default function BookPage({
   }, [getBook, updateLikes, getBookNotes, getBookReads, fetchShelfAssignments])
 
   function showModal(modalType: CurrentModal) {
-    console.log("setting onNewNoteSuccess")
     setOnNewNoteSuccess(() => refetchBookData)
     setCurrentBook(book)
     setCurrentModal(modalType)
@@ -521,6 +520,15 @@ export default function BookPage({
                 >
                   <BsJournalText className="inline-block -mt-[4px] mr-1 text-[16px]" /> add note or
                   log
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => showModal(CurrentModal.RecommendBook)}
+                  className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"
+                >
+                  <PiShootingStarFill className="inline-block -mt-[3px] mr-0.5 text-[18px]" />{" "}
+                  recommend to a friend
                 </button>
 
                 <Link

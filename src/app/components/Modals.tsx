@@ -9,6 +9,7 @@ import GlobalCreateModal from "app/components/GlobalCreateModal"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import BookNoteModal from "app/components/BookNoteModal"
 import NewBookPostModal from "app/components/NewBookPostModal"
+import RecommendBookModal from "app/components/RecommendBookModal"
 import CurrentModal from "enums/CurrentModal"
 import type List from "types/List"
 
@@ -72,6 +73,10 @@ export default function Modals() {
               isOpen
               onClose={() => setCurrentModal(undefined)}
             />
+          )}
+
+          {currentModal === CurrentModal.RecommendBook && (
+            <RecommendBookModal book={currentBook} isOpen />
           )}
         </>
       )}

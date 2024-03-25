@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useNotifications } from "lib/contexts/NotificationsContext"
+import { useUnreads } from "lib/contexts/UnreadsContext"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -10,16 +10,16 @@ function classNames(...classes) {
 
 export default function HomeTabs() {
   const pathname = usePathname()
-  const { hasUnread: hasUnreadNotifs } = useNotifications()
+  const { hasUnreadNotifs, hasUnreadRecs } = useUnreads()
 
   const tabs = [
     {
-      name: "statuses",
-      href: "/home",
+      name: "notifs",
+      href: "/inbox/notifs",
     },
     {
-      name: "notifs",
-      href: "/home/notifs",
+      name: "recs",
+      href: "/inbox/recs",
     },
   ]
 
@@ -38,6 +38,7 @@ export default function HomeTabs() {
                 tab={tab}
                 isCurrentTab={isCurrentTab(tab)}
                 hasUnreadNotifs={hasUnreadNotifs}
+                hasUnreadRecs={hasUnreadRecs}
               />
             ))}
           </div>
@@ -51,6 +52,7 @@ export default function HomeTabs() {
               tab={tab}
               isCurrentTab={isCurrentTab(tab)}
               hasUnreadNotifs={hasUnreadNotifs}
+              hasUnreadRecs={hasUnreadRecs}
             />
           ))}
         </nav>
@@ -59,7 +61,9 @@ export default function HomeTabs() {
   )
 }
 
-function TabLink({ tab, isCurrentTab, hasUnreadNotifs }) {
+function TabLink({ tab, isCurrentTab, hasUnreadNotifs, hasUnreadRecs }) {
+  const hasUnreads = tab.name === "notifs" ? hasUnreadNotifs : hasUnreadRecs
+
   return (
     <Link
       key={tab.name}
@@ -71,16 +75,12 @@ function TabLink({ tab, isCurrentTab, hasUnreadNotifs }) {
       aria-current={isCurrentTab ? "page" : undefined}
       scroll={false}
     >
-      {tab.name === "notifs" ? (
-        <div className="relative">
-          <span>notifs</span>
-          {hasUnreadNotifs && (
-            <span className="w-1.5 h-1.5 absolute top-[7px] -right-2.5 rounded-full bg-gold-200" />
-          )}
-        </div>
-      ) : (
-        tab.name
-      )}
+      <div className="relative">
+        <span>{tab.name}</span>
+        {hasUnreads && (
+          <span className="w-1.5 h-1.5 absolute top-[7px] -right-2.5 rounded-full bg-gold-200" />
+        )}
+      </div>
     </Link>
   )
 }

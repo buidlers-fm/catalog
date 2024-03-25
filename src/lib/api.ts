@@ -292,14 +292,36 @@ const api = {
         method: "PATCH",
         body: formData,
       }),
-    search: (searchStr) => {
+    search: (searchStr: string, followersOnly: boolean = false) => {
       const params = {
         query: searchStr,
+        followers: followersOnly,
       }
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
       const url = `/api/profiles/search?${queryString}`
       return fetchJson(url)
     },
+  },
+  recommendations: {
+    get: (params: { status?: string } = {}) => {
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/recommendations?${queryString}`
+      return fetchJson(url)
+    },
+    create: (requestData) =>
+      fetchJson(`/api/recommendations`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
+    update: (recommendationId, requestData) =>
+      fetchJson(`/api/recommendations/${recommendationId}`, {
+        method: "PATCH",
+        body: prepReqBody(requestData),
+      }),
+    markAllAsRead: () =>
+      fetchJson(`/api/recommendations/mark_all_as_read`, {
+        method: "PATCH",
+      }),
   },
   saves: {
     get: () => fetchJson(`/api/saves`),
