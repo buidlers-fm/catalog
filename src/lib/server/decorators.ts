@@ -487,7 +487,12 @@ export const decorateNotifs = async (notifs) => {
         source = commentIdsToComments[notif.sourceId]
       }
 
-      if (!object) return null
+      const isValid =
+        !!object ||
+        notif.objectType === NotificationObjectType.User ||
+        notif.objectType === NotificationObjectType.UserCurrentStatus
+
+      if (!isValid) return null
 
       return {
         ...notif,
