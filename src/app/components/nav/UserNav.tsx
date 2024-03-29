@@ -8,7 +8,7 @@ import { BsXLg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
 import { RxCaretDown } from "react-icons/rx"
 import { useUser } from "lib/contexts/UserContext"
-import { useNotifications } from "lib/contexts/NotificationsContext"
+import { useUnreads } from "lib/contexts/UnreadsContext"
 import {
   getUserProfileLink,
   getUserShelvesLink,
@@ -32,7 +32,7 @@ const authFormTitles = {
 
 export default function UserNav({ currentUserProfile: _initialCurrentUserProfile }) {
   const { signOut } = useUser()
-  const { hasUnread: hasUnreadNotifs } = useNotifications()
+  const { hasUnreadNotifs, hasUnreadRecs } = useUnreads()
 
   const [currentUserProfile, setCurrentUserProfile] = useState(_initialCurrentUserProfile)
   const [showAuth, setShowAuth] = useState<boolean>(false)
@@ -62,7 +62,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
   const { username } = currentUserProfile || {}
 
   const userLinks = [
-    { name: "notifs", path: "/home/notifs" },
+    { name: "inbox", path: "/inbox" },
     { name: "profile", path: getUserProfileLink(username) },
     { name: "shelves", path: getUserShelvesLink(username) },
     { name: "lists", path: getUserListsLink(username) },
@@ -105,10 +105,10 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                   <Menu.Item key={name}>
                     <Link href={path}>
                       <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-2 pb-2 text-left">
-                        {name === "notifs" ? (
+                        {name === "inbox" ? (
                           <div className="relative">
-                            <span>notifs</span>
-                            {hasUnreadNotifs && (
+                            <span>inbox</span>
+                            {(hasUnreadNotifs || hasUnreadRecs) && (
                               <span className="w-1.5 h-1.5 absolute top-1.5 right-6 rounded-full bg-gold-200" />
                             )}
                           </div>

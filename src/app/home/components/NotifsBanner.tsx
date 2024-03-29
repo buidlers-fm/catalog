@@ -1,13 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { useNotifications } from "lib/contexts/NotificationsContext"
+import { useUnreads } from "lib/contexts/UnreadsContext"
 import { useUser } from "lib/contexts/UserContext"
 import UserProfile from "lib/models/UserProfile"
 
-export default function NotifsBanner() {
+export default function UnreadsBanner() {
   const { currentUserProfile: _currentUserProfile } = useUser()
-  const { hasUnread: hasUnreadNotifs } = useNotifications()
+  const { hasUnreadNotifs, hasUnreadRecs } = useUnreads()
 
   if (!_currentUserProfile) return null
 
@@ -19,8 +19,17 @@ export default function NotifsBanner() {
       {hasUnreadNotifs && (
         <div className="mt-2 text-sm text-gray-200">
           {" You have "}
-          <Link href="/home/notifs" className="cat-link text-gold-500">
+          <Link href="/inbox/notifs" className="cat-link text-gold-500">
             unread notifs
+          </Link>
+          .
+        </div>
+      )}
+      {hasUnreadRecs && (
+        <div className="mt-2 text-sm text-gray-200">
+          {" You have "}
+          <Link href="/inbox/recs" className="cat-link text-gold-500">
+            new recs
           </Link>
           .
         </div>

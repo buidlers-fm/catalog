@@ -4,7 +4,7 @@ import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
 import { FaDiscord } from "react-icons/fa"
 import { BsEnvelopeFill } from "react-icons/bs"
 import { UserProvider } from "lib/contexts/UserContext"
-import { NotificationsProvider } from "lib/contexts/NotificationsContext"
+import { UnreadsProvider } from "lib/contexts/UnreadsContext"
 import { UserBooksProvider } from "lib/contexts/UserBooksContext"
 import { ModalsProvider } from "lib/contexts/ModalsContext"
 import CatalogHeader from "app/components/CatalogHeader"
@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className={`${fontsClassNames} bg-black text-white`}>
         <UserProvider>
-          <NotificationsProvider>
+          <UnreadsProvider>
             <UserBooksProvider>
               <ModalsProvider>
                 <div className="flex flex-col h-screen">
@@ -103,7 +103,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <Toast />
               </ModalsProvider>
             </UserBooksProvider>
-          </NotificationsProvider>
+          </UnreadsProvider>
         </UserProvider>
       </body>
     </html>

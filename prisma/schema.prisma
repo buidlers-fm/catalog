@@ -56,6 +56,25 @@ model FeedbackSubmission {
   @@map("feedback_submissions")
 }
 
+model Recommendation {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recommenderId String      @map("recommender_id") @db.Uuid
+  bookId        String      @map("book_id") @db.Uuid
+  recipientId   String      @map("recipient_id") @db.Uuid
+  recipientType String      @map("recipient_type")
+  note          String?     @map("note")
+  status        String      @default("new")
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  recommender   UserProfile @relation(fields: [recommenderId], references: [id], onDelete: Cascade)
+  book          Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([recommenderId])
+  @@index([bookId])
+  @@index([recipientId, recipientType])
+  @@map("recommendations")
+}
+
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model UserProfile {
   id                   String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -80,6 +99,7 @@ model UserProfile {
   config               UserConfig?
   notifications        Notification[]
   editLogs             EditLog[]
+  recommendationsGiven Recommendation[]
 
   @@map("user_profiles")
 }
@@ -121,6 +141,7 @@ model Book {
   userCurrentStatuses      UserCurrentStatus[]
   userShelfAssignments     UserBookShelfAssignment[]
   adaptations              Adaptation[]
+  recommendations          Recommendation[]
 
   @@index([openLibraryWorkId])
   @@index([titleAuthorSearch], type: Gin)

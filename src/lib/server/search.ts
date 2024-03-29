@@ -32,15 +32,63 @@ async function searchExistingBooks(searchString) {
   return results
 }
 
-async function searchUsers(searchString) {
+async function searchUsers(searchString, options: any = {}) {
+  const { followersOnly, currentUserProfile } = options
+
+  if (followersOnly && !currentUserProfile) {
+    throw new Error("currentUserProfile is required when searching for followers")
+  }
+
   const LIMIT = 8 // just an arbitrary small value to cap it at
+
+  let prismaQuery
 
   // case-insensitive exact substring search OR full-text search
   // the former (`ILIKE` queries) handles exact search strings that aren't full words
   // the latter handles "fuzziness" via `similarity` (%, from pg_trgm extension)
   // which handles more random misspellings
-  const results = await prisma.$queryRaw`
-    SELECT id, username, bio, user_id, avatar_url, display_name, location, website, created_at, updated_at,
+
+  if (followersOnly) {
+    prismaQuery = prisma.$queryRaw`
+    SELECT
+      user_profiles.id,
+      username,
+      bio,
+      user_id,
+      avatar_url,
+      display_name,
+      location,
+      website,
+      user_profiles.created_at,
+      user_profiles.updated_at,
+      similarity(username || ' ' || display_name, ${searchString}) as trigram
+    FROM user_profiles 
+    JOIN interactions ON interactions.agent_id = user_profiles.id
+      AND interactions.object_id = ${currentUserProfile.id}::uuid
+      AND interactions.interaction_type = 'follow'
+      AND interactions.object_type = 'user_profile'
+    WHERE 
+      username ILIKE ${`%${searchString}%`} OR 
+      display_name ILIKE ${`%${searchString}%`} OR 
+      (username || ' ' || display_name) % ${searchString}
+    ORDER BY
+      trigram DESC
+    LIMIT
+      ${LIMIT};
+    `
+  } else {
+    prismaQuery = prisma.$queryRaw`
+    SELECT
+  id,
+      username,
+      bio,
+      user_id,
+      avatar_url,
+      display_name,
+      location,
+      website,
+  created_at,
+  updated_at,
       similarity(username || ' ' || display_name, ${searchString}) as trigram
     FROM user_profiles 
     WHERE 
@@ -52,6 +100,9 @@ async function searchUsers(searchString) {
     LIMIT
       ${LIMIT};
     `
+  }
+
+  const results = await prismaQuery
 
   return humps.camelizeKeys(results)
 }
