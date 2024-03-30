@@ -1,21 +1,32 @@
-last updated: march 22, 2024.
+last updated: march 29, 2024.
 
 # big things for march - april 2024
 
 key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
-- 🛠️ Allow catalog users to edit book details and covers, and add new books.
-  - Sync these changes back to OpenLibrary if possible.
-- 🛠️ Bluesky integration phase 0: ability to add existing Bluesky feeds to books as read-only conversations.
 - 🛠️ A whole batch of UI features to make it easier to interact with a book from any page.
+- ✅ New "explore" page and revamped homepage to make it easier to discover books and activity through the catalog community as well as through your friends.
+- ✅ Recommendations: recommend a book to a friend.
 - ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
-- ⌛️ Allow users to see and edit their reading history/timeline (also with privacy/visibility settings).
+- ⌛️ Allow users to invite friends to join catalog.
 
 ---
 
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## march 25-31, 2024
+
+Main things:
+
+- You can now recommend a book to a friend (which can be any of your followers), from the book's page. Your rec will appear in the recipient's inbox, where they can add it to their to-read shelf if they want to.
+  - As part of this change, the notifs page has also been moved into the inbox, alongside the new recs page.
+
+Small fixes/improvements:
+
+- Fixed: changes to some book covers not reflecting on the book page.
+- Fixed: notifs not appearing for follows or for liking a current status.
 
 ## march 18-24, 2024
 
