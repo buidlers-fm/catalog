@@ -88,78 +88,91 @@ export default function SavedItems() {
       </div>
 
       {visibleItems && visibleItems.length > 0 ? (
-        visibleItems.map((savedItem) => (
-          <div key={savedItem.id} className="py-4 border-b border-b-gray-300 last:border-none">
-            {savedItem.save.objectType === InteractionObjectType.Note && (
-              <div className="mt-2">
-                <div className="cat-eyebrow">note</div>
-                <BookNoteCard
-                  note={savedItem}
-                  currentUserProfile={currentUserProfile || undefined}
-                  onEditSuccess={fetchSavedItems}
-                  onDeleteSuccess={fetchSavedItems}
-                  onSaveUnsave={fetchSavedItems}
-                />
+        visibleItems.map((savedItem) => {
+          if (savedItem.empty) {
+            return (
+              <div
+                key={savedItem.save.id}
+                className="py-12 border-b border-b-gray-300 last:border-none font-mulish text-gray-300"
+              >
+                This saved {savedItem.save.objectType} is no longer available.
               </div>
-            )}
+            )
+          }
 
-            {savedItem.save.objectType === InteractionObjectType.Post && (
-              <div className="mt-2">
-                <div className="cat-eyebrow">post</div>
-                <BookLinkPostCard
-                  post={savedItem}
-                  currentUserProfile={currentUserProfile || undefined}
-                  onEditSuccess={fetchSavedItems}
-                  onDeleteSuccess={fetchSavedItems}
-                  onSaveUnsave={fetchSavedItems}
-                />
-              </div>
-            )}
-
-            {savedItem.save.objectType === InteractionObjectType.Comment && (
-              <div className="mt-2">
-                <div className="cat-eyebrow">
-                  comment on{" "}
-                  {savedItem.rootObjectType === CommentParentType.Note && (
-                    <Link href={getNoteLink(savedItem.rootObjectId)} className="cat-link">
-                      a note
-                    </Link>
-                  )}
-                  {savedItem.rootObjectType === CommentParentType.Post && (
-                    <Link href={getPostLink(savedItem.rootObjectId)} className="cat-link">
-                      a post
-                    </Link>
-                  )}
-                  {savedItem.rootObjectType === CommentParentType.List && (
-                    <Link href={getListLinkById(savedItem.rootObjectId)} className="cat-link">
-                      a list
-                    </Link>
-                  )}
-                  {/* the below case shouldn't exist (where root object is a comment), but in case of a bug */}
-                  {savedItem.rootObjectType === CommentParentType.Comment && "a comment"}
+          return (
+            <div key={savedItem.id} className="py-4 border-b border-b-gray-300 last:border-none">
+              {savedItem.save.objectType === InteractionObjectType.Note && (
+                <div className="mt-2">
+                  <div className="cat-eyebrow">note</div>
+                  <BookNoteCard
+                    note={savedItem}
+                    currentUserProfile={currentUserProfile || undefined}
+                    onEditSuccess={fetchSavedItems}
+                    onDeleteSuccess={fetchSavedItems}
+                    onSaveUnsave={fetchSavedItems}
+                  />
                 </div>
-                <CommentCard
-                  comment={savedItem}
-                  currentUserProfile={currentUserProfile || undefined}
-                  onDelete={fetchSavedItems}
-                  onSaveUnsave={fetchSavedItems}
-                />
-              </div>
-            )}
+              )}
 
-            {savedItem.save.objectType === InteractionObjectType.List && (
-              <div className="mt-2">
-                <div className="cat-eyebrow -mb-4">list</div>
-                <ListCard
-                  list={savedItem}
-                  currentUserProfile={currentUserProfile || undefined}
-                  withByline
-                  onSaveUnsave={fetchSavedItems}
-                />
-              </div>
-            )}
-          </div>
-        ))
+              {savedItem.save.objectType === InteractionObjectType.Post && (
+                <div className="mt-2">
+                  <div className="cat-eyebrow">post</div>
+                  <BookLinkPostCard
+                    post={savedItem}
+                    currentUserProfile={currentUserProfile || undefined}
+                    onEditSuccess={fetchSavedItems}
+                    onDeleteSuccess={fetchSavedItems}
+                    onSaveUnsave={fetchSavedItems}
+                  />
+                </div>
+              )}
+
+              {savedItem.save.objectType === InteractionObjectType.Comment && (
+                <div className="mt-2">
+                  <div className="cat-eyebrow">
+                    comment on{" "}
+                    {savedItem.rootObjectType === CommentParentType.Note && (
+                      <Link href={getNoteLink(savedItem.rootObjectId)} className="cat-link">
+                        a note
+                      </Link>
+                    )}
+                    {savedItem.rootObjectType === CommentParentType.Post && (
+                      <Link href={getPostLink(savedItem.rootObjectId)} className="cat-link">
+                        a post
+                      </Link>
+                    )}
+                    {savedItem.rootObjectType === CommentParentType.List && (
+                      <Link href={getListLinkById(savedItem.rootObjectId)} className="cat-link">
+                        a list
+                      </Link>
+                    )}
+                    {/* the below case shouldn't exist (where root object is a comment), but in case of a bug */}
+                    {savedItem.rootObjectType === CommentParentType.Comment && "a comment"}
+                  </div>
+                  <CommentCard
+                    comment={savedItem}
+                    currentUserProfile={currentUserProfile || undefined}
+                    onDelete={fetchSavedItems}
+                    onSaveUnsave={fetchSavedItems}
+                  />
+                </div>
+              )}
+
+              {savedItem.save.objectType === InteractionObjectType.List && (
+                <div className="mt-2">
+                  <div className="cat-eyebrow -mb-4">list</div>
+                  <ListCard
+                    list={savedItem}
+                    currentUserProfile={currentUserProfile || undefined}
+                    withByline
+                    onSaveUnsave={fetchSavedItems}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })
       ) : (
         <EmptyState text="No items match the current filter." />
       )}

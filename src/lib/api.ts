@@ -241,6 +241,9 @@ const api = {
         body: prepReqBody(requestData),
       }),
   },
+  me: {
+    get: () => fetchJson("/api/me"),
+  },
   notifs: {
     getUnread: () => {
       const params = {

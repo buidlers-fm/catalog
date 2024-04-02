@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const NOTIFS_LIMIT = 50
 
 export default async function NotifsPage() {
-  const currentUserProfile = await getCurrentUserProfile()
+  const currentUserProfile = await getCurrentUserProfile({ requireSignedIn: true })
 
   let notifs = await prisma.notification.findMany({
     where: {

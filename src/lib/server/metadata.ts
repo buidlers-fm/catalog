@@ -2,6 +2,7 @@ import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import * as ghost from "lib/ghost"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { getBookNoteById } from "lib/server/bookNotes"
 import { truncateString } from "lib/helpers/strings"
 import UserProfile from "lib/models/UserProfile"
 import UserRole from "enums/UserRole"
@@ -148,14 +149,8 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
       pageTitle = config.title()
     } else if (key === "post" && postId) {
-      const post = await prisma.bookNote.findFirst({
-        where: {
-          id: postId,
-        },
-        include: {
-          creator: true,
-        },
-      })
+      const currentUserProfile = await getCurrentUserProfile()
+      const post = await getBookNoteById(postId, currentUserProfile)
 
       if (!post) return {}
 
@@ -163,15 +158,8 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
       pageTitle = config.title(post.title, creator.name)
     } else if (key === "note" && noteId) {
-      const note = await prisma.bookNote.findFirst({
-        where: {
-          id: noteId,
-        },
-        include: {
-          creator: true,
-          book: true,
-        },
-      })
+      const currentUserProfile = await getCurrentUserProfile()
+      const note = await getBookNoteById(postId, currentUserProfile)
 
       if (!note) return {}
 

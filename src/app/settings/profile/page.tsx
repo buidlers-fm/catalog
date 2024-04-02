@@ -8,9 +8,9 @@ import type { Metadata } from "next"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "edit profile • catalog",
+  title: "edit profile • settings • catalog",
   openGraph: {
-    title: "edit profile • catalog",
+    title: "edit profile • settings • catalog",
   },
 }
 

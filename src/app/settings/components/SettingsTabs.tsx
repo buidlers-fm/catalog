@@ -2,24 +2,26 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useUnreads } from "lib/contexts/UnreadsContext"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
-export default function InboxTabs() {
+export default function SettingsTabs() {
   const pathname = usePathname()
-  const { hasUnreadNotifs, hasUnreadRecs } = useUnreads()
 
   const tabs = [
     {
-      name: "notifs",
-      href: "/inbox/notifs",
+      name: "profile",
+      href: "/settings/profile",
     },
     {
-      name: "recs",
-      href: "/inbox/recs",
+      name: "password",
+      href: "/settings/password",
+    },
+    {
+      name: "privacy",
+      href: "/settings/privacy",
     },
   ]
 
@@ -33,13 +35,7 @@ export default function InboxTabs() {
         <nav className="-mb-px" aria-label="Tabs">
           <div className="flex space-x-4 justify-center">
             {tabs.slice(0, 3).map((tab) => (
-              <TabLink
-                key={tab.name}
-                tab={tab}
-                isCurrentTab={isCurrentTab(tab)}
-                hasUnreadNotifs={hasUnreadNotifs}
-                hasUnreadRecs={hasUnreadRecs}
-              />
+              <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
             ))}
           </div>
         </nav>
@@ -47,13 +43,7 @@ export default function InboxTabs() {
       <div className="hidden sm:block w-fit mx-auto border-b border-b-gray-700 px-8 rounded-sm">
         <nav className="-mb-px flex justify-center space-x-8" aria-label="Tabs">
           {tabs.map((tab) => (
-            <TabLink
-              key={tab.name}
-              tab={tab}
-              isCurrentTab={isCurrentTab(tab)}
-              hasUnreadNotifs={hasUnreadNotifs}
-              hasUnreadRecs={hasUnreadRecs}
-            />
+            <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />
           ))}
         </nav>
       </div>
@@ -61,9 +51,7 @@ export default function InboxTabs() {
   )
 }
 
-function TabLink({ tab, isCurrentTab, hasUnreadNotifs, hasUnreadRecs }) {
-  const hasUnreads = tab.name === "notifs" ? hasUnreadNotifs : hasUnreadRecs
-
+function TabLink({ tab, isCurrentTab }) {
   return (
     <Link
       key={tab.name}
@@ -77,9 +65,6 @@ function TabLink({ tab, isCurrentTab, hasUnreadNotifs, hasUnreadRecs }) {
     >
       <div className="relative">
         <span>{tab.name}</span>
-        {hasUnreads && (
-          <span className="w-1.5 h-1.5 absolute top-[7px] -right-2.5 rounded-full bg-gold-200" />
-        )}
       </div>
     </Link>
   )

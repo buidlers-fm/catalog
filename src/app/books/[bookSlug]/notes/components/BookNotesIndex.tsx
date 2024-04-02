@@ -59,7 +59,7 @@ export default function BookNotesIndex({ book, currentUserProfile }) {
               ))}
             </div>
           ) : (
-            <EmptyState text="No notes yet." />
+            <EmptyState text="No notes found." />
           )
         ) : (
           <LoadingSection />
