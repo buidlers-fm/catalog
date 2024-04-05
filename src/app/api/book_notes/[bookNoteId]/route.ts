@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import prisma from "lib/prisma"
 import { getAllAtMentions } from "lib/helpers/general"
+import { isNoteVisible } from "lib/server/bookNotes"
 import { createNotifsFromMentions } from "lib/server/notifs"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { reportToSentry } from "lib/sentry"
@@ -10,6 +11,7 @@ import NotificationObjectType from "enums/NotificationObjectType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import BookNoteType from "enums/BookNoteType"
 import type Mention from "types/Mention"
+import type BookNote from "types/BookNote"
 import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
@@ -62,12 +64,24 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     (atMention) => !existingNotifs.find((n) => n.notifiedUserProfileId === atMention!.id),
   )
 
-  const mentions: Mention[] = newAtMentions.map((atMention) => ({
-    agentId: userProfile.id,
-    objectId: updatedBookNote.id,
-    objectType: NotificationObjectType.BookNote,
-    mentionedUserProfileId: atMention!.id,
-  }))
+  const mentionsPromises = newAtMentions.map(async (atMention) => {
+    if (updatedBookNote.noteType === BookNoteType.JournalEntry) {
+      const shouldNotify = await isNoteVisible(
+        updatedBookNote as BookNote,
+        { id: atMention!.id } as any,
+      )
+      if (!shouldNotify) return null
+    }
+
+    return {
+      agentId: userProfile.id,
+      objectId: updatedBookNote.id,
+      objectType: NotificationObjectType.BookNote,
+      mentionedUserProfileId: atMention!.id,
+    }
+  })
+
+  const mentions = (await Promise.all(mentionsPromises)).filter(Boolean) as Mention[]
 
   await createNotifsFromMentions(mentions)
 

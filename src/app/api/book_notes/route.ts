@@ -3,7 +3,7 @@ import humps from "humps"
 import validations from "lib/constants/validations"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
-import { getBookNotes } from "lib/server/bookNotes"
+import { getBookNotes, isNoteVisible } from "lib/server/bookNotes"
 import { findOrCreateBook } from "lib/api/books"
 import { shelveBook } from "lib/api/userBookShelves"
 import { findOrCreateLike, deleteLikeByParams } from "lib/api/likes"
@@ -16,6 +16,7 @@ import UserBookShelf from "enums/UserBookShelf"
 import InteractionObjectType from "enums/InteractionObjectType"
 import NotificationObjectType from "enums/NotificationObjectType"
 import Sort from "enums/Sort"
+import Visibility from "enums/Visibility"
 import type Mention from "types/Mention"
 import type { NextRequest } from "next/server"
 
@@ -164,12 +165,21 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
     }
   }
 
+  const userConfig = await prisma.userConfig.findFirst({
+    where: {
+      userProfileId: userProfile.id,
+    },
+  })
+
+  const notesVisibility = userConfig?.notesVisibility || Visibility.Public
+
   const createBookNotePromise = prisma.bookNote.create({
     data: {
       noteType: BookNoteType.JournalEntry,
       text,
       hasSpoilers,
       readingStatus,
+      visibility: notesVisibility,
       creator: {
         connect: {
           id: userProfile.id,
@@ -219,12 +229,20 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   const atMentions = getAllAtMentions(text)
 
-  const mentions: Mention[] = atMentions.map((atMention) => ({
-    agentId: userProfile.id,
-    objectId: createdBookNote.id,
-    objectType: NotificationObjectType.BookNote,
-    mentionedUserProfileId: atMention!.id,
-  }))
+  const mentionsPromises = atMentions.map(async (atMention) => {
+    const shouldNotify = await isNoteVisible(createdBookNote, { id: atMention!.id } as any)
+
+    if (!shouldNotify) return null
+
+    return {
+      agentId: userProfile.id,
+      objectId: createdBookNote.id,
+      objectType: NotificationObjectType.BookNote,
+      mentionedUserProfileId: atMention!.id,
+    }
+  })
+
+  const mentions = (await Promise.all(mentionsPromises)).filter(Boolean) as Mention[]
 
   await createNotifsFromMentions(mentions)
 

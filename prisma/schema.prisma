@@ -213,6 +213,7 @@ model BookNote {
   title         String?
   linkUrl       String?     @map("link_url")
   readingStatus String?     @map("reading_status")
+  visibility    String      @default("public")
   likeCount     Int         @default(0) @map("like_count")
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -406,6 +407,7 @@ model UserConfig {
   id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userProfileId       String      @map("user_profile_id") @db.Uuid
   hasNewAnnouncements Boolean     @default(false) @map("has_new_announcements")
+  notesVisibility     String      @default("public") @map("notes_visibility")
   createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
   userProfile         UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)

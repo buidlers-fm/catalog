@@ -144,7 +144,12 @@ export const GET = withApiHandling(
             return null
         }
 
-        if (!savedObject) return null
+        if (!savedObject) {
+          return {
+            save,
+            empty: true,
+          }
+        }
 
         return {
           ...savedObject,

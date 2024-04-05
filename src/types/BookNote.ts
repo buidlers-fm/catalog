@@ -1,3 +1,4 @@
+import Visibility from "enums/Visibility"
 import type { UserProfileProps as UserProfile } from "lib/models/UserProfile"
 import type Book from "types/Book"
 import type Like from "types/Like"
@@ -13,9 +14,10 @@ export default interface BookNote {
   linkUrl?: string
   createdAt: Date
   updatedAt: Date
-  creator: UserProfile
-  book: Book
+  creator?: UserProfile
+  book?: Book
   likeCount?: number
+  visibility: Visibility
   currentUserLike?: Like // in-memory only
   creatorLikedBook?: boolean // in-memory only
   hasSpoilers: boolean

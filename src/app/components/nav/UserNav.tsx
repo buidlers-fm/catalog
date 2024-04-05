@@ -140,7 +140,15 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                     </button>
                   </div>
                 </Menu.Item>
-                <hr className="my-1 w-3/4 mx-auto border-gray-700" />
+                <Menu.Item>
+                  <div className="">
+                    <Link href="/settings">
+                      <button className="w-full cat-btn-text hover:bg-gray-700 px-4 py-2 text-left rounded-tl rounded-tr">
+                        settings
+                      </button>
+                    </Link>
+                  </div>
+                </Menu.Item>
                 <Menu.Item>
                   <div className="">
                     <button

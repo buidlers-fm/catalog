@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { Tooltip } from "react-tooltip"
 import { FaHeart, FaRegComment } from "react-icons/fa"
-import { MdEdit } from "react-icons/md"
+import { MdEdit, MdRemoveRedEye } from "react-icons/md"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import UserProfile, { UserProfileProps } from "lib/models/UserProfile"
@@ -21,6 +21,7 @@ import Likes from "app/components/Likes"
 import SaveBookmark from "app/components/saves/SaveBookmark"
 import BookNoteReadingStatus from "enums/BookNoteReadingStatus"
 import InteractionObjectType from "enums/InteractionObjectType"
+import Visibility, { visibilityCopy } from "enums/Visibility"
 
 dayjs.extend(relativeTime)
 
@@ -61,6 +62,7 @@ export default function BookNoteCard({
     creatorLikedBook,
     comments,
     hasSpoilers,
+    visibility,
     save,
   } = note
 
@@ -174,42 +176,58 @@ export default function BookNoteCard({
               )}
             </div>
           )}
-          <div className="flex items-center my-3">
-            <Likes
-              interactive={!!currentUserProfile}
-              likedObject={note}
-              likedObjectType={InteractionObjectType.Note}
-              likeCount={likeCount}
-              currentUserLike={currentUserLike}
-            />
-            <div className="ml-4">
-              {commentsAnchorId ? (
-                <div className="flex items-center font-mulish text-sm text-gray-300">
-                  <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-                  {comments && (
-                    <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
-                  )}
-                  <a href={`#${commentsAnchorId}`} className="ml-4 border-b border-b-gray-300">
-                    reply
-                  </a>
+          <div className="flex justify-between items-center my-3">
+            <div className="flex items-center">
+              <Likes
+                interactive={!!currentUserProfile}
+                likedObject={note}
+                likedObjectType={InteractionObjectType.Note}
+                likeCount={likeCount}
+                currentUserLike={currentUserLike}
+              />
+              <div className="ml-4">
+                {commentsAnchorId ? (
+                  <div className="flex items-center font-mulish text-sm text-gray-300">
+                    <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+                    {comments && (
+                      <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+                    )}
+                    <a href={`#${commentsAnchorId}`} className="ml-4 border-b border-b-gray-300">
+                      reply
+                    </a>
+                  </div>
+                ) : (
+                  <Link href={getNoteLink(id)} className="flex items-center">
+                    <FaRegComment className="mr-1.5 text-gray-500 text-md" />
+                    {comments && (
+                      <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
+                    )}
+                  </Link>
+                )}
+              </div>
+              {currentUserProfile && id && (
+                <div className="ml-4">
+                  <SaveBookmark
+                    savedObjectType={InteractionObjectType.Note}
+                    savedObjectId={id}
+                    saveId={save?.id}
+                    onSaveUnsave={onSaveUnsave}
+                  />
                 </div>
-              ) : (
-                <Link href={getNoteLink(id)} className="flex items-center">
-                  <FaRegComment className="mr-1.5 text-gray-500 text-md" />
-                  {comments && (
-                    <span className="text-sm text-gray-300 font-mulish">{comments.length}</span>
-                  )}
-                </Link>
               )}
             </div>
-            {currentUserProfile && id && (
-              <div className="ml-4">
-                <SaveBookmark
-                  savedObjectType={InteractionObjectType.Note}
-                  savedObjectId={id}
-                  saveId={save?.id}
-                  onSaveUnsave={onSaveUnsave}
+            {visibility !== Visibility.Public && (
+              <div className="">
+                <MdRemoveRedEye
+                  id={`book-note-visibility-${id}`}
+                  className="inline-block ml-2 -mt-1 text-gray-500 text-xl"
                 />
+                <Tooltip
+                  anchorSelect={`#book-note-visibility-${id}`}
+                  className="max-w-[240px] font-mulish"
+                >
+                  <div className="text-center">visible to: {visibilityCopy[visibility]}</div>
+                </Tooltip>
               </div>
             )}
           </div>

@@ -9,8 +9,8 @@ import LoadingSection from "app/components/LoadingSection"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 
-export default function NotesIndex({ notes: _notes, currentUserProfile }) {
-  const [notes, setNotes] = useState<any[]>(_notes)
+export default function NotesIndex({ currentUserProfile }) {
+  const [notes, setNotes] = useState<any[]>()
 
   const getBookNotes = useCallback(async () => {
     const requestData = {
@@ -32,10 +32,8 @@ export default function NotesIndex({ notes: _notes, currentUserProfile }) {
   }, [currentUserProfile])
 
   useEffect(() => {
-    if (!!_notes && _notes.length > 0) return
-
     getBookNotes()
-  }, [getBookNotes, _notes])
+  }, [getBookNotes])
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">

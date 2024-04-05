@@ -48,7 +48,6 @@ export function UserProvider({ children }) {
     const { user: userData } = session
 
     const {
-      id: userId,
       email,
       userMetadata: { username },
     } = userData
@@ -60,7 +59,7 @@ export function UserProvider({ children }) {
 
     setCurrentUser(_user)
 
-    const _currentUserProfile = await api.profiles.find(userId)
+    const _currentUserProfile = await api.me.get()
     if (_currentUserProfile) setCurrentUserProfile(_currentUserProfile)
     setIsFetching(false)
   }, [supabase.auth])
