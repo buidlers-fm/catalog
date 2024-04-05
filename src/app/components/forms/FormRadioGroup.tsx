@@ -2,6 +2,7 @@
 
 import { useState, Fragment } from "react"
 import { RadioGroup } from "@headlessui/react"
+import { FaCheckCircle } from "react-icons/fa"
 
 type Item = {
   value: string
@@ -39,7 +40,7 @@ export default function FormRadioGroup({
         </RadioGroup.Label>
       )}
 
-      <div className="flex gap-x-2">
+      <div className="my-2 flex flex-col sm:flex-row gap-y-1 gap-x-2">
         {items.map((item) => (
           <RadioGroup.Option key={item.value} value={item.value} as={Fragment}>
             {({ checked }) => (
@@ -49,9 +50,10 @@ export default function FormRadioGroup({
                     ? "border-2 border-gold-500 text-gold-500 font-semibold"
                     : "bg-black border border-gray-500 text-white"
                 }
-            inline-block list-none cursor-pointer my-2 px-3 py-2 rounded`}
+            inline-block list-none cursor-pointer px-3 py-2 rounded`}
               >
                 {item.label}
+                {checked && <FaCheckCircle className="inline-block ml-2 -mt-1 text-gold-500" />}
               </li>
             )}
           </RadioGroup.Option>
