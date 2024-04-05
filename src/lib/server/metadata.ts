@@ -154,7 +154,7 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
       if (!post) return {}
 
-      const creator = UserProfile.build(post.creator)
+      const creator = UserProfile.build(post.creator!)
 
       pageTitle = config.title(post.title, creator.name)
     } else if (key === "note" && noteId) {
@@ -163,13 +163,13 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
       if (!note) return {}
 
-      const creator = UserProfile.build(note.creator)
+      const creator = UserProfile.build(note.creator!)
 
       if (note.text) {
         const truncatedText = truncateString(note.text, 60)
-        pageTitle = config.title(creator.name, note.book.title, truncatedText)
+        pageTitle = config.title(creator.name, note.book!.title, truncatedText)
       } else {
-        pageTitle = config.title(creator.name, note.book.title)
+        pageTitle = config.title(creator.name, note.book!.title)
       }
     } else if (key === "news.post" && postSlug) {
       const post = await ghost.getPost(postSlug)
