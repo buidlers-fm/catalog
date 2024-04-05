@@ -1,4 +1,4 @@
-last updated: march 29, 2024.
+last updated: april 5, 2024.
 
 # big things for march - april 2024
 
@@ -7,7 +7,10 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 - 🛠️ A whole batch of UI features to make it easier to interact with a book from any page.
 - ✅ New "explore" page and revamped homepage to make it easier to discover books and activity through the catalog community as well as through your friends.
 - ✅ Recommendations: recommend a book to a friend.
-- ⌛️ Allow users to set privacy/visibility levels on notes, shelves, and status.
+- 🛠️ Allow users to set privacy/visibility levels on:
+  - ✅ Notes
+  - 🛠️ Shelves
+  - 🛠️ Current status
 - ⌛️ Allow users to invite friends to join catalog.
 
 ---
@@ -15,6 +18,17 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## april 1-7, 2024
+
+Main things:
+
+- New user settings area where you can edit your profile, change your password, or update privacy settings.
+- You can set the visibility of your book notes: public, signed-in users, users you follow, or only you.
+
+Small fixes/improvements:
+
+- Added public link to the "explore" page, in the header nav.
 
 ## march 25-31, 2024
 

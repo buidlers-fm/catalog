@@ -16,7 +16,7 @@ export default function Announcements({ isMobile, currentUserProfile }) {
       buttonClasses = "mt-2 ml-3 mr-2"
     }
   } else if (hasNewAnnouncements) {
-    buttonClasses = "-mt-2 mr-2"
+    buttonClasses = "mr-4"
   } else {
     buttonClasses = "mr-2"
   }
@@ -56,7 +56,7 @@ export default function Announcements({ isMobile, currentUserProfile }) {
           )}
         */}
         <BsEnvelopePaperHeartFill className={`${iconOpenClasses} text-gray-200`} />
-        <span className="w-1.5 h-1.5 absolute top-3 -right-1.5 rounded-full bg-red-300" />
+        <span className="w-1.5 h-1.5 absolute top-0.5 -right-1 rounded-full bg-red-300" />
       </Link>
     </button>
   )
