@@ -164,9 +164,14 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
           </Menu>
         ) : (
           <>
-            <button onClick={onClickSignIn} className="cat-btn-text mt-2 lg:mt-0 ml-4 mr-2">
-              Sign in
-            </button>
+            <div className="-mt-2">
+              <Link href="/explore" className="mr-4 text-gray-100">
+                explore
+              </Link>
+              <button onClick={onClickSignIn} className="cat-btn-text mt-2 lg:mt-0 ml-4 mr-2">
+                Sign in
+              </button>
+            </div>
             <Drawer
               open={showAuth}
               onClose={() => setShowAuth(false)}
