@@ -9,6 +9,7 @@ import ListDesignation from "enums/ListDesignation"
 import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import UserBookShelf from "enums/UserBookShelf"
+import Visibility from "enums/Visibility"
 import type Book from "types/Book"
 import type BookActivity from "types/BookActivity"
 
@@ -162,7 +163,7 @@ async function getBookActivity(book, currentUserProfile): Promise<BookActivity> 
   if (currentUserProfile) {
     const allCurrentUserFollows = await prisma.interaction.findMany({
       where: {
-        objectId: currentUserProfile.id,
+        agentId: currentUserProfile.id,
         objectType: InteractionObjectType.User,
         interactionType: InteractionType.Follow,
       },
@@ -171,11 +172,63 @@ async function getBookActivity(book, currentUserProfile): Promise<BookActivity> 
       },
     })
 
-    const allFollowedIds = new Set(allCurrentUserFollows.map((follow) => follow.agentId))
+    const allFollowedIds = new Set(allCurrentUserFollows.map((follow) => follow.objectId))
 
-    const friendsShelfAssignments = allShelfAssignments.filter((assignment) =>
+    let friendsShelfAssignments = allShelfAssignments.filter((assignment) =>
       allFollowedIds.has(assignment.userProfile.id),
     )
+
+    // filter out shelves that are not visible to the current user
+    const allUserConfigs = await prisma.userConfig.findMany({
+      where: {
+        userProfileId: {
+          in: friendsShelfAssignments.map((assignment) => assignment.userProfileId),
+        },
+      },
+    })
+
+    const allUserConfigsByUserProfileId = allUserConfigs.reduce(
+      (result, config) => ({
+        ...result,
+        [config.userProfileId]: config,
+      }),
+      {},
+    )
+
+    const allFriendCurrentUserFollows = await prisma.interaction.findMany({
+      where: {
+        agentId: {
+          in: friendsShelfAssignments.map((assignment) => assignment.userProfileId),
+        },
+        interactionType: InteractionType.Follow,
+        objectId: currentUserProfile.id,
+        objectType: InteractionObjectType.User,
+      },
+    })
+
+    friendsShelfAssignments = friendsShelfAssignments.filter((assignment) => {
+      const { userProfileId } = assignment
+
+      const userConfig = allUserConfigsByUserProfileId[userProfileId]
+
+      if (
+        userConfig.shelvesVisibility === Visibility.Public ||
+        userConfig.shelvesVisibility === Visibility.SignedIn
+      ) {
+        return true
+      }
+
+      if (userConfig.shelvesVisibility === Visibility.Self) {
+        return false
+      }
+
+      // visibility is Friends
+      const friendFollowsCurrentUser = allFriendCurrentUserFollows.some(
+        (follow) => follow.agentId === userProfileId,
+      )
+
+      return friendFollowsCurrentUser
+    })
 
     shelvesToFriendsProfiles = friendsShelfAssignments.reduce(
       (result, assignment) => ({

@@ -12,6 +12,7 @@ import UserProfileTabs from "app/users/[username]/components/UserProfileTabs"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import { getUserProfileLink, getDomainFromUrl } from "lib/helpers/general"
 import { decorateWithFollowers } from "lib/server/decorators"
+import { areShelvesVisible } from "lib/api/userBookShelves"
 import UserProfile from "lib/models/UserProfile"
 
 export const dynamic = "force-dynamic"
@@ -75,6 +76,8 @@ export default async function UserProfileLayout({ params, children }) {
 
   const { name, bio, location, website, avatarUrl } = userProfile
 
+  const showShelves = await areShelvesVisible(userProfile, currentUserProfile)
+
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] lg:w-[960px] mx-8 xs:mx-auto">
       <div className="sm:flex font-mulish">
@@ -123,7 +126,7 @@ export default async function UserProfileLayout({ params, children }) {
         </div>
       </div>
       <div className="mt-12 mb-8">
-        <UserProfileTabs userProfile={decoratedUserProfile} />
+        <UserProfileTabs userProfile={decoratedUserProfile} shelves={showShelves} />
       </div>
       <div>{children}</div>
     </div>
