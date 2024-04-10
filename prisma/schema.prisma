@@ -404,14 +404,15 @@ model Comment {
 }
 
 model UserConfig {
-  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userProfileId       String      @map("user_profile_id") @db.Uuid
-  hasNewAnnouncements Boolean     @default(false) @map("has_new_announcements")
-  notesVisibility     String      @default("public") @map("notes_visibility")
-  shelvesVisibility   String      @default("public") @map("shelves_visibility")
-  createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  userProfile         UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  id                      String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userProfileId           String      @map("user_profile_id") @db.Uuid
+  hasNewAnnouncements     Boolean     @default(false) @map("has_new_announcements")
+  notesVisibility         String      @default("public") @map("notes_visibility")
+  shelvesVisibility       String      @default("public") @map("shelves_visibility")
+  currentStatusVisibility String      @default("public") @map("current_status_visibility")
+  createdAt               DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  userProfile             UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 
   @@unique([userProfileId])
   @@map("user_configs")

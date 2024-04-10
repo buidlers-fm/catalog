@@ -15,21 +15,24 @@ export default function UserProfilePageComponent({
   lists,
   favoriteBooksList,
   hasPinnedLists,
+  showCurrentStatus,
 }) {
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
   const { name } = UserProfile.build(userProfile)
 
   return (
-    <div className="mt-4 flex flex-col lg:flex-row">
-      <div className="lg:w-64 mt-4 lg:mr-16 font-mulish">
-        <ProfileCurrentStatus
-          userProfile={userProfile}
-          // @ts-ignore
-          userCurrentStatus={userProfile.currentStatuses[0]}
-          isUsersProfile={isUsersProfile}
-        />
-      </div>
+    <div className="mt-4 flex flex-col lg:flex-row justify-center">
+      {showCurrentStatus && (
+        <div className="lg:w-64 mt-4 lg:mr-16 font-mulish">
+          <ProfileCurrentStatus
+            userProfile={userProfile}
+            // @ts-ignore
+            userCurrentStatus={userProfile.currentStatuses[0]}
+            isUsersProfile={isUsersProfile}
+          />
+        </div>
+      )}
       <div className="xs:w-[400px] sm:w-[600px] lg:w-[640px] mt-8 lg:mt-4">
         <div className="font-mulish">
           <div className="cat-eyebrow">favorite books</div>

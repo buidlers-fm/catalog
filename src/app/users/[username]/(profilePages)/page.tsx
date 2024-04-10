@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
+import { isCurrentStatusVisible } from "lib/server/userCurrentStatuses"
 import { sortListsByPinSortOrder } from "lib/helpers/general"
 import { decorateLists, decorateWithLikes } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
@@ -45,6 +46,8 @@ export default async function UserProfilePage({ params }) {
   })) as UserProfileProps
 
   if (!userProfile) notFound()
+
+  const showCurrentStatus = await isCurrentStatusVisible(userProfile, currentUserProfile)
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
@@ -127,6 +130,7 @@ export default async function UserProfilePage({ params }) {
       favoriteBooksList={favoriteBooksList}
       currentUserProfile={currentUserProfile}
       hasPinnedLists={hasPinnedLists}
+      showCurrentStatus={showCurrentStatus}
     />
   )
 }

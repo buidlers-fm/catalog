@@ -35,6 +35,7 @@ export const GET = withApiHandling(
 
     let friends = decoratedUserProfile.following
 
+    // filter out friends whose shelves are not visible to the current user
     const allFriendsCurrentUserFollows = await prisma.interaction.findMany({
       where: {
         agentId: {
@@ -46,7 +47,6 @@ export const GET = withApiHandling(
       },
     })
 
-    // filter out friends whose shelves are not visible to the current user
     friends = friends.filter((friend) => {
       const {
         config: { shelvesVisibility },
