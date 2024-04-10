@@ -44,17 +44,37 @@ const options = {
       label: visibilitySettingsCopy[Visibility.Self],
     },
   ],
+  currentStatusVisibility: [
+    {
+      value: Visibility.Public,
+      label: visibilitySettingsCopy[Visibility.Public],
+    },
+    {
+      value: Visibility.SignedIn,
+      label: visibilitySettingsCopy[Visibility.SignedIn],
+    },
+    {
+      value: Visibility.Friends,
+      label: visibilitySettingsCopy[Visibility.Friends],
+    },
+  ],
 }
 
 export default function PrivacySettings({ currentUserProfile }) {
-  const { notesVisibility: existingNotesVisibility, shelvesVisibility: existingShelvesVisibility } =
-    currentUserProfile.config || {}
+  const {
+    notesVisibility: existingNotesVisibility,
+    shelvesVisibility: existingShelvesVisibility,
+    currentStatusVisibility: existingCurrentStatusVisibility,
+  } = currentUserProfile.config || {}
 
   const [notesVisibility, setNotesVisibility] = useState<Visibility>(
     existingNotesVisibility || Visibility.Public,
   )
   const [shelvesVisibility, setShelvesVisibility] = useState<Visibility>(
     existingShelvesVisibility || Visibility.Public,
+  )
+  const [currentStatusVisibility, setCurrentStatusVisibility] = useState<Visibility>(
+    existingCurrentStatusVisibility || Visibility.Public,
   )
   const [isBusy, setIsBusy] = useState<boolean>(false)
 
@@ -64,6 +84,7 @@ export default function PrivacySettings({ currentUserProfile }) {
     const requestData = {
       notesVisibility,
       shelvesVisibility,
+      currentStatusVisibility,
     }
 
     const toastId = toast.loading("Updating privacy settings...")
@@ -92,6 +113,10 @@ export default function PrivacySettings({ currentUserProfile }) {
     (item) => item.value === shelvesVisibility,
   )
 
+  const defaultCurrentStatusVisibilityIndex = options.currentStatusVisibility.findIndex(
+    (item) => item.value === currentStatusVisibility,
+  )
+
   const NotesVisibilityLabel = (
     <div>
       Who can see my <span className="text-gold-500">book notes</span>:
@@ -101,6 +126,12 @@ export default function PrivacySettings({ currentUserProfile }) {
   const ShelvesVisibilityLabel = (
     <div>
       Who can see my <span className="text-gold-500">shelves</span>:
+    </div>
+  )
+
+  const CurrentStatusVisibilityLabel = (
+    <div>
+      Who can see my <span className="text-gold-500">current status</span>:
     </div>
   )
 
@@ -126,6 +157,18 @@ export default function PrivacySettings({ currentUserProfile }) {
             defaultItemIndex={defaultShelvesVisibilityIndex}
             items={options.shelvesVisibility}
             onChange={(selectedItem) => setShelvesVisibility(selectedItem.value as Visibility)}
+          />
+        </div>
+
+        <div className="my-8">
+          <FormRadioGroup
+            label={CurrentStatusVisibilityLabel}
+            helperText={`This refers to the current status you set for your profile (you can find this on your profile page or by going to "home").`}
+            defaultItemIndex={defaultCurrentStatusVisibilityIndex}
+            items={options.currentStatusVisibility}
+            onChange={(selectedItem) =>
+              setCurrentStatusVisibility(selectedItem.value as Visibility)
+            }
           />
         </div>
       </div>

@@ -8,7 +8,8 @@ import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile } = params
-  const { hasNewAnnouncements, notesVisibility, shelvesVisibility } = reqJson
+  const { hasNewAnnouncements, notesVisibility, shelvesVisibility, currentStatusVisibility } =
+    reqJson
 
   const existingUserConfig = await prisma.userConfig.findFirst({
     where: {
@@ -28,6 +29,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
         hasNewAnnouncements,
         notesVisibility,
         shelvesVisibility,
+        currentStatusVisibility,
       },
     })
   }
@@ -45,6 +47,10 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     return NextResponse.json({ error: "Invalid shelves visibility value" }, { status: 400 })
   }
 
+  if (currentStatusVisibility && !Object.values(Visibility).includes(currentStatusVisibility)) {
+    return NextResponse.json({ error: "Invalid current status visibility value" }, { status: 400 })
+  }
+
   const updateUserConfigQuery = prisma.userConfig.update({
     where: {
       userProfileId: currentUserProfile.id,
@@ -53,6 +59,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       hasNewAnnouncements,
       notesVisibility,
       shelvesVisibility,
+      currentStatusVisibility,
     },
   })
 

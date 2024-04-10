@@ -1,9 +1,12 @@
+import prisma from "lib/prisma"
 import { decorateWithFollowing, decorateWithLikes } from "lib/server/decorators"
 import { idsToObjects } from "lib/helpers/general"
 import UserCurrentStatusCard from "app/components/userCurrentStatuses/UserCurrentStatusCard"
 import EmptyState from "app/components/EmptyState"
 import LoadingSection from "app/components/LoadingSection"
+import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
+import Visibility from "enums/Visibility"
 
 const LIMIT = 5
 
@@ -25,6 +28,7 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
           book: true,
         },
       },
+      config: true,
     },
   }
 
@@ -34,8 +38,42 @@ export default async function FriendsCurrentStatuses({ currentUserProfile }) {
   )
 
   const { following } = decoratedUserProfile
+
+  const allFriendToCurrentUserFollows = await prisma.interaction.findMany({
+    where: {
+      agentId: {
+        in: following.map(({ id }) => id),
+      },
+      interactionType: InteractionType.Follow,
+      objectId: currentUserProfile.id,
+      objectType: InteractionObjectType.User,
+    },
+  })
+
   const followingWithCurrentStatuses = following
-    .filter((followedUserProfile) => followedUserProfile.currentStatuses.length > 0)
+    // filter for visibility and presence
+    .filter((friend) => {
+      if (friend.currentStatuses.length === 0) return false
+
+      const {
+        config: { currentStatusVisibility },
+      } = friend
+
+      if (
+        currentStatusVisibility === Visibility.Public ||
+        currentStatusVisibility === Visibility.SignedIn
+      ) {
+        return true
+      }
+
+      // visibility is Friends
+      const friendFollowsCurrentUser = allFriendToCurrentUserFollows.some(
+        (follow) => follow.agentId === friend.id,
+      )
+
+      return friendFollowsCurrentUser
+    })
+    // sort by most recent status
     .sort(
       (a, b) =>
         new Date(b.currentStatuses[0].createdAt).valueOf() -

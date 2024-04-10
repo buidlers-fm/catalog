@@ -5,6 +5,7 @@ import { withApiHandling } from "lib/api/withApiHandling"
 import { findOrCreateBook } from "lib/api/books"
 import { getAllAtMentions } from "lib/helpers/general"
 import { createNotifsFromMentions } from "lib/server/notifs"
+import { isCurrentStatusVisible } from "lib/server/userCurrentStatuses"
 import { reportToSentry } from "lib/sentry"
 import NotificationObjectType from "enums/NotificationObjectType"
 import type Mention from "types/Mention"
@@ -81,12 +82,20 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
 
   const atMentions = getAllAtMentions(text)
 
-  const mentions: Mention[] = atMentions.map((atMention) => ({
-    agentId: userProfile.id,
-    objectId: createdUserCurrentStatus.id,
-    objectType: NotificationObjectType.UserCurrentStatus,
-    mentionedUserProfileId: atMention!.id,
-  }))
+  const mentionsPromises = atMentions.map(async (atMention) => {
+    const shouldNotify = await isCurrentStatusVisible(userProfile, { id: atMention!.id } as any)
+
+    if (!shouldNotify) return null
+
+    return {
+      agentId: userProfile.id,
+      objectId: createdUserCurrentStatus.id,
+      objectType: NotificationObjectType.UserCurrentStatus,
+      mentionedUserProfileId: atMention!.id,
+    }
+  })
+
+  const mentions = (await Promise.all(mentionsPromises)).filter(Boolean) as Mention[]
 
   await createNotifsFromMentions(mentions)
 
