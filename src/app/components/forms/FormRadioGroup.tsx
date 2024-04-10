@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Fragment } from "react"
+import React, { useState, Fragment } from "react"
 import { RadioGroup } from "@headlessui/react"
 import { FaCheckCircle } from "react-icons/fa"
 
@@ -10,7 +10,7 @@ type Item = {
 }
 
 type Props = {
-  label?: string
+  label?: string | React.ReactNode
   helperText?: string
   items: Item[]
   defaultItemIndex?: number

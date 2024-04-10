@@ -15,7 +15,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
-export default function UserProfileTabs({ userProfile }) {
+export default function UserProfileTabs({ userProfile, shelves }) {
   const selectedLayoutSegment = useSelectedLayoutSegment()
 
   const { username } = userProfile
@@ -30,11 +30,16 @@ export default function UserProfileTabs({ userProfile }) {
       layoutPath: "lists",
       href: getUserListsLink(username),
     },
-    {
-      name: "shelves",
-      layoutPath: "shelves",
-      href: getUserShelvesLink(username),
-    },
+    // shelves tab dependent on prop
+    ...(shelves
+      ? [
+          {
+            name: "shelves",
+            layoutPath: "shelves",
+            href: getUserShelvesLink(username),
+          },
+        ]
+      : []),
     {
       name: "notes",
       layoutPath: "notes",

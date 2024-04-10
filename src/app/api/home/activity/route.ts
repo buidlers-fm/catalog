@@ -5,11 +5,16 @@ import { withApiHandling } from "lib/api/withApiHandling"
 import { decorateWithFollowing } from "lib/server/decorators"
 import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
+import Visibility from "enums/Visibility"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(
   async (_req: NextRequest, { params }) => {
     const { currentUserProfile } = params
+
+    if (!currentUserProfile) {
+      return NextResponse.json({}, { status: 404 })
+    }
 
     const includeQueryOptions = {
       bookShelfAssignments: {
@@ -21,13 +26,45 @@ export const GET = withApiHandling(
           updatedAt: "desc",
         },
       },
+      config: true,
     }
 
     const [decoratedUserProfile] = await decorateWithFollowing([currentUserProfile], {
       include: includeQueryOptions,
     })
 
-    const friends = decoratedUserProfile.following
+    let friends = decoratedUserProfile.following
+
+    const allFriendsCurrentUserFollows = await prisma.interaction.findMany({
+      where: {
+        agentId: {
+          in: friends.map(({ id }) => id),
+        },
+        interactionType: InteractionType.Follow,
+        objectId: currentUserProfile.id,
+        objectType: InteractionObjectType.User,
+      },
+    })
+
+    // filter out friends whose shelves are not visible to the current user
+    friends = friends.filter((friend) => {
+      const {
+        config: { shelvesVisibility },
+      } = friend
+
+      if (shelvesVisibility === Visibility.Public || shelvesVisibility === Visibility.SignedIn) {
+        return true
+      }
+
+      if (shelvesVisibility === Visibility.Self) return false
+
+      // visibility is Friends
+      const friendFollowsCurrentUser = allFriendsCurrentUserFollows.some(
+        (follow) => follow.agentId === friend.id,
+      )
+
+      return friendFollowsCurrentUser
+    })
 
     // array of friends with their respective shelf assignments,
     // sorted by most recently updated/created shelf assignment

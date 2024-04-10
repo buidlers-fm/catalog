@@ -8,7 +8,7 @@ import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile } = params
-  const { hasNewAnnouncements, notesVisibility } = reqJson
+  const { hasNewAnnouncements, notesVisibility, shelvesVisibility } = reqJson
 
   const existingUserConfig = await prisma.userConfig.findFirst({
     where: {
@@ -27,6 +27,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
         userProfileId: currentUserProfile.id,
         hasNewAnnouncements,
         notesVisibility,
+        shelvesVisibility,
       },
     })
   }
@@ -34,10 +35,14 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   let isNotesVisibilityChanged = false
   if (notesVisibility) {
     if (!Object.values(Visibility).includes(notesVisibility)) {
-      return NextResponse.json({ error: "Invalid visibility value" }, { status: 400 })
+      return NextResponse.json({ error: "Invalid notes visibility value" }, { status: 400 })
     }
 
     isNotesVisibilityChanged = existingUserConfig?.notesVisibility !== notesVisibility
+  }
+
+  if (shelvesVisibility && !Object.values(Visibility).includes(shelvesVisibility)) {
+    return NextResponse.json({ error: "Invalid shelves visibility value" }, { status: 400 })
   }
 
   const updateUserConfigQuery = prisma.userConfig.update({
@@ -47,6 +52,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     data: {
       hasNewAnnouncements,
       notesVisibility,
+      shelvesVisibility,
     },
   })
 
