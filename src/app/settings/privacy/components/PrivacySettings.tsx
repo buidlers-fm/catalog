@@ -5,76 +5,36 @@ import toast from "react-hot-toast"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
 import FormRadioGroup from "app/components/forms/FormRadioGroup"
-import Visibility, { visibilitySettingsCopy } from "enums/Visibility"
+import Visibility, { visibilitySettingsCopy, visibilitySettingsOptions } from "enums/Visibility"
 
-const options = {
-  notesVisibility: [
-    {
-      value: Visibility.Public,
-      label: visibilitySettingsCopy[Visibility.Public],
-    },
-    {
-      value: Visibility.SignedIn,
-      label: visibilitySettingsCopy[Visibility.SignedIn],
-    },
-    {
-      value: Visibility.Friends,
-      label: visibilitySettingsCopy[Visibility.Friends],
-    },
-    {
-      value: Visibility.Self,
-      label: visibilitySettingsCopy[Visibility.Self],
-    },
-  ],
-  shelvesVisibility: [
-    {
-      value: Visibility.Public,
-      label: visibilitySettingsCopy[Visibility.Public],
-    },
-    {
-      value: Visibility.SignedIn,
-      label: visibilitySettingsCopy[Visibility.SignedIn],
-    },
-    {
-      value: Visibility.Friends,
-      label: visibilitySettingsCopy[Visibility.Friends],
-    },
-    {
-      value: Visibility.Self,
-      label: visibilitySettingsCopy[Visibility.Self],
-    },
-  ],
-  currentStatusVisibility: [
-    {
-      value: Visibility.Public,
-      label: visibilitySettingsCopy[Visibility.Public],
-    },
-    {
-      value: Visibility.SignedIn,
-      label: visibilitySettingsCopy[Visibility.SignedIn],
-    },
-    {
-      value: Visibility.Friends,
-      label: visibilitySettingsCopy[Visibility.Friends],
-    },
-  ],
-}
+const options: any = {}
+
+Object.entries(visibilitySettingsOptions).forEach(([settingName, { options: settingOptions }]) => {
+  options[settingName] = settingOptions.map((value: Visibility) => ({
+    label: visibilitySettingsCopy[value],
+    value,
+  }))
+})
 
 export default function PrivacySettings({ currentUserProfile }) {
   const {
     notesVisibility: existingNotesVisibility,
     shelvesVisibility: existingShelvesVisibility,
     currentStatusVisibility: existingCurrentStatusVisibility,
+    userSearchVisibility: existingUserSearchVisibility,
   } = currentUserProfile.config || {}
 
   const [notesVisibility, setNotesVisibility] = useState<Visibility>(
-    existingNotesVisibility || Visibility.Public,
+    existingNotesVisibility || visibilitySettingsOptions.notesVisibility.default,
   )
   const [shelvesVisibility, setShelvesVisibility] = useState<Visibility>(
-    existingShelvesVisibility || Visibility.Public,
+    existingShelvesVisibility || visibilitySettingsOptions.shelvesVisibility.default,
   )
   const [currentStatusVisibility, setCurrentStatusVisibility] = useState<Visibility>(
-    existingCurrentStatusVisibility || Visibility.Public,
+    existingCurrentStatusVisibility || visibilitySettingsOptions.currentStatusVisibility.default,
+  )
+  const [userSearchVisibility, setUserSearchVisibility] = useState<Visibility>(
+    existingUserSearchVisibility || visibilitySettingsOptions.userSearchVisibility.default,
   )
   const [isBusy, setIsBusy] = useState<boolean>(false)
 
@@ -85,6 +45,7 @@ export default function PrivacySettings({ currentUserProfile }) {
       notesVisibility,
       shelvesVisibility,
       currentStatusVisibility,
+      userSearchVisibility,
     }
 
     const toastId = toast.loading("Updating privacy settings...")
@@ -117,6 +78,10 @@ export default function PrivacySettings({ currentUserProfile }) {
     (item) => item.value === currentStatusVisibility,
   )
 
+  const defaultUserSearchVisibilityIndex = options.userSearchVisibility.findIndex(
+    (item) => item.value === userSearchVisibility,
+  )
+
   const NotesVisibilityLabel = (
     <div>
       Who can see my <span className="text-gold-500">book notes</span>:
@@ -132,6 +97,12 @@ export default function PrivacySettings({ currentUserProfile }) {
   const CurrentStatusVisibilityLabel = (
     <div>
       Who can see my <span className="text-gold-500">current status</span>:
+    </div>
+  )
+
+  const UserSearchVisibilityLabel = (
+    <div>
+      Who can <span className="text-gold-500">search</span> for me by name:
     </div>
   )
 
@@ -169,6 +140,16 @@ export default function PrivacySettings({ currentUserProfile }) {
             onChange={(selectedItem) =>
               setCurrentStatusVisibility(selectedItem.value as Visibility)
             }
+          />
+        </div>
+
+        <div className="my-8">
+          <FormRadioGroup
+            label={UserSearchVisibilityLabel}
+            helperText={`This affects whether you will appear in search results, including when someone wants to @-mention you or recommend you a book. ("Public" is not an option because users must be signed in to use these features.)`}
+            defaultItemIndex={defaultUserSearchVisibilityIndex}
+            items={options.userSearchVisibility}
+            onChange={(selectedItem) => setUserSearchVisibility(selectedItem.value as Visibility)}
           />
         </div>
       </div>

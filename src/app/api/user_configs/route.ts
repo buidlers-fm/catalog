@@ -2,14 +2,19 @@ import { NextResponse } from "next/server"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { reportToSentry } from "lib/sentry"
-import Visibility from "enums/Visibility"
+import { visibilitySettingsOptions } from "enums/Visibility"
 import BookNoteType from "enums/BookNoteType"
 import type { NextRequest } from "next/server"
 
 export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile } = params
-  const { hasNewAnnouncements, notesVisibility, shelvesVisibility, currentStatusVisibility } =
-    reqJson
+  const {
+    hasNewAnnouncements,
+    notesVisibility,
+    shelvesVisibility,
+    currentStatusVisibility,
+    userSearchVisibility,
+  } = reqJson
 
   const existingUserConfig = await prisma.userConfig.findFirst({
     where: {
@@ -30,25 +35,45 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
         notesVisibility,
         shelvesVisibility,
         currentStatusVisibility,
+        userSearchVisibility,
       },
     })
   }
 
   let isNotesVisibilityChanged = false
   if (notesVisibility) {
-    if (!Object.values(Visibility).includes(notesVisibility)) {
+    if (
+      !Object.values(visibilitySettingsOptions.notesVisibility.options).includes(notesVisibility)
+    ) {
       return NextResponse.json({ error: "Invalid notes visibility value" }, { status: 400 })
     }
 
     isNotesVisibilityChanged = existingUserConfig?.notesVisibility !== notesVisibility
   }
 
-  if (shelvesVisibility && !Object.values(Visibility).includes(shelvesVisibility)) {
+  if (
+    shelvesVisibility &&
+    !Object.values(visibilitySettingsOptions.shelvesVisibility.options).includes(shelvesVisibility)
+  ) {
     return NextResponse.json({ error: "Invalid shelves visibility value" }, { status: 400 })
   }
 
-  if (currentStatusVisibility && !Object.values(Visibility).includes(currentStatusVisibility)) {
+  if (
+    currentStatusVisibility &&
+    !Object.values(visibilitySettingsOptions.currentStatusVisibility.options).includes(
+      currentStatusVisibility,
+    )
+  ) {
     return NextResponse.json({ error: "Invalid current status visibility value" }, { status: 400 })
+  }
+
+  if (
+    userSearchVisibility &&
+    !Object.values(visibilitySettingsOptions.userSearchVisibility.options).includes(
+      userSearchVisibility,
+    )
+  ) {
+    return NextResponse.json({ error: "Invalid user search visibility value" }, { status: 400 })
   }
 
   const updateUserConfigQuery = prisma.userConfig.update({
@@ -60,6 +85,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       notesVisibility,
       shelvesVisibility,
       currentStatusVisibility,
+      userSearchVisibility,
     },
   })
 

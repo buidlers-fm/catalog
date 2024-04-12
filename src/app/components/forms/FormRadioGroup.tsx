@@ -40,7 +40,7 @@ export default function FormRadioGroup({
         </RadioGroup.Label>
       )}
 
-      <div className="my-2 flex flex-col sm:flex-row gap-y-1 gap-x-2">
+      <div className="my-2 flex flex-col items-start sm:flex-row gap-y-2 gap-x-2">
         {items.map((item) => (
           <RadioGroup.Option key={item.value} value={item.value} as={Fragment}>
             {({ checked }) => (

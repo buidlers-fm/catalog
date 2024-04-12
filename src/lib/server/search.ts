@@ -67,10 +67,25 @@ async function searchUsers(searchString, options: any = {}) {
       AND interactions.object_id = ${currentUserProfile.id}::uuid
       AND interactions.interaction_type = 'follow'
       AND interactions.object_type = 'user_profile'
+    JOIN
+      user_configs
+      ON user_configs.user_profile_id = user_profiles.id  
     WHERE 
-      username ILIKE ${`%${searchString}%`} OR 
-      display_name ILIKE ${`%${searchString}%`} OR 
-      (username || ' ' || display_name) % ${searchString}
+      (
+        CASE user_configs.user_search_visibility 
+          WHEN 'signed_in' THEN true
+          WHEN 'friends' THEN
+            (interactions.agent_id = user_configs.user_profile_id)
+          ELSE 
+            false
+        END
+      )
+    AND
+      (
+        username ILIKE ${`%${searchString}%`} OR 
+        display_name ILIKE ${`%${searchString}%`} OR 
+        (username || ' ' || display_name) % ${searchString}
+      )
     ORDER BY
       trigram DESC
     LIMIT
@@ -79,7 +94,7 @@ async function searchUsers(searchString, options: any = {}) {
   } else {
     prismaQuery = prisma.$queryRaw`
     SELECT
-  id,
+      user_profiles.id,
       username,
       bio,
       user_id,
@@ -87,14 +102,46 @@ async function searchUsers(searchString, options: any = {}) {
       display_name,
       location,
       website,
-  created_at,
-  updated_at,
-      similarity(username || ' ' || display_name, ${searchString}) as trigram
+      user_profiles.created_at,
+      user_profiles.updated_at,
+      similarity(username || ' ' || display_name, ${searchString}) as trigram,
+      (
+        CASE user_configs.user_search_visibility
+          WHEN 'signed_in' THEN true
+          WHEN 'friends' THEN
+            EXISTS (SELECT 1 FROM interactions 
+                    WHERE interactions.agent_id = user_profiles.id 
+                    AND interactions.object_id = ${currentUserProfile.id}::uuid
+                    AND interactions.interaction_type = 'follow'
+                    AND interactions.object_type = 'user_profile')
+          ELSE
+            false
+        END
+      ) as visibility_check
     FROM user_profiles 
+    JOIN
+      user_configs
+      ON user_configs.user_profile_id = user_profiles.id
     WHERE 
-      username ILIKE ${`%${searchString}%`} OR 
-      display_name ILIKE ${`%${searchString}%`} OR 
-      (username || ' ' || display_name) % ${searchString}
+      (
+        CASE user_configs.user_search_visibility 
+          WHEN 'signed_in' THEN true
+          WHEN 'friends' THEN
+            EXISTS (SELECT 1 FROM interactions 
+                    WHERE interactions.agent_id = user_profiles.id 
+                    AND interactions.object_id = ${currentUserProfile.id}::uuid
+                    AND interactions.interaction_type = 'follow'
+                    AND interactions.object_type = 'user_profile')
+          ELSE 
+            false
+        END
+      )
+    AND
+      (
+        username ILIKE ${`%${searchString}%`} OR 
+        display_name ILIKE ${`%${searchString}%`} OR 
+        (username || ' ' || display_name) % ${searchString}
+      )
     ORDER BY
       trigram DESC
     LIMIT
