@@ -18,17 +18,14 @@ export default function BookTooltip({ book, anchorSelect: _anchorSelect }) {
 
   const anchorSelect = _anchorSelect || `#book-${book.id}`
 
+  if (isMobile) return null
+
   return (
-    <Tooltip
-      anchorSelect={anchorSelect}
-      className="z-10 max-w-[240px] font-mulish"
-      clickable={isMobile}
-    >
+    <Tooltip anchorSelect={anchorSelect} className="z-10 max-w-[240px] font-mulish">
       <Link href={getBookLink(book.slug)}>
-        <button disabled={!isMobile}>
+        <button>
           <div className="text-center">{truncateString(`${book.title}`, 40)}</div>
           <div className="text-center">{truncateString(`by ${book.authorName}`, 40)}</div>
-          {isMobile && <div className="underline">Go to page</div>}
         </button>
       </Link>
     </Tooltip>

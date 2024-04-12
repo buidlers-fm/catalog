@@ -5,6 +5,7 @@ import { reportToSentry } from "lib/sentry"
 import { useUser } from "lib/contexts/UserContext"
 import { useUserBooks } from "lib/contexts/UserBooksContext"
 import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
+import BookCoverOverlayMenu from "app/components/books/BookCoverOverlayMenu"
 import type Book from "types/Book"
 
 export default function BookCoverOverlay({
@@ -61,13 +62,16 @@ export default function BookCoverOverlay({
 
   return (
     <div
-      className={`hidden group-hover:flex group-hover:z-50 absolute left-1/2 transform -translate-x-1/2 ${positionClass} bg-black bg-opacity-80 items-center justify-center`}
+      className={`hidden group-hover:flex group-hover:z-50 absolute left-1/2 transform -translate-x-1/2 ${positionClass} p-2 bg-black bg-opacity-80 items-center justify-center`}
     >
-      <button className="m-2" onClick={toggleLike}>
+      <button className="mr-1" onClick={toggleLike}>
         {isLiked ? <FaHeart className="text-red-300" /> : <FaRegHeart className="text-gray-500" />}
       </button>
-      <div className="m-2">
+      <div className="mx-1">
         <UserBookShelfMenu book={book} compact />
+      </div>
+      <div className="ml-0.5 -mr-0.5">
+        <BookCoverOverlayMenu book={book} />
       </div>
     </div>
   )
