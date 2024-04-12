@@ -410,6 +410,7 @@ model UserConfig {
   notesVisibility         String      @default("public") @map("notes_visibility")
   shelvesVisibility       String      @default("public") @map("shelves_visibility")
   currentStatusVisibility String      @default("public") @map("current_status_visibility")
+  userSearchVisibility    String      @default("signed_in") @map("user_search_visibility")
   createdAt               DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt               DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
   userProfile             UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
