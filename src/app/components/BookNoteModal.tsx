@@ -11,6 +11,7 @@ import { FaRegHeart, FaHeart } from "react-icons/fa"
 import { SlInfo } from "react-icons/sl"
 import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
+import { fireConfetti } from "lib/helpers/confetti"
 import { reportToSentry } from "lib/sentry"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import FormTextarea from "app/components/forms/FormTextarea"
@@ -218,8 +219,21 @@ export default function BookNoteModal({
       book,
     }
 
+    function congrats() {
+      if (readingStatus === BookNoteReadingStatus.Finished) {
+        fireConfetti()
+        toast(`Yay, you finished ${book.title}!`, {
+          position: "top-center",
+          icon: "🎉",
+          duration: 4000,
+        })
+      }
+    }
+
     try {
       const createdNote = await api.bookNotes.create(requestData)
+
+      setTimeout(congrats, 1000)
 
       const successMessage = (
         <div className="flex flex-col xs:block ml-2">
@@ -233,8 +247,6 @@ export default function BookNoteModal({
       toast.success(successMessage, { id: toastId })
 
       await handleClose()
-
-      console.log("BookNoteModal onSuccess", onSuccess)
 
       if (onSuccess) await onSuccess()
       reset()
