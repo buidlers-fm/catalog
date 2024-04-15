@@ -89,7 +89,9 @@ export default async function UserProfileLayout({ params, children }) {
           <FaUserCircle className="mr-3 text-[96px] text-gray-500" />
         )}
         <div className="my-6 sm:my-0 sm:ml-4 grow">
-          <div className="text-2xl font-bold">{name}</div>
+          <div className="text-2xl font-bold">
+            <span data-intro-tour="profile-page">{name}</span>
+          </div>
           <div className="mt-2 max-w-lg">
             <CustomMarkdown markdown={bio} />
           </div>

@@ -1,7 +1,15 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect } from "react"
+import { useTour } from "@reactour/tour"
+import { useModals } from "lib/contexts/ModalsContext"
 import UserProfile from "lib/models/UserProfile"
+import { getLocalStorage, deleteLocalStorage } from "lib/localstorage"
+import {
+  INTRO_TOUR_LOCALSTORAGE_KEY,
+  INTRO_TOUR_PROFILE_PAGE_STEP,
+} from "app/components/IntroTourProvider"
 import { getUserListsLink, getNewListLink } from "lib/helpers/general"
 import ProfileCurrentStatus from "app/users/[username]/components/ProfileCurrentStatus"
 import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileBookNotes"
@@ -17,6 +25,19 @@ export default function UserProfilePageComponent({
   hasPinnedLists,
   showCurrentStatus,
 }) {
+  const { setCurrentStep, setIsOpen } = useTour()
+  const { currentModal, setCurrentModal } = useModals()
+
+  useEffect(() => {
+    const currentTourStep = getLocalStorage(INTRO_TOUR_LOCALSTORAGE_KEY)
+    if (currentTourStep === INTRO_TOUR_PROFILE_PAGE_STEP) {
+      setCurrentStep(currentTourStep)
+      setIsOpen(true)
+      deleteLocalStorage(INTRO_TOUR_LOCALSTORAGE_KEY)
+      setCurrentModal(undefined)
+    }
+  }, [setCurrentStep, setIsOpen, currentModal, setCurrentModal])
+
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
   const { name } = UserProfile.build(userProfile)
@@ -64,7 +85,10 @@ export default function UserProfilePageComponent({
             >
               {isUsersProfile && (
                 <Link href={getNewListLink(currentUserProfile)}>
-                  <button className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0">
+                  <button
+                    data-intro-tour="create-list"
+                    className="cat-btn cat-btn-sm cat-btn-gray mx-2 mb-1 xs:mb-0"
+                  >
                     + create a list
                   </button>
                 </Link>

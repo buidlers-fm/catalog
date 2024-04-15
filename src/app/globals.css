@@ -31,6 +31,10 @@ textarea:focus {
   @apply font-mulish font-semibold lowercase rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
 }
 
+.cat-btn-normal-case {
+  @apply font-mulish font-semibold rounded-sm disabled:opacity-50 shadow-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none;
+}
+
 .cat-btn-sm {
   @apply px-3 py-2;
 }

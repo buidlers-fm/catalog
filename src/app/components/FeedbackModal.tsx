@@ -1,10 +1,19 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { useTour } from "@reactour/tour"
 import { Dialog } from "@headlessui/react"
 import { toast } from "react-hot-toast"
 import { BsXLg } from "react-icons/bs"
+import { useUser } from "lib/contexts/UserContext"
 import api from "lib/api"
+import {
+  INTRO_TOUR_LOCALSTORAGE_KEY,
+  INTRO_TOUR_PROFILE_PAGE_STEP,
+} from "app/components/IntroTourProvider"
+import { setLocalStorage } from "lib/localstorage"
+import { getUserProfileLink } from "lib/helpers/general"
 import { reportToSentry } from "lib/sentry"
 import allValidations from "lib/constants/validations"
 import FormTextarea from "app/components/forms/FormTextarea"
@@ -12,8 +21,25 @@ import FormTextarea from "app/components/forms/FormTextarea"
 const feedbackValidations = allValidations.feedback
 
 export default function FeedbackModal({ onClose, isOpen }) {
+  const pathname = usePathname()
+  const { setCurrentStep, setIsOpen } = useTour()
+  const { currentUserProfile } = useUser()
+
   const [text, setText] = useState<string>("")
   const [isBusy, setIsBusy] = useState<boolean>(false)
+
+  async function handleStartTour() {
+    // if already on profile page, start tour. otherwise, navigate to profile page
+    const profilePagePath = getUserProfileLink(currentUserProfile!.username)
+    if (profilePagePath === pathname) {
+      setCurrentStep(INTRO_TOUR_PROFILE_PAGE_STEP)
+      setIsOpen(true)
+      await onClose()
+    } else {
+      setLocalStorage(INTRO_TOUR_LOCALSTORAGE_KEY, INTRO_TOUR_PROFILE_PAGE_STEP)
+      window.location.href = profilePagePath
+    }
+  }
 
   const submit = async () => {
     if (text && text.length > feedbackValidations.text.maxLength) {
@@ -56,8 +82,15 @@ export default function FeedbackModal({ onClose, isOpen }) {
           <div className="mt-8 md:mt-0 md:ml-8">
             <div className="my-4 w-full sm:w-96 max-w-[384px]">
               <div className="cat-eyebrow-uppercase">help</div>
+              <div className="mt-2 mb-2">
+                <button className="cat-link" onClick={handleStartTour}>
+                  Take a tour
+                </button>{" "}
+                of some of the features in catalog.
+              </div>
+
               <div className="mt-2 mb-8">
-                Check the{" "}
+                Or check the{" "}
                 <a href="/guide" className="underline" target="_blank">
                   guide
                 </a>{" "}

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import { createContext, useState, useEffect, useMemo, useContext } from "react"
+import { useUser } from "lib/contexts/UserContext"
 import CurrentModal from "enums/CurrentModal"
 import type Book from "types/Book"
 import type BookRead from "types/BookRead"
@@ -25,6 +26,7 @@ const ModalsContext = createContext<ModalsProviderValue | undefined>(undefined)
 
 export function ModalsProvider({ children }) {
   const pathname = usePathname()
+  const { currentUserProfile } = useUser()
 
   const [currentModal, setCurrentModal] = useState<CurrentModal>()
   const [currentBook, setCurrentBook] = useState<Book>()
@@ -33,9 +35,20 @@ export function ModalsProvider({ children }) {
   const [onNewNoteSuccess, setOnNewNoteSuccess] = useState<() => void>(() => {})
   const [onNewPostSuccess, setOnNewPostSuccess] = useState<() => void>(() => {})
 
+  // offer intro tour if user hasn't seen it yet
+  useEffect(() => {
+    if (
+      currentUserProfile &&
+      currentUserProfile.config &&
+      !currentUserProfile.config.seenIntroTour
+    ) {
+      setCurrentModal(CurrentModal.IntroTourPreTour)
+    }
+  }, [setCurrentModal, currentUserProfile])
+
+  // reset params for book-related modals
   useEffect(() => {
     setCurrentBook(undefined)
-    setCurrentModal(undefined)
     setExistingBookRead(undefined)
     setOnNewNoteSuccess(() => {})
     setOnNewPostSuccess(() => {})

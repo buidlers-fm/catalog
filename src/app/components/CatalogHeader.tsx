@@ -11,12 +11,17 @@ export default function CatalogHeader() {
 
   return (
     <header className="px-8 py-8 flex justify-between">
-      <div className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide">
+      <div
+        data-intro-tour="catalog-home"
+        className="self-start text-3xl sm:text-4xl font-chivo-mono font-bold text-gold-500 tracking-wide"
+      >
         <Link href={isSignedIn ? "/home" : "/"}>catalog</Link>
       </div>
-      <Suspense>
-        <Nav />
-      </Suspense>
+      <div data-intro-tour="nav-bar">
+        <Suspense>
+          <Nav />
+        </Suspense>
+      </div>
     </header>
   )
 }

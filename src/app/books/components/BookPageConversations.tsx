@@ -182,6 +182,7 @@ export default function BookPageConversations({
           (isSignedIn ? (
             <div className="flex -mt-1 items-end">
               <button
+                data-intro-tour="create-thread"
                 onClick={() => showModal(CurrentModal.NewPost)}
                 className="cat-btn cat-btn-sm cat-btn-gray mx-2"
               >

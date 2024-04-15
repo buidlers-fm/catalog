@@ -406,6 +406,7 @@ model Comment {
 model UserConfig {
   id                      String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userProfileId           String      @map("user_profile_id") @db.Uuid
+  seenIntroTour           Boolean     @default(false) @map("seen_intro_tour")
   hasNewAnnouncements     Boolean     @default(false) @map("has_new_announcements")
   notesVisibility         String      @default("public") @map("notes_visibility")
   shelvesVisibility       String      @default("public") @map("shelves_visibility")
