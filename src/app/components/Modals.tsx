@@ -5,6 +5,7 @@ import { useUser } from "lib/contexts/UserContext"
 import { useUserBooks } from "lib/contexts/UserBooksContext"
 import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
+import IntroTourPreTourModal from "app/components/IntroTourPreTourModal"
 import GlobalCreateModal from "app/components/GlobalCreateModal"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import BookNoteModal from "app/components/BookNoteModal"
@@ -42,6 +43,14 @@ export default function Modals() {
 
   return (
     <>
+      {currentModal === CurrentModal.IntroTourPreTour && (
+        <IntroTourPreTourModal
+          isOpen
+          currentUserProfile={currentUserProfile}
+          onClose={() => setCurrentModal(undefined)}
+        />
+      )}
+
       {currentModal === CurrentModal.GlobalCreate && (
         <GlobalCreateModal isOpen onClose={() => setCurrentModal(undefined)} />
       )}

@@ -14,6 +14,7 @@ export interface UserProfileProps {
   bio?: string | null
   location?: string | null
   website?: string | null
+  config?: any
   bookNotes?: BookNote[]
   bookReads?: BookRead[]
   currentStatuses?: UserCurrentStatus[]
@@ -44,6 +45,8 @@ export default class UserProfile {
 
   public website: string | null | undefined
 
+  public config: any | undefined
+
   public bookNotes: BookNote[] | undefined
 
   public bookReads: BookRead[] | undefined
@@ -69,6 +72,7 @@ export default class UserProfile {
     this.bio = userProfileProps.bio
     this.location = userProfileProps.location
     this.website = userProfileProps.website
+    this.config = userProfileProps.config
     this.bookNotes = userProfileProps.bookNotes
     this.bookReads = userProfileProps.bookReads
     this.currentStatuses = userProfileProps.currentStatuses

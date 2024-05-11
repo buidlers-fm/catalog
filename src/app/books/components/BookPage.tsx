@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
 import humps from "humps"
+import { useTour } from "@reactour/tour"
 import { Tooltip } from "react-tooltip"
 import { BsJournalText } from "react-icons/bs"
 import { FaHeart, FaBookmark } from "react-icons/fa"
@@ -17,6 +18,11 @@ import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
+import { getLocalStorage, deleteLocalStorage } from "lib/localstorage"
+import {
+  INTRO_TOUR_LOCALSTORAGE_KEY,
+  INTRO_TOUR_BOOK_PAGE_STEP,
+} from "app/components/IntroTourProvider"
 import {
   getBookLink,
   getBookEditLink,
@@ -77,6 +83,16 @@ export default function BookPage({
     setExistingBookRead,
     setOnNewNoteSuccess,
   } = useModals()
+
+  const { setCurrentStep, setIsOpen } = useTour()
+  useEffect(() => {
+    const currentTourStep = getLocalStorage(INTRO_TOUR_LOCALSTORAGE_KEY)
+    if (currentTourStep === INTRO_TOUR_BOOK_PAGE_STEP) {
+      setCurrentStep(currentTourStep)
+      setIsOpen(true)
+      deleteLocalStorage(INTRO_TOUR_LOCALSTORAGE_KEY)
+    }
+  }, [setCurrentStep, setIsOpen])
 
   const [bookLists, setBookLists] = useState<List[]>()
   const [bookActivity, setBookActivity] = useState<BookActivity>({} as any)
@@ -434,7 +450,7 @@ export default function BookPage({
                   </Tooltip>
                 )}
                 {isSignedIn && (
-                  <div id="book-shelves" className="ml-2 w-fit">
+                  <div id="book-shelves" data-intro-tour="book-shelves" className="ml-2 w-fit">
                     <UserBookShelfMenu book={book} onChange={onShelfChange} />
                   </div>
                 )}
@@ -514,6 +530,7 @@ export default function BookPage({
                 </button>
 
                 <button
+                  data-intro-tour="create-note"
                   type="button"
                   onClick={() => showModal(CurrentModal.NewNote)}
                   className="my-1 w-full cat-btn cat-btn-sm bg-gray-800 text-gray-200 hover:text-white"

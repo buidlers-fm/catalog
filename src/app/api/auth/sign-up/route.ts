@@ -160,7 +160,6 @@ export const POST = withApiHandling(
     await prisma.userConfig.create({
       data: {
         userProfileId: createUserRes.profile!.id,
-        hasNewAnnouncements: true,
       },
     })
 

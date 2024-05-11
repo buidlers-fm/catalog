@@ -20,6 +20,7 @@
     "@headlessui/react": "^1.7.16",
     "@leeoniya/ufuzzy": "^1.0.11",
     "@prisma/client": "5.2.0",
+    "@reactour/tour": "^3.6.1",
     "@sentry/nextjs": "^7.88.0",
     "@supabase/auth-helpers-nextjs": "^0.7.4",
     "@supabase/storage-js": "^2.5.4",

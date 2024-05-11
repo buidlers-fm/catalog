@@ -10,6 +10,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
   const { reqJson, currentUserProfile } = params
   const {
     hasNewAnnouncements,
+    seenIntroTour,
     notesVisibility,
     shelvesVisibility,
     currentStatusVisibility,
@@ -32,6 +33,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       data: {
         userProfileId: currentUserProfile.id,
         hasNewAnnouncements,
+        seenIntroTour,
         notesVisibility,
         shelvesVisibility,
         currentStatusVisibility,
@@ -82,6 +84,7 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
     },
     data: {
       hasNewAnnouncements,
+      seenIntroTour,
       notesVisibility,
       shelvesVisibility,
       currentStatusVisibility,

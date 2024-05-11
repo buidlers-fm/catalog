@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { getUserProfileLink } from "lib/helpers/general"
@@ -17,7 +16,6 @@ export default function SignUpForm({
   onSuccess?: (currentUserProfile) => void
   inviteCode?: string
 }) {
-  const router = useRouter()
   const { signUp } = useUser()
 
   const [email, setEmail] = useState<string>("")
@@ -59,8 +57,7 @@ export default function SignUpForm({
         onSuccess(currentUserProfile)
       }
 
-      await router.push(getUserProfileLink(username))
-      router.refresh()
+      window.location.href = getUserProfileLink(username)
     } catch (error: any) {
       setErrorMessage(error.message)
     }
