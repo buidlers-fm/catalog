@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { useUser } from "lib/contexts/UserContext"
 import FormInput from "app/components/forms/FormInput"
@@ -8,7 +8,6 @@ import AuthForm from "enums/AuthForm"
 
 export default function SignInForm({ toggleAuth, onSuccess }) {
   const pathname = usePathname()
-  const router = useRouter()
   const { signIn } = useUser()
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
@@ -31,7 +30,7 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
 
       onSuccess(currentUserProfile)
       if (pathname === "/") {
-        router.push("/home")
+        window.location.href = "/home"
       } else {
         window.location.reload()
       }
