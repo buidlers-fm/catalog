@@ -24,10 +24,11 @@ type Props = {
   isMobileNav?: boolean
   disabled?: boolean
   disabledMessage?: string
-  fullWidth?: boolean
   isSignedIn?: boolean
   placeholderText?: string
   maxHeightClass?: string
+  inputWidthClass?: string
+  resultsWidthClass?: string
 }
 
 const concatUniqueSearchResults = (resultsA, resultsB) => {
@@ -45,10 +46,11 @@ export default function Search({
   isMobileNav = false,
   disabled = false,
   disabledMessage,
-  fullWidth: _fullWidth,
   isSignedIn = false,
   placeholderText,
   maxHeightClass = "max-h-[calc(100vh-192px)]",
+  inputWidthClass: _inputWidthClass = "w-full xs:w-96",
+  resultsWidthClass: _resultsWidthClass = "w-full xs:w-96",
 }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -60,8 +62,6 @@ export default function Search({
   const [selectedBook, setSelectedBook] = useState<Book | null>()
   const [selectedUser, setSelectedUser] = useState<any | null>()
   const [errorMessage, setErrorMessage] = useState<string>()
-
-  const fullWidth = _fullWidth === undefined ? isMobileNav : _fullWidth
 
   const debouncedSearchHandler = useMemo(() => {
     async function onSearchChange(e: any) {
@@ -254,6 +254,16 @@ export default function Search({
     }
   }
 
+  let inputWidthClass = _inputWidthClass
+  if (isMobileNav) {
+    inputWidthClass = "w-full"
+  }
+
+  let resultsWidthClass = _resultsWidthClass
+  if (isMobileNav) {
+    resultsWidthClass = "w-full"
+  }
+
   return (
     <div className="relative">
       {disabled ? (
@@ -272,16 +282,14 @@ export default function Search({
                   return (searchMode === "books" ? selectedBook?.title : formattedName) || ""
                 }}
                 placeholder={placeholder}
-                className={`${fullWidth ? "w-full" : "w-full xs:w-96"} ${
+                className={`${inputWidthClass} ${
                   isNav ? "px-11" : "px-4"
                 } pt-2.5 pb-2 bg-gray-900 focus:outline-gold-500 rounded border-none font-mulish`}
               />
               {(open || selectedBook || selectedUser) && (
                 <Combobox.Options
                   static
-                  className={`${
-                    fullWidth ? "w-full" : "w-full xs:w-96"
-                  } absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
+                  className={`${resultsWidthClass} absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
                 >
                   {searchMode === "users" ? (
                     <UserSearchResults
