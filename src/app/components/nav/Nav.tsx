@@ -102,7 +102,10 @@ function MobileNav({ currentUserProfile, isLoading, onSelectItem, setCurrentModa
 
   return (
     <div className="flex items-center">
-      <button className="px-2" onClick={() => setShowMobileSearch(true)}>
+      <button
+        className={currentUserProfile ? "mt-1 mr-1 px-2" : "mt-2 mr-3 px-2"}
+        onClick={() => setShowMobileSearch(true)}
+      >
         <BsSearch className="text-[24px] text-gray-200" />
       </button>
 
@@ -115,7 +118,11 @@ function MobileNav({ currentUserProfile, isLoading, onSelectItem, setCurrentModa
       )}
 
       {isLoading ? (
-        <div className="ml-2 -mt-1 h-6 w-6 bg-gray-500 rounded-full animate-pulse" />
+        <div
+          className={`${
+            currentUserProfile ? "ml-3 mt-0.5" : "mt-1.5"
+          } h-6 w-6 bg-gray-500 rounded-full animate-pulse`}
+        />
       ) : (
         <div className="-mt-0.5">
           <UserNav currentUserProfile={currentUserProfile} />
