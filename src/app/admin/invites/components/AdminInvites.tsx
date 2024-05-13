@@ -2,26 +2,14 @@
 
 import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
-import toast from "react-hot-toast"
 import api from "lib/api"
-import { reportToSentry } from "lib/sentry"
 import { getUserProfileLink } from "lib/helpers/general"
-import { BASE_URLS_BY_ENV } from "lib/constants/urls"
-import CopyableText from "app/components/CopyableText"
+import CreateInvite from "app/components/invites/CreateInvite"
 
 export const dynamic = "force-dynamic"
 
-const env = process.env.NEXT_PUBLIC_CATALOG_ENV!
-const INVITE_LINK_BASE_URL = `${BASE_URLS_BY_ENV[env]}/sign-up?invite_code=`
-
 export default function AdminInvites() {
-  const [createdInvite, setCreatedInvite] = useState<any>()
-  const [errorMessage, setErrorMessage] = useState<string>()
   const [allInvites, setAllInvites] = useState<any[]>()
-
-  function getInviteUrl(inviteCode: string) {
-    return `${INVITE_LINK_BASE_URL}${inviteCode}`
-  }
 
   const getAllInvites = useCallback(async () => {
     const _allInvites = await api.invites.get()
@@ -32,49 +20,10 @@ export default function AdminInvites() {
     getAllInvites()
   }, [getAllInvites])
 
-  async function createInvite(singleUse: boolean) {
-    const requestData = {
-      singleUse,
-    }
-
-    const toastId = toast.loading("Creating invite...")
-
-    try {
-      const _createdInvite = await api.invites.create(requestData)
-
-      setCreatedInvite(_createdInvite)
-
-      toast.success("Invite created!", { id: toastId })
-
-      await getAllInvites()
-    } catch (error: any) {
-      reportToSentry(error)
-      setErrorMessage(error.message)
-      toast.error("Hmm, something went wrong.", { id: toastId })
-    }
-  }
-
   return (
     <div className="my-8 max-w-md mx-auto font-mulish">
-      <div className="mb-2">create an invite</div>
-      <button onClick={() => createInvite(true)} className="mr-4 cat-btn cat-btn-sm cat-btn-gold">
-        single
-      </button>
-      <button onClick={() => createInvite(false)} className="cat-btn cat-btn-sm cat-btn-gold">
-        multi (30-day)
-      </button>
-      <div className="my-2">
-        {createdInvite && (
-          <div>
-            <div>{createdInvite.expiresAt ? "30-day" : "single-use"} invite created!</div>
-            <CopyableText
-              displayText={createdInvite.code}
-              text={getInviteUrl(createdInvite.code)}
-            />
-          </div>
-        )}
-      </div>
-      {errorMessage && <div className="my-2 text-red-300">{errorMessage}</div>}
+      <CreateInvite isAdmin onSuccess={getAllInvites} />
+
       {allInvites && (
         <div className="my-8 text-sm">
           <table className="border-separate rounded bg-gray-800">

@@ -3,6 +3,8 @@ import humps from "humps"
 import cryptoRandomString from "crypto-random-string"
 import prisma from "lib/prisma"
 import { withApiHandling } from "lib/api/withApiHandling"
+import { isAdmin } from "lib/helpers/general"
+import FeatureFlag from "enums/FeatureFlag"
 import type { NextRequest } from "next/server"
 
 export const GET = withApiHandling(
@@ -19,6 +21,7 @@ export const GET = withApiHandling(
           },
         },
       },
+      take: 100,
     })
 
     const allClaimedByUserIds = _allInvites
@@ -63,6 +66,25 @@ export const POST = withApiHandling(
 
     const { singleUse } = reqJson
 
+    const generalInvitesFeatureFlag = await prisma.featureFlag.findFirst({
+      where: {
+        name: FeatureFlag.GeneralInvites,
+      },
+    })
+
+    const generalInvitesEnabled = generalInvitesFeatureFlag?.enabled
+
+    if (!generalInvitesEnabled && !isAdmin(currentUserProfile)) {
+      return NextResponse.json({ error: "Only admins can create invites" }, { status: 403 })
+    }
+
+    if (!singleUse && !isAdmin(currentUserProfile)) {
+      return NextResponse.json(
+        { error: "Only admins can create multi-use invites" },
+        { status: 403 },
+      )
+    }
+
     const code = cryptoRandomString({ length: 12 })
 
     const _30_DAYS_MS = 1000 * 60 * 60 * 24 * 30
@@ -83,5 +105,5 @@ export const POST = withApiHandling(
 
     return NextResponse.json(resBody, { status: 200 })
   },
-  { requireAdmin: true },
+  { requireSession: true },
 )
