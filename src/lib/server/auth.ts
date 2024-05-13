@@ -11,14 +11,12 @@ import { reportToSentry } from "lib/sentry"
 type Options = {
   redirectPath?: string
   requireSignedIn?: boolean
-  withRoles?: boolean
   include?: any
 }
 
 const defaultOptions = {
   redirectPath: "/",
   requireSignedIn: false,
-  withRoles: false,
   include: undefined,
 }
 
@@ -29,7 +27,7 @@ const createServerSupabaseClient = cache(() => {
 })
 
 const getCurrentUserProfile = async (options: Options = {}) => {
-  const { redirectPath, requireSignedIn, withRoles, include } = { ...defaultOptions, ...options }
+  const { redirectPath, requireSignedIn, include } = { ...defaultOptions, ...options }
 
   const supabase = createServerSupabaseClient()
 
@@ -62,7 +60,7 @@ const getCurrentUserProfile = async (options: Options = {}) => {
         userId: session.user.id,
       },
       include: {
-        roleAssignments: withRoles,
+        roleAssignments: true,
         config: true,
         ...include,
       },

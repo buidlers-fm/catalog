@@ -1,18 +1,15 @@
 import { notFound } from "next/navigation"
 import { getCurrentUserProfile } from "lib/server/auth"
-import UserRole from "enums/UserRole"
+import { isAdmin } from "lib/helpers/general"
 
 export const dynamic = "force-dynamic"
 
 export default async function AdminLayout({ children }) {
-  const currentUserProfile = await getCurrentUserProfile({ withRoles: true })
+  const currentUserProfile = await getCurrentUserProfile()
 
   if (!currentUserProfile) notFound()
 
-  const roles = currentUserProfile.roleAssignments.map((roleAssignment) => roleAssignment.role)
-  const isAdmin = roles.includes(UserRole.Admin)
-
-  if (!isAdmin) notFound()
+  if (!isAdmin(currentUserProfile)) notFound()
 
   return (
     <div className="">

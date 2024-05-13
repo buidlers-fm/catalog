@@ -4,8 +4,8 @@ import * as ghost from "lib/ghost"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getBookNoteById } from "lib/server/bookNotes"
 import { truncateString } from "lib/helpers/strings"
+import { isAdmin } from "lib/helpers/general"
 import UserProfile from "lib/models/UserProfile"
-import UserRole from "enums/UserRole"
 import type { Metadata } from "next"
 
 const METADATA_CONFIG = {
@@ -138,14 +138,11 @@ async function getMetadata({ key, params }): Promise<Metadata> {
         imageUrl = book.coverImageThumbnailUrl || undefined
       }
     } else if (key.match(/admin/)) {
-      const currentUserProfile = await getCurrentUserProfile({ withRoles: true })
+      const currentUserProfile = await getCurrentUserProfile()
 
       if (!currentUserProfile) return {}
 
-      const roles = currentUserProfile.roleAssignments.map((roleAssignment) => roleAssignment.role)
-      const isAdmin = roles.includes(UserRole.Admin)
-
-      if (!isAdmin) return {}
+      if (!isAdmin(currentUserProfile)) return {}
 
       pageTitle = config.title()
     } else if (key === "post" && postId) {

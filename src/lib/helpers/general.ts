@@ -8,6 +8,7 @@ import { BASE_URLS_BY_ENV } from "lib/constants/urls"
 import CommentParentType from "enums/CommentParentType"
 import NotificationObjectType from "enums/NotificationObjectType"
 import InteractionObjectType from "enums/InteractionObjectType"
+import UserRole from "enums/UserRole"
 
 export const fetchJson = async (url: string | URL, options: any = {}) => {
   const TIMEOUT = 10_000 // 10 seconds
@@ -265,4 +266,11 @@ export function getWorldCatUrl({ isbn, oclc }: { isbn?: string; oclc?: string })
   if (isbn) return `${baseUrl}/isbn/${isbn}`
 
   return ""
+}
+
+export function isAdmin(userProfile) {
+  if (!userProfile?.roleAssignments) return false
+
+  const roles = userProfile.roleAssignments.map((roleAssignment) => roleAssignment.role)
+  return roles.includes(UserRole.Admin)
 }

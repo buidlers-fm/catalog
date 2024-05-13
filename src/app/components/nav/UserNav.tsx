@@ -129,6 +129,15 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                     </Link>
                   </div>
                 </Menu.Item>
+                <Menu.Item>
+                  <div className="">
+                    <Link href={getUserFollowingLink(username)}>
+                      <button className="w-full hover:bg-gray-700 px-4 py-2 text-left text-gold-500 rounded-tl rounded-tr">
+                        invite
+                      </button>
+                    </Link>
+                  </div>
+                </Menu.Item>
                 <hr className="my-1 w-3/4 mx-auto border-gray-700" />
                 <Menu.Item>
                   <div className="">

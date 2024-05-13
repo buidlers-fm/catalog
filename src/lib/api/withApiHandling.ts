@@ -4,7 +4,7 @@ import humps from "humps"
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
-import UserRole from "enums/UserRole"
+import { isAdmin } from "lib/helpers/general"
 import type { NextRequest } from "next/server"
 
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -48,16 +48,13 @@ export function withApiHandling(requestHandler, options: Options = defaults) {
       if (session) {
         currentUserProfile = await prisma.userProfile.findFirst({
           where: { userId: session.user.id },
-          include: { roleAssignments: requireAdmin },
+          include: { roleAssignments: true },
         })
       }
       if (!currentUserProfile && requireUserProfile) throw new Error("User profile not found")
 
       if (requireAdmin) {
-        const roles = currentUserProfile.roleAssignments.map(
-          (roleAssignment) => roleAssignment.role,
-        )
-        if (!roles.includes(UserRole.Admin)) {
+        if (!isAdmin(currentUserProfile)) {
           return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
         }
       }
