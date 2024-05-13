@@ -54,7 +54,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="max-w-xl mx-8 sm:mx-auto">
       <NotifsBanner />
 
       <FriendsLatestShelved />

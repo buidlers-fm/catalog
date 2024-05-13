@@ -7,7 +7,12 @@ import ListBook from "app/lists/components/ListBook"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import LoadingSection from "app/components/LoadingSection"
 import EmptyState from "app/components/EmptyState"
-import { shelfToCopy } from "enums/UserBookShelf"
+import UserBookShelf, { shelfToCopy } from "enums/UserBookShelf"
+
+const shelfToCopyOverride = {
+  ...shelfToCopy,
+  [UserBookShelf.CurrentlyReading]: "reading", // shorten copy for alignment
+}
 
 export default function FriendsLatestShelved() {
   const [shelfAssignments, setShelfAssignments] = useState<any[]>()
@@ -42,7 +47,7 @@ export default function FriendsLatestShelved() {
                     <NameWithAvatar userProfile={shelfAssignment.userProfile} maxChars={13} />
                   </div>
                   <div className="font-mulish text-sm">
-                    {shelfToCopy[shelfAssignment.shelf]}
+                    {shelfToCopyOverride[shelfAssignment.shelf]}
                     {shelfAssignment.likedByFriend && (
                       <FaHeart className="text-red-300 inline-block ml-2 -mt-0.5" />
                     )}
