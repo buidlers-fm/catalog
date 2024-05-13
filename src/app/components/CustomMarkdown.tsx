@@ -40,12 +40,12 @@ const components: Components = {
     }
   },
   ol: ({ node, children, ...props }) => (
-    <ol {...props} className="ml-4 -my-3 last:-mb-10 list-decimal">
+    <ol {...props} className="ml-4 -my-3 list-decimal">
       {children}
     </ol>
   ),
   ul: ({ node, children, ...props }) => (
-    <ul {...props} className="ml-4 -my-3 last:-mb-10 list-disc">
+    <ul {...props} className="ml-4 -my-3 list-disc">
       {children}
     </ul>
   ),
