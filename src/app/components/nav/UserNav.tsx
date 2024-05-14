@@ -9,6 +9,7 @@ import { FaUserCircle } from "react-icons/fa"
 import { RxCaretDown } from "react-icons/rx"
 import { useUser } from "lib/contexts/UserContext"
 import { useUnreads } from "lib/contexts/UnreadsContext"
+import { useModals } from "lib/contexts/ModalsContext"
 import {
   getUserProfileLink,
   getUserShelvesLink,
@@ -20,6 +21,7 @@ import SignUpForm from "app/components/nav/SignUpForm"
 import ForgotPassword from "app/components/nav/ForgotPassword"
 import FeedbackModal from "app/components/FeedbackModal"
 import AuthForm from "enums/AuthForm"
+import CurrentModal from "enums/CurrentModal"
 import "react-modern-drawer/dist/index.css"
 
 const Drawer = dynamic(() => import("react-modern-drawer"), { ssr: false })
@@ -33,6 +35,7 @@ const authFormTitles = {
 export default function UserNav({ currentUserProfile: _initialCurrentUserProfile }) {
   const { signOut } = useUser()
   const { hasUnreadNotifs, hasUnreadRecs } = useUnreads()
+  const { setCurrentModal } = useModals()
 
   const [currentUserProfile, setCurrentUserProfile] = useState(_initialCurrentUserProfile)
   const [showAuth, setShowAuth] = useState<boolean>(false)
@@ -129,13 +132,15 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                     </Link>
                   </div>
                 </Menu.Item>
+                {/* below assumes FeatureFlag.GeneralInvites enabled! */}
                 <Menu.Item>
                   <div className="">
-                    <Link href={getUserFollowingLink(username)}>
-                      <button className="w-full hover:bg-gray-700 px-4 py-2 text-left text-gold-500 rounded-tl rounded-tr">
-                        invite
-                      </button>
-                    </Link>
+                    <button
+                      onClick={() => setCurrentModal(CurrentModal.Invites)}
+                      className="w-full hover:bg-gray-700 px-4 py-2 text-left text-gold-500 rounded-tl rounded-tr"
+                    >
+                      invite
+                    </button>
                   </div>
                 </Menu.Item>
                 <hr className="my-1 w-3/4 mx-auto border-gray-700" />

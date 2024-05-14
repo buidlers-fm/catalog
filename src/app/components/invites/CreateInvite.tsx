@@ -61,11 +61,11 @@ export default function CreateInvite({ onSuccess, isAdmin = false }: Props) {
         </>
       ) : (
         <>
-          <div className="mb-2">invite a friend</div>
+          <div className="mb-4 cat-eyebrow-uppercase">invite a friend</div>
           <button onClick={() => create(true)} className="cat-btn cat-btn-sm cat-btn-gold">
             {createdInvite ? "create another invite link" : "create an invite link"}
           </button>
-          <div className="my-2 text-sm text-gray-300">
+          <div className="my-4 text-sm text-gray-300">
             Each invite link can only be claimed once. You can create as many invite links as you
             want. The links never expire.
           </div>
@@ -74,7 +74,7 @@ export default function CreateInvite({ onSuccess, isAdmin = false }: Props) {
       <div className="my-2">
         {createdInvite && (
           <div>
-            <div>
+            <div className="text-gold-500">
               {createdInvite.expiresAt ? "30-day" : "single-use"} invite created
               {!isAdmin && " (click icon to copy the link)"}:
             </div>
