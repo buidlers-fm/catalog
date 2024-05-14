@@ -59,7 +59,10 @@ const steps = [
           From the nav bar, you can search for a book by title and author to go to that book's page,
           or search for a user by typing "@" followed by their username.
         </p>
-        <p>Let's go to the page for "The Library Book"; I'll take you there now.</p>
+        <p>
+          Let's go to the page for "The Library Book"; I'll take you there now. (It may take a few
+          seconds to load.)
+        </p>
       </div>
     ),
   },
@@ -99,36 +102,28 @@ const steps = [
     selector: `[data-intro-tour="nav-bar"]`,
     content: () => (
       <div>
-        <h2 className="mb-2 font-bold">Nav bar: "+" button</h2>
-        Just a couple more things! Use the "+" button as a shortcut to find a book and bring up a
-        menu of the most common actions you can do with it.
-      </div>
-    ),
-  },
-  {
-    selector: `[data-intro-tour="nav-bar"]`,
-    content: () => (
-      <div>
         <h2 className="mb-2 font-bold">Nav bar: main menu</h2>
         <p className="mb-2">
-          Finally, the menu you can open by clicking on your username is your portal to all of your
+          Finally, the menu that opens when you click on your username is your portal to all of your
           stuff around catalog, and includes links to your shelves, your settings (where you can
-          make some of your stuff private), and to the "explore" page to see what others are up to.
-          Feel free to check out the "explore" page now!
+          make some of your stuff private), and the "help" area.
         </p>
         <p>
-          This concludes our tour. You can take the tour again anytime by going to the main menu and
-          clicking "help". See you around!
+          This concludes our tour. You can take this tour again anytime by going to the main menu
+          and clicking "help". See you around!
         </p>
       </div>
     ),
   },
 ]
 
-const prevButton = ({ Button, currentStep }) => <Button kind="prev" hideArrow={currentStep === 0} />
+const prevButton = ({ Button, currentStep }) => (
+  <Button kind="prev" hideArrow={currentStep === 0 || currentStep === INTRO_TOUR_BOOK_PAGE_STEP} />
+)
+
 const nextButton = ({ Button, currentStep, stepsLength, setIsOpen }) => {
   const last = currentStep === stepsLength - 1
-  const stepBeforeBookPath = 3
+  const stepBeforeBookPath = INTRO_TOUR_BOOK_PAGE_STEP - 1
   const bookPath = "/books/the-library-book-susan-orlean"
 
   if (last) {

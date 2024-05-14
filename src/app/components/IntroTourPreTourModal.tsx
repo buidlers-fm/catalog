@@ -118,15 +118,11 @@ export default function IntroTourPreTourModal({ currentUserProfile, onClose, isO
                 <button
                   type="button"
                   onClick={handleAccept}
-                  className="cat-btn-normal-case cat-btn-lg cat-btn-gold mb-4 text-left"
+                  className="cat-btn-normal-case cat-btn-md cat-btn-gold mb-4 text-left"
                 >
                   Yes, start the tour!
                 </button>
-                <button
-                  type="button"
-                  onClick={handleDecline}
-                  className="cat-btn-normal-case cat-btn-lg cat-btn-light-gray text-left"
-                >
+                <button type="button" onClick={handleDecline} className="mt-2 cat-link">
                   No thanks, I'll just look around for now
                 </button>
               </div>
