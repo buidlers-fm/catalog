@@ -2,6 +2,7 @@ import { reportToSentry } from "lib/sentry"
 
 function setLocalStorage(key, value) {
   if (typeof window === "undefined") return
+  if (!window.localStorage) return
 
   try {
     window.localStorage.setItem(key, JSON.stringify(value))
@@ -16,11 +17,13 @@ function setLocalStorage(key, value) {
 
 function getLocalStorage(key) {
   if (typeof window === "undefined") return
+  if (!window.localStorage) return
   return JSON.parse(window.localStorage.getItem(key) as any)
 }
 
 function deleteLocalStorage(key) {
   if (typeof window === "undefined") return
+  if (!window.localStorage) return
 
   try {
     window.localStorage.removeItem(key)

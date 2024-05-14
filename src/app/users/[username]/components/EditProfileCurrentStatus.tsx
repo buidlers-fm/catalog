@@ -116,7 +116,7 @@ export default function EditProfileCurrentStatus({
         {!selectedBook &&
           (showBookSearch ? (
             <div className="my-4">
-              <Search isNav={false} onSelect={onBookSelect} fullWidth />
+              <Search isNav={false} onSelect={onBookSelect} inputWidthClass="w-full" />
               <button
                 className="mt-2 cat-btn-link text-sm text-gray-300"
                 onClick={() => setShowBookSearch(false)}

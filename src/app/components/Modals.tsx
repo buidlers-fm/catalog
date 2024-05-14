@@ -7,6 +7,7 @@ import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
 import IntroTourPreTourModal from "app/components/IntroTourPreTourModal"
 import GlobalCreateModal from "app/components/GlobalCreateModal"
+import InvitesModal from "app/components/invites/InvitesModal"
 import AddBookToListsModal from "app/lists/components/AddBookToListsModal"
 import BookNoteModal from "app/components/BookNoteModal"
 import NewBookPostModal from "app/components/NewBookPostModal"
@@ -53,6 +54,10 @@ export default function Modals() {
 
       {currentModal === CurrentModal.GlobalCreate && (
         <GlobalCreateModal isOpen onClose={() => setCurrentModal(undefined)} />
+      )}
+
+      {currentModal === CurrentModal.Invites && (
+        <InvitesModal isOpen onClose={() => setCurrentModal(undefined)} />
       )}
 
       {currentBook && (

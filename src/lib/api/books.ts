@@ -231,7 +231,10 @@ async function getBookActivity(book, currentUserProfile): Promise<BookActivity> 
     })
 
     shelvesToFriendsProfiles = friendsShelfAssignments.reduce(
+      // if shelf is already in the results, append the user profile to that shelf's array
+      // of friend profiles; otherwise, add the shelf to the results with a starting array
       (result, assignment) => ({
+        ...result,
         [assignment.shelf]: [...(result[assignment.shelf] || []), assignment.userProfile],
       }),
       {},
