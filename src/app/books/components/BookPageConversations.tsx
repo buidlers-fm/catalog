@@ -26,6 +26,8 @@ const slugsToFeedUris = {
     "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaaogozwjpftk",
   "moby-dick-herman-melville":
     "at://did:plc:c23ebk76cyagxpocpr3zfvpe/app.bsky.feed.generator/aaalhofhk5k2m",
+  "frankenstein-mary-wollstonecraft-shelley":
+    "at://did:plc:fohtl2r7vwxcawv4i3wuxn6o/app.bsky.feed.generator/aaaphq7h2t7ka",
 }
 
 export default function BookPageConversations({
