@@ -1,18 +1,13 @@
-last updated: april 13, 2024.
+last updated: may 17, 2024.
 
-# big things for march - april 2024
+# big things for may - june 2024
 
 key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
-- ✅ A whole batch of UI features to make it easier to interact with a book from any page.
-- ✅ New "explore" page and revamped homepage to make it easier to discover books and activity through the catalog community as well as through your friends.
-- ✅ Recommendations: recommend a book to a friend.
-- ✅ Allow users to set privacy/visibility levels on:
-  - ✅ Notes
-  - ✅ Shelves
-  - ✅ Current status
-  - ✅ User search
-- ⌛️ Allow users to invite friends to join catalog.
+- ✅ A new tour of the app to introduce you to some of the things you can do.
+- ✅ Allow users to invite friends to join catalog.
+- ⌛️ Author profile pages including the author's bio and the books they've written.
+- ⌛️ Timeline of your reading, where you can view and edit your reading history.
 
 ---
 
@@ -20,13 +15,25 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
 
+## april 15 - may 17, 2024
+
+Main things:
+
+- A new tour of the app to introduce you to some of the things you can do.
+- Allow users to invite friends to join catalog.
+
+Small fixes/improvements:
+
+- Fixed various visual bugs including in book notes, the mobile nav bar, and the homepage sections.
+- Fixed bug where on a book page, not all friends' activity was showing up.
+
 ## april 8-14, 2024
 
 Main things:
 
 - More privacy settings: You can now control who can see your shelves and your current status, and who can find you by searching for your name.
 
-Small things:
+Small fixes/improvements:
 
 - Added "three dots" extended menu to the book cover overlay, where you can add the book to lists or go to the book's page. More options will be added over time, and depending on demand.
 

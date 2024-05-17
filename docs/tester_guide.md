@@ -8,17 +8,17 @@ There are a few things that are good for you to know about the app, and its curr
 
 1. Fill out whatever you want to on your profile, like name/bio, favorite books, and current status.
 
-2. You can find some people to follow if you want to, by going to the [homepage](https://catalog.fyi/home) and browsing some of the recent activity in the sections there.
+2. You can find some people to follow if you want to, by going to the [explore page](https://catalog.fyi/explore) and browsing some of the recent activity in the sections there.
 
 3. Add a few books to your shelves (e.g. currently reading, up next) by going to the book's page and clicking "shelves".
 
 4. Create a list or two if you want to. People have been making lists like "favorites of 2023," "to read in 2024," or lists of books around specific topics that they want to share or remember.
 
-5. Explore other people's stuff, continue to keep track of your books and recs as you read, and try out some of the other features that are there now, and more that will be releasing soon. If you love it and want to get your friends in too, you can point them to the [waitlist signup](https://tally.so/r/mZ20aA).
+5. Explore other people's stuff, continue to keep track of your books and recs as you read, and try out some of the other features that are there now, and more that will be releasing soon. If you love it and want to get your friends in too, you can invite them by going to "invites" from the user menu.
 
 You can find a bit more context about the app in our blog archive, specifically my post [a space for book people](https://catalog.fyi/news/catalog-news-004-a-space-for-book-people).
 
-If you have any questions or run into any issues, let us know. We have a [Discord server](https://discord.gg/Htj7gWYCkC) for feedback, or you can email staff@catalog.fyi or use the "feedback" link in the user menu (top right).
+If you have any questions or run into any issues, let us know. We have a [Discord server](https://discord.gg/Htj7gWYCkC) for feedback, or you can email staff@catalog.fyi or use the "help" link in the user menu (top right).
 
 # tips
 
@@ -51,12 +51,6 @@ Most of your activity on catalog defaults to being public and visible to the wid
 
 You can review and update your privacy settings by clicking on your username at the top right -> "settings" -> "privacy".
 
-# invites
-
-For now, we are inviting each person personally, though we have a [waitlist](https://tally.so/r/mZ20aA) that people can add themselves to. But if there are a couple of folks you want to invite whose presence around catalog would make a huge difference for you, please let us know! We'll put them at the top of the list for the next round of invites.
-
-Later on, we'll give you the ability to invite friends yourself, and later still, we'll hopefully open up to the public.
-
 # other features
 
 Most of the features you see in the app now are a mere barest-bones shadow of what they will eventually be. If some features seem oddly or illogically incomplete, that's usually the reason why: it's on our to-do list, but we haven't gotten to it yet. We will be shipping new features and improvements all the time. Still, if there's a feature you'd like to see, do speak up! There's a lot we haven't thought of, and we're always looking for more ideas.
@@ -65,11 +59,11 @@ Most of the features you see in the app now are a mere barest-bones shadow of wh
 
 Mostly we just want you to have fun with catalog and tell us what you think. But if you want to go the extra mile, here are a few ways to be a superstar tester:
 
-Report any bugs, issues you run into, and general weird or unexpected things. You can reach us via [Discord](https://discord.gg/Htj7gWYCkC), email (staff@catalog.fyi), or any other way that you normally talk to us. There is also a "feedback" link (from the user menu, top right) where you can submit your feedback.
+Report any bugs, issues you run into, and general weird or unexpected things. You can reach us via [Discord](https://discord.gg/Htj7gWYCkC), email (staff@catalog.fyi), or any other way that you normally talk to us. There is also a "help" link (from the user menu, top right) where you can submit your feedback.
 
 Make suggestions for things you'd like to see in catalog, or for how you'd want things to work differently. Your involvement at this early stage will have an outsize influence on how catalog evolves.
 
-Add links to books you're reading or thinking about (via "add a link" on the book's page), as you run into them in your day-to-day, whether they're reviews, interviews, podcasts, TikToks, events, or something else. This will help build a rich context around each book of related media and conversation to explore.
+Add links to books you're reading or thinking about (via "create a thread" on the book's page), as you run into them in your day-to-day, whether they're reviews, interviews, podcasts, TikToks, events, or something else. This will help build a rich context around each book of related media and conversation to explore.
 
 Whenever you're mentioning a book in a digital conversation, consider sharing the catalog.fyi book link instead of the Amazon link! For more of our thoughts on the topic of book links and their implications, you can read our newsletter post on it [here](https://catalog.fyi/news/catalog-news-003-the-book-link).
 
