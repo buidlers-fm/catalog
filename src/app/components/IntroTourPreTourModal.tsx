@@ -42,13 +42,15 @@ export default function IntroTourPreTourModal({ currentUserProfile, onClose, isO
   }
 
   async function handleAccept() {
-    if (getUserProfileLink(currentUserProfile.username) === pathname) {
+    const profilePagePath = getUserProfileLink(currentUserProfile.username)
+    if (profilePagePath === pathname) {
       setCurrentStep(INTRO_TOUR_PROFILE_PAGE_STEP)
       setIsOpen(true)
       await onClose()
     } else {
       setAcceptedTour(true)
       setLocalStorage(INTRO_TOUR_LOCALSTORAGE_KEY, INTRO_TOUR_PROFILE_PAGE_STEP)
+      window.location.href = profilePagePath
     }
     updateUserConfig()
   }
@@ -68,27 +70,14 @@ export default function IntroTourPreTourModal({ currentUserProfile, onClose, isO
         <Dialog.Panel className="w-full max-w-sm rounded bg-gray-900 px-12 py-8 font-mulish">
           {!declinedTour && (
             <Dialog.Title>
-              <div className="mb-4 text-center text-xl font-bold">Welcome to catalog!</div>
+              <div className="mb-4 text-center text-xl font-bold">
+                {acceptedTour ? "Starting the tour..." : "Welcome to catalog!"}
+              </div>
             </Dialog.Title>
           )}
 
           {acceptedTour ? (
-            <>
-              <div className="my-8">
-                Great! To start the tour, go to your profile page. To get there, open the main menu
-                by clicking your username at the top right, then click "profile". I'll meet you
-                there.
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="block mx-auto cat-btn-normal-case cat-btn-md cat-btn-gold"
-                >
-                  OK
-                </button>
-              </div>
-            </>
+            <div />
           ) : declinedTour ? (
             <>
               <div className="my-8">
