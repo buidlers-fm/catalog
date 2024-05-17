@@ -67,10 +67,6 @@ const sections = [
     href: "#privacy",
   },
   {
-    title: "invites",
-    href: "#invites",
-  },
-  {
     title: "other features",
     href: "#other-features",
   },
