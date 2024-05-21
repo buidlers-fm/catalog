@@ -84,6 +84,7 @@ export default async function BookPageBySlug({ params }: any) {
       const updateBookData = {
         title: openLibraryBook.title || undefined,
         authorName: openLibraryBook.authorName || undefined,
+        openLibraryAuthorId: openLibraryBook.openLibraryAuthorId || undefined,
         subtitle: openLibraryBook.subtitle || undefined,
         description: openLibraryBook.description || undefined,
         coverImageUrl:
@@ -121,13 +122,18 @@ export default async function BookPageBySlug({ params }: any) {
       }
     }
 
-    // handle cover image urls separately
+    // special overrides
     book = {
       ...book,
+
+      // handle cover image urls separately
       coverImageUrl: useExistingCoverImageUrl ? book.coverImageUrl : openLibraryBook.coverImageUrl,
       openLibraryCoverImageUrl: useExistingCoverImageUrl
         ? book.openLibraryCoverImageUrl
         : openLibraryBook.coverImageUrl,
+
+      // override openLibraryAuthorId if db value is blank
+      openLibraryAuthorId: book.openLibraryAuthorId || openLibraryBook.openLibraryAuthorId,
     }
   }
 

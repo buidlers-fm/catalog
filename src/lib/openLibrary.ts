@@ -2,7 +2,7 @@ import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { reportToSentry } from "lib/sentry"
 import { fetchJson } from "lib/helpers/general"
-import { isSameLanguage, prepStringForSearch } from "lib/helpers/strings"
+import { looseStringEquals, isSameLanguage, prepStringForSearch } from "lib/helpers/strings"
 import CoverSize from "enums/CoverSize"
 import type Book from "types/Book"
 
@@ -13,6 +13,7 @@ const PUBLISH_DATE_FORMATS = ["YYYY", "MMMM YYYY", "MMMM D, YYYY", "MMM D, YYYY"
 
 const BASE_URL = "https://openlibrary.org"
 const COVERS_BASE_URL = "https://covers.openlibrary.org/b"
+const AUTHOR_IMAGE_BASE_URL = "https://covers.openlibrary.org/a/id"
 const PATHS = {
   search: "search.json",
 }
@@ -79,14 +80,14 @@ const OpenLibrary = {
 
     // get author from work
     let authorName
-    const authorKey = work.authors?.[0]?.author?.key
+    let authorKey = work.authors?.[0]?.author?.key
 
     if (authorKey) {
       let authorUrl = `${BASE_URL}/${authorKey}.json`
       let author = await fetchJson(authorUrl)
       if (author.type.key === "/type/redirect") {
-        const nextAuthorKey = author.location
-        authorUrl = `${BASE_URL}/${nextAuthorKey}.json`
+        authorKey = author.location
+        authorUrl = `${BASE_URL}/${authorKey}.json`
         author = await fetchJson(authorUrl)
       }
       authorName = isTranslated ? author.personalName || author.name : author.name
@@ -154,6 +155,7 @@ const OpenLibrary = {
         ? bestEnglishEdition.subtitle || work.subtitle || bestEdition.subtitle
         : work.subtitle || bestEnglishEdition?.subtitle,
       authorName,
+      openLibraryAuthorId: authorKey?.split("/authors/").pop(),
       description,
       coverImageUrl,
       openLibraryCoverImageUrl: coverImageUrl,
@@ -167,6 +169,62 @@ const OpenLibrary = {
     }
 
     return book
+  },
+
+  getAuthor: async (authorId: string) => {
+    const authorUrl = `${BASE_URL}/authors/${authorId}.json`
+    const author = await fetchJson(authorUrl)
+
+    const name = author.personalName || author.name
+    const bio = author.bio?.value
+    const photoId = author.photos?.[0]
+
+    let photoUrl
+    if (photoId) {
+      photoUrl = OpenLibrary.getAuthorImageUrl(photoId, OpenLibraryCoverSize.M)
+    }
+    const worksUrl = `${BASE_URL}/search.json?q=author_key:${authorId}`
+
+    const worksRes = await fetchJson(worksUrl)
+    const worksEntries = worksRes.docs
+
+    let books = worksEntries.map((workEntry: any) => {
+      const coverId = workEntry.coverI
+      let coverImageUrl
+      if (coverId) {
+        coverImageUrl = OpenLibrary.getCoverUrl(
+          CoverUrlType.CoverId,
+          coverId,
+          OpenLibraryCoverSize.M,
+        )
+      }
+
+      const openLibraryWorkId = workEntry.key?.split("/works/").pop()
+      const firstPublishedYear = workEntry.firstPublishYear
+      const editionsCount = workEntry.editionCount
+
+      return {
+        title: workEntry.title,
+        authorName: name,
+        coverImageUrl,
+        openLibraryCoverImageUrl: coverImageUrl,
+        openLibraryWorkId,
+        firstPublishedYear,
+        editionsCount,
+      }
+    })
+
+    books = books.filter(
+      (book, index) => index === books.findIndex((b) => looseStringEquals(b.title, book.title)),
+    )
+
+    return {
+      name,
+      bio,
+      photoUrl,
+      openLibraryAuthorId: authorId,
+      books,
+    }
   },
 
   getOlWorkPageUrl: (workId: string) => `${BASE_URL}/works/${workId}`,
@@ -222,6 +280,9 @@ const OpenLibrary = {
     }
   },
 
+  getAuthorImageUrl: (id: string | number, size: OpenLibraryCoverSize) =>
+    `${AUTHOR_IMAGE_BASE_URL}/${id}-${size}.jpg`,
+
   sortedEditionsByPubDate: (editions) =>
     [...editions].sort((editionA, editionB) => {
       const pubDateA = dayjs(editionA.publishDate, PUBLISH_DATE_FORMATS)
@@ -236,6 +297,7 @@ const OpenLibrary = {
       "key",
       "title",
       "author_name",
+      "author_key",
       "cover_i",
       "edition_count",
       "first_publish_year",
@@ -291,6 +353,7 @@ const OpenLibrary = {
 
       const title = isTranslated && bestEdition?.title ? bestEdition.title : workTitle
       const authorName = result.authorName?.join(", ")
+      const openLibraryAuthorId = result.authorKey?.[0]
       const coverId = isTranslated && !!bestEditionCoverId ? bestEditionCoverId : workCoverId
       const coverImageUrl =
         coverId && OpenLibrary.getCoverUrl(CoverUrlType.CoverId, coverId, OpenLibraryCoverSize.L)
@@ -310,6 +373,7 @@ const OpenLibrary = {
         editionsCount,
         firstPublishedYear,
         openLibraryWorkId,
+        openLibraryAuthorId,
         openLibraryBestEditionId,
         isTranslated,
         originalTitle: workTitle,

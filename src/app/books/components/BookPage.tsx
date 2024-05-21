@@ -30,6 +30,7 @@ import {
   getBookNotesLink,
   getBookListsLink,
   getWorldCatUrl,
+  getPersonLinkWithOpenLibraryId,
 } from "lib/helpers/general"
 import { joinStringsWithAnd } from "lib/helpers/strings"
 import CopyableLinkButton from "app/components/CopyableLinkButton"
@@ -607,7 +608,19 @@ export default function BookPage({
               <div className="my-2 text-gray-200 text-xl italic">({book.originalTitle})</div>
             )}
             {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
-            <h2 className="my-2 text-xl">by {book.authorName}</h2>
+            <h2 className="my-2 text-xl">
+              by{" "}
+              {book.openLibraryAuthorId ? (
+                <Link
+                  href={getPersonLinkWithOpenLibraryId(book.openLibraryAuthorId)}
+                  className="cat-link"
+                >
+                  {book.authorName}
+                </Link>
+              ) : (
+                book.authorName
+              )}
+            </h2>
             <div className="mt-8 mb-4 md:w-11/12">
               <ExpandableText text={description} maxChars={DESCRIPTION_MAX_CHARS} />
             </div>
