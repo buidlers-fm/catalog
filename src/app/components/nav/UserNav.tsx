@@ -178,7 +178,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
           </Menu>
         ) : (
           <>
-            <div className="mt-2 flex justify-end items-center">
+            <div className="mt-2 lg:-mt-2 flex justify-end items-center">
               <Link href="/explore" className="mr-2 text-gray-100">
                 explore
               </Link>

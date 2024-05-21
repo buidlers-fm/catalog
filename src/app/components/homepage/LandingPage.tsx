@@ -27,7 +27,7 @@ export default function LandingPage() {
           get their best recommendations from fellow humans.
         </p>
         <p className="my-4">
-          catalog is currently in closed alpha (as of winter 2023-2024).{" "}
+          catalog is currently in closed beta (as of May 2024).{" "}
           <a href="https://tally.so/r/mZ20aA" className="cat-underline">
             Sign up for the waitlist
           </a>{" "}

@@ -85,7 +85,7 @@ export default function SignInForm({ toggleAuth, onSuccess }) {
       </div>
       {/* end disabled general sign up */}
       <div className="mt-4 text-sm text-gray-300">
-        catalog is in closed alpha. Sign up for the waitlist{" "}
+        catalog is in closed beta. Sign up for the waitlist{" "}
         <a href="https://tally.so/r/mZ20aA" className="cat-link">
           here
         </a>
