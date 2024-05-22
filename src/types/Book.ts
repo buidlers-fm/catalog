@@ -16,6 +16,7 @@ export default interface Book {
   editionsCount?: number
   firstPublishedYear?: number | string
   openLibraryWorkId: string
+  openLibraryAuthorId?: string
   isTranslated?: boolean
   originalTitle?: string
   wikipediaUrl?: string

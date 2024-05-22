@@ -77,9 +77,12 @@ export const getUserListsLink = (username: string) => `/users/${username}/lists`
 export const getBookLink = (slug: string) => `/books/${slug}`
 
 export const getBookLinkWithOpenLibraryIds = (book) => {
-  const queryParams = {
+  const queryParams: any = {
     openLibraryWorkId: book.openLibraryWorkId,
-    openLibraryEditionId: book.openLibraryBestEditionId,
+  }
+
+  if (book.openLibraryEditionId) {
+    queryParams.openLibraryEditionId = book.openLibraryEditionId
   }
 
   const queryStr = new URLSearchParams(humps.decamelizeKeys(queryParams))
@@ -92,6 +95,9 @@ export const getBookLinkAgnostic = (book) => {
   if (book.slug) return getBookLink(book.slug)
   return getBookLinkWithOpenLibraryIds(book)
 }
+
+export const getPersonLinkWithOpenLibraryId = (openLibraryAuthorId) =>
+  `/people?open_library_author_id=${openLibraryAuthorId}`
 
 export const getBookEditLink = (slug: string) => `/books/${slug}/edit`
 
