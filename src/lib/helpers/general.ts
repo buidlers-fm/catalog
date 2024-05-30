@@ -5,6 +5,7 @@ import { validate as isValidUuid } from "uuid"
 import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import { BASE_URLS_BY_ENV } from "lib/constants/urls"
+import { USER_AGENT_HEADERS } from "lib/constants/general"
 import CommentParentType from "enums/CommentParentType"
 import NotificationObjectType from "enums/NotificationObjectType"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -50,6 +51,9 @@ export const fetchJson = async (url: string | URL, options: any = {}) => {
     throw error
   }
 }
+
+export const fetchJsonWithUserAgentHeaders = async (url: string | URL, options: any = {}) =>
+  fetchJson(url, { ...options, headers: USER_AGENT_HEADERS })
 
 export const isValidHttpUrl = (string) => {
   let url

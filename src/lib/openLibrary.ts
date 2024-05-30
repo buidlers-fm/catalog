@@ -1,8 +1,9 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import prisma from "lib/prisma"
+import wikidata from "lib/wikidata"
 import { reportToSentry } from "lib/sentry"
-import { fetchJson } from "lib/helpers/general"
+import { fetchJsonWithUserAgentHeaders } from "lib/helpers/general"
 import { looseStringEquals, isSameLanguage, prepStringForSearch } from "lib/helpers/strings"
 import CoverSize from "enums/CoverSize"
 import type Book from "types/Book"
@@ -33,14 +34,14 @@ const OpenLibrary = {
   getFullBook: async (workId: string, bestEditionId?) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
-    const work = await fetchJson(workUrl)
+    const work = await fetchJsonWithUserAgentHeaders(workUrl)
 
     let bestEdition
 
     if (bestEditionId) {
       const bestEditionUrl = `${BASE_URL}/editions/${bestEditionId}.json`
       try {
-        bestEdition = await fetchJson(bestEditionUrl)
+        bestEdition = await fetchJsonWithUserAgentHeaders(bestEditionUrl)
       } catch (error: any) {
         reportToSentry(error, {
           workId,
@@ -52,7 +53,7 @@ const OpenLibrary = {
 
     // get editions and first book data
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
-    const editionsRes = await fetchJson(editionsUrl)
+    const editionsRes = await fetchJsonWithUserAgentHeaders(editionsUrl)
     const _editions = editionsRes.entries
     let editions = [..._editions].sort((a, b) => {
       if (!a.latestRevision) return 1
@@ -85,13 +86,30 @@ const OpenLibrary = {
 
     if (authorKey) {
       let authorUrl = `${BASE_URL}/${authorKey}.json`
-      let author = await fetchJson(authorUrl)
+      let author = await fetchJsonWithUserAgentHeaders(authorUrl)
       if (author.type.key === "/type/redirect") {
         authorKey = author.location
         authorUrl = `${BASE_URL}/${authorKey}.json`
-        author = await fetchJson(authorUrl)
+        author = await fetchJsonWithUserAgentHeaders(authorUrl)
       }
-      authorName = isTranslated ? author.personalName || author.name : author.name
+
+      // get author name from wikipedia if possible
+      let wikidataName
+      const wikidataId = author.remoteIds?.wikidata
+      if (wikidataId) {
+        try {
+          const wikidataRes = await wikidata.getItem(wikidataId, { compact: true })
+          wikidataName = wikidataRes.name
+        } catch (error: any) {
+          reportToSentry(error, {
+            method: "openLibrary.getFullBook.wikidata.getItem",
+            author,
+          })
+        }
+      }
+
+      const openLibraryAuthorName = isTranslated ? author.personalName || author.name : author.name
+      authorName = wikidataName || openLibraryAuthorName
     }
 
     const getCoverUrl = (coverId: string) =>
@@ -175,7 +193,7 @@ const OpenLibrary = {
   // server-side only!
   getAuthor: async (authorId: string) => {
     const authorUrl = `${BASE_URL}/authors/${authorId}.json`
-    const author = await fetchJson(authorUrl)
+    const author = await fetchJsonWithUserAgentHeaders(authorUrl)
 
     const name = author.personalName || author.name
     const bio = author.bio?.value
@@ -186,9 +204,24 @@ const OpenLibrary = {
       photoUrl = OpenLibrary.getAuthorImageUrl(photoId, OpenLibraryCoverSize.M)
     }
 
+    // get works from OL, and more author info from wikidata, in parallel
     const worksUrl = `${BASE_URL}/search.json?q=author_key:${authorId}`
 
-    const worksRes = await fetchJson(worksUrl)
+    const worksPromise = fetchJsonWithUserAgentHeaders(worksUrl)
+    const promises = [worksPromise]
+
+    const wikidataId = author.remoteIds?.wikidata
+    if (wikidataId) {
+      const wikidataPromise = wikidata.getItem(wikidataId)
+      promises.push(wikidataPromise)
+    }
+
+    const [worksRes, wikidataRes] = await Promise.all(promises)
+
+    const { name: wikidataName, siteUrl: wikipediaUrl, summary: wikipediaBio } = wikidataRes || {}
+
+    const authorName = wikidataName || name
+
     const worksEntries = worksRes.docs
 
     let books = worksEntries.map((workEntry: any) => {
@@ -208,7 +241,7 @@ const OpenLibrary = {
 
       return {
         title: workEntry.title,
-        authorName: name,
+        authorName,
         coverImageUrl,
         openLibraryCoverImageUrl: coverImageUrl,
         openLibraryWorkId,
@@ -244,11 +277,12 @@ const OpenLibrary = {
     )
 
     return {
-      name,
-      bio,
+      name: authorName,
+      bio: wikipediaBio || bio,
       photoUrl,
       openLibraryAuthorId: authorId,
       books,
+      wikipediaUrl,
     }
   },
 
@@ -257,13 +291,13 @@ const OpenLibrary = {
   getCoverUrlsForWork: async (workId: string) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
-    const work = await fetchJson(workUrl)
+    const work = await fetchJsonWithUserAgentHeaders(workUrl)
 
     const workCoverIds = work.covers || []
 
     // get editions (up to 50 by default)
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
-    const editionsRes = await fetchJson(editionsUrl)
+    const editionsRes = await fetchJsonWithUserAgentHeaders(editionsUrl)
     const editions = editionsRes.entries
 
     const editionsCoverIds = editions.map((edition: any) => edition.covers || []).flat()
@@ -341,7 +375,7 @@ const OpenLibrary = {
     url.searchParams.append("lang", OL_LANGUAGE_CODE)
     url.searchParams.append("fields", searchFields.join(","))
 
-    const resBody = await fetchJson(url)
+    const resBody = await fetchJsonWithUserAgentHeaders(url)
     let results = resBody.docs // returns up to 100 results per page
     let moreResultsExist = resBody.numFound > results.length
 

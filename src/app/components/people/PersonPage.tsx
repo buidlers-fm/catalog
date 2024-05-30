@@ -13,7 +13,7 @@ import EmptyState from "app/components/EmptyState"
 const BOOKS_LIMIT = 8
 
 export default function PersonPage({ person }) {
-  const { openLibraryAuthorId, name, bio, photoUrl, books: allBooks } = person
+  const { openLibraryAuthorId, name, bio, photoUrl, books: allBooks, wikipediaUrl } = person
 
   const openLibraryUrl = `https://openlibrary.org/authors/${openLibraryAuthorId}`
 
@@ -48,8 +48,7 @@ export default function PersonPage({ person }) {
             <div className="mb-4 text-gray-300 italic">{bioPlaceholder}</div>
           )}
 
-          <div className="">
-            <span className="text-gray-200">View on</span>{" "}
+          <div className="my-1">
             <Link
               href={openLibraryUrl}
               className="cat-underline"
@@ -60,6 +59,20 @@ export default function PersonPage({ person }) {
             </Link>
             <TbExternalLink className="ml-1 -mt-1 inline-block" />
           </div>
+
+          {wikipediaUrl && (
+            <div className="my-1">
+              <Link
+                href={wikipediaUrl}
+                className="cat-underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Wikipedia
+              </Link>
+              <TbExternalLink className="ml-1 -mt-1 inline-block" />
+            </div>
+          )}
         </div>
 
         <div className="flex-grow mx-auto md:ml-16">
