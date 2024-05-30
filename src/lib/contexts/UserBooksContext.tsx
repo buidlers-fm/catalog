@@ -13,7 +13,7 @@ type UserBooksProviderValue = {
   fetchShelfAssignments: () => Promise<void>
   shelveBook: (book: Book, shelf: UserBookShelf) => Promise<void>
   unshelveBook: (bookId: string) => Promise<void>
-  likeBook: (book: Book) => Promise<void>
+  likeBook: (book: Book) => Promise<string>
   unlikeBook: (book: Book) => Promise<void>
   setBookIdsToLiked: (bookIdsToLiked: any) => void
   isLoading: boolean
@@ -118,6 +118,8 @@ export function UserBooksProvider({ children }) {
       ...prev,
       [objectId]: true,
     }))
+
+    return objectId
   }, [])
 
   const unlikeBook = useCallback(async (book: Book) => {

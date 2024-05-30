@@ -38,9 +38,20 @@ const api = {
       }),
   },
   books: {
-    get: (openLibraryWorkId: string) => {
-      const params = {
-        openLibraryWorkId,
+    get: ({
+      openLibraryWorkId,
+      openLibraryWorkIds,
+    }: {
+      openLibraryWorkId?: string
+      openLibraryWorkIds?: string[]
+    }) => {
+      let params
+      if (openLibraryWorkId) {
+        params = { openLibraryWorkId }
+      } else if (openLibraryWorkIds) {
+        params = { openLibraryWorkIds: openLibraryWorkIds.join(",") }
+      } else {
+        throw new Error("openLibraryWorkId or openLibraryWorkIds is required")
       }
 
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()

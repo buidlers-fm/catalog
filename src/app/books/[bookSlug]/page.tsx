@@ -102,7 +102,7 @@ export default async function BookPageBySlug({ params }: any) {
       }
 
       try {
-        prisma.book.update({
+        await prisma.book.update({
           where: {
             id: dbBook.id,
           },

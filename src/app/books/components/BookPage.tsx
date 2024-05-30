@@ -141,7 +141,7 @@ export default function BookPage({
 
   const getBook = useCallback(async () => {
     try {
-      const _book = await api.books.get(book.openLibraryWorkId)
+      const _book = await api.books.get({ openLibraryWorkId: book.openLibraryWorkId })
       window.history.replaceState(null, "", getBookLink(_book.slug))
       book.id = _book.id
       return _book

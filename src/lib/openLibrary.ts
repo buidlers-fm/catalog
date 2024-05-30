@@ -1,5 +1,6 @@
 import dayjs from "dayjs"
 import customParseFormat from "dayjs/plugin/customParseFormat"
+import prisma from "lib/prisma"
 import { reportToSentry } from "lib/sentry"
 import { fetchJson } from "lib/helpers/general"
 import { looseStringEquals, isSameLanguage, prepStringForSearch } from "lib/helpers/strings"
@@ -171,6 +172,7 @@ const OpenLibrary = {
     return book
   },
 
+  // server-side only!
   getAuthor: async (authorId: string) => {
     const authorUrl = `${BASE_URL}/authors/${authorId}.json`
     const author = await fetchJson(authorUrl)
@@ -183,6 +185,7 @@ const OpenLibrary = {
     if (photoId) {
       photoUrl = OpenLibrary.getAuthorImageUrl(photoId, OpenLibraryCoverSize.M)
     }
+
     const worksUrl = `${BASE_URL}/search.json?q=author_key:${authorId}`
 
     const worksRes = await fetchJson(worksUrl)
@@ -214,6 +217,28 @@ const OpenLibrary = {
       }
     })
 
+    // fetch books from db
+    const dbBooks = await prisma.book.findMany({
+      where: {
+        openLibraryWorkId: {
+          in: books.map((b) => b.openLibraryWorkId),
+          mode: "insensitive",
+        },
+      },
+    })
+
+    // prefer db books over openlibrary books, and put db books first
+    const allBooks = [...dbBooks, ...books]
+
+    books = allBooks.filter(
+      (book, index) =>
+        index ===
+        allBooks.findIndex(
+          (b) => b.openLibraryWorkId.toLowerCase() === book.openLibraryWorkId.toLowerCase(),
+        ),
+    )
+
+    // dedupe rest of OL results by title
     books = books.filter(
       (book, index) => index === books.findIndex((b) => looseStringEquals(b.title, book.title)),
     )
