@@ -298,6 +298,12 @@ export default function EditBookCovers({ book }) {
           larger than 2000x2000 pixels. Use the best quality image you can find within those
           dimensions.
         </div>
+        <div className="mb-4">
+          To set from an image URL, you'll need the direct URL of the image—a URL that ends in
+          ".jpg" or ".png" for example. To get to this URL, find the image online, right-click on
+          it, and select "Copy image address", or "Open image in new tab" and get the URL of the new
+          tab.
+        </div>
       </div>
 
       <button
