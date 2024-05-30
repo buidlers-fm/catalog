@@ -9,15 +9,16 @@ import BookCoverOverlayMenu from "app/components/books/BookCoverOverlayMenu"
 import type Book from "types/Book"
 
 export default function BookCoverOverlay({
-  book,
+  book: _book,
   positionClass = "bottom-1",
 }: {
-  book: Book
+  book: Book // book may not be in the db yet
   positionClass?: string
 }) {
   const { currentUserProfile } = useUser()
   const { bookIdsToLiked, likeBook, unlikeBook } = useUserBooks()
 
+  const [book, setBook] = useState<Book>(_book)
   const [isLiked, setIsLiked] = useState<boolean>(!!bookIdsToLiked[book.id!])
 
   useEffect(() => {
@@ -40,7 +41,11 @@ export default function BookCoverOverlay({
         setIsLiked(true)
 
         try {
-          await likeBook(book)
+          const bookId = await likeBook(book)
+
+          if (!book.id) {
+            setBook({ ...book, id: bookId })
+          }
         } catch (error: any) {
           setIsLiked(false)
           throw error
