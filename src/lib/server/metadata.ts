@@ -70,10 +70,13 @@ const METADATA_CONFIG = {
     title: (creatorName, bookTitle, noteText) =>
       `${noteText ? `${noteText} • ` : ""}a note by ${creatorName} on ${bookTitle} • catalog`,
   },
+  person: {
+    title: (name) => `${name} • catalog`,
+  },
 }
 
 async function getMetadata({ key, params }): Promise<Metadata> {
-  const { username, bookSlug, listSlug, shelf, postId, noteId, postSlug } = params
+  const { username, bookSlug, personSlug, listSlug, shelf, postId, noteId, postSlug } = params
 
   const config = METADATA_CONFIG[key]
 
@@ -137,6 +140,19 @@ async function getMetadata({ key, params }): Promise<Metadata> {
         pageDescription = book.description || undefined
         imageUrl = book.coverImageThumbnailUrl || undefined
       }
+    } else if (personSlug) {
+      const person = await prisma.person.findFirst({
+        where: {
+          slug: personSlug,
+        },
+      })
+
+      if (!person) return {}
+
+      pageTitle = config.title(person.name)
+
+      pageDescription = person.bio || undefined
+      imageUrl = person.imageUrl || undefined
     } else if (key.match(/admin/)) {
       const currentUserProfile = await getCurrentUserProfile()
 

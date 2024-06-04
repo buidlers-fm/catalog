@@ -103,6 +103,13 @@ export const getBookLinkAgnostic = (book) => {
 export const getPersonLinkWithOpenLibraryId = (openLibraryAuthorId) =>
   `/people?open_library_author_id=${openLibraryAuthorId}`
 
+export const getPersonLinkWithSlug = (slug) => `/people/${slug}`
+
+export const getPersonLinkAgnostic = (person) => {
+  if (person.slug) return getPersonLinkWithSlug(person.slug)
+  return getPersonLinkWithOpenLibraryId(person.openLibraryAuthorId)
+}
+
 export const getBookEditLink = (slug: string) => `/books/${slug}/edit`
 
 export const getBookEditLinkWithQueryString = (queryString: any) => `/books/edit?${queryString}`

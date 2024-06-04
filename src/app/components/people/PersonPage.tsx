@@ -13,7 +13,7 @@ import EmptyState from "app/components/EmptyState"
 const BOOKS_LIMIT = 8
 
 export default function PersonPage({ person }) {
-  const { openLibraryAuthorId, name, bio, photoUrl, books: allBooks, wikipediaUrl } = person
+  const { openLibraryAuthorId, name, bio, imageUrl, books: allBooks, wikipediaUrl } = person
 
   const openLibraryUrl = `https://openlibrary.org/authors/${openLibraryAuthorId}`
 
@@ -25,9 +25,9 @@ export default function PersonPage({ person }) {
   return (
     <div className="mt-8 max-w-4xl mx-8 lg:mx-auto">
       <div className="sm:flex font-mulish mb-8 pb-8 border-b border-b-gray-500">
-        {photoUrl ? (
+        {imageUrl ? (
           <div className="shrink-0 sm:mr-4 w-36 h-36 overflow-hidden rounded-full">
-            <img src={photoUrl} alt={name} className="object-cover min-w-full min-h-full" />
+            <img src={imageUrl} alt={name} className="object-cover min-w-full min-h-full" />
           </div>
         ) : (
           <FaUserCircle className="mr-3 text-[144px] text-gray-500" />

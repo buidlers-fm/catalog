@@ -56,6 +56,42 @@ model FeedbackSubmission {
   @@map("feedback_submissions")
 }
 
+model Person {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String               @map("name")
+  slug                String               @unique
+  bio                 String?
+  imageUrl            String?              @map("image_url")
+  wikipediaUrl        String?              @map("wikipedia_url")
+  location            String?
+  website             String?
+  openLibraryAuthorId String?              @map("open_library_author_id")
+  wikidataId          String?              @map("wikidata_id")
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime?            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  personBookRelations PersonBookRelation[]
+
+  @@index([slug])
+  @@index([openLibraryAuthorId])
+  @@index([wikidataId])
+  @@map("people")
+}
+
+model PersonBookRelation {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  personId     String    @map("person_id") @db.Uuid
+  bookId       String    @map("book_id") @db.Uuid
+  relationType String    @map("relation_type")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  person       Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([personId])
+  @@index([bookId])
+  @@map("person_book_relations")
+}
+
 model Recommendation {
   id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   recommenderId String      @map("recommender_id") @db.Uuid
@@ -143,6 +179,7 @@ model Book {
   userShelfAssignments     UserBookShelfAssignment[]
   adaptations              Adaptation[]
   recommendations          Recommendation[]
+  personBookRelations      PersonBookRelation[]
 
   @@index([openLibraryWorkId])
   @@index([openLibraryAuthorId])

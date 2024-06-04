@@ -30,6 +30,7 @@ import {
   getBookNotesLink,
   getBookListsLink,
   getWorldCatUrl,
+  getPersonLinkWithSlug,
   getPersonLinkWithOpenLibraryId,
 } from "lib/helpers/general"
 import { joinStringsWithAnd } from "lib/helpers/strings"
@@ -610,7 +611,11 @@ export default function BookPage({
             {book.subtitle && <h2 className="my-2 text-xl italic">{book.subtitle}</h2>}
             <h2 className="my-2 text-xl">
               by{" "}
-              {book.openLibraryAuthorId ? (
+              {book.author?.slug ? (
+                <Link href={getPersonLinkWithSlug(book.author.slug)} className="cat-link">
+                  {book.authorName}
+                </Link>
+              ) : book.openLibraryAuthorId ? (
                 <Link
                   href={getPersonLinkWithOpenLibraryId(book.openLibraryAuthorId)}
                   className="cat-link"
