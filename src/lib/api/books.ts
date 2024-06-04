@@ -10,11 +10,12 @@ import InteractionType from "enums/InteractionType"
 import InteractionObjectType from "enums/InteractionObjectType"
 import UserBookShelf from "enums/UserBookShelf"
 import Visibility from "enums/Visibility"
+import PersonBookRelationType from "enums/PersonBookRelationType"
 import type Book from "types/Book"
 import type BookActivity from "types/BookActivity"
 
 async function findOrCreateBook(_book: Book, options: any = {}) {
-  const { processCoverImage = true } = options
+  const { processCoverImage = true, createAuthor = true } = options
 
   const existingBook = await prisma.book.findFirst({
     where: {
@@ -62,6 +63,72 @@ async function findOrCreateBook(_book: Book, options: any = {}) {
       wikipediaUrl,
     },
   })
+
+  if (createAuthor) {
+    // try to fetch author info
+    let author
+
+    if (openLibraryAuthorId) {
+      const existingPerson = await prisma.person.findFirst({
+        where: {
+          openLibraryAuthorId,
+        },
+      })
+
+      if (existingPerson) {
+        author = existingPerson
+      } else {
+        try {
+          const openLibraryAuthor = await OpenLibrary.getAuthor(openLibraryAuthorId)
+
+          const authorSlug = await generateUniqueSlug(openLibraryAuthor.name, "person")
+
+          if (openLibraryAuthor) {
+            author = await prisma.person.create({
+              data: {
+                slug: authorSlug,
+                name: openLibraryAuthor.name,
+                imageUrl: openLibraryAuthor.imageUrl,
+                wikipediaUrl: openLibraryAuthor.wikipediaUrl,
+                bio: openLibraryAuthor.bio,
+                openLibraryAuthorId,
+                wikidataId: openLibraryAuthor.wikidataId,
+              },
+            })
+          }
+        } catch (error) {
+          reportToSentry(error, {
+            method: "findOrCreateBook.getAuthor",
+            book: _book,
+            openLibraryAuthorId,
+          })
+        }
+      }
+    }
+
+    // if the above failed, create author person without extra info
+    if (!author && authorName) {
+      const authorSlug = await generateUniqueSlug(authorName, "person")
+
+      author = await prisma.person.create({
+        data: {
+          slug: authorSlug,
+          name: authorName,
+        },
+      })
+    }
+
+    // create person-book relation
+    if (author) {
+      await prisma.personBookRelation.create({
+        data: {
+          personId: author.id,
+          bookId: createdBook.id,
+          relationType: PersonBookRelationType.Author,
+        },
+      })
+    }
+  }
 
   // fetch covers and upload to supabase storage, then update cover image urls on book
   if (coverImageUrl && processCoverImage) {

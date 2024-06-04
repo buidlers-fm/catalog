@@ -30,7 +30,10 @@ export default async function EditBookPage({ searchParams }) {
     notFound()
   }
 
-  const book = await findOrCreateBook(openLibraryBook, { processCoverImage: false })
+  const book = await findOrCreateBook(openLibraryBook, {
+    processCoverImage: false,
+    createAuthor: false,
+  })
 
   redirect(getBookEditLink(book.slug))
 }

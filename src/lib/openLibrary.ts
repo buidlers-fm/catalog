@@ -31,6 +31,7 @@ enum OpenLibraryCoverSize {
 }
 
 const OpenLibrary = {
+  // server-side only!
   getFullBook: async (workId: string, bestEditionId?) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
@@ -81,35 +82,51 @@ const OpenLibrary = {
       !!bestEnglishEdition && !isSameLanguage(work.title, bestEnglishEdition.title)
 
     // get author from work
+    let author
     let authorName
     let authorKey = work.authors?.[0]?.author?.key
+    const authorId = authorKey?.split("/authors/").pop()
 
     if (authorKey) {
-      let authorUrl = `${BASE_URL}/${authorKey}.json`
-      let author = await fetchJsonWithUserAgentHeaders(authorUrl)
-      if (author.type.key === "/type/redirect") {
-        authorKey = author.location
-        authorUrl = `${BASE_URL}/${authorKey}.json`
+      // use db author if exists
+      const dbAuthor = await prisma.person.findFirst({
+        where: {
+          openLibraryAuthorId: authorId,
+        },
+      })
+
+      if (dbAuthor) {
+        author = dbAuthor
+        authorName = dbAuthor.name
+      } else {
+        let authorUrl = `${BASE_URL}/${authorKey}.json`
         author = await fetchJsonWithUserAgentHeaders(authorUrl)
-      }
-
-      // get author name from wikipedia if possible
-      let wikidataName
-      const wikidataId = author.remoteIds?.wikidata
-      if (wikidataId) {
-        try {
-          const wikidataRes = await wikidata.getItem(wikidataId, { compact: true })
-          wikidataName = wikidataRes.name
-        } catch (error: any) {
-          reportToSentry(error, {
-            method: "openLibrary.getFullBook.wikidata.getItem",
-            author,
-          })
+        if (author.type.key === "/type/redirect") {
+          authorKey = author.location
+          authorUrl = `${BASE_URL}/${authorKey}.json`
+          author = await fetchJsonWithUserAgentHeaders(authorUrl)
         }
-      }
 
-      const openLibraryAuthorName = isTranslated ? author.personalName || author.name : author.name
-      authorName = wikidataName || openLibraryAuthorName
+        // get author name from wikipedia if possible
+        let wikidataName
+        const wikidataId = author.remoteIds?.wikidata
+        if (wikidataId) {
+          try {
+            const wikidataRes = await wikidata.getItem(wikidataId, { compact: true })
+            wikidataName = wikidataRes.name
+          } catch (error: any) {
+            reportToSentry(error, {
+              method: "openLibrary.getFullBook.wikidata.getItem",
+              author,
+            })
+          }
+        }
+
+        const openLibraryAuthorName = isTranslated
+          ? author.personalName || author.name
+          : author.name
+        authorName = wikidataName || openLibraryAuthorName
+      }
     }
 
     const getCoverUrl = (coverId: string) =>
@@ -174,7 +191,7 @@ const OpenLibrary = {
         ? bestEnglishEdition.subtitle || work.subtitle || bestEdition.subtitle
         : work.subtitle || bestEnglishEdition?.subtitle,
       authorName,
-      openLibraryAuthorId: authorKey?.split("/authors/").pop(),
+      openLibraryAuthorId: authorId,
       description,
       coverImageUrl,
       openLibraryCoverImageUrl: coverImageUrl,
@@ -185,6 +202,7 @@ const OpenLibrary = {
       originalTitle: work.title,
       isbn,
       oclc,
+      author,
     }
 
     return book
@@ -193,34 +211,58 @@ const OpenLibrary = {
   // server-side only!
   getAuthor: async (authorId: string) => {
     const authorUrl = `${BASE_URL}/authors/${authorId}.json`
-    const author = await fetchJsonWithUserAgentHeaders(authorUrl)
+    const openLibraryAuthor = await fetchJsonWithUserAgentHeaders(authorUrl)
 
-    const name = author.personalName || author.name
-    const bio = author.bio?.value
-    const photoId = author.photos?.[0]
+    const name = openLibraryAuthor.personalName || openLibraryAuthor.name
+    const bio = openLibraryAuthor.bio?.value
+    const photoId = openLibraryAuthor.photos?.[0]
 
-    let photoUrl
+    let imageUrl
     if (photoId) {
-      photoUrl = OpenLibrary.getAuthorImageUrl(photoId, OpenLibraryCoverSize.M)
+      imageUrl = OpenLibrary.getAuthorImageUrl(photoId, OpenLibraryCoverSize.M)
     }
 
-    // get works from OL, and more author info from wikidata, in parallel
-    const worksUrl = `${BASE_URL}/search.json?q=author_key:${authorId}`
+    let authorName = name
+    let authorBio = bio
+    let wikipediaUrl
 
-    const worksPromise = fetchJsonWithUserAgentHeaders(worksUrl)
-    const promises = [worksPromise]
-
-    const wikidataId = author.remoteIds?.wikidata
+    // get more author info from wikidata
+    const wikidataId = openLibraryAuthor.remoteIds?.wikidata
     if (wikidataId) {
-      const wikidataPromise = wikidata.getItem(wikidataId)
-      promises.push(wikidataPromise)
+      const wikidataRes = await wikidata.getItem(wikidataId)
+      const { name: wikidataName, siteUrl, summary: wikipediaBio } = wikidataRes || {}
+
+      authorName = wikidataName
+      authorBio = wikipediaBio
+      wikipediaUrl = siteUrl
+    }
+    const author = {
+      name: authorName,
+      bio: authorBio,
+      imageUrl,
+      openLibraryAuthorId: authorId,
+      wikipediaUrl,
+      wikidataId,
     }
 
-    const [worksRes, wikidataRes] = await Promise.all(promises)
+    const books = await OpenLibrary.getAuthorWorks(author)
 
-    const { name: wikidataName, siteUrl: wikipediaUrl, summary: wikipediaBio } = wikidataRes || {}
+    return {
+      ...author,
+      books,
+    }
+  },
 
-    const authorName = wikidataName || name
+  getAuthorWorks: async (author) => {
+    const { openLibraryAuthorId, name: authorName } = author
+
+    if (!openLibraryAuthorId) {
+      throw new Error("Can't get author works: missing openLibraryAuthorId")
+    }
+
+    const worksUrl = `${BASE_URL}/search.json?q=author_key:${openLibraryAuthorId}`
+
+    const worksRes = await fetchJsonWithUserAgentHeaders(worksUrl)
 
     const worksEntries = worksRes.docs
 
@@ -245,6 +287,7 @@ const OpenLibrary = {
         coverImageUrl,
         openLibraryCoverImageUrl: coverImageUrl,
         openLibraryWorkId,
+        openLibraryAuthorId,
         firstPublishedYear,
         editionsCount,
       }
@@ -276,14 +319,7 @@ const OpenLibrary = {
       (book, index) => index === books.findIndex((b) => looseStringEquals(b.title, book.title)),
     )
 
-    return {
-      name: authorName,
-      bio: wikipediaBio || bio,
-      photoUrl,
-      openLibraryAuthorId: authorId,
-      books,
-      wikipediaUrl,
-    }
+    return books
   },
 
   getOlWorkPageUrl: (workId: string) => `${BASE_URL}/works/${workId}`,

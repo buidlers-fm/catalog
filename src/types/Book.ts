@@ -2,6 +2,7 @@ import type BookNote from "types/BookNote"
 import type Like from "types/Like"
 import type UserBookShelfAssignment from "types/UserBookShelfAssignment"
 import type Adaptation from "types/Adaptation"
+import type Person from "types/Person"
 
 export default interface Book {
   id?: string
@@ -21,6 +22,7 @@ export default interface Book {
   originalTitle?: string
   wikipediaUrl?: string
   edited?: boolean
+  author?: Person
   bookNotes?: BookNote[]
   bookPosts?: BookNote[]
   bookReads?: any[] // TODO

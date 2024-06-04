@@ -1,8 +1,9 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import humps from "humps"
-// import prisma from "lib/prisma"
+import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
+import { getPersonLinkWithSlug } from "lib/helpers/general"
 import PersonPage from "app/components/people/PersonPage"
 import ErrorPage from "app/error"
 import type { Metadata } from "next"
@@ -14,13 +15,13 @@ export async function generateMetadata({ searchParams }): Promise<Metadata> {
 
   if (!openLibraryAuthorId) return {}
 
-  // const existingBook = await prisma.book.findFirst({
-  //   where: {
-  //     openLibraryWorkId,
-  //   },
-  // })
+  const existingPerson = await prisma.person.findFirst({
+    where: {
+      openLibraryAuthorId,
+    },
+  })
 
-  // if (existingBook) return {}
+  if (existingPerson) return {}
 
   let openLibraryAuthor: any = {}
   try {
@@ -48,13 +49,13 @@ export default async function PersonPageByQuery({ searchParams }) {
 
   if (!openLibraryAuthorId) notFound()
 
-  // const existingBook = await prisma.book.findFirst({
-  //   where: {
-  //     openLibraryWorkId,
-  //   },
-  // })
+  const existingPerson = await prisma.person.findFirst({
+    where: {
+      openLibraryAuthorId,
+    },
+  })
 
-  // if (existingBook) redirect(getBookLink(existingBook.slug))
+  if (existingPerson) redirect(getPersonLinkWithSlug(existingPerson.slug))
 
   let openLibraryAuthor: any = {}
   try {
