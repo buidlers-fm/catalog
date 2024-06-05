@@ -69,4 +69,38 @@ async function uploadCoverImage(coverImageData, options) {
   return imageUrl
 }
 
-export { storageBucketPath, uploadAvatar, deleteAvatar, uploadCoverImage }
+async function uploadPersonImage(imageData, options) {
+  const { personId, personSlug, mimeType, extension, replace = false } = options
+
+  // add a nonce to the filename to prevent caching issues when cover has changed
+  const nonce = cryptoRandomString({ length: 6 })
+
+  const fileDir = `people/images/${personId}`
+  const filename = `${personSlug}-${nonce}.${extension}`
+  const filePath = `${fileDir}/${filename}`
+  const imageUrl = `${storageBucketPath}/${filePath}`
+
+  const { error: imageUploadError } = await storageClient
+    .from("assets")
+    .upload(filePath, imageData, {
+      contentType: mimeType,
+      upsert: replace,
+    })
+
+  if (imageUploadError) {
+    if (imageUploadError.message.match(/The resource already exists/)) {
+      reportToSentry(new Error("Image already exists"), {
+        imageUrl,
+        options,
+      })
+
+      return imageUrl
+    } else {
+      throw new Error(`Error uploading person image: ${imageUploadError.message}`)
+    }
+  }
+
+  return imageUrl
+}
+
+export { storageBucketPath, uploadAvatar, deleteAvatar, uploadCoverImage, uploadPersonImage }

@@ -208,10 +208,29 @@ const OpenLibrary = {
     return book
   },
 
+  getAuthorIdFromWorkId: async (workId: string) => {
+    // get work
+    const workUrl = `${BASE_URL}/works/${workId}.json`
+    const work = await fetchJsonWithUserAgentHeaders(workUrl)
+
+    // get author from work
+    const authorKey = work.authors?.[0]?.author?.key
+    const authorId = authorKey?.split("/authors/").pop()
+
+    return authorId
+  },
+
   // server-side only!
   getAuthor: async (authorId: string) => {
     const authorUrl = `${BASE_URL}/authors/${authorId}.json`
-    const openLibraryAuthor = await fetchJsonWithUserAgentHeaders(authorUrl)
+    let openLibraryAuthor = await fetchJsonWithUserAgentHeaders(authorUrl)
+
+    // follow a redirect
+    if (openLibraryAuthor.type.key === "/type/redirect") {
+      const nextAuthorKey = openLibraryAuthor.location
+      const nextAuthorUrl = `${BASE_URL}/${nextAuthorKey}.json`
+      openLibraryAuthor = await fetchJsonWithUserAgentHeaders(nextAuthorUrl)
+    }
 
     const name = openLibraryAuthor.personalName || openLibraryAuthor.name
     const bio = openLibraryAuthor.bio?.value
@@ -230,10 +249,16 @@ const OpenLibrary = {
     const wikidataId = openLibraryAuthor.remoteIds?.wikidata
     if (wikidataId) {
       const wikidataRes = await wikidata.getItem(wikidataId)
-      const { name: wikidataName, siteUrl, summary: wikipediaBio } = wikidataRes || {}
+      const {
+        name: wikidataName,
+        siteUrl,
+        summary: wikipediaBio,
+        imageUrl: wikipediaImageUrl,
+      } = wikidataRes || {}
 
       authorName = wikidataName
       authorBio = wikipediaBio
+      imageUrl = wikipediaImageUrl || imageUrl
       wikipediaUrl = siteUrl
     }
     const author = {
