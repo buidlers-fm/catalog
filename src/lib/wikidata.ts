@@ -32,11 +32,17 @@ const Wikidata = {
     const wikipediaSummaryRes = await fetchJsonWithUserAgentHeaders(wikipediaSummaryUrl)
     const wikipediaSummary = wikipediaSummaryRes.extract
 
+    let imageUrl
+    if (wikipediaSummaryRes.thumbnail) {
+      imageUrl = wikipediaSummaryRes.thumbnail.source
+    }
+
     return {
       name,
       siteTitle,
       siteUrl,
       summary: wikipediaSummary,
+      imageUrl,
     }
   },
 }
