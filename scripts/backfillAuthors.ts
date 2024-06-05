@@ -90,13 +90,13 @@ async function getWikidataItem(id: string, options: any = GET_ITEM_DEFAULT_OPTIO
   const { labels, sitelinks } = item
 
   const name = labels.en
-  const { title: siteTitle, url: siteUrl } = sitelinks.enwiki
+  const { title: siteTitle, url: siteUrl } = sitelinks.enwiki || {}
 
-  if (compact) {
+  if (compact || !siteUrl) {
     return { name, siteTitle, siteUrl }
   }
 
-  const siteUrlFragment = sitelinks.enwiki.url.split("/").pop()
+  const siteUrlFragment = siteUrl.split("/").pop()
   const wikipediaSummaryUrl = `${WIKIPEDIA_SUMMARY_BASE_URL}/${siteUrlFragment}`
 
   const wikipediaSummaryRes = await fetchJsonWithUserAgentHeaders(wikipediaSummaryUrl)
