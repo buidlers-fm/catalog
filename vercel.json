@@ -3,6 +3,14 @@
     {
       "path": "/api/books/process_cover_images",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/people/process_new_authors",
+      "schedule": "10 * * * *"
+    },
+    {
+      "path": "/api/people/process_new_images",
+      "schedule": "20 * * * *"
     }
   ],
   "functions": {

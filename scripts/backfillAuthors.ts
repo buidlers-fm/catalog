@@ -90,13 +90,13 @@ async function getWikidataItem(id: string, options: any = GET_ITEM_DEFAULT_OPTIO
   const { labels, sitelinks } = item
 
   const name = labels.en
-  const { title: siteTitle, url: siteUrl } = sitelinks.enwiki
+  const { title: siteTitle, url: siteUrl } = sitelinks.enwiki || {}
 
-  if (compact) {
+  if (compact || !siteUrl) {
     return { name, siteTitle, siteUrl }
   }
 
-  const siteUrlFragment = sitelinks.enwiki.url.split("/").pop()
+  const siteUrlFragment = siteUrl.split("/").pop()
   const wikipediaSummaryUrl = `${WIKIPEDIA_SUMMARY_BASE_URL}/${siteUrlFragment}`
 
   const wikipediaSummaryRes = await fetchJsonWithUserAgentHeaders(wikipediaSummaryUrl)
@@ -211,6 +211,7 @@ async function generateUniqueSlug(str, modelName, additionalFilters = {}) {
 }
 
 async function main() {
+  const startTime = new Date()
   let count = 0
   let successCount = 0
   const failures: any[] = []
@@ -293,6 +294,8 @@ async function main() {
             console.log(
               `creating from OL failed for ${slug} with error: ${error.message}. trying with just author name...`,
             )
+
+            failures.push({ slug, error, errorMsg: `creating from OL failed: ${error.message}` })
           }
         }
       }
@@ -337,7 +340,13 @@ async function main() {
     count += 1
   }
 
-  console.log(`${successCount} authors created.`)
+  const endTime = new Date()
+  const elapsedMs = endTime.valueOf() - startTime.valueOf()
+  const elapsedSeconds = Math.floor(elapsedMs / 1000)
+  const minutes = Math.floor(elapsedSeconds / 60)
+  const seconds = elapsedSeconds % 60
+
+  console.log(`${successCount} authors created in ${minutes}m ${seconds}s.`)
   console.log("failures:")
   console.log(failures)
   console.log(`${failures.length} failures.`)
