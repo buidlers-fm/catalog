@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import prisma from "lib/prisma"
+import logger from "lib/logger"
 import { uploadPersonImage } from "lib/server/supabaseStorage"
 import { fetchImageAsBlob } from "lib/helpers/general"
 import { withApiHandling } from "lib/api/withApiHandling"
@@ -35,7 +36,7 @@ export const GET = withApiHandling(
 
     if (totalPeopleToProcess > PEOPLE_LIMIT) {
       reportToSentry(
-        `api.people.process_new_images: found ${totalPeopleToProcess} with cover images to process, but only processing ${PEOPLE_LIMIT}.`,
+        `api.people.process_new_images: found ${totalPeopleToProcess} with images to process, but only processing ${PEOPLE_LIMIT}.`,
       )
     }
 
@@ -48,7 +49,7 @@ export const GET = withApiHandling(
       take: PEOPLE_LIMIT,
     })
 
-    console.log(
+    logger.info(
       `api.people.process_new_images: found ${people.length} people with images in this batch.`,
     )
 
@@ -63,12 +64,12 @@ export const GET = withApiHandling(
       }
 
       try {
-        console.log(`api.people.process_new_images: starting ${slug}...`)
-        console.log(`api.people.process_new_images: ${slug}: fetching image...`)
+        logger.info(`api.people.process_new_images: starting ${slug}...`)
+        logger.info(`api.people.process_new_images: ${slug}: fetching image...`)
 
         const { blob, mimeType } = await fetchImageAsBlob(imageUrl)
 
-        console.log(`api.people.process_new_images: ${slug}: image fetched. uploading...`)
+        logger.info(`api.people.process_new_images: ${slug}: image fetched. uploading...`)
 
         const options = {
           ...baseOptions,
@@ -77,7 +78,7 @@ export const GET = withApiHandling(
 
         const supabaseUrl = await uploadPersonImage(blob, options)
 
-        console.log(`api.people.process_new_images: ${slug}: image uploaded. updating person...`)
+        logger.info(`api.people.process_new_images: ${slug}: image uploaded. updating person...`)
 
         await prisma.person.update({
           where: {
@@ -89,7 +90,7 @@ export const GET = withApiHandling(
           },
         })
 
-        console.log(`api.people.process_new_images: ${slug} updated.`)
+        logger.info(`api.people.process_new_images: ${slug} updated.`)
 
         successCount += 1
       } catch (error: any) {
@@ -103,10 +104,10 @@ export const GET = withApiHandling(
       }
     }
 
-    console.log(`${successCount} people updated.`)
-    console.log("failures:")
-    console.log(failures)
-    console.log(`${failures.length} failures.`)
+    logger.info(`${successCount} people updated.`)
+    logger.info("failures:")
+    logger.info(failures)
+    logger.info(`${failures.length} failures.`)
 
     return NextResponse.json({}, { status: 200 })
   },

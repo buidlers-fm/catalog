@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
+import logger from "lib/logger"
 import { uploadCoverImage } from "lib/server/supabaseStorage"
 import { fetchImageAsBlob } from "lib/helpers/general"
 import { withApiHandling } from "lib/api/withApiHandling"
@@ -68,7 +69,7 @@ export const GET = withApiHandling(
       take: BOOKS_LIMIT,
     })
 
-    console.log(
+    logger.info(
       `api.books.process_cover_images: found ${allBooks.length} books with cover images in this batch.`,
     )
 
@@ -87,12 +88,12 @@ export const GET = withApiHandling(
       }
 
       try {
-        console.log(`api.books.process_cover_images: starting ${slug}...`)
-        console.log(`api.books.process_cover_images: ${slug}: fetching large image...`)
+        logger.info(`api.books.process_cover_images: starting ${slug}...`)
+        logger.info(`api.books.process_cover_images: ${slug}: fetching large image...`)
 
         const { blob: largeBlob, mimeType: largeMimeType } = await fetchImageAsBlob(olLargeUrl)
 
-        console.log(`api.books.process_cover_images: ${slug}: large image fetched. uploading...`)
+        logger.info(`api.books.process_cover_images: ${slug}: large image fetched. uploading...`)
 
         const largeOptions = {
           ...baseOptions,
@@ -102,7 +103,7 @@ export const GET = withApiHandling(
 
         const largeUrl = await uploadCoverImage(largeBlob, largeOptions)
 
-        console.log(
+        logger.info(
           `api.books.process_cover_images: ${slug}: large image uploaded. fetching thumbnail image...`,
         )
 
@@ -110,7 +111,7 @@ export const GET = withApiHandling(
           olThumbnailUrl,
         )
 
-        console.log(
+        logger.info(
           `api.books.process_cover_images: ${slug}: thumbnail image fetched. uploading...`,
         )
 
@@ -122,7 +123,7 @@ export const GET = withApiHandling(
 
         const thumbnailUrl = await uploadCoverImage(thumbnailBlob, thumbnailOptions)
 
-        console.log(
+        logger.info(
           `api.books.process_cover_images: ${slug}: thumbnail image uploaded. updating book...`,
         )
 
@@ -137,7 +138,7 @@ export const GET = withApiHandling(
           },
         })
 
-        console.log(`api.books.process_cover_images: ${slug} updated.`)
+        logger.info(`api.books.process_cover_images: ${slug} updated.`)
 
         successCount += 1
       } catch (error: any) {
@@ -146,10 +147,10 @@ export const GET = withApiHandling(
       }
     }
 
-    console.log(`${successCount} books updated.`)
-    console.log("failures:")
-    console.log(failures)
-    console.log(`${failures.length} failures.`)
+    logger.info(`${successCount} books updated.`)
+    logger.info("failures:")
+    logger.info(failures)
+    logger.info(`${failures.length} failures.`)
 
     return NextResponse.json({}, { status: 200 })
   },

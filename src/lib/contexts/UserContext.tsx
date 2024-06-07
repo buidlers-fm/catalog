@@ -4,6 +4,7 @@ import { createContext, useState, useCallback, useEffect, useMemo, useContext } 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import humps from "humps"
 import api from "lib/api"
+import logger from "lib/logger"
 import { getBaseUrl } from "lib/helpers/general"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
@@ -61,6 +62,9 @@ export function UserProvider({ children }) {
 
     const _currentUserProfile = await api.me.get()
     if (_currentUserProfile) setCurrentUserProfile(_currentUserProfile)
+
+    logger.info(`${_currentUserProfile.displayName || _currentUserProfile.username} is online!`)
+
     setIsFetching(false)
   }, [supabase.auth])
 

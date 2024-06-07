@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import humps from "humps"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import prisma from "lib/prisma"
+import logger from "lib/logger"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { reportToSentry } from "lib/sentry"
 import * as ghost from "lib/ghost"
@@ -134,7 +135,7 @@ export const POST = withApiHandling(
       throw supabaseAuthError
     }
 
-    console.log(data)
+    logger.info(data)
 
     const userId = data.user!.id
 
@@ -154,7 +155,8 @@ export const POST = withApiHandling(
       },
     })
 
-    console.log(createUserRes)
+    logger.info(`${username} signed up!`)
+    logger.info(createUserRes)
 
     // create user config
     await prisma.userConfig.create({
@@ -199,7 +201,7 @@ export const POST = withApiHandling(
     if (subscribe && isProduction()) {
       try {
         await ghost.subscribe(email)
-        console.log(`signup: Subscribed ${email} to Ghost.`)
+        logger.info(`signup: Subscribed ${email} to Ghost.`)
       } catch (error: any) {
         reportToSentry(error, {
           method: "ghost.subscribe",
