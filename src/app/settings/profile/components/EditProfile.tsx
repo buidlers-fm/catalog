@@ -83,10 +83,7 @@ export default function EditProfile({ userProfile, favoriteBooksList }) {
   }
 
   const submit = async (userProfileData) => {
-    if (!avatarValid) {
-      console.log("avatar is invalid, can't submit!")
-      return
-    }
+    if (!avatarValid) return
 
     setIsSubmitting(true)
 

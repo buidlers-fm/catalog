@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
+import logger from "lib/logger"
 import { generateUniqueSlug } from "lib/helpers/general"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { reportToSentry } from "lib/sentry"
@@ -47,11 +48,11 @@ export const GET = withApiHandling(
       take: BOOKS_LIMIT,
     })
 
-    console.log(
+    logger.info(
       `api.people.process_new_authors: found ${books.length} books to process in this batch.`,
     )
 
-    // for each book, fetch cover images, upload to supabase, and update book record
+    // for each book, try to fetch author info, create author person, and create person-book relation
     for (const book of books) {
       await sleep(SLEEP_MS)
 
@@ -65,9 +66,9 @@ export const GET = withApiHandling(
 
           if (authorId) {
             openLibraryAuthorId = authorId
-            console.log(`api.people.process_new_authors: fetched author id ${authorId} for ${slug}`)
+            logger.info(`api.people.process_new_authors: fetched author id ${authorId} for ${slug}`)
           } else {
-            console.log(
+            logger.info(
               `api.people.process_new_authors: failed to fetch openLibraryAuthorId for ${slug}, proceeding without OL data...`,
             )
           }
@@ -84,14 +85,14 @@ export const GET = withApiHandling(
           })
 
           if (existingPerson) {
-            console.log(
+            logger.info(
               `api.people.process_new_authors: found existing author ${existingPerson.name} for ${slug}`,
             )
 
             author = existingPerson
           } else {
             try {
-              console.log("api.people.process_new_authors: calling OL...")
+              logger.info("api.people.process_new_authors: calling OL...")
 
               const openLibraryAuthor = await OpenLibrary.getAuthor(openLibraryAuthorId)
 
@@ -111,11 +112,11 @@ export const GET = withApiHandling(
                 })
               }
 
-              console.log(
+              logger.info(
                 `api.people.process_new_authors: created author ${author.name} from OL for ${slug}`,
               )
             } catch (error: any) {
-              console.log(
+              logger.info(
                 `api.people.process_new_authors: creating from OL failed for ${slug} with error: ${error.message}. trying with just author name...`,
               )
             }
@@ -133,13 +134,13 @@ export const GET = withApiHandling(
             },
           })
 
-          console.log(
+          logger.info(
             `api.people.process_new_authors: created author ${author.name} from authorName for ${slug}`,
           )
         }
 
         // create person-book relation
-        console.log(
+        logger.info(
           `api.people.process_new_authors: creating relation for ${author.name} and ${slug}...`,
         )
 
@@ -152,7 +153,7 @@ export const GET = withApiHandling(
             },
           })
 
-          console.log(
+          logger.info(
             `api.people.process_new_authors: created relation for ${author.name} and ${slug}.`,
           )
         } else {
@@ -170,10 +171,10 @@ export const GET = withApiHandling(
       }
     }
 
-    console.log(`api.people.process_new_authors: ${successCount} books updated.`)
-    console.log("api.people.process_new_authors: failures:")
-    console.log(failures)
-    console.log(`api.people.process_new_authors: ${failures.length} failures.`)
+    logger.info(`api.people.process_new_authors: ${successCount} books updated.`)
+    logger.info("api.people.process_new_authors: failures:")
+    logger.info(failures)
+    logger.info(`api.people.process_new_authors: ${failures.length} failures.`)
 
     return NextResponse.json({}, { status: 200 })
   },

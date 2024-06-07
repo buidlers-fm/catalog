@@ -108,7 +108,6 @@ export default function BookPageConversations({
   }, [getBookPosts, onChange])
 
   const handleCreatedPost = useCallback(async () => {
-    console.log("onNewPostSuccess, running")
     setConversationsTab(ConversationsTab.Catalog)
     if (onChange) onChange()
     return getBookPosts()
@@ -136,7 +135,6 @@ export default function BookPageConversations({
   }
 
   function showModal(modalType: CurrentModal) {
-    console.log("setting onNewPostSuccess")
     setOnNewPostSuccess(() => handleCreatedPost)
     setCurrentBook(book)
     setCurrentModal(modalType)

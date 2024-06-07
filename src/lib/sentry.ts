@@ -1,8 +1,9 @@
 import * as Sentry from "@sentry/nextjs"
+import logger from "lib/logger"
 
 function reportToSentry(error, data: any = {}) {
-  console.error(error)
-  console.log(data)
+  logger.error(error)
+  logger.info(data)
 
   const sentryContext: any = {
     extra: data,

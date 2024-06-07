@@ -3,6 +3,7 @@ import { withApiHandling } from "lib/api/withApiHandling"
 import { reportToSentry } from "lib/sentry"
 import * as ghost from "lib/ghost"
 import prisma from "lib/prisma"
+import logger from "lib/logger"
 import { isProduction } from "lib/helpers/general"
 import type { NextRequest } from "next/server"
 
@@ -45,7 +46,7 @@ export const POST = withApiHandling(
       try {
         await ghost.subscribe(email)
         subscribed = true
-        console.log(`api.webhooks.tally: Subscribed ${email} to Ghost.`)
+        logger.info(`api.webhooks.tally: Subscribed ${email} to Ghost.`)
       } catch (error: any) {
         reportToSentry(error, {
           method: "api.webhooks.tally.subscribe",
