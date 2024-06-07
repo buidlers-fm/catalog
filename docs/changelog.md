@@ -1,4 +1,4 @@
-last updated: may 17, 2024.
+last updated: june 7, 2024.
 
 # big things for may - june 2024
 
@@ -6,7 +6,8 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
 - ✅ A new tour of the app to introduce you to some of the things you can do.
 - ✅ Allow users to invite friends to join catalog.
-- ⌛️ Author profile pages including the author's bio and the books they've written.
+- 🛠️ Author profile pages including the author's bio and the books they've written.
+- ⌛️ Email notifications and settings to configure these.
 - ⌛️ Timeline of your reading, where you can view and edit your reading history.
 
 ---
@@ -14,6 +15,19 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## may 18 - june 9, 2024
+
+Main things:
+
+- New "people" pages (for now, just for book authors) include author's bio, photo, and books they've written, pulling information from OpenLibrary and Wikipedia whenever possible.
+  - Each book's page links to its author's page.
+
+Small fixes/improvements:
+
+- Added a helpful tip to the guidelines for editing a book cover.
+- (Internal) Upgraded our auth library for better sign-out handling.
+- (Internal) Improved logging so we can have more visibility into how the app is running.
 
 ## april 15 - may 17, 2024
 
