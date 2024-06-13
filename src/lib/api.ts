@@ -279,6 +279,13 @@ const api = {
       return fetchJson(apiUrl)
     },
   },
+  people: {
+    update: (personId, formData) =>
+      fetchJson(`/api/people/${personId}`, {
+        method: "PATCH",
+        body: formData,
+      }),
+  },
   pins: {
     create: (requestData) =>
       fetchJson(`/api/pins`, {

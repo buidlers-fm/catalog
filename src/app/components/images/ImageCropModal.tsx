@@ -81,7 +81,7 @@ const ImageCropModal = ({ isOpen, imageUrl, imageType, onModalClose, onSaveHandl
       <div className="fixed inset-0 flex w-screen items-center justify-center font-mulish">
         <Dialog.Panel className="relative rounded max-h-[90dvh] min-h-[80dvh] xs:min-h-[70dvh] sm:min-h-[60dvh] overflow-y-auto max-w-xs xs:max-w-md sm:max-w-xl md:max-w-none bg-gray-900 px-8 sm:px-16 py-8 flex flex-col">
           <Dialog.Title>
-            <div className="mb-8 text-center text-xl font-bold">avatar crop and resize</div>
+            <div className="mb-8 text-center text-xl font-bold">crop and resize</div>
           </Dialog.Title>
           <Dialog.Description>scroll to zoom, drag to move photo</Dialog.Description>
 

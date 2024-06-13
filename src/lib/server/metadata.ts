@@ -73,6 +73,9 @@ const METADATA_CONFIG = {
   person: {
     title: (name) => `${name} • catalog`,
   },
+  "person.edit": {
+    title: (name) => `edit ${name} • catalog`,
+  },
 }
 
 async function getMetadata({ key, params }): Promise<Metadata> {
@@ -151,8 +154,10 @@ async function getMetadata({ key, params }): Promise<Metadata> {
 
       pageTitle = config.title(person.name)
 
-      pageDescription = person.bio || undefined
-      imageUrl = person.imageUrl || undefined
+      if (key === "person") {
+        pageDescription = person.bio || undefined
+        imageUrl = person.imageUrl || undefined
+      }
     } else if (key.match(/admin/)) {
       const currentUserProfile = await getCurrentUserProfile()
 

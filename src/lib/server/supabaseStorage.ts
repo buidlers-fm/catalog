@@ -72,7 +72,7 @@ async function uploadCoverImage(coverImageData, options) {
 async function uploadPersonImage(imageData, options) {
   const { personId, personSlug, mimeType, extension, replace = false } = options
 
-  // add a nonce to the filename to prevent caching issues when cover has changed
+  // add a nonce to the filename to prevent caching issues when image has changed
   const nonce = cryptoRandomString({ length: 6 })
 
   const fileDir = `people/images/${personId}`
@@ -103,4 +103,19 @@ async function uploadPersonImage(imageData, options) {
   return imageUrl
 }
 
-export { storageBucketPath, uploadAvatar, deleteAvatar, uploadCoverImage, uploadPersonImage }
+async function deletePersonImage(imageUrl) {
+  const filePath = imageUrl.split("/assets/").pop()
+
+  const { error: imageDeleteError } = await storageClient.from("assets").remove([filePath])
+
+  if (imageDeleteError) throw new Error(`Error deleting person image: ${imageDeleteError.message}`)
+}
+
+export {
+  storageBucketPath,
+  uploadAvatar,
+  deleteAvatar,
+  uploadCoverImage,
+  uploadPersonImage,
+  deletePersonImage,
+}

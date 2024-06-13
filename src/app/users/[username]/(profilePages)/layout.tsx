@@ -95,7 +95,7 @@ export default async function UserProfileLayout({ params, children }) {
           <div className="mt-2 max-w-lg">
             <CustomMarkdown markdown={bio} />
           </div>
-          <div className="flex mt-3 text-gray-300">
+          <div className="flex flex-col sm:flex-row mt-3 text-gray-300">
             {location && (
               <div className="mr-4">
                 <PiMapPinFill className="inline-block -mt-[5px] mr-1" />
@@ -103,7 +103,7 @@ export default async function UserProfileLayout({ params, children }) {
               </div>
             )}
             {website && (
-              <div>
+              <div className="my-1 sm:my-0">
                 <BsLink45Deg className="inline-block -mt-[3px] mr-1 text-lg " />
                 <Link href={website} target="_blank" rel="noopener noreferrer">
                   {getDomainFromUrl(website)}

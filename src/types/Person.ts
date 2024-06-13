@@ -11,6 +11,7 @@ export default interface Person {
   website?: string
   openLibraryAuthorId?: string
   wikidataId?: string
+  edited: boolean
   createdAt?: string | Date
   updatedAt?: string | Date
   books?: Book[]
