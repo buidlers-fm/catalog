@@ -62,14 +62,34 @@ export default async function UserEditsPage({ params }) {
     return acc
   }, {})
 
+  const personIds = _editLogs
+    .filter((editLog) => editLog.editedObjectType === EditedObjectType.Person)
+    .map((editLog) => editLog.editedObjectId)
+
+  const people = await prisma.person.findMany({
+    where: {
+      id: {
+        in: personIds,
+      },
+    },
+  })
+
+  const peopleById = people.reduce((acc, person) => {
+    acc[person.id] = person
+    return acc
+  }, {})
+
   const editLogs = _editLogs.map((editLog) => ({
     ...editLog,
-    book: booksById[editLog.editedObjectId],
+    editedObject:
+      editLog.editedObjectType === EditedObjectType.Book
+        ? booksById[editLog.editedObjectId]
+        : peopleById[editLog.editedObjectId],
   }))
 
   return (
     <div className="mt-4 max-w-3xl mx-auto font-mulish">
-      Book edits {isUsersProfile ? "you've" : `${name} has`} made.
+      Edits {isUsersProfile ? "you've" : `${name} has`} made.
       <div className="mt-4">
         {editLogs ? (
           editLogs.length > 0 ? (

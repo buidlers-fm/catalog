@@ -1,9 +1,18 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
+import { MdEdit } from "react-icons/md"
+import { PiMapPinFill } from "react-icons/pi"
 import { TbExternalLink } from "react-icons/tb"
-import { getBookLinkAgnostic } from "lib/helpers/general"
+import {
+  getPersonEditLink,
+  getPersonEditLinkWithQueryString,
+  getBookLinkAgnostic,
+  getDomainFromUrl,
+} from "lib/helpers/general"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
@@ -13,7 +22,19 @@ import EmptyState from "app/components/EmptyState"
 const BOOKS_LIMIT = 8
 
 export default function PersonPage({ person }) {
-  const { openLibraryAuthorId, name, bio, imageUrl, books: allBooks, wikipediaUrl } = person
+  const searchParams = useSearchParams()
+
+  const {
+    slug,
+    openLibraryAuthorId,
+    name,
+    bio,
+    imageUrl,
+    books: allBooks,
+    wikipediaUrl,
+    location,
+    website,
+  } = person
 
   const openLibraryUrl = `https://openlibrary.org/authors/${openLibraryAuthorId}`
 
@@ -35,6 +56,23 @@ export default function PersonPage({ person }) {
         <div className="my-6 sm:my-0 sm:ml-4 grow">
           <div className="text-2xl font-bold">
             <span data-intro-tour="profile-page">{name}</span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row mt-3 text-gray-300">
+            {location && (
+              <div className="mr-4">
+                <PiMapPinFill className="inline-block -mt-[5px] mr-1" />
+                {location}
+              </div>
+            )}
+            {website && (
+              <div className="my-1 sm:my-0">
+                <BsLink45Deg className="inline-block -mt-[3px] mr-1 text-lg " />
+                <Link href={website} target="_blank" rel="noopener noreferrer">
+                  {getDomainFromUrl(website)}
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -73,6 +111,19 @@ export default function PersonPage({ person }) {
               <TbExternalLink className="ml-1 -mt-1 inline-block" />
             </div>
           )}
+
+          <div className="">
+            <Link
+              href={
+                slug
+                  ? getPersonEditLink(slug)
+                  : getPersonEditLinkWithQueryString(searchParams.toString())
+              }
+              className="mt-4 mb-2 block text-sm text-gray-200 hover:text-white font-mulish"
+            >
+              <MdEdit className="inline-block -mt-[4px] text-sm" /> edit this person
+            </Link>
+          </div>
         </div>
 
         <div className="flex-grow mx-auto md:ml-16">

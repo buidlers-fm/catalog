@@ -13,4 +13,5 @@ export default interface EditLog {
   editedFields: string[]
   createdAt: Date
   editor: UserProfile
+  editedObject: any // Book | Person, in-memory only
 }
