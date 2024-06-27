@@ -285,6 +285,11 @@ const api = {
         method: "PATCH",
         body: formData,
       }),
+    updateBooks: (personId, requestData) =>
+      fetchJson(`/api/people/${personId}/books`, {
+        method: "POST",
+        body: prepReqBody(requestData),
+      }),
   },
   pins: {
     create: (requestData) =>

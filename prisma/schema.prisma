@@ -69,6 +69,7 @@ model Person {
   wikidataId          String?              @map("wikidata_id")
   originalImageUrl    String?              @map("original_image_url")
   edited              Boolean              @default(false)
+  areBooksEdited      Boolean              @default(false) @map("are_books_edited")
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime?            @updatedAt @map("updated_at") @db.Timestamptz(6)
   personBookRelations PersonBookRelation[]

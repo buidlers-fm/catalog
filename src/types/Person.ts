@@ -1,3 +1,4 @@
+import type PersonBookRelation from "types/PersonBookRelation"
 import type Book from "types/Book"
 
 export default interface Person {
@@ -12,7 +13,9 @@ export default interface Person {
   openLibraryAuthorId?: string
   wikidataId?: string
   edited: boolean
+  areBooksEdited: boolean
   createdAt?: string | Date
   updatedAt?: string | Date
+  personBookRelations?: PersonBookRelation[]
   books?: Book[]
 }

@@ -6,6 +6,7 @@ import { getMetadata } from "lib/server/metadata"
 import PersonPage from "app/components/people/PersonPage"
 import type { Metadata } from "next"
 import type Person from "types/Person"
+import type Book from "types/Book"
 
 export const dynamic = "force-dynamic"
 
@@ -23,13 +24,22 @@ export default async function PersonPageBySlug({ params }) {
     where: {
       slug: personSlug,
     },
+    include: {
+      personBookRelations: {
+        include: {
+          book: true,
+        },
+      },
+    },
   })) as Person
 
   if (!person) notFound()
 
-  let books = []
+  let books: Book[] = []
 
-  if (person.openLibraryAuthorId) {
+  if (person.areBooksEdited) {
+    books = person.personBookRelations!.map((relation) => relation.book!)
+  } else if (person.openLibraryAuthorId) {
     try {
       books = await OpenLibrary.getAuthorWorks(person)
     } catch (error: any) {
