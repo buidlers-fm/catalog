@@ -1,5 +1,6 @@
 import PersonBookRelationType from "enums/PersonBookRelationType"
 import type Book from "types/Book"
+import type Person from "types/Person"
 
 export default interface PersonBookRelation {
   id: string
@@ -9,4 +10,5 @@ export default interface PersonBookRelation {
   createdAt?: string | Date
   updatedAt?: string | Date
   book?: Book
+  person?: Person
 }

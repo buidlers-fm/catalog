@@ -29,7 +29,7 @@ export default function EditPersonTabs({ person }) {
   }
 
   return (
-    <div className="mx-auto w-full sm:w-fit border-b border-gray-700 px-8 rounded-sm font-mulish">
+    <div className="mx-auto w-fit border-b border-gray-700 px-8 rounded-sm font-mulish">
       <nav className="-mb-px flex gap-x-8 sm:gap-x-16" aria-label="Tabs">
         {tabs.map((tab) => (
           <TabLink key={tab.name} tab={tab} isCurrentTab={isCurrentTab(tab)} />

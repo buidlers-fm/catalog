@@ -36,7 +36,7 @@ export default async function EditPersonLayout({ params, children }) {
         <TiWarningOutline className="inline-block -mt-1 mr-1 text-lg text-gold-500" />
         Make sure to save your changes before you switch tabs.
       </div>
-      <div className="my-8 max-w-xl">
+      <div className="my-8 mx-auto">
         <EditPersonTabs person={person} />
       </div>
       {children}

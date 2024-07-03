@@ -12,6 +12,8 @@ import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import EmptyState from "app/components/EmptyState"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
+import ConfirmationModal from "app/components/ConfirmationModal"
+import type Book from "types/Book"
 
 const BOOKS_LIMIT = 20
 const mockList = { books: [] } as any
@@ -31,23 +33,34 @@ export default function EditPersonBooks({ person }) {
     removeBook,
   } = useEditBookList(mockList, { defaultSort })
 
+  const { name, books: dbBooks, openLibraryBooks } = person
+
+  const defaultListedBooks = person.areBooksEdited ? dbBooks : openLibraryBooks
+  const [listedBooks, setListedBooks] = useState<Book[]>(defaultListedBooks)
+  const [currentDbBooks, setCurrentDbBooks] = useState<Book[]>(dbBooks)
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showDeleteAllConfirmation, setShowDeleteAllConfirmation] = useState(false)
 
-  const { name, books: allBooks } = person
-
-  const suggestedBooks = allBooks
+  const suggestedBooks = openLibraryBooks
     .filter((book) => !currentBooks.some((b) => b.id === book.id))
     .slice(0, BOOKS_LIMIT)
 
   // reset books when exiting editing mode
   useEffect(() => {
+    const defaultBooks = person.areBooksEdited ? currentDbBooks : []
     if (!isEditing) {
-      setCurrentBooks([])
+      setCurrentBooks(defaultBooks)
     }
-  }, [isEditing, setCurrentBooks])
+  }, [isEditing, setCurrentBooks, currentDbBooks, person.areBooksEdited])
 
-  async function submit() {
+  async function submit(confirmed = false) {
+    const deletingAllBooks = currentBooks.length === 0 && listedBooks.length > 0
+    if (deletingAllBooks && !confirmed) {
+      setShowDeleteAllConfirmation(true)
+      return
+    }
+
     const requestData = {
       books: currentBooks,
     }
@@ -62,6 +75,8 @@ export default function EditPersonBooks({ person }) {
       toast.success(`${name}'s books updated!`, { id: toastId })
 
       setIsEditing(false)
+      setListedBooks(currentBooks)
+      setCurrentDbBooks(currentBooks)
     } catch (error) {
       toast.error("Hmm, something went wrong.", { id: toastId })
 
@@ -75,105 +90,137 @@ export default function EditPersonBooks({ person }) {
   }
 
   return (
-    <div>
-      <div className="">
-        {isEditing ? (
-          <div className="mb-16">
-            <EditListBooks
-              heading={`editing ${name}'s books`}
-              books={currentBooks}
-              onBookSelect={addBook}
-              onBookRemove={removeBook}
-              onReorder={() => {}}
-              isRanked={false}
-              emptyStateText="Add books using the above search field, or from the suggested books below."
-              reorderEnabled={false}
-            />
+    <>
+      <div>
+        <div className="">
+          {isEditing ? (
+            <div className="mb-16">
+              <EditListBooks
+                heading={`editing ${name}'s books`}
+                books={currentBooks}
+                onBookSelect={addBook}
+                onBookRemove={removeBook}
+                onReorder={() => {}}
+                isRanked={false}
+                emptyStateText="Add books using the above search field, or from the suggested books below."
+                reorderEnabled={false}
+              />
 
-            <div className="mt-8 text-sm text-gray-300">
-              <div className="mb-4">guidelines for editing a person's books:</div>
-              <div className="mb-4">
-                Once a person's books have been manually edited (and saved) for the first time,
-                their books will no longer be automatically populated or updated from OpenLibrary.
-                They will always need to be manually updated.
+              <div className="mt-8 text-sm text-gray-300">
+                <div className="mb-4">guidelines for editing a person's books:</div>
+                <div className="mb-4">
+                  If the above list is empty but the person has books listed, it means their books
+                  were auto-populated from OpenLibrary. You can add their first confirmed books by
+                  searching for them, or by clicking "+" on any suggested books below.
+                </div>
+                <div className="mb-4">
+                  Once a person's books have been manually edited (and saved) for the first time,
+                  their books will no longer be automatically populated or updated from OpenLibrary.
+                  They will always need to be manually updated.
+                </div>
+                <div className="mb-4">
+                  There is no limit to the number of books that can be added to a person's profile
+                  (unlike with auto-populated books).
+                </div>
+                <div className="mb-4">
+                  Books will always be in order of first published year, descending.
+                </div>
+                <div className="mb-4">
+                  To edit an individual book's details (including first published year), exit this
+                  editing session by either saving your changes or clicking "cancel", then click the
+                  "edit book" button on the book's card. This will open in a new tab.
+                </div>
+                <div className="mb-4">
+                  If you need to add a book that isn't found in the search results or in the
+                  suggested books,{" "}
+                  <a
+                    href="mailto:staff@catalog.fyi"
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    contact us
+                  </a>{" "}
+                  for assistance.
+                </div>
               </div>
-              <div className="mb-4">
-                There is no limit to the number of books that can be added to a person's profile
-                (unlike with auto-populated books).
-              </div>
-              <div className="mb-4">
-                Books will always be in order of first published year, descending.
-              </div>
-              <div className="mb-4">
-                To edit an individual book's details (including first published year), exit this
-                editing session by either saving your changes or clicking "cancel", then click the
-                "edit book" button on the book's card. This will open in a new tab.
-              </div>
-              <div className="mb-4">
-                If you need to add a book that isn't found in the search results or in the suggested
-                books,{" "}
-                <a
-                  href="mailto:staff@catalog.fyi"
-                  className="cat-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div className="flex justify-between mt-8">
+                <button
+                  className="cat-link text-gray-300"
+                  onClick={() => setIsEditing(false)}
+                  disabled={isSubmitting}
                 >
-                  contact us
-                </a>{" "}
-                for assistance.
+                  cancel
+                </button>
+                <button
+                  className="cat-btn cat-btn-sm cat-btn-gold"
+                  onClick={() => submit()}
+                  disabled={isSubmitting}
+                >
+                  save
+                </button>
               </div>
             </div>
-            <div className="flex justify-between mt-8">
-              <button
-                className="cat-link text-gray-300"
-                onClick={() => setIsEditing(false)}
-                disabled={isSubmitting}
-              >
-                cancel
-              </button>
-              <button
-                className="cat-btn cat-btn-sm cat-btn-gold"
-                onClick={submit}
-                disabled={isSubmitting}
-              >
-                save
-              </button>
-            </div>
+          ) : (
+            <button
+              className="mb-8 cat-btn cat-btn-sm cat-btn-gold"
+              onClick={() => setIsEditing(true)}
+            >
+              edit books
+            </button>
+          )}
+        </div>
+
+        {isEditing && <hr className="border-[1px] border-gray-800 my-8" />}
+
+        {isEditing ? (
+          <div className="">
+            {suggestedBooks.length > 0 ? (
+              <>
+                <h2 className="mb-4 cat-eyebrow-uppercase">Suggested books</h2>
+                {suggestedBooks.map((book) => (
+                  <BookCard key={book.openLibraryWorkId} book={book} addBook={addBook} isEditing />
+                ))}
+              </>
+            ) : (
+              <EmptyState text={`No suggested books for ${name}.`} />
+            )}
           </div>
         ) : (
-          <button
-            className="mb-8 cat-btn cat-btn-sm cat-btn-gold"
-            onClick={() => setIsEditing(true)}
-          >
-            edit books
-          </button>
+          <div className="">
+            {listedBooks.length > 0 ? (
+              <>
+                {listedBooks.map((book) => (
+                  <BookCard
+                    key={book.openLibraryWorkId}
+                    book={book}
+                    addBook={addBook}
+                    isEditing={false}
+                  />
+                ))}
+              </>
+            ) : (
+              <EmptyState text={`No books found for ${name}.`} />
+            )}
+          </div>
         )}
       </div>
 
-      {isEditing && <hr className="border-[1px] border-gray-800 my-8" />}
-
-      <div className="">
-        {suggestedBooks.length > 0 ? (
-          <>
-            {isEditing && <h2 className="mb-4 cat-eyebrow-uppercase">Suggested books</h2>}
-            {suggestedBooks.map((book) => (
-              <SuggestedBookCard
-                key={book.openLibraryWorkId}
-                book={book}
-                addBook={addBook}
-                isEditing={isEditing}
-              />
-            ))}
-          </>
-        ) : (
-          <EmptyState text={`No books found for ${name}.`} />
-        )}
-      </div>
-    </div>
+      <ConfirmationModal
+        title="Are you sure you want to remove all books from this section?"
+        onConfirm={() => {
+          submit(true)
+          setShowDeleteAllConfirmation(false)
+        }}
+        onClose={() => setShowDeleteAllConfirmation(false)}
+        isOpen={showDeleteAllConfirmation}
+        confirmText="yes, remove all"
+      />
+    </>
   )
 }
 
-function SuggestedBookCard({ book, addBook, isEditing }) {
+function BookCard({ book, addBook, isEditing }) {
   const { id, openLibraryWorkId, coverImageUrl, title, editionsCount, firstPublishedYear } = book
 
   const idForAnchor = id || openLibraryWorkId
@@ -219,7 +266,7 @@ function SuggestedBookCard({ book, addBook, isEditing }) {
             <Link
               href={getBookEditLinkAgnostic(book)}
               target="_blank"
-              className="cat-link text-sm text-gray-300"
+              className="underline text-sm text-gray-300"
             >
               edit book
             </Link>

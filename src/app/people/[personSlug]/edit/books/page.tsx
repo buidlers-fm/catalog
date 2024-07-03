@@ -6,6 +6,7 @@ import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
 import EditPersonBooks from "app/people/[personSlug]/edit//components/EditPersonBooks"
 import type Person from "types/Person"
+import type Book from "types/Book"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -26,15 +27,24 @@ export default async function EditPersonBooksPage({ params }) {
     where: {
       slug: personSlug,
     },
+    include: {
+      personBookRelations: {
+        include: {
+          book: true,
+        },
+      },
+    },
   })) as Person
 
   if (!person) notFound()
 
-  let books = []
+  const books: Book[] = person.personBookRelations!.map((relation) => relation.book!)
+
+  let openLibraryBooks: Book[] = []
 
   if (person.openLibraryAuthorId) {
     try {
-      books = await OpenLibrary.getAuthorWorks(person)
+      openLibraryBooks = await OpenLibrary.getAuthorWorks(person)
     } catch (error: any) {
       reportToSentry(error, {
         method: "EditPersonBooksPage.getAuthorWorks",
@@ -46,6 +56,7 @@ export default async function EditPersonBooksPage({ params }) {
   person = {
     ...person,
     books,
+    openLibraryBooks,
   }
 
   return <EditPersonBooks person={person} />

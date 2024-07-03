@@ -3,6 +3,7 @@ import type Like from "types/Like"
 import type UserBookShelfAssignment from "types/UserBookShelfAssignment"
 import type Adaptation from "types/Adaptation"
 import type Person from "types/Person"
+import type PersonBookRelation from "types/PersonBookRelation"
 
 export default interface Book {
   id?: string
@@ -28,6 +29,7 @@ export default interface Book {
   bookReads?: any[] // TODO
   userShelfAssignments?: UserBookShelfAssignment[]
   adaptations?: Adaptation[]
+  personBookRelations?: PersonBookRelation[]
   openLibraryBestEditionId?: string // in-memory only
   isbn?: string // in-memory only
   oclc?: string // in-memory only

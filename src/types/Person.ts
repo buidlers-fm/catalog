@@ -18,4 +18,5 @@ export default interface Person {
   updatedAt?: string | Date
   personBookRelations?: PersonBookRelation[]
   books?: Book[]
+  openLibraryBooks?: Book[] // only used in the edit books page
 }

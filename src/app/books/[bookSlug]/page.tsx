@@ -8,6 +8,7 @@ import { getMetadata } from "lib/server/metadata"
 import BookPage from "app/books/components/BookPage"
 import RemountOnPathChange from "app/components/RemountOnPathChange"
 import InteractionObjectType from "enums/InteractionObjectType"
+import PersonBookRelationType from "enums/PersonBookRelationType"
 import type { Metadata } from "next"
 import type Book from "types/Book"
 
@@ -24,7 +25,7 @@ export default async function BookPageBySlug({ params }: any) {
   const { bookSlug } = params
   const userProfile = await getCurrentUserProfile()
 
-  const dbBook = await prisma.book.findFirst({
+  const dbBook = (await prisma.book.findFirst({
     where: {
       slug: bookSlug,
     },
@@ -42,6 +43,11 @@ export default async function BookPageBySlug({ params }: any) {
           createdAt: "desc",
         },
       },
+      personBookRelations: {
+        include: {
+          person: true,
+        },
+      },
       userShelfAssignments: {
         where: {
           userProfileId: userProfile?.id,
@@ -51,7 +57,7 @@ export default async function BookPageBySlug({ params }: any) {
         },
       },
     },
-  })
+  })) as Book
 
   if (!dbBook) notFound()
 
@@ -122,9 +128,14 @@ export default async function BookPageBySlug({ params }: any) {
       }
     }
 
+    const author = book.personBookRelations
+      ?.filter((relation) => relation.relationType === PersonBookRelationType.Author)
+      .map((relation) => relation.person)[0]
+
     // special overrides
     book = {
       ...book,
+      author,
 
       // handle cover image urls separately
       coverImageUrl: useExistingCoverImageUrl ? book.coverImageUrl : openLibraryBook.coverImageUrl,

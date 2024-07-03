@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { FaUserCircle } from "react-icons/fa"
 import { getBookLink, getPersonLinkWithSlug } from "lib/helpers/general"
 import { getFormattedTimestamps } from "lib/helpers/dateTime"
 import UserProfile from "lib/models/UserProfile"
@@ -96,7 +97,7 @@ function EditLogCardBook({ editLog, withCover = true }) {
 }
 
 function EditLogCardPerson({ editLog }) {
-  const { id, editor, editedObject: person, editedFields, createdAt } = editLog
+  const { id, editor, editedObject: person, editedFields, editType, createdAt } = editLog
 
   const { name: editorName } = UserProfile.build(editor)
 
@@ -113,22 +114,30 @@ function EditLogCardPerson({ editLog }) {
 
   const { name, imageUrl, slug } = person
 
+  const editedBooks = editType === EditType.PersonBookRelations
+
   return (
     <div className="flex items-center px-4 py-4 border-b border-b-gray-800 last:border-none">
-      <img src={imageUrl} alt={name} className="w-16 h-16 mr-6 shrink-0 rounded-full" />
+      {imageUrl ? (
+        <img src={imageUrl} alt={name} className="w-16 h-16 mr-6 shrink-0 rounded-full" />
+      ) : (
+        <FaUserCircle className="mr-3 text-[64px] text-gray-500" />
+      )}
       <div className="">
         {editorName} edited{" "}
         <Link href={getPersonLinkWithSlug(slug)} className="cat-link">
           {name}
         </Link>
-        &rsquo;s page.
+        &rsquo;s {editedBooks ? "books" : "page"}.
         <span id={timestampTooltipAnchorId} className="ml-2 mt-2 text-sm text-gray-500">
           {createdAtFromNow}
         </span>
         {timestampTooltip}
-        <div className="ml-2 mt-1 text-sm text-gray-500">
-          ({editedFields.map((fieldName) => camelCaseToWords(fieldName)).join(", ")})
-        </div>
+        {!editedBooks && (
+          <div className="ml-2 mt-1 text-sm text-gray-500">
+            ({editedFields.map((fieldName) => camelCaseToWords(fieldName)).join(", ")})
+          </div>
+        )}
       </div>
     </div>
   )
