@@ -135,7 +135,7 @@ export default async function BookPageBySlug({ params }: any) {
     // special overrides
     book = {
       ...book,
-      author,
+      author: author || openLibraryBook.author,
 
       // handle cover image urls separately
       coverImageUrl: useExistingCoverImageUrl ? book.coverImageUrl : openLibraryBook.coverImageUrl,
