@@ -43,7 +43,7 @@ export default function EditPersonBooks({ person }) {
   const [showDeleteAllConfirmation, setShowDeleteAllConfirmation] = useState(false)
 
   const suggestedBooks = openLibraryBooks
-    .filter((book) => !currentBooks.some((b) => b.id === book.id))
+    .filter((book) => !currentBooks.some((b) => b.openLibraryWorkId === book.openLibraryWorkId))
     .slice(0, BOOKS_LIMIT)
 
   // reset books when exiting editing mode
