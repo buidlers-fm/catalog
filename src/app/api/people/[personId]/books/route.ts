@@ -97,7 +97,7 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
   })
 
   const createPersonBookRelationsPromise = prisma.personBookRelation.createMany({
-    data: books.map((book) => ({
+    data: bookRecords.map((book) => ({
       personId,
       bookId: book.id,
       relationType: PersonBookRelationType.Author,
