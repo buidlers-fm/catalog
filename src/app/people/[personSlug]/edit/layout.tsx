@@ -1,9 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-// import { TiWarningOutline } from "react-icons/ti"
+import { TiWarningOutline } from "react-icons/ti"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getPersonLinkWithSlug } from "lib/helpers/general"
+import EditPersonTabs from "app/people/[personSlug]/edit/components/EditPersonTabs"
 
 export const dynamic = "force-dynamic"
 
@@ -31,15 +32,13 @@ export default async function EditPersonLayout({ params, children }) {
           {person.name}
         </Link>{" "}
       </div>
-      {/*
       <div className="text-gray-300 text-sm">
         <TiWarningOutline className="inline-block -mt-1 mr-1 text-lg text-gold-500" />
         Make sure to save your changes before you switch tabs.
       </div>
-      <div className="my-8 max-w-xl">
-        <EditBookTabs book={book} />
+      <div className="my-8 mx-auto">
+        <EditPersonTabs person={person} />
       </div>
-      */}
       {children}
     </div>
   )

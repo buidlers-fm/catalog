@@ -3,9 +3,15 @@ import { toast } from "react-hot-toast"
 import type List from "types/List"
 import type Book from "types/Book"
 
-export default function useEditBookList(list?: List) {
+type Options = {
+  defaultSort?: (a, b) => number
+}
+
+export default function useEditBookList(list?: List, options: Options = {}) {
   const [books, setBooks] = useState<Book[]>([])
   const [isDirty, setIsDirty] = useState<boolean>(false)
+
+  const { defaultSort } = options
 
   useEffect(() => {
     if (!list?.books) return
@@ -21,7 +27,12 @@ export default function useEditBookList(list?: List) {
       return
     }
 
-    const updatedBooks = [...books, selectedBook]
+    let updatedBooks = [...books, selectedBook]
+
+    if (defaultSort) {
+      updatedBooks = updatedBooks.sort(defaultSort)
+    }
+
     setBooks(updatedBooks)
     setIsDirty(true)
   }
@@ -50,6 +61,7 @@ export default function useEditBookList(list?: List) {
 
   return {
     books,
+    setBooks,
     addBook,
     removeBook,
     reorderBooks,

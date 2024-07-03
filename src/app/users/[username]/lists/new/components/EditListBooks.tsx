@@ -15,10 +15,14 @@ type Props = {
   onReorder: (reorderedIds: string[]) => void
   limit?: number
   isRanked: boolean
+  reorderEnabled?: boolean
   notesEnabled?: boolean
   bookIdsToNotes?: any
   onBookNoteChange?: (openLibraryWorkId: string, note: string) => void
+  emptyStateText?: string
 }
+
+const DEFAULT_EMPTY_STATE_TEXT = "Add some books using the above search field."
 
 export default function EditListBooks({
   heading,
@@ -28,9 +32,11 @@ export default function EditListBooks({
   onReorder,
   limit,
   isRanked,
+  reorderEnabled = true,
   notesEnabled = false,
   bookIdsToNotes = {},
   onBookNoteChange = () => {},
+  emptyStateText = DEFAULT_EMPTY_STATE_TEXT,
 }: Props) {
   const [bookIds, setBookIds] = useState<string[]>([])
 
@@ -78,6 +84,7 @@ export default function EditListBooks({
                     onRemove={onBookRemove}
                     isRanked={isRanked}
                     rank={index + 1}
+                    reorderEnabled={reorderEnabled}
                     notesEnabled={notesEnabled}
                     note={bookIdsToNotes[book.openLibraryWorkId]}
                     onNoteChange={onBookNoteChange}
@@ -88,7 +95,7 @@ export default function EditListBooks({
           </DndContext>
         ) : (
           <div className="h-32 p-6 flex items-center justify-center border border-gray-700 rounded">
-            Add some books using the above search field.
+            {emptyStateText}
           </div>
         )}
       </div>

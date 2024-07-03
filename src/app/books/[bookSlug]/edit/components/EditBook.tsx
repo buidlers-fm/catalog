@@ -60,7 +60,7 @@ const validations = {
   },
   firstPublishedYear: {
     min: {
-      value: 0,
+      value: 1,
       message: "First published year must be a positive number.",
     },
     max: {
@@ -102,6 +102,9 @@ export default function EditBook({ book }) {
   const submit = async (formData: BookFormData) => {
     const requestData = {
       ...formData,
+      firstPublishedYear: formData.firstPublishedYear
+        ? Number(formData.firstPublishedYear)
+        : undefined,
       isTranslated: !formData.isOriginallyEnglish,
     }
 
@@ -211,6 +214,15 @@ export default function EditBook({ book }) {
             errorMessage={errors.description?.message}
             fullWidth={false}
             atMentionsEnabled={false}
+          />
+
+          <FormInput
+            labelText="first published year"
+            name="firstPublishedYear"
+            type="number"
+            formProps={register("firstPublishedYear", validations.firstPublishedYear)}
+            errorMessage={errors.firstPublishedYear?.message}
+            fullWidth={false}
           />
 
           <div className="my-8">

@@ -40,8 +40,20 @@ export default function PersonPage({ person }) {
 
   const bioPlaceholder = "No bio available."
 
-  const books = allBooks.slice(0, BOOKS_LIMIT)
-  const hasMoreBooks = allBooks.length > BOOKS_LIMIT
+  let books
+  let hasMoreBooks = false
+
+  if (person.areBooksEdited) {
+    books = allBooks.sort((a, b) => {
+      // by first published year, descending
+      if (a.firstPublishedYear === undefined) return 1
+      if (b.firstPublishedYear === undefined) return -1
+      return b.firstPublishedYear - a.firstPublishedYear
+    })
+  } else {
+    books = allBooks.slice(0, BOOKS_LIMIT)
+    hasMoreBooks = allBooks.length > BOOKS_LIMIT
+  }
 
   return (
     <div className="mt-8 max-w-4xl mx-8 lg:mx-auto">

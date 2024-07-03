@@ -114,9 +114,22 @@ export const getPersonEditLink = (slug: string) => `/people/${slug}/edit`
 
 export const getPersonEditLinkWithQueryString = (queryString: any) => `/people/edit?${queryString}`
 
+export const getPersonEditBooksLink = (slug: string) => `/people/${slug}/edit/books`
+
 export const getBookEditLink = (slug: string) => `/books/${slug}/edit`
 
 export const getBookEditLinkWithQueryString = (queryString: any) => `/books/edit?${queryString}`
+
+export const getBookEditLinkAgnostic = (book) => {
+  if (book.slug) return getBookEditLink(book.slug)
+
+  const queryParams = {
+    openLibraryWorkId: book.openLibraryWorkId,
+  }
+  const queryString = new URLSearchParams(humps.decamelizeKeys(queryParams))
+
+  return getBookEditLinkWithQueryString(queryString)
+}
 
 export const getBookEditCoversLink = (slug: string) => `/books/${slug}/edit/covers`
 
