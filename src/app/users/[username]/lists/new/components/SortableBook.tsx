@@ -87,7 +87,12 @@ export default function SortableBook({
           />
         ) : (
           <>
-            <div className="mt-[-8px] font-bold">{truncateString(book.title, 64)}</div>
+            <div className="mt-[-8px]">
+              <span className="font-bold">{truncateString(book.title, 64)}</span>
+              {book.firstPublishedYear && (
+                <span className="text-sm text-gray-300"> {book.firstPublishedYear}</span>
+              )}
+            </div>
             <div>{truncateString(book.authorName, 32)}</div>
             {notesEnabled &&
               (note ? (
