@@ -49,8 +49,8 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       editedObjectId: adaptation.bookId,
       editedObjectType: EditedObjectType.Book,
       editType: EditType.AdaptationUpdate,
-      beforeJson: JSON.stringify(before),
-      afterJson: JSON.stringify(after),
+      beforeJson: before,
+      afterJson: after,
       editedFields: ["adaptations"],
     },
   })
@@ -109,8 +109,8 @@ export const DELETE = withApiHandling(
         editedObjectId: adaptation.bookId,
         editedObjectType: EditedObjectType.Book,
         editType: EditType.AdaptationDelete,
-        beforeJson: JSON.stringify(before),
-        afterJson: JSON.stringify(after),
+        beforeJson: before,
+        afterJson: after,
         editedFields: ["adaptations"],
       },
     })

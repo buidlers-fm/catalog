@@ -70,8 +70,8 @@ export const PATCH = withApiHandling(async (_req: NextRequest, { params }) => {
       editedObjectId: bookId,
       editedObjectType: EditedObjectType.Book,
       editType: EditType.Update,
-      beforeJson: JSON.stringify(book),
-      afterJson: JSON.stringify(updatedBook),
+      beforeJson: book,
+      afterJson: updatedBook,
       editedFields: changedFields,
     },
   })

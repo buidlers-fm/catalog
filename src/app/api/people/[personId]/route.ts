@@ -98,8 +98,8 @@ export const PATCH = withApiHandling(
         editedObjectId: personId,
         editedObjectType: EditedObjectType.Person,
         editType: EditType.Update,
-        beforeJson: JSON.stringify(person),
-        afterJson: JSON.stringify(updatedPerson),
+        beforeJson: person,
+        afterJson: updatedPerson,
         editedFields: changedFields,
       },
     })
