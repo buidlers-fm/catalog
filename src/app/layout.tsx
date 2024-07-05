@@ -2,6 +2,7 @@ import "app/globals.css"
 import Link from "next/link"
 import { Chivo_Mono, Newsreader, Mulish } from "next/font/google"
 import { FaDiscord } from "react-icons/fa"
+import { FaBluesky } from "react-icons/fa6"
 import { BsEnvelopeFill } from "react-icons/bs"
 import { UserProvider } from "lib/contexts/UserContext"
 import { UnreadsProvider } from "lib/contexts/UnreadsContext"
@@ -11,7 +12,6 @@ import IntroTourProvider from "app/components/IntroTourProvider"
 import CatalogHeader from "app/components/CatalogHeader"
 import Modals from "app/components/Modals"
 import Toast from "app/components/Toast"
-import BlueskyLogo from "app/components/BlueskyLogo"
 import type { Metadata } from "next"
 
 const chivoMono = Chivo_Mono({ subsets: ["latin"], variable: "--font-chivo-mono" })
@@ -87,13 +87,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                             <FaDiscord className="mt-0.5 text-2xl" />
                           </a>
                         </div>
-                        <div className="ml-[7px] sm:ml-4 -mt-[3px] w-8 h-8">
+                        <div className="ml-4 sm:ml-6 w-8 h-8">
                           <a
                             href="https://bsky.app/profile/catalog.fyi"
                             className="w-full h-full"
                             rel="noopener noreferrer"
                           >
-                            <BlueskyLogo />
+                            <FaBluesky className="mt-[5px] text-lg" />
                           </a>
                         </div>
                       </div>

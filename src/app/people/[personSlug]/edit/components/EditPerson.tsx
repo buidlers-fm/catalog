@@ -16,6 +16,10 @@ type PersonFormData = {
   bio: string
   location: string
   website: string
+  instagram: string
+  tiktok: string
+  bluesky: string
+  twitter: string
   wikipediaUrl: string
   slug: string
   openLibraryAuthorId: string
@@ -85,11 +89,23 @@ export default function EditPerson({ person }) {
     setImageChanged(true)
   }
 
+  function stripAtSymbol(username?: string) {
+    if (!username) return null
+
+    return username.replace(/^@/, "")
+  }
+
   const submit = async (data: PersonFormData) => {
     if (!imageValid) return
 
     const requestData = {
-      person: data,
+      person: {
+        ...data,
+        instagram: stripAtSymbol(data.instagram),
+        tiktok: stripAtSymbol(data.tiktok),
+        bluesky: stripAtSymbol(data.bluesky),
+        twitter: stripAtSymbol(data.twitter),
+      },
       options: {} as any,
     }
 
@@ -158,7 +174,6 @@ export default function EditPerson({ person }) {
               markFileValid={setImageValid}
             />
           </div>
-
           <FormInput
             labelText="slug (not editable for now)"
             name="slug"
@@ -223,6 +238,43 @@ export default function EditPerson({ person }) {
             errorMessage={errors.website?.message}
             fullWidth={false}
             placeholder="https://example.com"
+          />
+
+          <div className="-mb-4 text-gray-300 text-sm">
+            Social media usernames should be entered without the "@" symbol.
+          </div>
+
+          <FormInput
+            labelText="instagram username"
+            name="instagram"
+            type="text"
+            formProps={register("instagram")}
+            errorMessage={errors.instagram?.message}
+            fullWidth={false}
+          />
+          <FormInput
+            labelText="tiktok username"
+            name="tiktok"
+            type="text"
+            formProps={register("tiktok")}
+            errorMessage={errors.tiktok?.message}
+            fullWidth={false}
+          />
+          <FormInput
+            labelText="bluesky username"
+            name="bluesky"
+            type="text"
+            formProps={register("bluesky")}
+            errorMessage={errors.bluesky?.message}
+            fullWidth={false}
+          />
+          <FormInput
+            labelText="x (twitter) username"
+            name="twitter"
+            type="text"
+            formProps={register("twitter")}
+            errorMessage={errors.twitter?.message}
+            fullWidth={false}
           />
 
           <FormInput

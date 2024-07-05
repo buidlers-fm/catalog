@@ -87,8 +87,8 @@ export const POST = withApiHandling(async (_req: NextRequest, { params }) => {
       editedObjectId: bookId,
       editedObjectType: EditedObjectType.Book,
       editType: EditType.AdaptationCreate,
-      beforeJson: JSON.stringify(before),
-      afterJson: JSON.stringify(after),
+      beforeJson: before,
+      afterJson: after,
       editedFields: ["adaptations"],
     },
   })

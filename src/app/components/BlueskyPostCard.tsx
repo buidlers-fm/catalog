@@ -4,10 +4,10 @@ import { Tooltip } from "react-tooltip"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { FaUserCircle } from "react-icons/fa"
+import { FaBluesky } from "react-icons/fa6"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import { truncateString } from "lib/helpers/strings"
 import CustomMarkdown from "app/components/CustomMarkdown"
-import BlueskyLogo from "app/components/BlueskyLogo"
 
 dayjs.extend(relativeTime)
 
@@ -126,9 +126,9 @@ export default function BlueskyPostCard({ post, embedded = false }) {
             {createdAtFromNow}
           </span>
 
-          <div className="-mt-1 h-8 w-8">
+          <div className="mt-2.5 ml-1 h-8 w-8">
             <a href={postUrl} className="w-full h-full" rel="noopener noreferrer">
-              <BlueskyLogo color="gray" />
+              <FaBluesky className="text-gray-300 text-lg" />
             </a>
           </div>
         </div>

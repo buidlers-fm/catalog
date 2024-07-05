@@ -10,6 +10,10 @@ export default interface Person {
   wikipdiaUrl?: string
   location?: string
   website?: string
+  instagram?: string
+  tiktok?: string
+  bluesky?: string
+  twitter?: string
   openLibraryAuthorId?: string
   wikidataId?: string
   edited: boolean

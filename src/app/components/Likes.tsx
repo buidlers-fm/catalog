@@ -116,6 +116,14 @@ export default function Likes({
     }
   }
 
+  if (!interactive) {
+    // when signed out, don't show likes for books with no likes
+    // yes, 0 is already falsy, but just to be explicit
+    if ((likedObjectType === InteractionObjectType.Book && !likeCount) || likeCount === 0) {
+      return null
+    }
+  }
+
   return interactive ? (
     <div className="flex items-center">
       <button id={buttonId} onClick={toggleLike} className="flex items-center mr-1.5">

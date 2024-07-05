@@ -3,7 +3,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat"
 import prisma from "lib/prisma"
 import wikidata from "lib/wikidata"
 import { reportToSentry } from "lib/sentry"
-import { fetchJsonWithUserAgentHeaders } from "lib/helpers/general"
+import { fetchJson } from "lib/helpers/general"
 import { looseStringEquals, isSameLanguage, prepStringForSearch } from "lib/helpers/strings"
 import CoverSize from "enums/CoverSize"
 import type Book from "types/Book"
@@ -35,14 +35,14 @@ const OpenLibrary = {
   getFullBook: async (workId: string, bestEditionId?) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
-    const work = await fetchJsonWithUserAgentHeaders(workUrl)
+    const work = await fetchJson(workUrl)
 
     let bestEdition
 
     if (bestEditionId) {
       const bestEditionUrl = `${BASE_URL}/editions/${bestEditionId}.json`
       try {
-        bestEdition = await fetchJsonWithUserAgentHeaders(bestEditionUrl)
+        bestEdition = await fetchJson(bestEditionUrl)
       } catch (error: any) {
         reportToSentry(error, {
           workId,
@@ -54,7 +54,7 @@ const OpenLibrary = {
 
     // get editions and first book data
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
-    const editionsRes = await fetchJsonWithUserAgentHeaders(editionsUrl)
+    const editionsRes = await fetchJson(editionsUrl)
     const _editions = editionsRes.entries
     let editions = [..._editions].sort((a, b) => {
       if (!a.latestRevision) return 1
@@ -100,11 +100,11 @@ const OpenLibrary = {
         authorName = dbAuthor.name
       } else {
         let authorUrl = `${BASE_URL}/${authorKey}.json`
-        author = await fetchJsonWithUserAgentHeaders(authorUrl)
+        author = await fetchJson(authorUrl)
         if (author.type.key === "/type/redirect") {
           authorKey = author.location
           authorUrl = `${BASE_URL}/${authorKey}.json`
-          author = await fetchJsonWithUserAgentHeaders(authorUrl)
+          author = await fetchJson(authorUrl)
         }
 
         // get author name from wikipedia if possible
@@ -211,7 +211,7 @@ const OpenLibrary = {
   getAuthorIdFromWorkId: async (workId: string) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
-    const work = await fetchJsonWithUserAgentHeaders(workUrl)
+    const work = await fetchJson(workUrl)
 
     // get author from work
     const authorKey = work.authors?.[0]?.author?.key
@@ -223,13 +223,13 @@ const OpenLibrary = {
   // server-side only!
   getAuthor: async (authorId: string) => {
     const authorUrl = `${BASE_URL}/authors/${authorId}.json`
-    let openLibraryAuthor = await fetchJsonWithUserAgentHeaders(authorUrl)
+    let openLibraryAuthor = await fetchJson(authorUrl)
 
     // follow a redirect
     if (openLibraryAuthor.type.key === "/type/redirect") {
       const nextAuthorKey = openLibraryAuthor.location
       const nextAuthorUrl = `${BASE_URL}/${nextAuthorKey}.json`
-      openLibraryAuthor = await fetchJsonWithUserAgentHeaders(nextAuthorUrl)
+      openLibraryAuthor = await fetchJson(nextAuthorUrl)
     }
 
     const name = openLibraryAuthor.personalName || openLibraryAuthor.name
@@ -287,7 +287,7 @@ const OpenLibrary = {
 
     const worksUrl = `${BASE_URL}/search.json?q=author_key:${openLibraryAuthorId}`
 
-    const worksRes = await fetchJsonWithUserAgentHeaders(worksUrl)
+    const worksRes = await fetchJson(worksUrl)
 
     const worksEntries = worksRes.docs
 
@@ -352,13 +352,13 @@ const OpenLibrary = {
   getCoverUrlsForWork: async (workId: string) => {
     // get work
     const workUrl = `${BASE_URL}/works/${workId}.json`
-    const work = await fetchJsonWithUserAgentHeaders(workUrl)
+    const work = await fetchJson(workUrl)
 
     const workCoverIds = work.covers || []
 
     // get editions (up to 50 by default)
     const editionsUrl = `${BASE_URL}/works/${workId}/editions.json`
-    const editionsRes = await fetchJsonWithUserAgentHeaders(editionsUrl)
+    const editionsRes = await fetchJson(editionsUrl)
     const editions = editionsRes.entries
 
     const editionsCoverIds = editions.map((edition: any) => edition.covers || []).flat()
@@ -436,7 +436,7 @@ const OpenLibrary = {
     url.searchParams.append("lang", OL_LANGUAGE_CODE)
     url.searchParams.append("fields", searchFields.join(","))
 
-    const resBody = await fetchJsonWithUserAgentHeaders(url)
+    const resBody = await fetchJson(url)
     let results = resBody.docs // returns up to 100 results per page
     let moreResultsExist = resBody.numFound > results.length
 

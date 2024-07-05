@@ -88,8 +88,6 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
     },
   })
 
-  const beforeJson = JSON.stringify(existingPersonBookRelations)
-
   const deletePersonBookRelationsPromise = prisma.personBookRelation.deleteMany({
     where: {
       personId,
@@ -125,16 +123,14 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
     },
   })
 
-  const afterJson = JSON.stringify(newPersonBookRelations)
-
   await prisma.editLog.create({
     data: {
       editorId: currentUserProfile.id,
       editedObjectId: personId,
       editedObjectType: EditedObjectType.Person,
       editType: EditType.PersonBookRelations,
-      beforeJson,
-      afterJson,
+      beforeJson: existingPersonBookRelations,
+      afterJson: newPersonBookRelations,
       editedFields: ["personBookRelations"],
     },
   })
