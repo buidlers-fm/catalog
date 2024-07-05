@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
+import { FaInstagram, FaTiktok, FaBluesky, FaXTwitter } from "react-icons/fa6"
 import { MdEdit } from "react-icons/md"
 import { PiMapPinFill } from "react-icons/pi"
 import { TbExternalLink } from "react-icons/tb"
@@ -34,11 +35,20 @@ export default function PersonPage({ person }) {
     wikipediaUrl,
     location,
     website,
+    instagram,
+    tiktok,
+    bluesky,
+    twitter,
   } = person
 
   const openLibraryUrl = `https://openlibrary.org/authors/${openLibraryAuthorId}`
 
   const bioPlaceholder = "No bio available."
+
+  const instagramUrl = instagram ? `https://instagram.com/${instagram}` : null
+  const tiktokUrl = tiktok ? `https://tiktok.com/@${tiktok}` : null
+  const blueskyUrl = bluesky ? `https://bsky.app/profile/${bluesky}` : null
+  const twitterUrl = twitter ? `https://x.com/${twitter}` : null
 
   let books
   let hasMoreBooks = false
@@ -84,6 +94,29 @@ export default function PersonPage({ person }) {
                   {getDomainFromUrl(website)}
                 </Link>
               </div>
+            )}
+          </div>
+
+          <div className="flex my-4">
+            {instagramUrl && (
+              <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
+                <FaInstagram className="text-2xl" />
+              </a>
+            )}
+            {tiktokUrl && (
+              <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
+                <FaTiktok className="text-xl" />
+              </a>
+            )}
+            {blueskyUrl && (
+              <a href={blueskyUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
+                <FaBluesky className="text-xl" />
+              </a>
+            )}
+            {twitterUrl && (
+              <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
+                <FaXTwitter className="text-xl" />
+              </a>
             )}
           </div>
         </div>

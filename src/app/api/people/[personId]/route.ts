@@ -56,13 +56,18 @@ export const PATCH = withApiHandling(
       originalImageUrl = null // since image comes from user, there is no "source" url
     }
 
-    const { name, bio, location, website, wikipediaUrl } = reqJson
+    const { name, bio, location, website, instagram, tiktok, bluesky, twitter, wikipediaUrl } =
+      reqJson
 
     const fieldsToUpdate = {
       name,
       bio,
       location,
       website,
+      instagram,
+      tiktok,
+      bluesky,
+      twitter,
       wikipediaUrl,
       imageUrl: newImageUrl,
       originalImageUrl,
