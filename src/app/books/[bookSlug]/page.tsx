@@ -11,6 +11,7 @@ import InteractionObjectType from "enums/InteractionObjectType"
 import PersonBookRelationType from "enums/PersonBookRelationType"
 import type { Metadata } from "next"
 import type Book from "types/Book"
+import type PersonBookRelation from "types/PersonBookRelation"
 
 export const dynamic = "force-dynamic"
 
@@ -132,6 +133,32 @@ export default async function BookPageBySlug({ params }: any) {
       ?.filter((relation) => relation.relationType === PersonBookRelationType.Author)
       .map((relation) => relation.person)[0]
 
+    // group credits by relation type, sort by relation type name, then by person name
+    const creditsByRelationType = book.personBookRelations
+      ?.reduce((acc, relation: PersonBookRelation) => {
+        if (relation.relationType === PersonBookRelationType.Author) return acc
+
+        const existingRelationType: any = acc.find(
+          (item: any) => item.relationType === relation.relationType,
+        )
+
+        if (existingRelationType) {
+          existingRelationType.relations.push(relation)
+        } else {
+          acc.push({
+            relationType: relation.relationType,
+            relations: [relation] as PersonBookRelation[],
+          })
+        }
+
+        return acc
+      }, [] as any[])
+      .sort((a, b) => a.relationType.localeCompare(b.relationType))
+      .map((item) => ({
+        ...item,
+        relations: item.relations.sort((a, b) => a.person.name.localeCompare(b.person.name)),
+      }))
+
     // special overrides
     book = {
       ...book,
@@ -145,6 +172,8 @@ export default async function BookPageBySlug({ params }: any) {
 
       // override openLibraryAuthorId if db value is blank
       openLibraryAuthorId: book.openLibraryAuthorId || openLibraryBook.openLibraryAuthorId,
+
+      creditsByRelationType,
     }
   }
 

@@ -28,7 +28,9 @@ export const GET = withApiHandling(
     // fetch books without person-book relations
     const whereConditions = {
       personBookRelations: {
-        none: {},
+        none: {
+          relationType: PersonBookRelationType.Author,
+        },
       },
     }
 

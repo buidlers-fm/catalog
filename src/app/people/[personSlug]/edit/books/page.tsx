@@ -5,6 +5,7 @@ import { reportToSentry } from "lib/sentry"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
 import EditPersonBooks from "app/people/[personSlug]/edit//components/EditPersonBooks"
+import PersonBookRelationType from "enums/PersonBookRelationType"
 import type Person from "types/Person"
 import type Book from "types/Book"
 import type { Metadata } from "next"
@@ -29,6 +30,9 @@ export default async function EditPersonBooksPage({ params }) {
     },
     include: {
       personBookRelations: {
+        where: {
+          relationType: PersonBookRelationType.Author,
+        },
         include: {
           book: true,
         },

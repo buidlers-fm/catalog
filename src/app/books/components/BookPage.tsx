@@ -16,7 +16,6 @@ import { TbExternalLink } from "react-icons/tb"
 import { useUserBooks } from "lib/contexts/UserBooksContext"
 import { useModals } from "lib/contexts/ModalsContext"
 import api from "lib/api"
-import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import { getLocalStorage, deleteLocalStorage } from "lib/localstorage"
 import {
@@ -35,6 +34,7 @@ import {
 } from "lib/helpers/general"
 import { joinStringsWithAnd } from "lib/helpers/strings"
 import CopyableLinkButton from "app/components/CopyableLinkButton"
+import BookInfo from "app/books/components/BookInfo"
 import BookPageConversations from "app/books/components/BookPageConversations"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import Likes from "app/components/Likes"
@@ -42,7 +42,6 @@ import UserBookShelfMenu from "app/components/userBookShelves/UserBookShelfMenu"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import BookLinkPostCard from "app/components/bookPosts/BookPostCard"
 import ListCard from "app/components/lists/ListCard"
-import ExpandableText from "app/components/ExpandableText"
 import BookNoteType from "enums/BookNoteType"
 import Sort from "enums/Sort"
 import InteractionObjectType from "enums/InteractionObjectType"
@@ -59,8 +58,6 @@ import type BookActivity from "types/BookActivity"
 
 const BOOK_NOTES_LIMIT = 3
 const LISTS_LIMIT = 3
-const DEFAULT_DESCRIPTION = "No description found."
-const DESCRIPTION_MAX_CHARS = 800
 
 let pageUrl
 if (typeof window !== "undefined") {
@@ -398,8 +395,6 @@ export default function BookPage({
         (likedByFriendsProfiles && likedByFriendsProfiles.length > 0))) ||
     (favoritedByFriendsProfiles && favoritedByFriendsProfiles.length > 0)
 
-  const description = book.description || DEFAULT_DESCRIPTION
-
   const worldCatUrl = getWorldCatUrl({ isbn: book.isbn, oclc: book.oclc })
 
   return (
@@ -598,6 +593,7 @@ export default function BookPage({
               </div>
             )}
           </div>
+
           <div className="flex-grow mx-auto md:ml-16">
             <h1 className="mb-1 text-4xl font-semibold">
               {book.title}
@@ -626,48 +622,8 @@ export default function BookPage({
                 book.authorName
               )}
             </h2>
-            <div className="mt-8 mb-4 md:w-11/12">
-              <ExpandableText text={description} maxChars={DESCRIPTION_MAX_CHARS} />
-            </div>
-            {book.description && !book.edited && (
-              <div className="px-8 flex justify-end text-sm text-gray-300">— from OpenLibrary</div>
-            )}
-            <div className="my-8">
-              {book.openLibraryWorkId && (
-                <div className="">
-                  <span className="text-gray-200">
-                    {book.editionsCount
-                      ? `${
-                          book.editionsCount === 1 ? "1 edition" : `${book.editionsCount} editions`
-                        } at`
-                      : "More at"}
-                  </span>{" "}
-                  <Link
-                    href={OpenLibrary.getOlWorkPageUrl(book.openLibraryWorkId)}
-                    className="cat-underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    OpenLibrary
-                  </Link>
-                  <TbExternalLink className="ml-1 -mt-1 inline-block" />
-                </div>
-              )}
 
-              {book.wikipediaUrl && (
-                <div className="">
-                  <Link
-                    href={book.wikipediaUrl}
-                    className="cat-underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Wikipedia
-                  </Link>
-                  <TbExternalLink className="ml-1 -mt-1 inline-block" />
-                </div>
-              )}
-            </div>
+            <BookInfo book={book} />
           </div>
 
           {book.adaptations && book.adaptations.length > 0 && (

@@ -45,6 +45,7 @@
     "jsx-a11y/label-has-associated-control": "off",
     "jsx-a11y/control-has-associated-label": "off",
     "no-await-in-loop": "off",
+    "no-continue": "off",
     "no-else-return": "off",
     "no-inner-declarations": "off",
     "no-nested-ternary": "off",

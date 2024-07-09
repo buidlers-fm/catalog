@@ -30,6 +30,7 @@ export default interface Book {
   userShelfAssignments?: UserBookShelfAssignment[]
   adaptations?: Adaptation[]
   personBookRelations?: PersonBookRelation[]
+  creditsByRelationType?: any // in-memory only
   openLibraryBestEditionId?: string // in-memory only
   isbn?: string // in-memory only
   oclc?: string // in-memory only

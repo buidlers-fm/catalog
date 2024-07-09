@@ -6,6 +6,8 @@ export default interface Person {
   slug: string
   name: string
   imageUrl?: string
+  orgName?: string
+  title?: string
   bio?: string
   wikipdiaUrl?: string
   location?: string
@@ -23,4 +25,6 @@ export default interface Person {
   personBookRelations?: PersonBookRelation[]
   books?: Book[]
   openLibraryBooks?: Book[] // only used in the edit books page
+  authoredBooks?: Book[] // in-memory only
+  creditsByRelationType?: any[] // in-memory only
 }
