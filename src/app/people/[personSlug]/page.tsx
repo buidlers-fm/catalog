@@ -60,6 +60,8 @@ export default async function PersonPageBySlug({ params }) {
     (acc, relation) => {
       const { relationType } = relation
 
+      if (relationType === PersonBookRelationType.Author) return acc
+
       const existingRelationType = acc.find((r) => r.relationType === relationType)
 
       if (existingRelationType) {
