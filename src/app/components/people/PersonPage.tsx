@@ -19,6 +19,8 @@ import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import BookTooltip from "app/components/books/BookTooltip"
 import ExpandableText from "app/components/ExpandableText"
 import EmptyState from "app/components/EmptyState"
+import { personBookRelationTypeCopy } from "enums/PersonBookRelationType"
+import type Book from "types/Book"
 
 const BOOKS_LIMIT = 8
 
@@ -29,9 +31,11 @@ export default function PersonPage({ person }) {
     slug,
     openLibraryAuthorId,
     name,
+    orgName,
+    title,
     bio,
     imageUrl,
-    books: allBooks,
+    authoredBooks: allAuthoredBooks,
     wikipediaUrl,
     location,
     website,
@@ -39,6 +43,7 @@ export default function PersonPage({ person }) {
     tiktok,
     bluesky,
     twitter,
+    creditsByRelationType: credits,
   } = person
 
   const openLibraryUrl = `https://openlibrary.org/authors/${openLibraryAuthorId}`
@@ -50,19 +55,17 @@ export default function PersonPage({ person }) {
   const blueskyUrl = bluesky ? `https://bsky.app/profile/${bluesky}` : null
   const twitterUrl = twitter ? `https://x.com/${twitter}` : null
 
-  let books
-  let hasMoreBooks = false
+  let authoredBooks
 
   if (person.areBooksEdited) {
-    books = allBooks.sort((a, b) => {
+    authoredBooks = allAuthoredBooks.sort((a, b) => {
       // by first published year, descending
       if (a.firstPublishedYear === undefined) return 1
       if (b.firstPublishedYear === undefined) return -1
       return b.firstPublishedYear - a.firstPublishedYear
     })
   } else {
-    books = allBooks.slice(0, BOOKS_LIMIT)
-    hasMoreBooks = allBooks.length > BOOKS_LIMIT
+    authoredBooks = allAuthoredBooks.slice(0, BOOKS_LIMIT)
   }
 
   return (
@@ -78,6 +81,18 @@ export default function PersonPage({ person }) {
         <div className="my-6 sm:my-0 sm:ml-4 grow">
           <div className="text-2xl font-bold">
             <span data-intro-tour="profile-page">{name}</span>
+          </div>
+
+          <div className="mt-1 text-gray-300">
+            <div className="block md:hidden">
+              <div className="">{title}</div>
+              <div className="">{orgName}</div>
+            </div>
+            <div className="hidden md:block">
+              {title}
+              {title && orgName && " • "}
+              {orgName}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row mt-3 text-gray-300">
@@ -172,14 +187,40 @@ export default function PersonPage({ person }) {
         </div>
 
         <div className="flex-grow mx-auto md:ml-16">
-          {books.length > 0 ? (
+          {authoredBooks.length > 0 || credits.length > 0 ? (
             <>
-              <h2 className="mb-4 cat-eyebrow-uppercase">
-                {hasMoreBooks ? "Notable books" : "Books"}
-              </h2>
-              {books.map((book) => (
-                <BookCard key={book.openLibraryWorkId} book={book} />
-              ))}
+              {authoredBooks.length > 0 && (
+                <div>
+                  <h2 className="cat-eyebrow">author</h2>
+                  <hr className="mt-0.5 h-[1px] border-none bg-gray-300" />
+                  {authoredBooks.map((book) => (
+                    <BookCard key={book.openLibraryWorkId} book={book} />
+                  ))}
+                </div>
+              )}
+
+              {credits.length > 0 && (
+                <div className="font-mulish">
+                  {credits.map(({ relationType, relations }) => {
+                    if (!relations || relations.length === 0) return null
+
+                    return (
+                      <div key={relationType} className="my-6">
+                        <div className="cat-eyebrow">
+                          {personBookRelationTypeCopy[relationType]}
+                        </div>
+                        <hr className="mt-0.5 h-[1px] border-none bg-gray-300" />
+
+                        {relations.map((relation) => (
+                          <div key={relation.id} className="my-2">
+                            <BookCard book={relation.book} relationDetail={relation.detail} />
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </>
           ) : (
             <EmptyState text={`No books found for ${name}.`} />
@@ -190,7 +231,7 @@ export default function PersonPage({ person }) {
   )
 }
 
-function BookCard({ book }) {
+function BookCard({ book, relationDetail }: { book: Book; relationDetail?: string }) {
   const { id, openLibraryWorkId, coverImageUrl, title, editionsCount, firstPublishedYear } = book
 
   const idForAnchor = id || openLibraryWorkId
@@ -218,11 +259,15 @@ function BookCard({ book }) {
 
         <BookTooltip book={book} anchorSelect={`#book-${idForAnchor}`} />
 
-        <div className="grow">
-          <Link href={getBookLinkAgnostic(book)}>{title}</Link>
-          <div className="text-gray-300">
-            {editionsCount} editions • {firstPublishedYear}
+        <div className="grow flex flex-col justify-between">
+          <div className="">
+            <Link href={getBookLinkAgnostic(book)}>{title}</Link>
+            <div className="text-gray-300">
+              {editionsCount} editions • {firstPublishedYear}
+            </div>
           </div>
+
+          {relationDetail && <div className="text-gray-300">{relationDetail}</div>}
         </div>
       </div>
     </div>

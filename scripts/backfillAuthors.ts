@@ -220,13 +220,15 @@ async function main() {
   const books = await prisma.book.findMany({
     where: {
       personBookRelations: {
-        none: {},
+        none: {
+          relationType: PersonBookRelationType.Author,
+        },
       },
     },
     take: BOOKS_LIMIT,
   })
 
-  console.log(`found ${books.length} books without person-book relations.`)
+  console.log(`found ${books.length} books without author person-book relations.`)
   console.log(books.map((b) => b.slug))
 
   // for each book, create the person (author) and the person-book relation
