@@ -16,6 +16,7 @@ export default interface Person {
   tiktok?: string
   bluesky?: string
   twitter?: string
+  linkedin?: string
   openLibraryAuthorId?: string
   wikidataId?: string
   edited: boolean

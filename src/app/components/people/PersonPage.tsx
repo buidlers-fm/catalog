@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { BsLink45Deg } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
-import { FaInstagram, FaTiktok, FaBluesky, FaXTwitter } from "react-icons/fa6"
+import { FaInstagram, FaTiktok, FaBluesky, FaXTwitter, FaLinkedin } from "react-icons/fa6"
 import { MdEdit } from "react-icons/md"
 import { PiMapPinFill } from "react-icons/pi"
 import { TbExternalLink } from "react-icons/tb"
@@ -43,6 +43,7 @@ export default function PersonPage({ person }) {
     tiktok,
     bluesky,
     twitter,
+    linkedin,
     creditsByRelationType: credits,
   } = person
 
@@ -54,6 +55,7 @@ export default function PersonPage({ person }) {
   const tiktokUrl = tiktok ? `https://tiktok.com/@${tiktok}` : null
   const blueskyUrl = bluesky ? `https://bsky.app/profile/${bluesky}` : null
   const twitterUrl = twitter ? `https://x.com/${twitter}` : null
+  const linkedinUrl = linkedin ? `https://linkedin.com/in/${linkedin}` : null
 
   let authoredBooks
 
@@ -112,7 +114,7 @@ export default function PersonPage({ person }) {
             )}
           </div>
 
-          <div className="flex my-4">
+          <div className="flex items-center my-4">
             {instagramUrl && (
               <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
                 <FaInstagram className="text-2xl" />
@@ -131,6 +133,11 @@ export default function PersonPage({ person }) {
             {twitterUrl && (
               <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
                 <FaXTwitter className="text-xl" />
+              </a>
+            )}
+            {linkedinUrl && (
+              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="mr-4">
+                <FaLinkedin className="text-2xl" />
               </a>
             )}
           </div>

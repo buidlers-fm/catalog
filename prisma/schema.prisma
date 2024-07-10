@@ -70,6 +70,7 @@ model Person {
   bluesky             String?
   instagram           String?
   tiktok              String?
+  linkedin            String?
   orgName             String?              @map("org_name")
   openLibraryAuthorId String?              @map("open_library_author_id")
   wikidataId          String?              @map("wikidata_id")
