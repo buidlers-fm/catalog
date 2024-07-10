@@ -32,8 +32,9 @@ import { personBookRelationTypeCopy } from "../src/enums/PersonBookRelationType"
 
 dayjs.extend(customParseFormat)
 
-const CSV_PATH = "./scripts/data/person_book_relations_2024-07-08.csv" // path relative to the directory where you run the script
-const IMPORT_SOURCE = "person_book_relations_2024-07-08"
+const PREVIOUS_IMPORT_SOURCE = "person_book_relations_2024-07-08"
+const CSV_PATH = "./scripts/data/person_book_relations_2024-07-09.csv" // path relative to the directory where you run the script
+const IMPORT_SOURCE = "person_book_relations_2024-07-09"
 
 const CSV_COLUMNS_TO_ATTRS = {
   Person: "name",
@@ -265,6 +266,16 @@ async function main() {
   const invalidRows: any[] = []
   const failures: any[] = []
   const duplicates: any[] = []
+
+  console.log(`deleting records from previous import source ${PREVIOUS_IMPORT_SOURCE}...`)
+
+  await prisma.personBookRelation.deleteMany({
+    where: {
+      importSource: PREVIOUS_IMPORT_SOURCE,
+    },
+  })
+
+  console.log(`deleted records from previous import source. reading csv...`)
 
   const rows = await readCsv(CSV_PATH)
 
