@@ -70,6 +70,7 @@ model Person {
   bluesky             String?
   instagram           String?
   tiktok              String?
+  linkedin            String?
   orgName             String?              @map("org_name")
   openLibraryAuthorId String?              @map("open_library_author_id")
   wikidataId          String?              @map("wikidata_id")
@@ -102,6 +103,7 @@ model PersonBookRelation {
   person       Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
   book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
+  @@unique([personId, bookId, relationType])
   @@index([personId])
   @@index([bookId])
   @@map("person_book_relations")

@@ -20,6 +20,7 @@ type PersonFormData = {
   tiktok: string
   bluesky: string
   twitter: string
+  linkedin: string
   wikipediaUrl: string
   slug: string
   openLibraryAuthorId: string
@@ -105,6 +106,7 @@ export default function EditPerson({ person }) {
         tiktok: stripAtSymbol(data.tiktok),
         bluesky: stripAtSymbol(data.bluesky),
         twitter: stripAtSymbol(data.twitter),
+        linkedin: stripAtSymbol(data.linkedin),
       },
       options: {} as any,
     }
@@ -274,6 +276,14 @@ export default function EditPerson({ person }) {
             type="text"
             formProps={register("twitter")}
             errorMessage={errors.twitter?.message}
+            fullWidth={false}
+          />
+          <FormInput
+            labelText="linkedin username"
+            name="linkedin"
+            type="text"
+            formProps={register("linkedin")}
+            errorMessage={errors.linkedin?.message}
             fullWidth={false}
           />
 
