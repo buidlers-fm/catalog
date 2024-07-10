@@ -22,6 +22,7 @@ export const GET = withApiHandling(
     const whereConditions = {
       imageUrl: {
         not: null,
+        notIn: [""],
       },
       NOT: {
         imageUrl: {
