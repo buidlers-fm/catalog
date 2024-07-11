@@ -71,5 +71,12 @@ export default async function PersonPageByQuery({ searchParams }) {
       notFound()
     }
   }
-  return <PersonPage person={openLibraryAuthor} />
+
+  const person = {
+    ...openLibraryAuthor,
+    authoredBooks: openLibraryAuthor.books,
+    creditsByRelationType: [],
+  }
+
+  return <PersonPage person={person} />
 }
