@@ -35,7 +35,7 @@ export default function PersonPage({ person }) {
     title,
     bio,
     imageUrl,
-    authoredBooks: allAuthoredBooks,
+    authoredBooks: allAuthoredBooks = [],
     wikipediaUrl,
     location,
     website,
@@ -44,7 +44,7 @@ export default function PersonPage({ person }) {
     bluesky,
     twitter,
     linkedin,
-    creditsByRelationType: credits,
+    creditsByRelationType: credits = [],
   } = person
 
   const openLibraryUrl = `https://openlibrary.org/authors/${openLibraryAuthorId}`

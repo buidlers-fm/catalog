@@ -15,7 +15,8 @@ import EditListBooks from "app/users/[username]/lists/new/components/EditListBoo
 import ConfirmationModal from "app/components/ConfirmationModal"
 import type Book from "types/Book"
 
-const BOOKS_LIMIT = 20
+const DEFAULT_CURRENT_BOOKS_LIMIT = 8
+const SUGGESTED_BOOKS_LIMIT = 20
 const mockList = { books: [] } as any
 
 function defaultSort(a, b) {
@@ -36,6 +37,8 @@ export default function EditPersonBooks({ person }) {
   const { name, books: dbBooks, openLibraryBooks } = person
 
   const defaultListedBooks = person.areBooksEdited ? dbBooks : openLibraryBooks
+
+  const [areBooksEdited, setAreBooksEdited] = useState(person.areBooksEdited)
   const [listedBooks, setListedBooks] = useState<Book[]>(defaultListedBooks)
   const [currentDbBooks, setCurrentDbBooks] = useState<Book[]>(dbBooks)
   const [isEditing, setIsEditing] = useState(false)
@@ -44,15 +47,17 @@ export default function EditPersonBooks({ person }) {
 
   const suggestedBooks = openLibraryBooks
     .filter((book) => !currentBooks.some((b) => b.openLibraryWorkId === book.openLibraryWorkId))
-    .slice(0, BOOKS_LIMIT)
+    .slice(0, SUGGESTED_BOOKS_LIMIT)
 
   // reset books when exiting editing mode
   useEffect(() => {
-    const defaultBooks = person.areBooksEdited ? currentDbBooks : []
+    const defaultBooks = areBooksEdited
+      ? currentDbBooks
+      : openLibraryBooks.slice(0, DEFAULT_CURRENT_BOOKS_LIMIT)
     if (!isEditing) {
       setCurrentBooks(defaultBooks)
     }
-  }, [isEditing, setCurrentBooks, currentDbBooks, person.areBooksEdited])
+  }, [isEditing, setCurrentBooks, currentDbBooks, areBooksEdited, openLibraryBooks])
 
   async function submit(confirmed = false) {
     const deletingAllBooks = currentBooks.length === 0 && listedBooks.length > 0
@@ -75,6 +80,7 @@ export default function EditPersonBooks({ person }) {
       toast.success(`${name}'s books updated!`, { id: toastId })
 
       setIsEditing(false)
+      setAreBooksEdited(true)
       setListedBooks(currentBooks)
       setCurrentDbBooks(currentBooks)
     } catch (error) {
@@ -109,9 +115,8 @@ export default function EditPersonBooks({ person }) {
               <div className="mt-8 text-sm text-gray-300">
                 <div className="mb-4">guidelines for editing a person's books:</div>
                 <div className="mb-4">
-                  If the above list is empty but the person has books listed, it means their books
-                  were auto-populated from OpenLibrary. You can add their first confirmed books by
-                  searching for them, or by clicking "+" on any suggested books below.
+                  You can add books to a person's profile by searching for them, or by clicking "+"
+                  on any suggested books below.
                 </div>
                 <div className="mb-4">
                   Once a person's books have been manually edited (and saved) for the first time,

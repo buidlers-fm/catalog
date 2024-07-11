@@ -61,6 +61,35 @@ export const GET = withApiHandling(
       const { slug, openLibraryWorkId, authorName } = book
       let { openLibraryAuthorId } = book
 
+      // if possible duplicate, skip and notify
+      const existingAuthorByName = await prisma.person.findFirst({
+        where: {
+          name: authorName!,
+        },
+      })
+
+      if (existingAuthorByName) {
+        logger.info(
+          `api.people.process_new_authors: found potential existing person ${existingAuthorByName.name} for ${slug}, skipping`,
+        )
+
+        const error = new Error(`found potential existing person by name`)
+
+        reportToSentry(error, {
+          method: "api.people.process_new_authors",
+          authorName,
+          bookSlug: slug,
+        })
+
+        failures.push({
+          slug,
+          error,
+          errorMsg: error.message,
+        })
+
+        continue
+      }
+
       try {
         // fetch author id if needed
         if (!openLibraryAuthorId) {

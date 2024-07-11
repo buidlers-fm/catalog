@@ -91,6 +91,7 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
   const deletePersonBookRelationsPromise = prisma.personBookRelation.deleteMany({
     where: {
       personId,
+      relationType: PersonBookRelationType.Author, // temp until endpoint supports other relation types
     },
   })
 
