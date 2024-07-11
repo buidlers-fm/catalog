@@ -3,6 +3,7 @@ import OpenLibrary from "lib/openLibrary"
 import { uploadCoverImage } from "lib/server/supabaseStorage"
 import { generateUniqueSlug, fetchImageAsBlob } from "lib/helpers/general"
 import { reportToSentry } from "lib/sentry"
+import logger from "lib/logger"
 import CoverSize from "enums/CoverSize"
 import ListedObjectType from "enums/ListedObjectType"
 import ListDesignation from "enums/ListDesignation"
@@ -64,7 +65,28 @@ async function findOrCreateBook(_book: Book, options: any = {}) {
     },
   })
 
-  if (createAuthor) {
+  // if possible duplicate, skip and notify
+  const existingAuthorByName = await prisma.person.findFirst({
+    where: {
+      name: authorName!,
+    },
+  })
+
+  if (createAuthor && existingAuthorByName) {
+    logger.info(
+      `books.findOrCreateBook: found potential existing person ${existingAuthorByName.name} for ${slug}, skipping`,
+    )
+
+    const error = new Error(`found potential existing person by name`)
+
+    reportToSentry(error, {
+      method: "books.findOrCreateBook",
+      authorName,
+      bookSlug: slug,
+    })
+  }
+
+  if (createAuthor && !existingAuthorByName) {
     // try to fetch author info
     let author
 
