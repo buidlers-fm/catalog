@@ -116,6 +116,8 @@ export const getPersonEditLinkWithQueryString = (queryString: any) => `/people/e
 
 export const getPersonEditBooksLink = (slug: string) => `/people/${slug}/edit/books`
 
+export const getPersonHistoryLink = (slug: string) => `/people/${slug}/history`
+
 export const getBookEditLink = (slug: string) => `/books/${slug}/edit`
 
 export const getBookEditLinkWithQueryString = (queryString: any) => `/books/edit?${queryString}`
@@ -152,6 +154,8 @@ export const getUserBookNotesLink = (username: string) => `/users/${username}/no
 export const getBookNotesLink = (slug: string) => `/books/${slug}/notes`
 
 export const getBookPostsLink = (slug: string) => `/books/${slug}/posts`
+
+export const getBookHistoryLink = (slug: string) => `/books/${slug}/history`
 
 export const getPostLink = (postId: string) => `/posts/${postId}`
 

@@ -45,6 +45,9 @@ const METADATA_CONFIG = {
   "book.edit": {
     title: (title) => `edit ${title} • catalog`,
   },
+  "book.history": {
+    title: (title) => `history • ${title} • catalog`,
+  },
   "book.lists": {
     title: (title, authorName) => `lists • ${title} by ${authorName} • catalog`,
   },
@@ -75,6 +78,9 @@ const METADATA_CONFIG = {
   },
   "person.edit": {
     title: (name) => `edit ${name} • catalog`,
+  },
+  "person.history": {
+    title: (name) => `history • ${name} • catalog`,
   },
 }
 

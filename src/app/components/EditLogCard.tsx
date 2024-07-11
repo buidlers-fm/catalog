@@ -14,13 +14,13 @@ function camelCaseToWords(str) {
   return str.replace(/([A-Z])/g, " $1").toLowerCase()
 }
 
-export default function EditLogCard({ editLog, withCover = true }) {
+export default function EditLogCard({ editLog, withImage = true }) {
   const { editedObjectType } = editLog
 
   if (editedObjectType === EditedObjectType.Book) {
-    return <EditLogCardBook editLog={editLog} withCover={withCover} />
+    return <EditLogCardBook editLog={editLog} withCover={withImage} />
   } else if (editedObjectType === EditedObjectType.Person) {
-    return <EditLogCardPerson editLog={editLog} />
+    return <EditLogCardPerson editLog={editLog} withImage={withImage} />
   }
 }
 
@@ -96,7 +96,7 @@ function EditLogCardBook({ editLog, withCover = true }) {
   )
 }
 
-function EditLogCardPerson({ editLog }) {
+function EditLogCardPerson({ editLog, withImage = true }) {
   const { id, editor, editedObject: person, editedFields, editType, createdAt } = editLog
 
   const { name: editorName } = UserProfile.build(editor)
@@ -118,17 +118,21 @@ function EditLogCardPerson({ editLog }) {
 
   return (
     <div className="flex items-center px-4 py-4 border-b border-b-gray-800 last:border-none">
-      {imageUrl ? (
-        <img src={imageUrl} alt={name} className="w-16 h-16 mr-6 shrink-0 rounded-full" />
-      ) : (
-        <FaUserCircle className="mr-3 text-[64px] text-gray-500" />
-      )}
+      {withImage &&
+        (imageUrl ? (
+          <div className="shrink-0 w-16 h-16 mr-6 overflow-hidden rounded-full">
+            <img src={imageUrl} alt={name} className="object-cover min-w-full min-h-full" />
+          </div>
+        ) : (
+          <FaUserCircle className="mr-3 text-[64px] text-gray-500" />
+        ))}
+
       <div className="">
         {editorName} edited{" "}
         <Link href={getPersonLinkWithSlug(slug)} className="cat-link">
           {name}
         </Link>
-        &rsquo;s {editedBooks ? "books" : "page"}.
+        &rsquo;s {editedBooks ? "books" : "details"}.
         <span id={timestampTooltipAnchorId} className="ml-2 mt-2 text-sm text-gray-500">
           {createdAtFromNow}
         </span>
