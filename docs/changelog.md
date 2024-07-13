@@ -1,12 +1,12 @@
-last updated: july 5, 2024.
+last updated: july 12, 2024.
 
 # big things for july - august 2024
 
 key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 
 - ✅ Author profile pages including the author's bio and the books they've written.
-- 🛠️ Expand the above to include profile pages for other book people, including editors and agents.
-- 🛠️ Show a book's credits (who worked on the book) on the book page.
+- ✅ Expand the above to include profile pages for other book people, including editors and agents.
+- ✅ Show a book's credits (who worked on the book) on the book page.
 - ⌛️ Email notifications and settings to configure these.
 - ⌛️ Timeline of your reading, where you can view and edit your reading history.
 
@@ -15,6 +15,21 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## july 8 - july 14, 2024
+
+Main things:
+
+- Book pages can have a "credits" section that lists the people who worked on the book (editable by catalog staff).
+- People pages can support many other relations/roles to books (not just author), including editor, agent, art & design, production, and more.
+- Added a link to view a book's edit history.
+- Added a link to view a person's edit history (i.e., who has edited the person).
+
+Small fixes/improvements:
+
+- Added LinkedIn field to people profiles.
+- Added functionality to alert us (internally) of potential duplicate authors/people being created so we can keep the data cleaner.
+- Tweaked UX of editing a person's authored books to be less confusing.
 
 ## june 10 - july 7, 2024
 
