@@ -11,16 +11,12 @@ import { TbExternalLink } from "react-icons/tb"
 import {
   getPersonEditLink,
   getPersonEditLinkWithQueryString,
-  getBookLinkAgnostic,
   getDomainFromUrl,
 } from "lib/helpers/general"
-import CoverPlaceholder from "app/components/books/CoverPlaceholder"
-import BookCoverOverlay from "app/components/books/BookCoverOverlay"
-import BookTooltip from "app/components/books/BookTooltip"
+import ListBook from "app/lists/components/ListBook"
 import ExpandableText from "app/components/ExpandableText"
 import EmptyState from "app/components/EmptyState"
 import { personBookRelationTypeCopy } from "enums/PersonBookRelationType"
-import type Book from "types/Book"
 
 const BOOKS_LIMIT = 8
 
@@ -71,7 +67,7 @@ export default function PersonPage({ person }) {
   }
 
   return (
-    <div className="mt-8 max-w-4xl mx-8 lg:mx-auto">
+    <div className="mt-8 max-w-5xl mx-8 lg:mx-auto">
       <div className="sm:flex font-mulish mb-8 pb-8 border-b border-b-gray-500">
         {imageUrl ? (
           <div className="shrink-0 sm:mr-4 w-36 h-36 overflow-hidden rounded-full">
@@ -86,11 +82,11 @@ export default function PersonPage({ person }) {
           </div>
 
           <div className="mt-1 text-gray-300">
-            <div className="block md:hidden">
+            <div className="block lg:hidden">
               <div className="">{title}</div>
               <div className="">{orgName}</div>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               {title}
               {title && orgName && " • "}
               {orgName}
@@ -143,8 +139,8 @@ export default function PersonPage({ person }) {
           </div>
         </div>
       </div>
-      <div className="md:flex">
-        <div className="flex-grow-0 flex-shrink-0 w-full md:w-64 mb-16 md:mb-8 pb-8 md:pb-0 border-b border-b-gray-500 md:border-none">
+      <div className="lg:flex lg:justify-between">
+        <div className="flex-grow-0 flex-shrink-0 w-full lg:w-64 mb-16 lg:mb-8">
           {bio ? (
             <div className="mb-4">
               <ExpandableText text={bio} />
@@ -193,21 +189,30 @@ export default function PersonPage({ person }) {
           </div>
         </div>
 
-        <div className="flex-grow mx-auto md:ml-16">
+        <div className="mx-auto lg:ml-16 lg:mr-0 xs:w-[400px] sm:w-[600px] lg:w-[640px]">
           {authoredBooks.length > 0 || credits.length > 0 ? (
             <>
               {authoredBooks.length > 0 && (
                 <div>
                   <h2 className="cat-eyebrow">author</h2>
                   <hr className="mt-0.5 h-[1px] border-none bg-gray-300" />
-                  {authoredBooks.map((book) => (
-                    <BookCard key={book.openLibraryWorkId} book={book} />
-                  ))}
+
+                  {!person.areBooksEdited && (
+                    <div className="mt-4 lg:mb-2 text-gray-300 italic">
+                      The most notable books by {name}, populated from OpenLibrary.
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-4 sm:gap-[28px]">
+                    {authoredBooks.map((book) => (
+                      <ListBook key={book.openLibraryWorkId} book={book} />
+                    ))}
+                  </div>
                 </div>
               )}
 
               {credits.length > 0 && (
-                <div className="font-mulish">
+                <div className="">
                   {credits.map(({ relationType, relations }) => {
                     if (!relations || relations.length === 0) return null
 
@@ -218,11 +223,15 @@ export default function PersonPage({ person }) {
                         </div>
                         <hr className="mt-0.5 h-[1px] border-none bg-gray-300" />
 
-                        {relations.map((relation) => (
-                          <div key={relation.id} className="my-2">
-                            <BookCard book={relation.book} relationDetail={relation.detail} />
-                          </div>
-                        ))}
+                        <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
+                          {relations.map((relation) => (
+                            <ListBook
+                              key={relation.id}
+                              book={relation.book}
+                              detail={relation.detail}
+                            />
+                          ))}
+                        </div>
                       </div>
                     )
                   })}
@@ -232,49 +241,6 @@ export default function PersonPage({ person }) {
           ) : (
             <EmptyState text={`No books found for ${name}.`} />
           )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function BookCard({ book, relationDetail }: { book: Book; relationDetail?: string }) {
-  const { id, openLibraryWorkId, coverImageUrl, title, editionsCount, firstPublishedYear } = book
-
-  const idForAnchor = id || openLibraryWorkId
-
-  return (
-    <div className="px-2 py-4 border-b-[1px] border-b-gray-800 last:border-none">
-      <div className="flex">
-        <div id={`book-${idForAnchor}`} className="w-16 mr-6 shrink-0">
-          <div className="relative group">
-            <Link href={getBookLinkAgnostic(book)}>
-              {coverImageUrl ? (
-                <img
-                  src={coverImageUrl}
-                  alt="cover"
-                  className="w-full mx-auto shadow-md rounded-xs"
-                />
-              ) : (
-                <CoverPlaceholder size="sm" />
-              )}
-            </Link>
-
-            <BookCoverOverlay book={book} positionClass="bottom-1" />
-          </div>
-        </div>
-
-        <BookTooltip book={book} anchorSelect={`#book-${idForAnchor}`} />
-
-        <div className="grow flex flex-col justify-between">
-          <div className="">
-            <Link href={getBookLinkAgnostic(book)}>{title}</Link>
-            <div className="text-gray-300">
-              {editionsCount} editions • {firstPublishedYear}
-            </div>
-          </div>
-
-          {relationDetail && <div className="text-gray-300">{relationDetail}</div>}
         </div>
       </div>
     </div>

@@ -36,7 +36,9 @@ export default function EditPersonBooks({ person }) {
 
   const { name, books: dbBooks, openLibraryBooks } = person
 
-  const defaultListedBooks = person.areBooksEdited ? dbBooks : openLibraryBooks
+  const defaultListedBooks = person.areBooksEdited
+    ? dbBooks
+    : openLibraryBooks.slice(0, DEFAULT_CURRENT_BOOKS_LIMIT)
 
   const [areBooksEdited, setAreBooksEdited] = useState(person.areBooksEdited)
   const [listedBooks, setListedBooks] = useState<Book[]>(defaultListedBooks)
