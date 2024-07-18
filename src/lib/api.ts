@@ -280,6 +280,14 @@ const api = {
     },
   },
   people: {
+    search: (searchStr: string) => {
+      const params = {
+        query: searchStr,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
+      const url = `/api/people/search?${queryString}`
+      return fetchJson(url)
+    },
     update: (personId, formData) =>
       fetchJson(`/api/people/${personId}`, {
         method: "PATCH",
