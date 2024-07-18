@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useMemo, Fragment, useEffect } from "react"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { Combobox } from "@headlessui/react"
 import { BsSearch } from "react-icons/bs"
 import { FaUserCircle } from "react-icons/fa"
+import { FaArrowRight } from "react-icons/fa6"
 import { GiOpenBook } from "react-icons/gi"
 import { ThreeDotsScale } from "react-svg-spinners"
 import debounce from "lodash.debounce"
@@ -55,6 +56,8 @@ export default function Search({
 }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const router = useRouter()
+
   const [searchResults, setSearchResults] = useState<Partial<Book>[]>()
   const [userSearchResults, setUserSearchResults] = useState<any[]>()
   const [personSearchResults, setPersonSearchResults] = useState<any[]>()
@@ -64,6 +67,7 @@ export default function Search({
   const [selectedUser, setSelectedUser] = useState<any | null>()
   const [selectedPerson, setSelectedPerson] = useState<any | null>()
   const [errorMessage, setErrorMessage] = useState<string>()
+  const [searchTerm, setSearchTerm] = useState<string>()
 
   const debouncedSearchHandler = useMemo(() => {
     async function onSearchChange(e: any) {
@@ -80,6 +84,8 @@ export default function Search({
       }
 
       if (isNav) {
+        setSearchTerm(searchString)
+
         if (isSignedIn) {
           await Promise.all([
             searchBooks(searchString),
@@ -235,6 +241,19 @@ export default function Search({
   }
 
   const handleSelect = (item) => {
+    if (item === "seeAllResults" && searchTerm) {
+      resetSearch()
+
+      const queryParams = {
+        query: searchTerm,
+      }
+      const queryString = new URLSearchParams(queryParams).toString()
+      const path = `/search?${queryString}`
+      router.push(path)
+
+      return
+    }
+
     let itemType
 
     if (item.username) {
@@ -326,6 +345,20 @@ export default function Search({
                   className={`${resultsWidthClass} absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
                 >
                   <div className={`${maxHeightClass} overflow-y-auto`}>
+                    {searchTerm && (
+                      <Combobox.Option key="seeAllResults" value="seeAllResults" as={Fragment}>
+                        {({ active }) => (
+                          <li
+                            className={`flex items-center ${
+                              active && "bg-gray-700"
+                            } px-4 py-3 cursor-pointer border-b border-b-gray-700 last:border-none`}
+                          >
+                            See all results for "{searchTerm}" <FaArrowRight className="ml-2" />
+                          </li>
+                        )}
+                      </Combobox.Option>
+                    )}
+
                     <BookSearchResults
                       isLoading={isLoadingBooks}
                       searchResults={searchResults}
