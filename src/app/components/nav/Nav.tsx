@@ -9,7 +9,7 @@ import { BsSearch, BsXLg } from "react-icons/bs"
 import { FaPlus } from "react-icons/fa"
 import { useUser } from "lib/contexts/UserContext"
 import { useModals } from "lib/contexts/ModalsContext"
-import { getUserProfileLink } from "lib/helpers/general"
+import { getUserProfileLink, getPersonLinkAgnostic } from "lib/helpers/general"
 import { reportToSentry } from "lib/sentry"
 import Search from "app/components/nav/Search"
 import UserNav from "app/components/nav/UserNav"
@@ -28,14 +28,25 @@ export default function Nav() {
   const { setCurrentModal } = useModals()
 
   const navigate = (item, type) => {
-    if (type === "books") return navigateToBookPage(item)
-    if (type === "users") return navigateToUserProfilePage(item)
+    if (type === "book") return navigateToBookPage(item)
+    if (type === "user") return navigateToUserProfilePage(item)
+    if (type === "person") return navigateToPersonPage(item)
 
     reportToSentry(new Error(`Unknown type ${type}`), { item, type })
   }
 
   const navigateToUserProfilePage = (userProfile) => {
     const path = getUserProfileLink(userProfile.username)
+
+    const sameAsCurrentPath = pathname === path
+
+    if (!sameAsCurrentPath) router.push(path)
+
+    return { shouldReset: sameAsCurrentPath }
+  }
+
+  const navigateToPersonPage = (person) => {
+    const path = getPersonLinkAgnostic(person)
 
     const sameAsCurrentPath = pathname === path
 
@@ -144,7 +155,7 @@ function MobileNav({ currentUserProfile, isLoading, onSelectItem, setCurrentModa
             </button>
           </div>
 
-          <div className="ml-2 text-gray-200">search by title and author, type @ for user.</div>
+          <div className="ml-2 text-gray-200">search books, people, or users.</div>
         </div>
       </Drawer>
     </div>

@@ -32,6 +32,29 @@ async function searchExistingBooks(searchString) {
   return results
 }
 
+async function searchPeople(searchString) {
+  const LIMIT = 8 // just an arbitrary small value to cap it at
+
+  // case-insensitive exact substring search OR full-text search
+  // the former (`ILIKE` queries) handles exact search strings that aren't full words
+  // the latter handles "fuzziness", via `similarity` (%, from pg_trgm extension)
+  // which handles more random misspellings
+  const results = await prisma.$queryRaw`
+    SELECT id, name, slug, title, org_name, image_url,
+      similarity(name, ${searchString}) as trigram
+    FROM people 
+    WHERE 
+      name ILIKE ${`%${searchString}%`} OR 
+      name % ${searchString}
+    ORDER BY
+      trigram DESC
+    LIMIT
+      ${LIMIT};
+    `
+
+  return results
+}
+
 async function searchUsers(searchString, options: any = {}) {
   const { followersOnly, currentUserProfile } = options
 
@@ -154,4 +177,4 @@ async function searchUsers(searchString, options: any = {}) {
   return humps.camelizeKeys(results)
 }
 
-export { searchExistingBooks, searchUsers }
+export { searchExistingBooks, searchPeople, searchUsers }

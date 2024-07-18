@@ -458,6 +458,8 @@ const OpenLibrary = {
     // there are more filtered results than the limit
     moreResultsExist = moreResultsExist || results.length > limit
 
+    results = results.slice(0, limit)
+
     const books = results.map((result: any) => {
       const {
         title: workTitle,
