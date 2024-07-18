@@ -17,7 +17,8 @@ import { truncateString, prepStringForSearch } from "lib/helpers/strings"
 import NameWithAvatar from "app/components/userProfiles/NameWithAvatar"
 import type Book from "types/Book"
 
-const RESULTS_LIMIT = 3
+const NAV_RESULTS_LIMIT = 3
+const RESULTS_LIMIT = 5
 const DEBOUNCE_THRESHOLD_MS = 500
 
 type Props = {
@@ -110,7 +111,7 @@ export default function Search({
 
     try {
       let results = await api.profiles.search(searchString)
-      results = results.slice(0, RESULTS_LIMIT)
+      results = results.slice(0, NAV_RESULTS_LIMIT)
       setUserSearchResults(results)
     } catch (error: any) {
       reportToSentry(error, { searchString })
@@ -134,12 +135,13 @@ export default function Search({
 
     let allOpenLibraryResults: any[] = []
     let searchWithEditionsFinished = false
+    const resultsLimit = isNav ? NAV_RESULTS_LIMIT : RESULTS_LIMIT
 
     try {
       const searchOpenLibrary = async () => {
         try {
           const { moreResultsExist: _moreResultsExist, resultsForPage: _results } =
-            await OpenLibrary.search(searchString, { includeEditions: false, limit: RESULTS_LIMIT })
+            await OpenLibrary.search(searchString, { includeEditions: false, limit: resultsLimit })
 
           // because this search's results are just placeholders until the
           // better, slower results come in
@@ -154,7 +156,7 @@ export default function Search({
           // they come back, so that we have all results available
           allOpenLibraryResults = results
           let currentResults = concatUniqueSearchResults(existingBooksResults, results)
-          currentResults = currentResults.slice(0, RESULTS_LIMIT)
+          currentResults = currentResults.slice(0, resultsLimit)
 
           setSearchResults(currentResults)
           setMoreResultsExist(_moreResultsExist)
@@ -178,7 +180,7 @@ export default function Search({
           const { moreResultsExist: _moreResultsExist, resultsForPage: results } =
             await OpenLibrary.search(searchString, {
               includeEditions: true,
-              limit: RESULTS_LIMIT,
+              limit: resultsLimit,
             })
 
           // existing books always come first, followed by the 2x openlibrary results
@@ -193,7 +195,7 @@ export default function Search({
             allOpenLibraryResults,
           )
 
-          currentResults = currentResults.slice(0, RESULTS_LIMIT)
+          currentResults = currentResults.slice(0, resultsLimit)
 
           setSearchResults(currentResults)
           setMoreResultsExist(_moreResultsExist)
@@ -224,7 +226,7 @@ export default function Search({
   const searchPeople = async (searchString: string) => {
     try {
       let results = await api.people.search(searchString)
-      results = results.slice(0, RESULTS_LIMIT)
+      results = results.slice(0, NAV_RESULTS_LIMIT)
       setPersonSearchResults(results)
     } catch (error: any) {
       reportToSentry(error, { searchString })
@@ -345,7 +347,7 @@ export default function Search({
                   className={`${resultsWidthClass} absolute z-50 top-[50px] rounded bg-gray-900 font-mulish`}
                 >
                   <div className={`${maxHeightClass} overflow-y-auto`}>
-                    {searchTerm && (
+                    {isNav && searchTerm && (
                       <Combobox.Option key="seeAllResults" value="seeAllResults" as={Fragment}>
                         {({ active }) => (
                           <li
@@ -365,15 +367,21 @@ export default function Search({
                       isLoadingMoreResults={isLoadingMoreBooksResults}
                       moreResultsExist={moreResultsExist}
                       errorMessage={errorMessage}
+                      isNav={isNav}
                     />
-                    <PersonSearchResults
-                      isLoading={isLoadingPeople}
-                      searchResults={personSearchResults}
-                    />
-                    <UserSearchResults
-                      isLoading={isLoadingUsers}
-                      searchResults={userSearchResults}
-                    />
+
+                    {isNav && (
+                      <>
+                        <PersonSearchResults
+                          isLoading={isLoadingPeople}
+                          searchResults={personSearchResults}
+                        />
+                        <UserSearchResults
+                          isLoading={isLoadingUsers}
+                          searchResults={userSearchResults}
+                        />
+                      </>
+                    )}
                   </div>
                 </Combobox.Options>
               )}
@@ -459,10 +467,11 @@ function BookSearchResults({
   isLoadingMoreResults,
   moreResultsExist,
   errorMessage,
+  isNav,
 }) {
   return (
     <>
-      <div className="p-2 font-bold">Books</div>
+      {isNav && <div className="p-2 font-bold">Books</div>}
       {isLoading && (
         <div className="h-24 flex items-center justify-center">
           {/* spinner is gold-300  */}
@@ -514,7 +523,7 @@ function BookSearchResults({
               <ThreeDotsScale width={32} height={32} color="hsl(45, 100%, 69%)" />
             </li>
           )}
-          {moreResultsExist && (
+          {!isNav && moreResultsExist && (
             <li className="px-6 py-6 text-gray-200">
               More book results exist. Try searching by title and author to narrow them down!
             </li>
