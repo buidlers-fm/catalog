@@ -315,19 +315,20 @@ export function isAdmin(userProfile) {
 
 export function sortSearchResults(results) {
   // items should go in order of:
-  // items that have `name` (people) or `username` (users) (in original order),
+  // items that have `name` (people) or `username` (users) but no trigram (in original order)
+  // (the above is to ensure that exact matches are shown first),
   // followed by items that have trigram (highest to lowest),
   // followed by items that don't have trigram but do have tsRank (highest to lowest),
   // followed by items that have neither (in original order).
 
   results.sort((a, b) => {
-    if (a.name || a.username) {
-      if (b.name || b.username) {
+    if ((a.name || a.username) && !a.trigram) {
+      if ((b.name || b.username) && !b.trigram) {
         return 0 // if both have `name` or `username`, maintain original order
       } else {
         return -1 // `a` comes first if it has `name` or `username` and `b` doesn't
       }
-    } else if (b.name || b.username) {
+    } else if ((b.name || b.username) && !b.trigram) {
       return 1 // `b` comes first if it has `name` or `username` and `a` doesn't
     } else if (a.trigram && b.trigram) {
       return b.trigram - a.trigram
