@@ -312,3 +312,39 @@ export function isAdmin(userProfile) {
   const roles = userProfile.roleAssignments.map((roleAssignment) => roleAssignment.role)
   return roles.includes(UserRole.Admin)
 }
+
+export function sortSearchResults(results) {
+  // items should go in order of:
+  // items that have `name` (people) or `username` (users) (in original order),
+  // followed by items that have trigram (highest to lowest),
+  // followed by items that don't have trigram but do have tsRank (highest to lowest),
+  // followed by items that have neither (in original order).
+
+  results.sort((a, b) => {
+    if (a.name || a.username) {
+      if (b.name || b.username) {
+        return 0 // if both have `name` or `username`, maintain original order
+      } else {
+        return -1 // `a` comes first if it has `name` or `username` and `b` doesn't
+      }
+    } else if (b.name || b.username) {
+      return 1 // `b` comes first if it has `name` or `username` and `a` doesn't
+    } else if (a.trigram && b.trigram) {
+      return b.trigram - a.trigram
+    } else if (a.trigram) {
+      return -1
+    } else if (b.trigram) {
+      return 1
+    } else if (a.tsRank && b.tsRank) {
+      return b.tsRank - a.tsRank
+    } else if (a.tsRank) {
+      return -1
+    } else if (b.tsRank) {
+      return 1
+    } else {
+      return 0
+    }
+  })
+
+  return results
+}

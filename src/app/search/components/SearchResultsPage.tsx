@@ -5,10 +5,14 @@ import { useState, useEffect, useCallback } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { TiWarningOutline } from "react-icons/ti"
 import { reportToSentry } from "lib/sentry"
-import api from "lib/api"
 import search from "lib/search/books"
 import OpenLibrary from "lib/openLibrary"
-import { getBookLinkAgnostic, getPersonLinkAgnostic, getUserProfileLink } from "lib/helpers/general"
+import {
+  sortSearchResults,
+  getBookLinkAgnostic,
+  getPersonLinkAgnostic,
+  getUserProfileLink,
+} from "lib/helpers/general"
 import LoadingSection from "app/components/LoadingSection"
 import EmptyState from "app/components/EmptyState"
 import CoverPlaceholder from "app/components/books/CoverPlaceholder"
@@ -34,61 +38,18 @@ function concatUniqueBookResults(resultsA, resultsB) {
   return [...resultsA, ...uniqueResultsB]
 }
 
-function sortSearchResults(results) {
-  // items should go in order of:
-  // items that have `name` (people) or `username` (users) (in original order),
-  // followed by items that have trigram (highest to lowest),
-  // followed by items that don't have trigram but do have tsRank (highest to lowest),
-  // followed by items that have neither (in original order).
-
-  results.sort((a, b) => {
-    if (a.name || a.username) {
-      if (b.name || b.username) {
-        return 0 // if both have `name` or `username`, maintain original order
-      } else {
-        return -1 // `a` comes first if it has `name` or `username` and `b` doesn't
-      }
-    } else if (b.name || b.username) {
-      return 1 // `b` comes first if it has `name` or `username` and `a` doesn't
-    } else if (a.trigram && b.trigram) {
-      return b.trigram - a.trigram
-    } else if (a.trigram) {
-      return -1
-    } else if (b.trigram) {
-      return 1
-    } else if (a.tsRank && b.tsRank) {
-      return b.tsRank - a.tsRank
-    } else if (a.tsRank) {
-      return -1
-    } else if (b.tsRank) {
-      return 1
-    } else {
-      return 0
-    }
-  })
-
-  return results
-}
-
-export default function SearchResultsPage({ searchString }) {
+export default function SearchResultsPage({ searchString, initialResults }) {
   const [searchResults, setSearchResults] = useState<any[]>([])
-  const [booksSearchResults, setBooksSearchResults] = useState<any[]>([])
-  const [peopleSearchResults, setPeopleSearchResults] = useState<any[]>([])
-  const [usersSearchResults, setUsersSearchResults] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [booksSearchResults, setBooksSearchResults] = useState<any[]>(initialResults.books)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [currentFilter, setCurrentFilter] = useState<SearchFilter>(SearchFilter.All)
 
+  const peopleSearchResults = initialResults.people
+  const usersSearchResults = initialResults.users
+
   const searchBooks = useCallback(async () => {
-    let existingBooksResults: any[] = []
-    try {
-      existingBooksResults = await api.books.search(searchString)
-      if (existingBooksResults.length > 0) {
-        setSearchResults(existingBooksResults)
-      }
-    } catch (error: any) {
-      reportToSentry(error, { searchString })
-    }
+    const existingBooksResults = initialResults.books
 
     let allOpenLibraryResults: any[] = []
 
@@ -116,36 +77,18 @@ export default function SearchResultsPage({ searchString }) {
 
       reportToSentry(error, { searchString })
     }
-  }, [searchString])
-
-  const searchUsers = useCallback(async () => {
-    try {
-      const results = await api.profiles.search(searchString)
-      setUsersSearchResults(results)
-    } catch (error: any) {
-      reportToSentry(error, { searchString })
-    }
-  }, [searchString])
-
-  const searchPeople = useCallback(async () => {
-    try {
-      const results = await api.people.search(searchString)
-      setPeopleSearchResults(results)
-    } catch (error: any) {
-      reportToSentry(error, { searchString })
-    }
-  }, [searchString])
+  }, [searchString, initialResults.books])
 
   useEffect(() => {
     async function searchAll() {
       setIsLoading(true)
-      // setErrorMessage(null)
+      setErrorMessage(null)
 
-      await Promise.all([searchBooks(), searchUsers(), searchPeople()])
+      await searchBooks()
     }
 
     searchAll()
-  }, [searchString, searchBooks, searchUsers, searchPeople])
+  }, [searchString, searchBooks])
 
   useEffect(() => {
     const _searchResults = [...booksSearchResults, ...peopleSearchResults, ...usersSearchResults]

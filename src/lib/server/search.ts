@@ -174,8 +174,6 @@ async function searchUsers(searchString, options: any = {}) {
 
   const results = await prismaQuery
 
-  console.log(results[0])
-
   return humps.camelizeKeys(results)
 }
 
