@@ -1,4 +1,4 @@
-last updated: july 12, 2024.
+last updated: july 19, 2024.
 
 # big things for july - august 2024
 
@@ -15,6 +15,17 @@ key: 🛠️ in progress | ✅ done | ⌛️ upcoming
 # changelog
 
 A running journal of things we've been working on around catalog. 🛠️ 🚧
+
+## july 15-21, 2024
+
+Main things:
+
+- Search all the things: the nav searchbar searches across books, people, and users, which you can view in the instant results but also in a new search results page that you can navigate to, to browse more results.
+
+Small fixes/improvements:
+
+- Person page: books are arranged in a more compact grid form instead of each book taking up a row.
+- (Internal) Better logging to help alert staff of potential duplicate authors/people in the database.
 
 ## july 8 - july 14, 2024
 
