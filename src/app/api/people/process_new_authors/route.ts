@@ -6,6 +6,7 @@ import { generateUniqueSlug } from "lib/helpers/general"
 import { withApiHandling } from "lib/api/withApiHandling"
 import { reportToSentry } from "lib/sentry"
 import PersonBookRelationType from "enums/PersonBookRelationType"
+import JobStatus from "enums/JobStatus"
 import type { NextRequest } from "next/server"
 
 const BOOKS_LIMIT = 30
@@ -38,9 +39,22 @@ export const GET = withApiHandling(
       where: whereConditions,
     })
 
+    let jobLog
+    if (totalBooksToProcess > 0) {
+      jobLog = await prisma.jobLog.create({
+        data: {
+          jobName: "api.people.process_new_authors",
+          status: JobStatus.Started,
+          data: {
+            totalBooksToProcess,
+          },
+        },
+      })
+    }
+
     if (totalBooksToProcess > BOOKS_LIMIT) {
-      reportToSentry(
-        `api.people.process_new_authors: found ${totalBooksToProcess} with authors to process, but only processing ${BOOKS_LIMIT}.`,
+      logger.info(
+        `api.people.process_new_authors: notifs: found ${totalBooksToProcess} with authors to process, but only processing ${BOOKS_LIMIT}.`,
       )
     }
 
@@ -68,23 +82,48 @@ export const GET = withApiHandling(
         },
       })
 
+      const jobAlreadyAttempted = await prisma.jobLogItem.findFirst({
+        where: {
+          jobName: "api.people.process_new_authors",
+          reference: authorName,
+          data: {
+            path: ["bookSlug"],
+            equals: slug,
+          },
+        },
+      })
+
+      if (jobAlreadyAttempted) {
+        continue
+      }
+
       if (existingAuthorByName) {
         logger.info(
-          `api.people.process_new_authors: found potential existing person ${existingAuthorByName.name} for ${slug}, skipping`,
+          `api.people.process_new_authors: notifs: found potential existing person ${existingAuthorByName.name} for ${slug}, skipping`,
         )
 
-        const error = new Error(`found potential existing person by name`)
-
-        reportToSentry(error, {
-          method: "api.people.process_new_authors",
-          authorName,
-          bookSlug: slug,
+        await prisma.jobLogItem.create({
+          data: {
+            jobLogId: jobLog.id,
+            jobName: "api.people.process_new_authors",
+            status: JobStatus.Failed,
+            reason: "potential duplicate person",
+            reference: authorName,
+            data: {
+              bookSlug: slug,
+              authorName,
+              openLibraryWorkId,
+              openLibraryAuthorId,
+            },
+          },
         })
 
         failures.push({
-          slug,
-          error,
-          errorMsg: error.message,
+          bookSlug: slug,
+          authorName,
+          openLibraryWorkId,
+          openLibraryAuthorId,
+          errorMsg: `potential duplicate with person: ${existingAuthorByName.slug}`,
         })
 
         continue
@@ -191,6 +230,22 @@ export const GET = withApiHandling(
           throw new Error(`failed to create author for ${slug}`)
         }
 
+        await prisma.jobLogItem.create({
+          data: {
+            jobLogId: jobLog.id,
+            jobName: "api.people.process_new_authors",
+            status: JobStatus.Success,
+            reference: authorName,
+            data: {
+              bookSlug: slug,
+              authorName,
+              personSlug: author.slug,
+              openLibraryWorkId,
+              openLibraryAuthorId,
+            },
+          },
+        })
+
         successCount += 1
       } catch (error: any) {
         reportToSentry(error, {
@@ -198,7 +253,25 @@ export const GET = withApiHandling(
           bookSlug: slug,
         })
 
-        failures.push({ slug, error, errorMsg: error.message })
+        await prisma.jobLogItem.create({
+          data: {
+            jobLogId: jobLog.id,
+            jobName: "api.people.process_new_authors",
+            status: JobStatus.Failed,
+            reason: error.message,
+            reference: authorName,
+            data: {
+              bookSlug: slug,
+              authorName,
+              openLibraryWorkId,
+              openLibraryAuthorId,
+              error,
+              errorMsg: error.message,
+            },
+          },
+        })
+
+        failures.push({ bookSlug: slug, error, errorMsg: error.message })
       }
     }
 
@@ -206,6 +279,35 @@ export const GET = withApiHandling(
     logger.info("api.people.process_new_authors: failures:")
     logger.info(failures)
     logger.info(`api.people.process_new_authors: ${failures.length} failures.`)
+
+    if (failures.length > 0) {
+      await prisma.jobLog.update({
+        where: {
+          id: jobLog.id,
+        },
+        data: {
+          status: JobStatus.PartialSuccess,
+          data: {
+            totalBooksToProcess,
+            successCount,
+            failures,
+          },
+        },
+      })
+    } else {
+      await prisma.jobLog.update({
+        where: {
+          id: jobLog.id,
+        },
+        data: {
+          status: JobStatus.Success,
+          data: {
+            totalBooksToProcess,
+            successCount,
+          },
+        },
+      })
+    }
 
     return NextResponse.json({}, { status: 200 })
   },
