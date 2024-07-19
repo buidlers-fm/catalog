@@ -220,7 +220,8 @@ function BookResult({ book }: { book: Book }) {
         <div className="grow flex flex-col justify-between">
           <div className="">
             <Link href={getBookLinkAgnostic(book)}>{title}</Link>
-            <div className="text-gray-300">
+            <div className="text-gray-300">by {book.authorName}</div>
+            <div className="mt-1 text-gray-300 text-sm">
               {editionsCount} editions • {firstPublishedYear}
             </div>
           </div>
