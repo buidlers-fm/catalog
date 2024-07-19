@@ -56,6 +56,36 @@ model FeedbackSubmission {
   @@map("feedback_submissions")
 }
 
+model JobLog {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jobName   String       @map("job_name")
+  status    String       @map("status")
+  reference String?      @map("reference")
+  reason    String?      @map("reason")
+  data      Json?        @map("data")
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  items     JobLogItem[]
+
+  @@map("job_logs")
+}
+
+model JobLogItem {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jobLogId  String    @map("job_log_id") @db.Uuid
+  jobName   String    @map("job_name")
+  status    String    @map("status")
+  reason    String?   @map("reason")
+  reference String?   @map("reference")
+  data      Json?     @map("data")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  jobLog    JobLog    @relation(fields: [jobLogId], references: [id], onDelete: Cascade)
+
+  @@index([jobLogId])
+  @@map("job_log_items")
+}
+
 model Person {
   id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                String               @map("name")
