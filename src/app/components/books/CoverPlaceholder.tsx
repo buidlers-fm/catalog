@@ -6,11 +6,13 @@ export default function CoverPlaceholder({
   size = "md",
   loading = false,
   book,
+  fade = false,
 }: {
   sizeClasses?: string
   size?: string
   loading?: boolean
   book?: any
+  fade?: boolean
 }) {
   const SIZE_CLASSES = {
     sm: {
@@ -31,13 +33,19 @@ export default function CoverPlaceholder({
 
   return (
     <div
-      className={`${containerSize} shrink-0 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center`}
+      className={`${containerSize} shrink-0 flex flex-col items-center justify-center border-2 ${
+        fade ? "border-gray-800" : "border-gray-500"
+      } box-border rounded font-mulish text-center ${fade ? "text-gray-700" : "text-gray-200"}`}
     >
       {loading ? (
         <span className="text-sm text-gray-200">Loading...</span>
       ) : book ? (
         <>
-          <GiOpenBook className="hidden sm:block mb-4 sm:mb-2 text-8xl sm:text-4xl text-gray-500" />
+          <GiOpenBook
+            className={`hidden sm:block mb-4 sm:mb-2 text-8xl sm:text-4xl ${
+              fade ? "text-gray-800" : "text-gray-500"
+            }`}
+          />
           <div className="mb-2 sm:mb-0 text-sm">{truncateString(book.title, 20)}</div>
           <div className="text-sm">{truncateString(book.authorName, 20)}</div>
         </>
