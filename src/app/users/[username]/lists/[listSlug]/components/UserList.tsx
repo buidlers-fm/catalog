@@ -223,6 +223,8 @@ export default function UserList({
               isRanked={ranked}
               rank={index + 1}
               fade={fadeRead && hasCurrentUserReadBook(book)}
+              showLikedByListCreator
+              listCreatorName={name}
             />
           ))}
         </div>

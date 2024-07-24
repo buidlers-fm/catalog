@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { getSelectorsByUserAgent } from "react-device-detect"
 import { Tooltip } from "react-tooltip"
+import { FaHeart } from "react-icons/fa"
 import { FaNoteSticky } from "react-icons/fa6"
 import { GiOpenBook } from "react-icons/gi"
 import { getBookLinkAgnostic } from "lib/helpers/general"
@@ -27,6 +28,8 @@ export default function ListBook({
   heightClasses = "",
   detail = undefined,
   fade = false,
+  showLikedByListCreator = false,
+  listCreatorName = "",
 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -84,6 +87,18 @@ export default function ListBook({
                 book={book}
                 fade={fade}
               />
+            )}
+
+            {showLikedByListCreator && book.likedByListCreator && (
+              <div className="absolute -bottom-6 right-1 w-full flex justify-end">
+                <FaHeart id={`liked-by-list-creator-${id}`} className="text-red-300" />
+                <Tooltip
+                  anchorSelect={`#liked-by-list-creator-${id}`}
+                  className="z-10 max-w-[240px] font-mulish"
+                >
+                  {listCreatorName} loved it
+                </Tooltip>
+              </div>
             )}
           </LinkOrDiv>
 

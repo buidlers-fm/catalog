@@ -68,6 +68,7 @@ export default async function UserListPage({ params, searchParams }) {
   const [list, currentUserReadList] = await decorateLists(
     [_list, _currentUserReadList],
     currentUserProfile,
+    { includeLikedByCreator: true },
   )
 
   const isUsersList = currentUserProfile?.id === userProfile!.id
