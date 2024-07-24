@@ -7,6 +7,7 @@ import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
 import UserList from "app/users/[username]/lists/[listSlug]/components/UserList"
 import { decorateLists } from "lib/server/decorators"
+import ListDesignation from "enums/ListDesignation"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -50,7 +51,25 @@ export default async function UserListPage({ params, searchParams }) {
 
   if (!_list) notFound()
 
-  const [list] = await decorateLists([_list], currentUserProfile)
+  const _currentUserReadList = await prisma.list.findFirst({
+    where: {
+      ownerId: currentUserProfile?.id,
+      designation: ListDesignation.Read,
+    },
+    include: {
+      listItemAssignments: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  })
+
+  const [list, currentUserReadList] = await decorateLists(
+    [_list, _currentUserReadList],
+    currentUserProfile,
+    { includeLikedByCreator: true },
+  )
 
   const isUsersList = currentUserProfile?.id === userProfile!.id
 
@@ -60,6 +79,7 @@ export default async function UserListPage({ params, searchParams }) {
       list={list}
       isUsersList={isUsersList}
       currentUserProfile={currentUserProfile}
+      currentUserReadList={currentUserReadList}
       view={view}
     />
   )

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { getSelectorsByUserAgent } from "react-device-detect"
 import { Tooltip } from "react-tooltip"
+import { FaHeart } from "react-icons/fa"
 import { FaNoteSticky } from "react-icons/fa6"
 import { GiOpenBook } from "react-icons/gi"
 import { getBookLinkAgnostic } from "lib/helpers/general"
@@ -26,6 +27,9 @@ export default function ListBook({
   widthClasses = "",
   heightClasses = "",
   detail = undefined,
+  fade = false,
+  showLikedByListCreator = false,
+  listCreatorName = "",
 }) {
   const [imgLoaded, setImgLoaded] = useState<boolean>(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -70,7 +74,9 @@ export default function ListBook({
                 ref={imgRef}
                 src={book.coverImageUrl}
                 id={`book-${id}`}
-                className={`w-full ${imgLoaded ? "block" : "hidden"} rounded-sm`}
+                className={`w-full ${imgLoaded ? "block" : "hidden"} ${
+                  fade ? "opacity-30" : ""
+                } rounded-sm`}
                 alt={`${book.title} cover`}
                 onLoad={() => setImgLoaded(true)}
               />
@@ -79,7 +85,20 @@ export default function ListBook({
                 widthClasses={widthClassesToUse}
                 heightClasses={heightClassesToUse}
                 book={book}
+                fade={fade}
               />
+            )}
+
+            {showLikedByListCreator && book.likedByListCreator && (
+              <div className="absolute -bottom-6 right-1 w-full flex justify-end">
+                <FaHeart id={`liked-by-list-creator-${id}`} className="text-red-300" />
+                <Tooltip
+                  anchorSelect={`#liked-by-list-creator-${id}`}
+                  className="z-10 max-w-[240px] font-mulish"
+                >
+                  {listCreatorName} loved it
+                </Tooltip>
+              </div>
             )}
           </LinkOrDiv>
 
@@ -100,19 +119,27 @@ export default function ListBook({
   )
 }
 
-const CoverPlaceholder = ({ book, loading = false, widthClasses, heightClasses }) => {
+const CoverPlaceholder = ({ book, loading = false, widthClasses, heightClasses, fade = false }) => {
   const id = book.id || book.openLibraryWorkId
 
   return (
     <div
       id={`book-${id}`}
-      className={`${widthClasses} ${heightClasses} p-2 flex flex-col items-center justify-center border-2 border-gray-500 box-border rounded font-mulish text-center text-sm text-gray-200`}
+      className={`${widthClasses} ${heightClasses} p-2 flex flex-col items-center justify-center border-2 ${
+        fade ? "border-gray-800" : "border-gray-500"
+      } box-border rounded font-mulish text-center text-sm ${
+        fade ? "text-gray-700" : "text-gray-200"
+      }`}
     >
       {loading ? (
         "Loading..."
       ) : (
         <>
-          <GiOpenBook className="hidden sm:block mb-4 sm:mb-2 text-8xl sm:text-4xl text-gray-500" />
+          <GiOpenBook
+            className={`hidden sm:block mb-4 sm:mb-2 text-8xl sm:text-4xl ${
+              fade ? "text-gray-800" : "text-gray-500"
+            }`}
+          />
           <div className="mb-2 sm:mb-0">{truncateString(book.title, 20)}</div>
           <div className="hidden sm:block">{truncateString(book.authorName, 20)}</div>
         </>

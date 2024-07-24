@@ -4,7 +4,7 @@ import CoverPlaceholder from "app/components/books/CoverPlaceholder"
 import BookCoverOverlay from "app/components/books/BookCoverOverlay"
 import CustomMarkdown from "app/components/CustomMarkdown"
 
-export default function ListBookCard({ book, note, isRanked = false, rank = 0 }) {
+export default function ListBookCard({ book, note, isRanked = false, rank = 0, fade = false }) {
   const { title, authorName, slug, coverImageUrl } = book
 
   return (
@@ -15,12 +15,13 @@ export default function ListBookCard({ book, note, isRanked = false, rank = 0 })
             <img
               src={coverImageUrl}
               alt="cover"
-              className="object-top mx-auto shadow-md rounded-sm"
+              className={`object-top mx-auto shadow-md rounded-sm ${fade ? "opacity-30" : ""}`}
             />
           ) : (
             <CoverPlaceholder
               book={book}
               sizeClasses="w-[72px] h-[108px] xs:w-[96px] xs:h-[144px]"
+              fade={fade}
             />
           )}
         </Link>
@@ -28,11 +29,11 @@ export default function ListBookCard({ book, note, isRanked = false, rank = 0 })
         <BookCoverOverlay book={book} positionClass="bottom-1" />
       </div>
       <div className="grow">
-        <div className="text-2xl font-semibold">
+        <div className={`text-2xl font-semibold ${fade ? "text-gray-700" : "text-white"}`}>
           {isRanked && <span className="mr-2">{rank}.</span>}
           {title}
         </div>
-        <div className="text-gray-300 text-lg">by {authorName}</div>
+        <div className={`${fade ? "text-gray-700" : "text-gray-300"} text-lg`}>by {authorName}</div>
         {note && (
           <div className="my-2">
             <CustomMarkdown markdown={note} />

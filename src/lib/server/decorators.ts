@@ -8,7 +8,9 @@ import CommentParentType from "enums/CommentParentType"
 import type Like from "types/Like"
 import type { UserProfileProps } from "lib/models/UserProfile"
 
-export const decorateLists = async (lists, currentUserProfile?) => {
+export const decorateLists = async (lists, currentUserProfile?, options: any = {}) => {
+  const { includeLikedByCreator } = options
+
   const allBookIds = lists
     .map((list) =>
       list.listItemAssignments
@@ -40,11 +42,36 @@ export const decorateLists = async (lists, currentUserProfile?) => {
     return result
   }, {})
 
+  let allCreatorBookLikes: any[] = []
+  if (includeLikedByCreator) {
+    allCreatorBookLikes = await prisma.interaction.findMany({
+      where: {
+        objectId: {
+          in: allBookIds,
+        },
+        objectType: InteractionObjectType.Book,
+        interactionType: InteractionType.Like,
+        agentId: {
+          in: listOwners.map((owner) => owner.id),
+        },
+        agentType: InteractionAgentType.User,
+      },
+    })
+  }
+
   let _lists = lists.map((list: any) => ({
     ...list,
     books: list.listItemAssignments
       .map((lia) => (lia.listedObjectType === "book" ? bookIdsToBooks[lia.listedObjectId] : null))
-      .filter((b) => !!b),
+      .filter((b) => !!b)
+      .map((book) => ({
+        ...book,
+        likedByListCreator: includeLikedByCreator
+          ? allCreatorBookLikes.some(
+              (like) => like.objectId === book.id && like.agentId === list.creatorId,
+            )
+          : undefined,
+      })),
     url: getListLink(listIdsToOwners[list.id], list.slug),
     owner: listIdsToOwners[list.id],
   }))

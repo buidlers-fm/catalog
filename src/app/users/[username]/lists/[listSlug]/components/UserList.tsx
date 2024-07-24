@@ -16,6 +16,7 @@ import Likes from "app/components/Likes"
 import CustomMarkdown from "app/components/CustomMarkdown"
 import EditComment from "app/components/comments/EditComment"
 import CommentCard from "app/components/comments/CommentCard"
+import Toggle from "app/components/Toggle"
 import { getUserProfileLink, getEditListLink } from "lib/helpers/general"
 import { dateTimeFormats } from "lib/constants/dateTime"
 import UserProfile from "lib/models/UserProfile"
@@ -36,18 +37,21 @@ export default function UserList({
   list,
   isUsersList,
   currentUserProfile,
+  currentUserReadList,
   view = "grid",
 }: {
   userProfile: UserProfileProps
   list: List
   isUsersList: boolean
   currentUserProfile?: UserProfileProps
+  currentUserReadList: List
   view?: ViewType
 }) {
   const router = useRouter()
   const pathname = usePathname()
 
   const [activeView, setActiveView] = useState<ViewType>(view)
+  const [fadeRead, setFadeRead] = useState(false)
   const [comments, setComments] = useState<any[]>(list.comments || [])
 
   const {
@@ -97,6 +101,16 @@ export default function UserList({
   }
 
   const replyAnchorId = "reply"
+
+  const booksCurrentUserHasRead = currentUserReadList.books!.filter((book) =>
+    list.books!.some((listBook) => listBook.id === book.id),
+  )
+
+  const hasCurrentUserReadBook = (book) => booksCurrentUserHasRead.some((b) => b.id === book.id)
+
+  const booksReadCount = booksCurrentUserHasRead.length
+  const booksTotalCount = list.books!.length
+  const booksReadPercentage = Math.round((booksReadCount / booksTotalCount) * 100)
 
   return (
     <div className="mt-4 xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto">
@@ -160,6 +174,35 @@ export default function UserList({
       <div className="my-4">
         <CustomMarkdown markdown={description} />
       </div>
+
+      {currentUserProfile && (
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+          <div className="mt-8 mb-4 max-w-md border border-gray-800 rounded font-mulish">
+            <div className="flex justify-between items-center p-3">
+              <div className="text-sm text-gray-300">
+                You've read {booksReadCount} of {booksTotalCount} books on this list.
+              </div>
+              <div className="ml-3 text-xl text-gray-300">{booksReadPercentage}%</div>
+            </div>
+            <div className="overflow-hidden rounded-bl rounded-br bg-gray-800">
+              <div
+                style={{ width: `${booksReadPercentage}%` }}
+                className="h-1 rounded-bl rounded-br bg-gold-500"
+              />
+            </div>
+          </div>
+
+          <div className="sm:mt-6 sm:ml-4 max-w-[160px] text-sm text-gray-300 font-mulish">
+            <Toggle
+              label="fade read books"
+              name="fadeReadBooks"
+              defaultValue={fadeRead}
+              onChange={setFadeRead}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-end">
         {hasNotes && activeView === "grid" && (
           <button
@@ -174,7 +217,15 @@ export default function UserList({
       {activeView === "grid" ? (
         <div className="sm:my-4 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
           {list.books!.map((book, index: number) => (
-            <ListBook key={book!.id} book={book} isRanked={ranked} rank={index + 1} />
+            <ListBook
+              key={book!.id}
+              book={book}
+              isRanked={ranked}
+              rank={index + 1}
+              fade={fadeRead && hasCurrentUserReadBook(book)}
+              showLikedByListCreator
+              listCreatorName={name}
+            />
           ))}
         </div>
       ) : (
@@ -185,6 +236,7 @@ export default function UserList({
             note={bookIdsToNotes[book.id!]}
             isRanked={ranked}
             rank={index + 1}
+            fade={fadeRead && hasCurrentUserReadBook(book)}
           />
         ))
       )}
