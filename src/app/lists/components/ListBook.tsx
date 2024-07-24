@@ -20,7 +20,7 @@ const favoriteBookHeights = "h-[116px] xs:h-[154px] sm:h-[216px] ml:h-[216px]"
 export default function ListBook({
   book,
   note = undefined,
-  isFavorite = false,
+  isProfilePage = false,
   isRanked = false,
   rank = 0,
   widthClasses = "",
@@ -44,8 +44,8 @@ export default function ListBook({
 
   const LinkOrDiv = isMobile ? "div" : Link
 
-  const widthClassesToUse = widthClasses || (isFavorite ? favoriteBookWidths : defaultWidths)
-  const heightClassesToUse = heightClasses || (isFavorite ? favoriteBookHeights : defaultHeights)
+  const widthClassesToUse = widthClasses || (isProfilePage ? favoriteBookWidths : defaultWidths)
+  const heightClassesToUse = heightClasses || (isProfilePage ? favoriteBookHeights : defaultHeights)
 
   const id = book.id || book.openLibraryWorkId
 
@@ -114,7 +114,7 @@ const CoverPlaceholder = ({ book, loading = false, widthClasses, heightClasses }
         <>
           <GiOpenBook className="hidden sm:block mb-4 sm:mb-2 text-8xl sm:text-4xl text-gray-500" />
           <div className="mb-2 sm:mb-0">{truncateString(book.title, 20)}</div>
-          <div>{truncateString(book.authorName, 20)}</div>
+          <div className="hidden sm:block">{truncateString(book.authorName, 20)}</div>
         </>
       )}
     </div>

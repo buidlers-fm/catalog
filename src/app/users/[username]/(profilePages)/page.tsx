@@ -2,11 +2,13 @@ import { notFound } from "next/navigation"
 import prisma from "lib/prisma"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { isCurrentStatusVisible } from "lib/server/userCurrentStatuses"
+import { areShelvesVisible } from "lib/api/userBookShelves"
 import { sortListsByPinSortOrder } from "lib/helpers/general"
 import { decorateLists, decorateWithLikes } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import UserProfilePageComponent from "app/users/[username]/components/UserProfilePageComponent"
 import InteractionObjectType from "enums/InteractionObjectType"
+import UserBookShelf from "enums/UserBookShelf"
 import type { UserProfileProps } from "lib/models/UserProfile"
 import type List from "types/List"
 import type { Metadata } from "next"
@@ -29,6 +31,19 @@ export default async function UserProfilePage({ params }) {
       username,
     },
     include: {
+      bookShelfAssignments: {
+        where: {
+          shelf: {
+            in: [UserBookShelf.CurrentlyReading, UserBookShelf.Read],
+          },
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+        include: {
+          book: true,
+        },
+      },
       currentStatuses: {
         orderBy: {
           createdAt: "desc",
@@ -48,6 +63,7 @@ export default async function UserProfilePage({ params }) {
   if (!userProfile) notFound()
 
   const showCurrentStatus = await isCurrentStatusVisible(userProfile, currentUserProfile)
+  const showShelves = await areShelvesVisible(userProfile, currentUserProfile)
 
   let favoriteBooksList = (await prisma.list.findFirst({
     where: {
@@ -131,6 +147,7 @@ export default async function UserProfilePage({ params }) {
       currentUserProfile={currentUserProfile}
       hasPinnedLists={hasPinnedLists}
       showCurrentStatus={showCurrentStatus}
+      showShelves={showShelves}
     />
   )
 }
