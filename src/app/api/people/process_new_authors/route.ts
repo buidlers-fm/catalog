@@ -75,60 +75,6 @@ export const GET = withApiHandling(
       const { slug, openLibraryWorkId, authorName } = book
       let { openLibraryAuthorId } = book
 
-      // if possible duplicate, skip and notify
-      const existingAuthorByName = await prisma.person.findFirst({
-        where: {
-          name: authorName!,
-        },
-      })
-
-      const jobAlreadyAttempted = await prisma.jobLogItem.findFirst({
-        where: {
-          jobName: "api.people.process_new_authors",
-          reference: authorName,
-          data: {
-            path: ["bookSlug"],
-            equals: slug,
-          },
-        },
-      })
-
-      if (jobAlreadyAttempted) {
-        continue
-      }
-
-      if (existingAuthorByName) {
-        logger.info(
-          `api.people.process_new_authors: notifs: found potential existing person ${existingAuthorByName.name} for ${slug}, skipping`,
-        )
-
-        await prisma.jobLogItem.create({
-          data: {
-            jobLogId: jobLog.id,
-            jobName: "api.people.process_new_authors",
-            status: JobStatus.Failed,
-            reason: "potential duplicate person",
-            reference: authorName,
-            data: {
-              bookSlug: slug,
-              authorName,
-              openLibraryWorkId,
-              openLibraryAuthorId,
-            },
-          },
-        })
-
-        failures.push({
-          bookSlug: slug,
-          authorName,
-          openLibraryWorkId,
-          openLibraryAuthorId,
-          errorMsg: `potential duplicate with person: ${existingAuthorByName.slug}`,
-        })
-
-        continue
-      }
-
       try {
         // fetch author id if needed
         if (!openLibraryAuthorId) {
@@ -161,6 +107,61 @@ export const GET = withApiHandling(
 
             author = existingPerson
           } else {
+            // if possible duplicate, skip and notify, instead of creating a person
+            // ...but if we have already been notified before, skip altogether
+            const jobAlreadyAttempted = await prisma.jobLogItem.findFirst({
+              where: {
+                jobName: "api.people.process_new_authors",
+                reference: authorName,
+                data: {
+                  path: ["bookSlug"],
+                  equals: slug,
+                },
+              },
+            })
+
+            if (jobAlreadyAttempted) {
+              continue
+            }
+
+            const existingAuthorByName = await prisma.person.findFirst({
+              where: {
+                name: authorName!,
+              },
+            })
+
+            if (existingAuthorByName) {
+              logger.info(
+                `api.people.process_new_authors: notifs: found potential existing person ${existingAuthorByName.name} for ${slug}, skipping`,
+              )
+
+              await prisma.jobLogItem.create({
+                data: {
+                  jobLogId: jobLog.id,
+                  jobName: "api.people.process_new_authors",
+                  status: JobStatus.Failed,
+                  reason: "potential duplicate person",
+                  reference: authorName,
+                  data: {
+                    bookSlug: slug,
+                    authorName,
+                    openLibraryWorkId,
+                    openLibraryAuthorId,
+                  },
+                },
+              })
+
+              failures.push({
+                bookSlug: slug,
+                authorName,
+                openLibraryWorkId,
+                openLibraryAuthorId,
+                errorMsg: `potential duplicate with person: ${existingAuthorByName.slug}`,
+              })
+
+              continue
+            }
+
             try {
               logger.info("api.people.process_new_authors: calling OL...")
 
