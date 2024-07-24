@@ -1,5 +1,6 @@
 import type BookNote from "types/BookNote"
 import type BookRead from "types/BookRead"
+import type UserBookShelfAssignment from "types/UserBookShelfAssignment"
 import type UserCurrentStatus from "types/UserCurrentStatus"
 import type EditLog from "types/EditLog"
 
@@ -17,6 +18,7 @@ export interface UserProfileProps {
   config?: any
   bookNotes?: BookNote[]
   bookReads?: BookRead[]
+  bookShelfAssignments?: UserBookShelfAssignment[]
   currentStatuses?: UserCurrentStatus[]
   followers?: UserProfileProps[]
   following?: UserProfileProps[]
@@ -51,6 +53,8 @@ export default class UserProfile {
 
   public bookReads: BookRead[] | undefined
 
+  public bookShelfAssignments: UserBookShelfAssignment[] | undefined
+
   public currentStatuses: UserCurrentStatus[] | undefined
 
   public followers: UserProfile[] | UserProfileProps[] | undefined
@@ -75,6 +79,7 @@ export default class UserProfile {
     this.config = userProfileProps.config
     this.bookNotes = userProfileProps.bookNotes
     this.bookReads = userProfileProps.bookReads
+    this.bookShelfAssignments = userProfileProps.bookShelfAssignments
     this.currentStatuses = userProfileProps.currentStatuses
     this.editLogs = userProfileProps.editLogs
     this.pins = userProfileProps.pins

@@ -16,6 +16,8 @@ import ProfileBookNotes from "app/users/[username]/bookNotes/components/ProfileB
 import ListBook from "app/lists/components/ListBook"
 import ListCard from "app/components/lists/ListCard"
 import EmptyState from "app/components/EmptyState"
+import UserBookShelf from "enums/UserBookShelf"
+import type Book from "types/Book"
 
 export default function UserProfilePageComponent({
   userProfile,
@@ -24,6 +26,7 @@ export default function UserProfilePageComponent({
   favoriteBooksList,
   hasPinnedLists,
   showCurrentStatus,
+  showShelves,
 }) {
   const { setCurrentStep, setIsOpen } = useTour()
   const { currentModal, setCurrentModal } = useModals()
@@ -41,6 +44,23 @@ export default function UserProfilePageComponent({
   const isUsersProfile = currentUserProfile?.id === userProfile.id
 
   const { name } = UserProfile.build(userProfile)
+
+  let currentlyReadingBooks: Book[] = []
+  let recentlyReadBooks: Book[] = []
+
+  if (showShelves) {
+    currentlyReadingBooks = userProfile
+      .bookShelfAssignments!.filter(
+        (assignment) => assignment.shelf === UserBookShelf.CurrentlyReading,
+      )
+      .slice(0, 4)
+      .map((assignment) => assignment.book)
+
+    recentlyReadBooks = userProfile
+      .bookShelfAssignments!.filter((assignment) => assignment.shelf === UserBookShelf.Read)
+      .slice(0, 4)
+      .map((assignment) => assignment.book)
+  }
 
   return (
     <div className="mt-4 flex flex-col lg:flex-row justify-center">
@@ -61,7 +81,7 @@ export default function UserProfilePageComponent({
           {favoriteBooksList?.books && favoriteBooksList.books.length > 0 ? (
             <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
               {favoriteBooksList.books.map((book) => (
-                <ListBook key={book!.id} book={book} isFavorite />
+                <ListBook key={book!.id} book={book} isProfilePage />
               ))}
             </div>
           ) : (
@@ -72,6 +92,30 @@ export default function UserProfilePageComponent({
             </div>
           )}
         </div>
+
+        {currentlyReadingBooks.length > 0 && (
+          <div className="font-mulish">
+            <div className="cat-eyebrow">currently reading</div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+            <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
+              {currentlyReadingBooks.map((book) => (
+                <ListBook key={book!.id} book={book} isProfilePage />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {recentlyReadBooks.length > 0 && (
+          <div className="font-mulish">
+            <div className="cat-eyebrow">recently read</div>
+            <hr className="my-1 h-[1px] border-none bg-gray-300" />
+            <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
+              {recentlyReadBooks.map((book) => (
+                <ListBook key={book!.id} book={book} isProfilePage />
+              ))}
+            </div>
+          </div>
+        )}
 
         <ProfileBookNotes userProfile={userProfile} currentUserProfile={currentUserProfile} />
 

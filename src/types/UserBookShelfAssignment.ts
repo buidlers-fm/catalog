@@ -1,4 +1,5 @@
 import UserBookShelf from "enums/UserBookShelf"
+import type Book from "types/Book"
 
 export default interface UserBookShelfAssignment {
   id?: string
@@ -7,4 +8,5 @@ export default interface UserBookShelfAssignment {
   userProfileId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  book?: Book
 }
