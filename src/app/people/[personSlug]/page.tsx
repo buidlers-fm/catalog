@@ -56,7 +56,7 @@ export default async function PersonPageBySlug({ params }) {
     }
   }
 
-  const creditsByRelationType = person.personBookRelations!.reduce(
+  let creditsByRelationType = person.personBookRelations!.reduce(
     (acc, relation) => {
       const { relationType } = relation
 
@@ -79,7 +79,7 @@ export default async function PersonPageBySlug({ params }) {
   )
 
   // sort by relation type name, then by book first published year, descending
-  creditsByRelationType
+  creditsByRelationType = creditsByRelationType
     .sort((a, b) => a.relationType.localeCompare(b.relationType))
     .map((item) => ({
       ...item,
