@@ -3,12 +3,12 @@ import prisma from "lib/prisma"
 import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import { getMetadata } from "lib/server/metadata"
+import { getPersonCredits } from "lib/server/people"
 import PersonPage from "app/components/people/PersonPage"
 import PersonBookRelationType from "enums/PersonBookRelationType"
 import type { Metadata } from "next"
 import type Person from "types/Person"
 import type Book from "types/Book"
-import type PersonBookRelation from "types/PersonBookRelation"
 
 export const dynamic = "force-dynamic"
 
@@ -56,40 +56,7 @@ export default async function PersonPageBySlug({ params }) {
     }
   }
 
-  let creditsByRelationType = person.personBookRelations!.reduce(
-    (acc, relation) => {
-      const { relationType } = relation
-
-      if (relationType === PersonBookRelationType.Author) return acc
-
-      const existingRelationType = acc.find((r) => r.relationType === relationType)
-
-      if (existingRelationType) {
-        existingRelationType.relations.push(relation)
-      } else {
-        acc.push({
-          relationType,
-          relations: [relation],
-        })
-      }
-
-      return acc
-    },
-    [] as { relationType: string; relations: PersonBookRelation[] }[],
-  )
-
-  // sort by relation type name, then by book first published year, descending
-  creditsByRelationType = creditsByRelationType
-    .sort((a, b) => a.relationType.localeCompare(b.relationType))
-    .map((item) => ({
-      ...item,
-      relations: item.relations.sort((a, b) => {
-        if (typeof a.book!.firstPublishedYear !== "number") return 1
-        if (typeof b.book!.firstPublishedYear !== "number") return -1
-
-        return b.book!.firstPublishedYear - a.book!.firstPublishedYear
-      }),
-    }))
+  const creditsByRelationType = getPersonCredits(person, { includeAuthorRelationType: false })
 
   person = {
     ...person,

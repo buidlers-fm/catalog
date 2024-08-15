@@ -29,7 +29,19 @@ function defaultSort(a, b) {
   return b.firstPublishedYear - a.firstPublishedYear
 }
 
-export default function EditPersonBooks({ person, onSuccess, onCancel }) {
+type Props = {
+  person: any
+  relationType?: PersonBookRelationType
+  onSuccess?: () => void
+  onCancel: () => void
+}
+
+export default function EditPersonBooksForRelationType({
+  person,
+  relationType: initialRelationType,
+  onSuccess,
+  onCancel,
+}: Props) {
   const {
     books: currentBooks,
     setBooks: setCurrentBooks,
@@ -37,23 +49,47 @@ export default function EditPersonBooks({ person, onSuccess, onCancel }) {
     removeBook,
   } = useEditBookList(mockList, { defaultSort })
 
-  const [selectedRelationType, setSelectedRelationType] = useState<PersonBookRelationType>()
+  const [selectedRelationType, setSelectedRelationType] = useState<
+    PersonBookRelationType | undefined
+  >(initialRelationType)
   const [relationTypeOptions, setRelationTypeOptions] =
     useState<PersonBookRelationType[]>(allRelationTypes)
 
-  const { name, creditsByRelationType, books: dbBooks, openLibraryBooks } = person
-
-  const defaultListedBooks = person.areBooksEdited
-    ? dbBooks
-    : openLibraryBooks.slice(0, DEFAULT_CURRENT_BOOKS_LIMIT)
-
-  const [listedBooks, setListedBooks] = useState<Book[]>(defaultListedBooks)
+  const [listedBooks, setListedBooks] = useState<Book[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDeleteAllConfirmation, setShowDeleteAllConfirmation] = useState(false)
+
+  const { name, creditsByRelationType, openLibraryBooks } = person
+
+  const isAdding = !initialRelationType
 
   const suggestedBooks = openLibraryBooks
     .filter((book) => !currentBooks.some((b) => b.openLibraryWorkId === book.openLibraryWorkId))
     .slice(0, SUGGESTED_BOOKS_LIMIT)
+
+  useEffect(() => {
+    if (selectedRelationType) {
+      const existingBooksForRelationType = creditsByRelationType
+        .find((credit) => credit.relationType === selectedRelationType)
+        ?.relations.map((relation) => relation.book)
+
+      setCurrentBooks(existingBooksForRelationType || [])
+
+      if (selectedRelationType === PersonBookRelationType.Author) {
+        const _listedBooks = person.areBooksEdited
+          ? existingBooksForRelationType
+          : openLibraryBooks.slice(0, DEFAULT_CURRENT_BOOKS_LIMIT)
+
+        setListedBooks(_listedBooks)
+      }
+    }
+  }, [
+    selectedRelationType,
+    creditsByRelationType,
+    openLibraryBooks,
+    person.areBooksEdited,
+    setCurrentBooks,
+  ])
 
   useEffect(() => {
     const existingRelationTypes = creditsByRelationType.map((credit) => credit.relationType)
@@ -75,6 +111,7 @@ export default function EditPersonBooks({ person, onSuccess, onCancel }) {
     }
 
     const requestData = {
+      relationType: selectedRelationType,
       books: currentBooks,
     }
 
@@ -88,7 +125,7 @@ export default function EditPersonBooks({ person, onSuccess, onCancel }) {
       toast.success(`${name}'s books updated!`, { id: toastId })
 
       setListedBooks(currentBooks)
-      if (onSuccess) onSuccess()
+      if (onSuccess) await onSuccess()
     } catch (error) {
       toast.error("Hmm, something went wrong.", { id: toastId })
 
@@ -108,14 +145,18 @@ export default function EditPersonBooks({ person, onSuccess, onCancel }) {
           {selectedRelationType ? (
             <div className="mb-16">
               <div className="flex items-baseline">
-                <div className="">editing {name}'s books as:</div>
-                <div className="ml-4">
-                  <SelectRelationType
-                    options={relationTypeOptions}
-                    defaultValue={selectedRelationType}
-                    onSelect={handleSelectRelationType}
-                  />
-                </div>
+                <div className="">editing {name}'s books as: </div>
+                {isAdding ? (
+                  <div className="ml-4">
+                    <SelectRelationType
+                      options={relationTypeOptions}
+                      defaultValue={selectedRelationType}
+                      onSelect={handleSelectRelationType}
+                    />
+                  </div>
+                ) : (
+                  <span className="ml-2">{personBookRelationTypeCopy[selectedRelationType]}</span>
+                )}
               </div>
 
               <EditListBooks

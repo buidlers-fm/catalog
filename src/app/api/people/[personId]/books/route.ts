@@ -12,7 +12,11 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
   const { routeParams, currentUserProfile, reqJson } = params
   const { personId } = routeParams
 
-  const { books } = reqJson
+  const { relationType, books } = reqJson
+
+  if (!Object.values(PersonBookRelationType).includes(relationType)) {
+    return NextResponse.json({ error: "Invalid relation type" }, { status: 400 })
+  }
 
   const person = await prisma.person.findFirst({
     where: {
@@ -85,13 +89,17 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
   const existingPersonBookRelations = await prisma.personBookRelation.findMany({
     where: {
       personId,
+      relationType,
+    },
+    include: {
+      book: true,
     },
   })
 
   const deletePersonBookRelationsPromise = prisma.personBookRelation.deleteMany({
     where: {
       personId,
-      relationType: PersonBookRelationType.Author, // temp until endpoint supports other relation types
+      relationType,
     },
   })
 
@@ -99,7 +107,7 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
     data: bookRecords.map((book) => ({
       personId,
       bookId: book.id,
-      relationType: PersonBookRelationType.Author,
+      relationType,
     })),
   })
 
@@ -121,6 +129,10 @@ export const POST = withApiHandling(async (req: NextRequest, { params }) => {
   const newPersonBookRelations = await prisma.personBookRelation.findMany({
     where: {
       personId,
+      relationType,
+    },
+    include: {
+      book: true,
     },
   })
 

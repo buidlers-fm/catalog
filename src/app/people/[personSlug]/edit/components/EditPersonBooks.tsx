@@ -1,16 +1,19 @@
 "use client"
 
 import { useState } from "react"
+import { MdEdit } from "react-icons/md"
 import ListBook from "app/lists/components/ListBook"
 import EditPersonBooksForRelationType from "app/people/[personSlug]/edit/components/EditPersonBooksForRelationType"
 import { personBookRelationTypeCopy } from "enums/PersonBookRelationType"
-// import api from "lib/api"
-// import { reportToSentry } from "lib/sentry"
+import api from "lib/api"
+import { reportToSentry } from "lib/sentry"
+import type PersonBookRelationType from "enums/PersonBookRelationType"
 
 export default function EditPersonBooks({ person }) {
-  const { creditsByRelationType: credits = [], openLibraryBooks } = person
+  const { creditsByRelationType = [], openLibraryBooks } = person
 
-  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [credits, setCredits] = useState(creditsByRelationType)
+  const [editingRelationType, setEditingRelationType] = useState<PersonBookRelationType>()
   const [isAdding, setIsAdding] = useState<boolean>(false)
 
   // const [areBooksEdited, setAreBooksEdited] = useState(person.areBooksEdited)
@@ -25,30 +28,35 @@ export default function EditPersonBooks({ person }) {
   //   }
   // }, [isEditing, setCurrentBooks, currentDbBooks, areBooksEdited, openLibraryBooks])
 
-  // async function fetchAdaptations() {
-  //   try {
-  //     const fetchedAdaptations = await api.adaptations.get(book.id)
-  //     setAdaptations(fetchedAdaptations)
-  //   } catch (error: any) {
-  //     reportToSentry(error, { method: "EditBookAdaptations.fetchAdaptations", book })
-  //   }
-  // }
+  async function fetchCredits() {
+    try {
+      const updatedPerson = await api.people.get(person.id)
+      const _credits = updatedPerson.creditsByRelationType
+      setCredits(_credits)
+    } catch (error: any) {
+      reportToSentry(error, { method: "EditPersonBooks.fetchCredits", person })
+    }
+  }
 
   function handleAdd() {
     setIsAdding(true)
   }
 
-  function handleAddSuccess() {
+  async function handleAddSuccess() {
     setIsAdding(false)
+    await fetchCredits()
     // setAreBooksEdited(true)
     // setCurrentDbBooks(currentBooks)
-    // fetchAdaptations()
   }
 
-  // function handleEditSuccess() {
-  //   setIsEditing(false)
-  //   // fetchAdaptations()
-  // }
+  function handleEdit(relationType: PersonBookRelationType) {
+    setEditingRelationType(relationType)
+  }
+
+  async function handleEditSuccess() {
+    setEditingRelationType(undefined)
+    await fetchCredits()
+  }
 
   return (
     <div className="">
@@ -58,9 +66,27 @@ export default function EditPersonBooks({ person }) {
           {credits.map(({ relationType, relations }) => {
             if (!relations || relations.length === 0) return null
 
+            if (editingRelationType === relationType) {
+              return (
+                <EditPersonBooksForRelationType
+                  key={relationType}
+                  person={person}
+                  relationType={relationType}
+                  onSuccess={handleEditSuccess}
+                  onCancel={() => setEditingRelationType(undefined)}
+                />
+              )
+            }
+
             return (
               <div key={relationType} className="my-6">
-                <div className="cat-eyebrow">{personBookRelationTypeCopy[relationType]}</div>
+                <div className="flex justify-between items-center">
+                  <div className="cat-eyebrow">{personBookRelationTypeCopy[relationType]}</div>
+
+                  <button className="" onClick={() => handleEdit(relationType)}>
+                    <MdEdit className="m-1 text-lg text-gray-300" />
+                  </button>
+                </div>
                 <hr className="mt-0.5 h-[1px] border-none bg-gray-300" />
 
                 <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
@@ -80,7 +106,7 @@ export default function EditPersonBooks({ person }) {
           onCancel={() => setIsAdding(false)}
         />
       )}
-      {!isAdding && !isEditing && (
+      {!isAdding && !editingRelationType && (
         <div className="flex items-center">
           <button
             type="button"
