@@ -4,6 +4,7 @@ import OpenLibrary from "lib/openLibrary"
 import { reportToSentry } from "lib/sentry"
 import { getCurrentUserProfile } from "lib/server/auth"
 import { getMetadata } from "lib/server/metadata"
+import { getPersonCredits } from "lib/server/people"
 import EditPersonBooks from "app/people/[personSlug]/edit//components/EditPersonBooks"
 import PersonBookRelationType from "enums/PersonBookRelationType"
 import type Person from "types/Person"
@@ -30,9 +31,6 @@ export default async function EditPersonBooksPage({ params }) {
     },
     include: {
       personBookRelations: {
-        where: {
-          relationType: PersonBookRelationType.Author,
-        },
         include: {
           book: true,
         },
@@ -42,7 +40,11 @@ export default async function EditPersonBooksPage({ params }) {
 
   if (!person) notFound()
 
-  const books: Book[] = person.personBookRelations!.map((relation) => relation.book!)
+  const authoredBooks: Book[] = person
+    .personBookRelations!.filter(
+      (relation) => relation.relationType === PersonBookRelationType.Author,
+    )
+    .map((relation) => relation.book!)
 
   let openLibraryBooks: Book[] = []
 
@@ -57,10 +59,13 @@ export default async function EditPersonBooksPage({ params }) {
     }
   }
 
+  const creditsByRelationType = getPersonCredits(person, { includeAuthorRelationType: true })
+
   person = {
     ...person,
-    books,
+    authoredBooks,
     openLibraryBooks,
+    creditsByRelationType,
   }
 
   return <EditPersonBooks person={person} />

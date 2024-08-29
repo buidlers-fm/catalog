@@ -288,6 +288,7 @@ const api = {
       const url = `/api/people/search?${queryString}`
       return fetchJson(url)
     },
+    get: (personId) => fetchJson(`/api/people/${personId}`),
     update: (personId, formData) =>
       fetchJson(`/api/people/${personId}`, {
         method: "PATCH",

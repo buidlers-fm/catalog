@@ -3,9 +3,45 @@ import humps from "humps"
 import prisma from "lib/prisma"
 import { uploadPersonImage, deletePersonImage } from "lib/server/supabaseStorage"
 import { withApiHandling } from "lib/api/withApiHandling"
+import { getPersonCredits } from "lib/server/people"
 import EditType from "enums/EditType"
 import EditedObjectType from "enums/EditedObjectType"
+import type Person from "types/Person"
 import type { NextRequest } from "next/server"
+
+export const GET = withApiHandling(
+  async (req: NextRequest, { params }) => {
+    const { routeParams } = params
+    const { personId } = routeParams
+
+    const person = (await prisma.person.findFirst({
+      where: {
+        id: personId,
+      },
+      include: {
+        personBookRelations: {
+          include: {
+            book: true,
+          },
+        },
+      },
+    })) as Person
+
+    if (!person) {
+      return NextResponse.json({ error: "Person not found" }, { status: 404 })
+    }
+
+    const resData = {
+      ...person,
+      creditsByRelationType: getPersonCredits(person),
+    }
+
+    const resBody = humps.decamelizeKeys(resData)
+
+    return NextResponse.json(resBody, { status: 200 })
+  },
+  { requireJsonBody: false, requireSession: false, requireUserProfile: false },
+)
 
 export const PATCH = withApiHandling(
   async (req: NextRequest, { params }) => {
