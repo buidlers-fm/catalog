@@ -61,8 +61,6 @@ export default async function EditPersonBooksPage({ params }) {
 
   const creditsByRelationType = getPersonCredits(person, { includeAuthorRelationType: true })
 
-  console.log(creditsByRelationType)
-
   person = {
     ...person,
     authoredBooks,
