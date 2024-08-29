@@ -1,15 +1,11 @@
 "use client"
 
-import Link from "next/link"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import useEditBookList from "lib/hooks/useEditBookList"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
-import { getBookLinkAgnostic, getBookEditLinkAgnostic } from "lib/helpers/general"
-import CoverPlaceholder from "app/components/books/CoverPlaceholder"
-import BookCoverOverlay from "app/components/books/BookCoverOverlay"
-import BookTooltip from "app/components/books/BookTooltip"
+import BookCard from "app/people/[personSlug]/edit/components/EditPersonBookCard"
 import EmptyState from "app/components/EmptyState"
 import EditListBooks from "app/users/[username]/lists/new/components/EditListBooks"
 import ConfirmationModal from "app/components/ConfirmationModal"
@@ -81,6 +77,9 @@ export default function EditPersonBooksForRelationType({
           : openLibraryBooks.slice(0, DEFAULT_CURRENT_BOOKS_LIMIT)
 
         setListedBooks(_listedBooks)
+        setCurrentBooks(_listedBooks)
+      } else {
+        setListedBooks(existingBooksForRelationType || [])
       }
     }
   }, [
@@ -144,10 +143,10 @@ export default function EditPersonBooksForRelationType({
         <div className="">
           {selectedRelationType ? (
             <div className="mb-16">
-              <div className="flex items-baseline">
+              <div className="flex flex-col sm:flex-row sm:items-baseline">
                 <div className="">editing {name}'s books as: </div>
                 {isAdding ? (
-                  <div className="ml-4">
+                  <div className="sm:ml-4">
                     <SelectRelationType
                       options={relationTypeOptions}
                       defaultValue={selectedRelationType}
@@ -272,63 +271,6 @@ export default function EditPersonBooksForRelationType({
         confirmText="yes, remove all"
       />
     </>
-  )
-}
-
-function BookCard({ book, addBook, isEditing }) {
-  const { id, openLibraryWorkId, coverImageUrl, title, editionsCount, firstPublishedYear } = book
-
-  const idForAnchor = id || openLibraryWorkId
-
-  return (
-    <div className="px-2 py-4 border-b-[1px] border-b-gray-800 last:border-none">
-      <div className="flex">
-        <div id={`book-${idForAnchor}`} className="w-16 mr-6 shrink-0">
-          <div className="relative group">
-            <Link href={getBookLinkAgnostic(book)}>
-              {coverImageUrl ? (
-                <img
-                  src={coverImageUrl}
-                  alt="cover"
-                  className="w-full mx-auto shadow-md rounded-xs"
-                />
-              ) : (
-                <CoverPlaceholder size="sm" />
-              )}
-            </Link>
-
-            <BookCoverOverlay book={book} positionClass="bottom-1" />
-          </div>
-        </div>
-
-        <BookTooltip book={book} anchorSelect={`#book-${idForAnchor}`} />
-
-        <div className="grow">
-          <Link href={getBookLinkAgnostic(book)}>{title}</Link>
-          <div className="text-gray-300">
-            {editionsCount} editions • {firstPublishedYear}
-          </div>
-        </div>
-
-        {isEditing ? (
-          <div className="flex items-center">
-            <button className="cat-btn cat-btn-sm cat-btn-gold" onClick={() => addBook(book)}>
-              +
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center">
-            <Link
-              href={getBookEditLinkAgnostic(book)}
-              target="_blank"
-              className="underline text-sm text-gray-300"
-            >
-              edit book
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
   )
 }
 

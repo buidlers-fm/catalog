@@ -1,40 +1,54 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MdEdit } from "react-icons/md"
-import ListBook from "app/lists/components/ListBook"
 import EditPersonBooksForRelationType from "app/people/[personSlug]/edit/components/EditPersonBooksForRelationType"
-import { personBookRelationTypeCopy } from "enums/PersonBookRelationType"
+import BookCard from "app/people/[personSlug]/edit/components/EditPersonBookCard"
+import EmptyState from "app/components/EmptyState"
+import PersonBookRelationType, { personBookRelationTypeCopy } from "enums/PersonBookRelationType"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
-import type PersonBookRelationType from "enums/PersonBookRelationType"
 
-export default function EditPersonBooks({ person }) {
-  const { creditsByRelationType = [], openLibraryBooks } = person
+export default function EditPersonBooks({ person: initialPerson }) {
+  const { creditsByRelationType = [], openLibraryBooks } = initialPerson
 
+  const [person, setPerson] = useState(initialPerson)
   const [credits, setCredits] = useState(creditsByRelationType)
   const [editingRelationType, setEditingRelationType] = useState<PersonBookRelationType>()
   const [isAdding, setIsAdding] = useState<boolean>(false)
+  const [areBooksEdited, setAreBooksEdited] = useState<boolean>(initialPerson.areBooksEdited)
 
-  // const [areBooksEdited, setAreBooksEdited] = useState(person.areBooksEdited)
-  // const [currentDbBooks, setCurrentDbBooks] = useState<Book[]>(dbBooks)
-  // // reset books when exiting editing mode?
-  // useEffect(() => {
-  //   const defaultBooks = areBooksEdited
-  //     ? currentDbBooks
-  //     : openLibraryBooks.slice(0, DEFAULT_CURRENT_BOOKS_LIMIT)
-  //   if (!isEditing) {
-  //     setCurrentBooks(defaultBooks)
-  //   }
-  // }, [isEditing, setCurrentBooks, currentDbBooks, areBooksEdited, openLibraryBooks])
+  useEffect(() => {
+    if (creditsByRelationType.length === 0 && openLibraryBooks.length > 0 && !areBooksEdited) {
+      const _credits = [
+        {
+          relationType: PersonBookRelationType.Author,
+          relations: openLibraryBooks
+            .map((book) => ({ book }))
+            .sort((a, b) => {
+              if (typeof a.book!.firstPublishedYear !== "number") return 1
+              if (typeof b.book!.firstPublishedYear !== "number") return -1
+
+              return b.book!.firstPublishedYear - a.book!.firstPublishedYear
+            }),
+        },
+      ]
+
+      setCredits(_credits)
+    }
+  }, [openLibraryBooks, creditsByRelationType, areBooksEdited])
 
   async function fetchCredits() {
     try {
-      const updatedPerson = await api.people.get(person.id)
+      const updatedPerson = await api.people.get(initialPerson.id)
       const _credits = updatedPerson.creditsByRelationType
       setCredits(_credits)
+      setPerson({
+        ...person,
+        ...updatedPerson,
+      })
     } catch (error: any) {
-      reportToSentry(error, { method: "EditPersonBooks.fetchCredits", person })
+      reportToSentry(error, { method: "EditPersonBooks.fetchCredits", person: initialPerson })
     }
   }
 
@@ -45,8 +59,7 @@ export default function EditPersonBooks({ person }) {
   async function handleAddSuccess() {
     setIsAdding(false)
     await fetchCredits()
-    // setAreBooksEdited(true)
-    // setCurrentDbBooks(currentBooks)
+    setAreBooksEdited(true)
   }
 
   function handleEdit(relationType: PersonBookRelationType) {
@@ -61,7 +74,7 @@ export default function EditPersonBooks({ person }) {
   return (
     <div className="">
       Edit book relations for {person.name}.
-      {credits.length > 0 && (
+      {credits.length > 0 ? (
         <div className="">
           {credits.map(({ relationType, relations }) => {
             if (!relations || relations.length === 0) return null
@@ -89,15 +102,22 @@ export default function EditPersonBooks({ person }) {
                 </div>
                 <hr className="mt-0.5 h-[1px] border-none bg-gray-300" />
 
-                <div className="p-0 grid grid-cols-4 sm:gap-[28px]">
+                <div className="">
                   {relations.map((relation) => (
-                    <ListBook key={relation.id} book={relation.book} detail={relation.detail} />
+                    <BookCard
+                      key={relation.book.id || relation.book.openLibraryWorkId}
+                      book={relation.book}
+                      addBook={() => {}}
+                      isEditing={false}
+                    />
                   ))}
                 </div>
               </div>
             )
           })}
         </div>
+      ) : (
+        <EmptyState text="This person doesn't currently have any book relations." />
       )}
       {isAdding && (
         <EditPersonBooksForRelationType
