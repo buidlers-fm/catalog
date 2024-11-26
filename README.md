@@ -4,7 +4,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 Make sure to follow the [installation instructions](installations.md) to ensure you have all of the correct technologies.
 
-First, run the development server:
+First, install the node modules:
+
+```bash
+pnpm i
+```
+
+Then, run the development server:
 
 ```bash
 pnpm dev

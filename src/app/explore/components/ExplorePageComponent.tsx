@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useUser } from "lib/contexts/UserContext"
 import api from "lib/api"
 import { reportToSentry } from "lib/sentry"
-import FeaturedBooks from "app/explore/components/FeaturedBooks"
+// import FeaturedBooks from "app/explore/components/FeaturedBooks"
 import BookNoteCard from "app/components/bookNotes/BookNoteCard"
 import BookLinkPostCard from "app/components/bookPosts/BookPostCard"
 import ListCard from "app/components/lists/ListCard"
@@ -82,9 +82,10 @@ export default function ExplorePageComponent() {
 
   return (
     <div className="sm:max-w-3xl sm:mx-auto px-8 sm:px-16 py-8">
-      <div className="mt-8 mb-16">
+      {/* featured books aren't being maintained right now */}
+      {/* <div className="mt-8 mb-16">
         <FeaturedBooks />
-      </div>
+      </div> */}
 
       <div className="mt-8 mb-16 font-mulish">
         <div className="flex justify-between items-baseline text-sm">
