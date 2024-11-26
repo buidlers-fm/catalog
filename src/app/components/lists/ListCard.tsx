@@ -49,8 +49,8 @@ export default function ListCard({
             <Link href={list.url}>
               <div className="font-bold">{truncateString(list.title, 64)}</div>
             </Link>
-            <div className="flex items-center my-1">
-              <div className="mr-3 text-gray-500 text-sm font-normal">
+            <div className="flex items-center my-1 gap-x-3.5">
+              <div className="text-gray-500 text-sm font-normal">
                 {totalBookCount} {totalBookCount === 1 ? "book" : "books"}
               </div>
               <Likes
@@ -59,7 +59,7 @@ export default function ListCard({
                 likedObjectType={InteractionObjectType.List}
                 likeCount={likeCount}
               />
-              <div className="flex items-center ml-4">
+              <div className="flex items-center">
                 <FaComment className="mr-1.5 text-gray-500 text-md" />
                 {list.comments && (
                   <span className="text-sm text-gray-300 font-mulish">{list.comments.length}</span>
