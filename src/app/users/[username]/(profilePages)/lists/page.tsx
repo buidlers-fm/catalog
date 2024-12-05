@@ -8,7 +8,7 @@ import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex
 import Pagination from "app/components/Pagination"
 import type { Metadata } from "next"
 
-const LISTS_LIMIT = 2
+const LISTS_LIMIT = 1
 
 export const dynamic = "force-dynamic"
 
