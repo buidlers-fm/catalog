@@ -57,7 +57,7 @@ export default async function UserListsIndexPage({ params, searchParams }) {
         },
       },
     },
-    skip: LISTS_LIMIT * page,
+    skip: LISTS_LIMIT * (page - 1),
     take: LISTS_LIMIT,
   })
 
