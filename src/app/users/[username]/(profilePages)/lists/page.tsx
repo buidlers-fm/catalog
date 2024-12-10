@@ -43,7 +43,7 @@ export default async function UserListsIndexPage({ params, searchParams }) {
     where: whereConditions,
   })
 
-  const pageCount = Math.floor(totalCount / LISTS_LIMIT)
+  const pageCount = Math.ceil(totalCount / LISTS_LIMIT)
 
   const _lists = await prisma.list.findMany({
     where: whereConditions,
