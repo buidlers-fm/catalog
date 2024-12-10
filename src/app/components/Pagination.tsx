@@ -107,20 +107,30 @@ export default function Pagination({ pageCount }) {
   if (pageCount === 1) return null
 
   return (
-    <nav className="flex justify-center border-t border-gray-500 font-mulish mt-2">
-      {currentPage > 1 && (
-        <Link href={getHref(currentPage - 1)} className="mr-3 pt-2.5 text-2xl">
-          <IoIosArrowRoundBack aria-hidden="true" className="text-gray-300 hover:text-white" />
-        </Link>
-      )}
+    <nav className="flex justify-center border-t border-gray-500 font-mulish">
+      <Link
+        href={getHref(currentPage - 1)}
+        className={classNames(
+          // arrow element needs to exist but be invisible for page numbers to be centered properly
+          currentPage > 1 ? "visible" : "invisible pointer-events-none	",
+          "mr-3 pt-2.5 text-2xl",
+        )}
+      >
+        <IoIosArrowRoundBack aria-hidden="true" className="text-gray-300 hover:text-white" />
+      </Link>
+
       <div className="flex">
         <PageNumbers pageCount={pageCount} currentPage={currentPage} getHref={getHref} />
       </div>
-      {currentPage < pageCount && (
-        <Link href={getHref(currentPage + 1)} className="ml-3 pt-2.5 text-2xl">
-          <IoIosArrowRoundForward aria-hidden="true" className="text-gray-300 hover:text-white" />
-        </Link>
-      )}
+      <Link
+        href={getHref(currentPage + 1)}
+        className={classNames(
+          currentPage < pageCount ? "visible" : "invisible pointer-events-none	",
+          "ml-3 pt-2.5 text-2xl",
+        )}
+      >
+        <IoIosArrowRoundForward aria-hidden="true" className="text-gray-300 hover:text-white" />
+      </Link>
     </nav>
   )
 }
