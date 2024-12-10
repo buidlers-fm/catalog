@@ -8,7 +8,7 @@ import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex
 import Pagination from "app/components/Pagination"
 import type { Metadata } from "next"
 
-const LISTS_LIMIT = 1
+const LISTS_LIMIT = 8
 
 export const dynamic = "force-dynamic"
 
@@ -89,16 +89,4 @@ export default async function UserListsIndexPage({ params, searchParams }) {
       <Pagination pageCount={pageCount} />
     </>
   )
-
-  // if (isUsersProfile) {
-  //   return <ManageLists lists={lists} pins={pins} />
-  // } else {
-  //   return (
-  //     <UserListsIndex
-  //       lists={lists}
-  //       userProfile={userProfile}
-  //       currentUserProfile={currentUserProfile}
-  //     />
-  //   )
-  // }
 }
