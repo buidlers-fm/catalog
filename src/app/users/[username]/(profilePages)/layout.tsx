@@ -83,7 +83,7 @@ export default async function UserProfileLayout({ params, children }) {
       <div className="sm:flex font-mulish">
         {avatarUrl ? (
           <div className="shrink-0 sm:mr-3 w-24 h-24 overflow-hidden rounded-full">
-            <img src={avatarUrl} alt="user avatar" className="object-cover min-w-full min-h-full" />
+            {/* <img src={avatarUrl} alt="user avatar" className="object-cover min-w-full min-h-full" /> */}
           </div>
         ) : (
           <FaUserCircle className="mr-3 text-[96px] text-gray-500" />
