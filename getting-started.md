@@ -1,4 +1,4 @@
-## Installations
+## Getting Started
 
 Make sure you have the following items:
 
@@ -6,6 +6,7 @@ Make sure you have the following items:
 - pnpm - `brew install pnpm`
   - run `pnpm` to verify the installation worked correctly
   - if `pnpm` is too annoying to type, add `alias pn=pnpm` (or whatever alias you want) to your bashrc
+  - run `pnpm i` to install all modules
 - [vercel cli](https://vercel.com/docs/cli) — `pnpm i -g vercel`
   - run `vercel --version` to verify the installation worked correctly
   - run `vercel link` to link to the current vercel project
