@@ -12,6 +12,9 @@ const METADATA_CONFIG = {
   profile: {
     title: (name) => `${name}'s profile • catalog`,
   },
+  "profile.2024": {
+    title: (name) => `${name}'s 2024 in books • catalog`,
+  },
   "profile.lists": {
     title: (name) => `${name}'s lists • catalog`,
   },
