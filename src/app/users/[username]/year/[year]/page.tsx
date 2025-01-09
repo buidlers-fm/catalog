@@ -4,12 +4,13 @@ import prisma from "lib/prisma"
 import { getMetadata } from "lib/server/metadata"
 import UserProfile from "lib/models/UserProfile"
 import FeatureFlag from "enums/FeatureFlag"
-// import InteractionType from "enums/InteractionType"
-// import InteractionAgentType from "enums/InteractionAgentType"
-// import InteractionObjectType from "enums/InteractionObjectType"
-// import BookReadStatus from "enums/BookReadStatus"
-// import BookNoteType from "enums/BookNoteType"
-// import EditedObjectType from "enums/EditedObjectType"
+import InteractionType from "enums/InteractionType"
+import InteractionAgentType from "enums/InteractionAgentType"
+import InteractionObjectType from "enums/InteractionObjectType"
+import BookReadStatus from "enums/BookReadStatus"
+import BookNoteType from "enums/BookNoteType"
+import EditedObjectType from "enums/EditedObjectType"
+import ListBook from "app/lists/components/ListBook"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -45,111 +46,109 @@ export default async function UserYearPage({ params }) {
 
   const { name, avatarUrl } = userProfile
 
-  const books = [{}]
+  const yearStart = new Date("2024-01-01T00:00:00.000Z")
+  const yearEnd = new Date("2025-01-01T00:00:00.000Z")
 
-  // const yearStart = new Date("2024-01-01T00:00:00.000Z")
-  // const yearEnd = new Date("2025-01-01T00:00:00.000Z")
+  const allFinishedBookReads = await prisma.bookRead.findMany({
+    where: {
+      readerId: userProfile.id,
+      endDate: {
+        gte: yearStart,
+        lt: yearEnd,
+      },
+      status: BookReadStatus.Finished,
+    },
+    orderBy: {
+      endDate: "desc",
+    },
+    include: {
+      book: true,
+    },
+  })
 
-  // const allFinishedBookReads = await prisma.bookRead.findMany({
-  //   where: {
-  //     readerId: userProfile.id,
-  //     endDate: {
-  //       gte: yearStart,
-  //       lt: yearEnd,
-  //     },
-  //     status: BookReadStatus.Finished,
-  //   },
-  //   orderBy: {
-  //     endDate: "desc",
-  //   },
-  //   include: {
-  //     book: true,
-  //   },
-  // })
+  const allBooksFinished = allFinishedBookReads.map((bookRead) => bookRead.book)
 
-  // const allBooksFinished = allFinishedBookReads.map((bookRead) => bookRead.book)
+  const allBookReads = await prisma.bookRead.findMany({
+    where: {
+      readerId: userProfile.id,
+      endDate: {
+        gte: yearStart,
+        lt: yearEnd,
+      },
+    },
+  })
 
-  // const allBookReads = await prisma.bookRead.findMany({
-  //   where: {
-  //     readerId: userProfile.id,
-  //     endDate: {
-  //       gte: yearStart,
-  //       lt: yearEnd,
-  //     },
-  //   },
-  // })
+  const numBooksStarted = allBookReads.length
 
-  // const numBooksStarted = allBookReads.length
+  const numBooksFinished = allBookReads.filter(
+    (bookRead) => bookRead.status === BookReadStatus.Finished,
+  ).length
 
-  // const numBooksFinished = allBookReads.filter(
-  //   (bookRead) => bookRead.status === BookReadStatus.Finished,
-  // ).length
+  const avgBooksFinishedPerMonth = parseFloat((numBooksFinished / 12).toFixed(1))
 
-  // const avgBooksFinishedPerMonth = parseFloat((numBooksFinished / 12).toFixed(1))
+  const numBooksAbandoned = allBookReads.filter(
+    (bookRead) => bookRead.status === BookReadStatus.Abandoned,
+  ).length
 
-  // const numBooksAbandoned = allBookReads.filter(
-  //   (bookRead) => bookRead.status === BookReadStatus.Abandoned,
-  // ).length
+  const numBooksLiked = await prisma.interaction.count({
+    where: {
+      agentId: userProfile.id,
+      interactionType: InteractionType.Like,
+      agentType: InteractionAgentType.User,
+      objectType: InteractionObjectType.Book,
+      createdAt: {
+        gte: yearStart,
+        lt: yearEnd,
+      },
+    },
+  })
 
-  // const numBooksLiked = await prisma.interaction.count({
-  //   where: {
-  //     agentId: userProfile.id,
-  //     interactionType: InteractionType.Like,
-  //     agentType: InteractionAgentType.User,
-  //     objectType: InteractionObjectType.Book,
-  //     createdAt: {
-  //       gte: yearStart,
-  //       lt: yearEnd,
-  //     },
-  //   },
-  // })
+  const numNotesCreated = await prisma.bookNote.count({
+    where: {
+      creatorId: userProfile.id,
+      createdAt: {
+        gte: yearStart,
+        lt: yearEnd,
+      },
+      noteType: BookNoteType.JournalEntry,
+      AND: [
+        {
+          text: {
+            not: null,
+          },
+        },
+        {
+          text: {
+            not: "",
+          },
+        },
+      ],
+    },
+  })
 
-  // const numNotesCreated = await prisma.bookNote.count({
-  //   where: {
-  //     creatorId: userProfile.id,
-  //     createdAt: {
-  //       gte: yearStart,
-  //       lt: yearEnd,
-  //     },
-  //     noteType: BookNoteType.JournalEntry,
-  //     AND: [
-  //       {
-  //         text: {
-  //           not: null,
-  //         },
-  //       },
-  //       {
-  //         text: {
-  //           not: "",
-  //         },
-  //       },
-  //     ],
-  //   },
-  // })
+  const numListsCreated = await prisma.list.count({
+    where: {
+      creatorId: userProfile.id,
+      createdAt: {
+        gte: yearStart,
+        lt: yearEnd,
+      },
+    },
+  })
 
-  // const numListsCreated = await prisma.list.count({
-  //   where: {
-  //     creatorId: userProfile.id,
-  //     createdAt: {
-  //       gte: yearStart,
-  //       lt: yearEnd,
-  //     },
-  //   },
-  // })
-
-  // const numBooksEdited = (
-  //   await prisma.editLog.groupBy({
-  //     by: ["editedObjectId"],
-  //     where: {
-  //       editorId: userProfile.id,
-  //       editedObjectType: EditedObjectType.Book,
-  //       createdAt: {
-  //         gte: yearStart,
-  //         lt: yearEnd,
-  //       },
-  //     },
-  //   })
-  // ).length
+  const numBooksEdited = (
+    await prisma.editLog.groupBy({
+      by: ["editedObjectId"],
+      where: {
+        editorId: userProfile.id,
+        editedObjectType: EditedObjectType.Book,
+        createdAt: {
+          gte: yearStart,
+          lt: yearEnd,
+        },
+      },
+    })
+  ).length
 
   return (
     <div className="mt-4 font-mulish xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto py-8">
@@ -175,25 +174,29 @@ export default async function UserYearPage({ params }) {
       <div className="relative">
         <LongArrow className="absolute text-gray-300 mx-auto left-[50%] ml-[-15px] top-[14px] ml-[-37px] hidden sm:block" />
         <div className="flex flex-col items-center sm:items-start gap-8 sm:gap-0 sm:flex-row sm:justify-between relative">
-          <NumberLabel number={16} label="started" />
-          <NumberLabel number={16} label="finished" />
-          <NumberLabel number={16} label="avg per month" />
-          <NumberLabel number={16} label="abandoned" />
+          <NumberLabel number={numBooksStarted} label="started" />
+          <NumberLabel number={numBooksFinished} label="finished" />
+          <NumberLabel number={avgBooksFinishedPerMonth} label="avg per month" />
+          <NumberLabel number={numBooksAbandoned} label="abandoned" />
         </div>
       </div>
 
       <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">activity</div>
       <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
       <div className="flex flex-col items-center sm:items-start gap-8 sm:gap-0 sm:flex-row sm:justify-between relative">
-        <NumberLabel number={16} label="books liked" />
-        <NumberLabel number={16} label="notes written" />
-        <NumberLabel number={16} label="lists created" />
-        <NumberLabel number={16} label="books edited" />
+        <NumberLabel number={numBooksLiked} label="books liked" />
+        <NumberLabel number={numNotesCreated} label="notes written" />
+        <NumberLabel number={numListsCreated} label="lists created" />
+        <NumberLabel number={numBooksEdited} label="books edited" />
       </div>
 
       <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">books read</div>
       <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
-      <div className="">{}</div>
+      <div className="">
+        {allBooksFinished.map((book) => (
+          <ListBook key={book!.id} book={book} />
+        ))}
+      </div>
     </div>
   )
 }
