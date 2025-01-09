@@ -370,6 +370,18 @@ const api = {
         method: "DELETE",
       }),
   },
+  stats: {
+    get: (params: { username: string }) => {
+      // later, this should allow you to query for `year`
+      const allParams = {
+        year: "2024",
+        ...params,
+      }
+      const queryString = new URLSearchParams(humps.decamelizeKeys(allParams)).toString()
+      const url = `/api/stats?${queryString}`
+      return fetchJson(url)
+    },
+  },
   userBookShelves: {
     get: (params: { bookId?: string } = {}) => {
       const queryString = new URLSearchParams(humps.decamelizeKeys(params)).toString()
