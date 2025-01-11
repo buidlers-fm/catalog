@@ -66,7 +66,9 @@ export default async function UserYearPage({ params }) {
     },
   })
 
-  const allBooksFinished = allFinishedBookReads.map((bookRead) => bookRead.book)
+  const allBooksFinished = allFinishedBookReads
+    .map((bookRead) => bookRead.book)
+    .filter((book, index, self) => index === self.findIndex((t) => t.id === book.id)) // distinct
 
   const allBookReads = await prisma.bookRead.findMany({
     where: {
