@@ -194,7 +194,7 @@ export default async function UserYearPage({ params }) {
 
       <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">books read</div>
       <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
-      <div className="">
+      <div className="sm:my-4 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
         {allBooksFinished.map((book) => (
           <ListBook key={book!.id} book={book} />
         ))}
