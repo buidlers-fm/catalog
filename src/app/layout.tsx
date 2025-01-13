@@ -12,8 +12,8 @@ import IntroTourProvider from "app/components/IntroTourProvider"
 import CatalogHeader from "app/components/CatalogHeader"
 import Modals from "app/components/Modals"
 import Toast from "app/components/Toast"
+import YearInBooksGlobalBanner from "app/components/YearInBooksGlobalBanner"
 import type { Metadata } from "next"
-import YearInBooksGlobalBanner from "./components/YearInBooksGlobalBanner"
 
 const chivoMono = Chivo_Mono({ subsets: ["latin"], variable: "--font-chivo-mono" })
 const newsreader = Newsreader({

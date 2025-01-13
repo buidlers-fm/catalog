@@ -1,12 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import { useUser } from "lib/contexts/UserContext"
+import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import { BsXLg } from "react-icons/bs"
 import { GiPartyPopper } from "react-icons/gi"
+import { useUser } from "lib/contexts/UserContext"
 import { getLocalStorage, setLocalStorage } from "lib/localstorage"
-import { useEffect, useState } from "react"
 
 const YEAR_IN_BOOKS_2024_LOCALSTORAGE_KEY = "catalog__year-in-books-2024-seen"
 
