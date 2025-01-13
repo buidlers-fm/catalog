@@ -12,6 +12,7 @@ import BookNoteType from "enums/BookNoteType"
 import EditedObjectType from "enums/EditedObjectType"
 import ListBook from "app/lists/components/ListBook"
 import type { Metadata } from "next"
+import EmptyState from "app/components/EmptyState"
 
 export const dynamic = "force-dynamic"
 
@@ -154,7 +155,7 @@ export default async function UserYearPage({ params }) {
 
   return (
     <div className="mt-4 font-mulish xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto py-8">
-      <div className="flex justify-center items-center space-x-3 sm:space-x-5">
+      <div className="flex justify-center items-center space-x-3 sm:space-x-5 mr-6">
         {/* place avatar after centering username */}
         {avatarUrl ? (
           <img
@@ -172,9 +173,9 @@ export default async function UserYearPage({ params }) {
       </div>
 
       <div className="text-3xl -mb-2 font-semibold font-newsreader">reading</div>
-      <hr className="my-1 h-[1px] border-none bg-gray-300 mb-8 mb-10" />
+      <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
       <div className="relative">
-        <LongArrow className="absolute text-gray-300 mx-auto left-[50%] ml-[-15px] top-[14px] ml-[-37px] hidden sm:block" />
+        <LongArrow className="absolute text-gray-300 mx-auto left-[50%] top-[14px] ml-[-37px] hidden sm:block" />
         <div className="flex flex-col items-center sm:items-start gap-8 sm:gap-0 sm:flex-row sm:justify-between relative">
           <NumberLabel number={numBooksStarted} label="started" />
           <NumberLabel number={numBooksFinished} label="finished" />
@@ -193,12 +194,16 @@ export default async function UserYearPage({ params }) {
       </div>
 
       <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">books read</div>
-      <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
-      <div className="sm:my-4 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px]">
-        {allBooksFinished.map((book) => (
-          <ListBook key={book!.id} book={book} />
-        ))}
-      </div>
+      <hr className="my-1 h-[1px] border-none bg-gray-300" />
+      {allBooksFinished.length > 0 ? (
+        <div className="sm:my-4 p-0 grid grid-cols-4 ml:grid-cols-5 -mx-2 ml:gap-[28px] mt-10">
+          {allBooksFinished.map((book) => (
+            <ListBook key={book!.id} book={book} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState text={`You haven’t logged any books read in ${year}.`} />
+      )}
     </div>
   )
 }
