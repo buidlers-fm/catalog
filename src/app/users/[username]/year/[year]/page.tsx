@@ -208,7 +208,7 @@ export default async function UserYearPage({ params }) {
   )
 }
 
-export function NumberLabel({ number, label }) {
+function NumberLabel({ number, label }) {
   return (
     <div className="sm:w-[126px]">
       <div className="text-center font-newsreader text-4xl sm:text-5xl font-semibold -mb-1 sm:mb-0 mx-auto">
@@ -221,7 +221,7 @@ export function NumberLabel({ number, label }) {
   )
 }
 
-export function LongArrow({ className }) {
+function LongArrow({ className }) {
   return (
     <svg
       width="75"
