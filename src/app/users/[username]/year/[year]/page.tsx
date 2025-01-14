@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { notFound } from "next/navigation"
 import { FaUserCircle } from "react-icons/fa"
 import prisma from "lib/prisma"
@@ -153,6 +154,39 @@ export default async function UserYearPage({ params }) {
     })
   ).length
 
+  const authorsRead = [
+    {
+      name: "Robyn Choi",
+      imageUrl:
+        "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
+    },
+    {
+      name: "Robin Choy",
+      imageUrl:
+        "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
+    },
+    {
+      name: "Robyn Choi",
+      imageUrl:
+        "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
+    },
+    {
+      name: "Robin Choy",
+      imageUrl:
+        "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
+    },
+    {
+      name: "Robyn Choi",
+      imageUrl:
+        "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
+    },
+    {
+      name: "Robin Choy Chocolate",
+      imageUrl:
+        "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
+    },
+  ]
+
   return (
     <div className="mt-4 font-mulish xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto py-8">
       <div className="flex justify-center items-center space-x-3 sm:space-x-5 mr-6">
@@ -204,6 +238,14 @@ export default async function UserYearPage({ params }) {
       ) : (
         <EmptyState text={`You haven’t logged any books read in ${year}.`} />
       )}
+
+      <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">authors read</div>
+      <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
+      <div className="flex flex-wrap justify-center gap-6">
+        {authorsRead.map((author) => (
+          <Author key={author.name} name={author.name} imageUrl={author.imageUrl} numBooks={2} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -236,5 +278,17 @@ function LongArrow({ className }) {
         fill="currentColor"
       />
     </svg>
+  )
+}
+
+function Author({ name, imageUrl, numBooks }) {
+  return (
+    <div className="text-center w-[190px]">
+      <div className="relative w-[160px] h-[160px] mx-auto">
+        <Image alt={name} src={imageUrl} fill className="object-cover rounded-full" />
+      </div>
+      <div className="font-newsreader text-xl mt-3 -mb-1">{name}</div>
+      {numBooks > 1 && <div className="font-mulish text-gray-300">{numBooks} books</div>}
+    </div>
   )
 }
