@@ -1,9 +1,12 @@
 import Image from "next/image"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { FaUserCircle } from "react-icons/fa"
+import { GiQuillInk } from "react-icons/gi"
 import prisma from "lib/prisma"
 import { getMetadata } from "lib/server/metadata"
 import UserProfile from "lib/models/UserProfile"
+import { getPersonLinkWithSlug } from "lib/helpers/general"
 import ListBook from "app/lists/components/ListBook"
 import EmptyState from "app/components/EmptyState"
 import FeatureFlag from "enums/FeatureFlag"
@@ -193,47 +196,14 @@ export default async function UserYearPage({ params }) {
     return {
       name: author.name,
       imageUrl: author.imageUrl,
+      slug: author.slug,
       numBooks: authorCountsById[id],
     }
   })
 
-  // const authorsRead = [
-  //   {
-  //     name: "Robyn Choi",
-  //     imageUrl:
-  //       "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
-  //   },
-  //   {
-  //     name: "Robin Choy",
-  //     imageUrl:
-  //       "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
-  //   },
-  //   {
-  //     name: "Robyn Choi",
-  //     imageUrl:
-  //       "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
-  //   },
-  //   {
-  //     name: "Robin Choy",
-  //     imageUrl:
-  //       "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
-  //   },
-  //   {
-  //     name: "Robyn Choi",
-  //     imageUrl:
-  //       "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
-  //   },
-  //   {
-  //     name: "Robin Choy Chocolate",
-  //     imageUrl:
-  //       "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
-  //   },
-  // ]
-
   return (
     <div className="mt-4 font-mulish xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto py-8">
       <div className="flex justify-center items-center space-x-3 sm:space-x-5 mr-6">
-        {/* place avatar after centering username */}
         {avatarUrl ? (
           <img
             src={avatarUrl}
@@ -282,18 +252,23 @@ export default async function UserYearPage({ params }) {
         <EmptyState text={`You haven’t logged any books read in ${year}.`} />
       )}
 
-      <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">authors read</div>
-      <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
-      <div className="flex flex-wrap justify-center gap-6">
-        {sortedAuthorsRead.map((author) => (
-          <Author
-            key={author.name}
-            name={author.name}
-            imageUrl={author.imageUrl}
-            numBooks={author.numBooks}
-          />
-        ))}
-      </div>
+      {sortedAuthorsRead.length > 0 && (
+        <>
+          <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">authors read</div>
+          <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-7 ml:gap-x-6">
+            {sortedAuthorsRead.map((author) => (
+              <Author
+                key={author.name}
+                name={author.name}
+                imageUrl={author.imageUrl}
+                slug={author.slug}
+                numBooks={author.numBooks}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -329,14 +304,20 @@ function LongArrow({ className }) {
   )
 }
 
-function Author({ name, imageUrl, numBooks }) {
+function Author({ name, imageUrl, slug, numBooks }) {
   return (
-    <div className="text-center w-[190px]">
-      <div className="relative w-[160px] h-[160px] mx-auto">
-        {imageUrl && <Image alt={name} src={imageUrl} fill className="object-cover rounded-full" />}
+    <Link href={getPersonLinkWithSlug(slug)}>
+      <div className="text-center w-[190px]">
+        <div className="relative w-[160px] h-[160px] mx-auto bg-gray-950 border border-gray-800 rounded-full flex items-center justify-center">
+          {imageUrl ? (
+            <Image alt={name} src={imageUrl} fill className="object-cover rounded-full" />
+          ) : (
+            <GiQuillInk className="w-[60%] h-[60%] text-gray-800" />
+          )}
+        </div>
+        <div className="font-newsreader text-xl mt-3 -mb-1">{name}</div>
+        {numBooks > 1 && <div className="font-mulish text-gray-300">{numBooks} books</div>}
       </div>
-      <div className="font-newsreader text-xl mt-3 -mb-1">{name}</div>
-      {numBooks > 1 && <div className="font-mulish text-gray-300">{numBooks} books</div>}
-    </div>
+    </Link>
   )
 }
