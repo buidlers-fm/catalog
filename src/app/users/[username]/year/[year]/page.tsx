@@ -13,6 +13,7 @@ import InteractionObjectType from "enums/InteractionObjectType"
 import BookReadStatus from "enums/BookReadStatus"
 import BookNoteType from "enums/BookNoteType"
 import EditedObjectType from "enums/EditedObjectType"
+import PersonBookRelationType from "enums/PersonBookRelationType"
 import type { Metadata } from "next"
 
 export const dynamic = "force-dynamic"
@@ -78,6 +79,20 @@ export default async function UserYearPage({ params }) {
       endDate: {
         gte: yearStart,
         lt: yearEnd,
+      },
+    },
+    include: {
+      book: {
+        include: {
+          personBookRelations: {
+            where: {
+              relationType: PersonBookRelationType.Author,
+            },
+            include: {
+              person: true,
+            },
+          },
+        },
       },
     },
   })
@@ -154,38 +169,66 @@ export default async function UserYearPage({ params }) {
     })
   ).length
 
-  const authorsRead = [
-    {
-      name: "Robyn Choi",
-      imageUrl:
-        "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
-    },
-    {
-      name: "Robin Choy",
-      imageUrl:
-        "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
-    },
-    {
-      name: "Robyn Choi",
-      imageUrl:
-        "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
-    },
-    {
-      name: "Robin Choy",
-      imageUrl:
-        "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
-    },
-    {
-      name: "Robyn Choi",
-      imageUrl:
-        "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
-    },
-    {
-      name: "Robin Choy Chocolate",
-      imageUrl:
-        "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
-    },
-  ]
+  const allBookReadsBooksDistinct = allBookReads
+    .map((bookRead) => bookRead.book)
+    .filter((book, index, self) => index === self.findIndex((t) => t.id === book.id))
+
+  const allBookReadsAuthors = allBookReadsBooksDistinct
+    .map((book) => book.personBookRelations.map((pbr) => pbr.person))
+    .flat()
+
+  const authorCountsById = allBookReadsAuthors.reduce((acc, author) => {
+    acc[author.id] = (acc[author.id] || 0) + 1
+    return acc
+  }, {})
+
+  const sortedAuthorIds = (Object.entries(authorCountsById) as [string, number][])
+    .sort(([, countA], [, countB]) => countB - countA)
+    .map(([authorId]) => authorId)
+
+  const authorsById = Object.fromEntries(allBookReadsAuthors.map((author) => [author.id, author]))
+
+  const sortedAuthorsRead = sortedAuthorIds.map((id) => {
+    const author = authorsById[id]
+    return {
+      name: author.name,
+      imageUrl: author.imageUrl,
+      numBooks: authorCountsById[id],
+    }
+  })
+
+  // const authorsRead = [
+  //   {
+  //     name: "Robyn Choi",
+  //     imageUrl:
+  //       "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
+  //   },
+  //   {
+  //     name: "Robin Choy",
+  //     imageUrl:
+  //       "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
+  //   },
+  //   {
+  //     name: "Robyn Choi",
+  //     imageUrl:
+  //       "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
+  //   },
+  //   {
+  //     name: "Robin Choy",
+  //     imageUrl:
+  //       "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
+  //   },
+  //   {
+  //     name: "Robyn Choi",
+  //     imageUrl:
+  //       "https://birdallianceoregon.org/wp-content/uploads/2019/01/American-Robin-5D3_8701_filtered-SC-1024x682.jpg",
+  //   },
+  //   {
+  //     name: "Robin Choy Chocolate",
+  //     imageUrl:
+  //       "https://i.natgeofe.com/k/efc30835-9b7c-4ed7-af00-a8db7f0722f3/american-robin_2x3.jpg",
+  //   },
+  // ]
 
   return (
     <div className="mt-4 font-mulish xs:w-[400px] sm:w-[600px] ml:w-[832px] mx-8 xs:mx-auto py-8">
@@ -242,8 +285,13 @@ export default async function UserYearPage({ params }) {
       <div className="text-3xl -mb-2 font-semibold font-newsreader mt-16">authors read</div>
       <hr className="my-1 h-[1px] border-none bg-gray-300 mb-10" />
       <div className="flex flex-wrap justify-center gap-6">
-        {authorsRead.map((author) => (
-          <Author key={author.name} name={author.name} imageUrl={author.imageUrl} numBooks={2} />
+        {sortedAuthorsRead.map((author) => (
+          <Author
+            key={author.name}
+            name={author.name}
+            imageUrl={author.imageUrl}
+            numBooks={author.numBooks}
+          />
         ))}
       </div>
     </div>
@@ -285,7 +333,7 @@ function Author({ name, imageUrl, numBooks }) {
   return (
     <div className="text-center w-[190px]">
       <div className="relative w-[160px] h-[160px] mx-auto">
-        <Image alt={name} src={imageUrl} fill className="object-cover rounded-full" />
+        {imageUrl && <Image alt={name} src={imageUrl} fill className="object-cover rounded-full" />}
       </div>
       <div className="font-newsreader text-xl mt-3 -mb-1">{name}</div>
       {numBooks > 1 && <div className="font-mulish text-gray-300">{numBooks} books</div>}
