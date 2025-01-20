@@ -31,7 +31,7 @@ export default async function UserListsIndexPage({ params, searchParams }) {
 
   if (!userProfile) notFound()
 
-  let { page } = await searchParams
+  let { page } = searchParams
   if (!page) page = 1
 
   const whereConditions = {

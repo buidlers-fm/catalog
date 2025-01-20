@@ -5,7 +5,12 @@ import { useSearchParams, usePathname } from "next/navigation"
 import { useCallback } from "react"
 import { IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io"
 
+// there will be ellipses when there are this many pages or more
 const OVERFLOW_THRESHOLD = 7
+// when the current page is this far from the first or last pages, it will show the "middle pages" -
+// the current page in the center with previous and next pages and ellipses on either side.
+// note: changing this may result in the pagination not displaying correctly
+const MIDDLE_PAGES_DISPLAY_THRESHOLD = 3
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -46,11 +51,11 @@ function PageNumbers({ pageCount, currentPage, getHref }) {
     )
   }
 
-  if (currentPage <= 3) {
+  if (currentPage <= MIDDLE_PAGES_DISPLAY_THRESHOLD) {
     // 1 2 3 4 ... 7
     return (
       <>
-        {range(1, 4).map((page) => (
+        {range(1, MIDDLE_PAGES_DISPLAY_THRESHOLD + 1).map((page) => (
           <PageLink key={page} page={page} href={getHref(page)} currentPage={currentPage} />
         ))}
         <Ellipsis />
@@ -58,7 +63,10 @@ function PageNumbers({ pageCount, currentPage, getHref }) {
       </>
     )
   }
-  if (currentPage >= 4 && currentPage <= pageCount - 3) {
+  if (
+    currentPage > MIDDLE_PAGES_DISPLAY_THRESHOLD &&
+    currentPage <= pageCount - MIDDLE_PAGES_DISPLAY_THRESHOLD
+  ) {
     // 1 ... 3 4 5 ... 7
     return (
       <>
@@ -72,13 +80,13 @@ function PageNumbers({ pageCount, currentPage, getHref }) {
       </>
     )
   }
-  if (currentPage > pageCount - 4) {
+  if (currentPage >= pageCount - MIDDLE_PAGES_DISPLAY_THRESHOLD) {
     // 1 ... 4 5 6 7
     return (
       <>
         <PageLink page={1} href={getHref(1)} currentPage={currentPage} />
         <Ellipsis />
-        {range(pageCount - 3, pageCount).map((page) => (
+        {range(pageCount - MIDDLE_PAGES_DISPLAY_THRESHOLD, pageCount).map((page) => (
           <PageLink key={page} page={page} href={getHref(page)} currentPage={currentPage} />
         ))}
       </>
@@ -122,6 +130,7 @@ export default function Pagination({ pageCount }) {
       <div className="flex">
         <PageNumbers pageCount={pageCount} currentPage={currentPage} getHref={getHref} />
       </div>
+
       <Link
         href={getHref(currentPage + 1)}
         className={classNames(
