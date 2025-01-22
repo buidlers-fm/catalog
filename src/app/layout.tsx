@@ -12,6 +12,7 @@ import IntroTourProvider from "app/components/IntroTourProvider"
 import CatalogHeader from "app/components/CatalogHeader"
 import Modals from "app/components/Modals"
 import Toast from "app/components/Toast"
+import YearInBooksGlobalBanner from "app/components/YearInBooksGlobalBanner"
 import type { Metadata } from "next"
 
 const chivoMono = Chivo_Mono({ subsets: ["latin"], variable: "--font-chivo-mono" })
@@ -49,6 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <IntroTourProvider>
                   <div className="flex flex-col h-screen">
                     <CatalogHeader />
+                    <YearInBooksGlobalBanner />
                     <main className="mb-auto font-newsreader font-normal text-md tracking-wide leading-relaxed">
                       {children}
                     </main>

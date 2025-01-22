@@ -95,8 +95,8 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                 <RxCaretDown className="inline-block mt-1 ml-0.5 text-2xl text-gray-300" />
               </div>
             </Menu.Button>
-            <div className="relative">
-              <Menu.Items className="absolute top-2 w-[108px] bg-gray-900 rounded z-10">
+            <div className="relative mr-1">
+              <Menu.Items className="absolute top-2 right-0 w-[150px] bg-gray-900 rounded z-10">
                 <Menu.Item>
                   <Link href="/home">
                     <button className="w-full cat-btn-text hover:bg-gray-700 px-4 pt-3 pb-2 text-left rounded-tl rounded-tr">
@@ -125,6 +125,15 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                 <hr className="my-1 w-3/4 mx-auto border-gray-700" />
                 <Menu.Item>
                   <div className="">
+                    <Link href={`/users/${currentUserProfile.username}/year/2024`}>
+                      <button className="w-full cat-btn-text hover:bg-gray-700 !text-gold-500 px-4 py-2 text-left rounded-tl rounded-tr">
+                        2024 in books
+                      </button>
+                    </Link>
+                  </div>
+                </Menu.Item>
+                <Menu.Item>
+                  <div className="">
                     <Link href="/explore">
                       <button className="w-full cat-btn-text hover:bg-gray-700 px-4 py-2 text-left rounded-tl rounded-tr">
                         explore
@@ -137,7 +146,7 @@ export default function UserNav({ currentUserProfile: _initialCurrentUserProfile
                   <div className="">
                     <button
                       onClick={() => setCurrentModal(CurrentModal.Invites)}
-                      className="w-full hover:bg-gray-700 px-4 py-2 text-left text-gold-500 rounded-tl rounded-tr"
+                      className="w-full hover:bg-gray-700 px-4 py-2 text-left rounded-tl rounded-tr"
                     >
                       invite
                     </button>
