@@ -5,7 +5,10 @@ import { decorateLists } from "lib/server/decorators"
 import { getMetadata } from "lib/server/metadata"
 import ManageLists from "app/users/[username]/lists/components/ManageLists"
 import UserListsIndex from "app/users/[username]/lists/components/UsersListIndex"
+import Pagination from "app/components/Pagination"
 import type { Metadata } from "next"
+
+const LISTS_LIMIT = 8
 
 export const dynamic = "force-dynamic"
 
@@ -16,7 +19,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   })
 }
 
-export default async function UserListsIndexPage({ params }) {
+export default async function UserListsIndexPage({ params, searchParams }) {
   const { username } = params
   const currentUserProfile = await getCurrentUserProfile()
 
@@ -28,11 +31,22 @@ export default async function UserListsIndexPage({ params }) {
 
   if (!userProfile) notFound()
 
+  let { page } = searchParams
+  if (!page) page = 1
+
+  const whereConditions = {
+    ownerId: userProfile.id,
+    designation: null,
+  }
+
+  const totalCount = await prisma.list.count({
+    where: whereConditions,
+  })
+
+  const pageCount = Math.ceil(totalCount / LISTS_LIMIT)
+
   const _lists = await prisma.list.findMany({
-    where: {
-      ownerId: userProfile.id,
-      designation: null,
-    },
+    where: whereConditions,
     orderBy: {
       createdAt: "desc",
     },
@@ -43,6 +57,8 @@ export default async function UserListsIndexPage({ params }) {
         },
       },
     },
+    skip: LISTS_LIMIT * (page - 1),
+    take: LISTS_LIMIT,
   })
 
   const lists = await decorateLists(_lists, currentUserProfile)
@@ -59,9 +75,18 @@ export default async function UserListsIndexPage({ params }) {
 
   const isUsersProfile = currentUserProfile?.id === userProfile!.id
 
-  if (isUsersProfile) {
-    return <ManageLists lists={lists} pins={pins} />
-  } else {
-    return <UserListsIndex lists={lists} userProfile={userProfile} currentUserProfile={currentUserProfile} />
-  }
+  return (
+    <>
+      {isUsersProfile ? (
+        <ManageLists lists={lists} pins={pins} />
+      ) : (
+        <UserListsIndex
+          lists={lists}
+          userProfile={userProfile}
+          currentUserProfile={currentUserProfile}
+        />
+      )}
+      <Pagination pageCount={pageCount} />
+    </>
+  )
 }
